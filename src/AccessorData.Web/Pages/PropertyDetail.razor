@@ -1,0 +1,37 @@
+﻿@using AccessorData.Core.Models;
+@using AccessorData.Core.Services;
+
+@inject IPropertyService PropertyService
+@page "/property/{id:int}"
+
+@if (this.Property is null)
+{
+    <h3>There was a problem finding the property.</h3>
+}
+else
+{
+    <h3>@this.Property.Id</h3>
+}
+
+@code {
+    /// <summary>
+    /// References <see cref="Property.Id"/>
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "id")]
+    public int PropertyId { get; set; }
+
+    /// <summary>
+    /// The property to display.
+    /// </summary>
+    public Property? Property { get; set; }
+
+    /// <summary>
+    /// Initializes <see cref="Property"/> via the supplied <see cref="PropertyId"/>.
+    /// </summary>
+    /// <returns>Whether the task was completed or not.</returns>
+    protected override async Task OnInitializedAsync()
+    {
+        this.Property = await this.PropertyService.GetAsync(this.PropertyId);
+    }
+}
