@@ -1,0 +1,51 @@
+﻿@using AccessorData.Core.Aggregates;
+
+@if (this.Building is not null)
+{
+    <div class="row">
+        <div class="col-12">
+            <h3>[Building name]</h3>
+        </div>
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="col">
+                    <h5>Section name:</h5>
+                    <h5>Year built:</h5>
+                    <h5>% completed:</h5>
+                    <h5>Stories</h5>
+                    <h5>Perimeter</h5>
+                    <h5>Total area</h5>
+                </div>
+                <div class="col text-end">
+                    <h5>@this.Building.SectionName</h5>
+                    <h5>@this.Building.Built</h5>
+                    <h5>@this.Building.PercentCompleted</h5>
+                    <h5>@this.Building.Stories</h5>
+                    <h5>@this.Building.Perimeter</h5>
+                    <h5>@this.Building.TotalArea</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <!-- TODO: Image here -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h3>Occupancies</h3>
+        </div>
+    </div>
+}
+
+@code {
+    /*
+     * Broke this off into a seperate component for organization's sake,
+     * despite it only being used it one place.
+     */
+
+    /// <summary>
+    /// The building to detail.
+    /// </summary>
+    [Parameter]
+    public Building? Building { get; set; }
+}

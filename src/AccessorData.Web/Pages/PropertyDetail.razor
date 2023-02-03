@@ -10,7 +10,61 @@
 }
 else
 {
-    <h3>@this.Property.Id</h3>
+    <div class="container shadow p-3">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3>Tax Key Number: @this.Property.Location.ParcelNumber</h3>
+                <h3>Property Address: @this.Property.Location.Address</h3>
+            </div>
+            <div class="col-sm-6">
+                @if (this.Property.Assessment is null)
+                {
+                    <h3>Could not load assessment summary</h3>
+                }
+                else
+                {
+                    <div class="row">
+                        <h3>Assessment Summary</h3>
+                        <div class="col">
+                            <h5>Land</h5>
+                            <h5>Improvements</h5>
+                            <h5>Total</h5>
+                        </div>
+                        <div class="col text-end">
+                            <h5>@this.Property.Assessment.Land</h5>
+                            <h5>@this.Property.Assessment.Improvements</h5>
+                            <h5>@this.Property.Assessment.Total</h5>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="row">
+                    <div class="col">
+                        <h3>Owner</h3>
+                    </div>
+                    <div class="col text-end">
+                        <p>
+                            @this.Property.Owner.Name
+                            <br>
+                            @this.Property.Owner.Location.Address
+                            <br>
+                            @this.Property.Owner.Location.City, @this.Property.Owner.Location.State @this.Property.Owner.Location.Zip
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (this.Property.Buildings is not null &&
+             this.Property.Buildings.Count() != 0)
+            @foreach (var b in this.Property.Buildings)
+            {
+                <BuildingComponent Building="b"/>
+            }
+    </div>
 }
 
 @code {

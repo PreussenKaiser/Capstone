@@ -5,9 +5,9 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccessorData.Web", "AccessorData.Web\AccessorData.Web.csproj", "{2C901A7B-0D77-4FA6-ACE0-EC8F1D1FA13B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessorData.Core", "AccessorData.Core\AccessorData.Core.csproj", "{7865D6E6-F19C-45DC-A1CB-0CCA072BF766}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccessorData.Core", "AccessorData.Core\AccessorData.Core.csproj", "{7865D6E6-F19C-45DC-A1CB-0CCA072BF766}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessorData.Infrastructure", "AccessorData.Infrastructure\AccessorData.Infrastructure.csproj", "{F278503A-08BA-4A26-B37A-F447E6442368}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccessorData.Infrastructure", "AccessorData.Infrastructure\AccessorData.Infrastructure.csproj", "{F278503A-08BA-4A26-B37A-F447E6442368}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{53A984C1-664B-484E-B3DA-43BE338EB3B3}"
 	ProjectSection(SolutionItems) = preProject
