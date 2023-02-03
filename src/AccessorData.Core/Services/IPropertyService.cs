@@ -13,12 +13,12 @@ public interface IPropertyService
 	/// </summary>
 	/// <param name="id">A value referencing <see cref="Property.Id"/>.</param>
 	/// <returns>A possible property.</returns>
-	Task<Property?> GetAsync(int id);
+	Task<Property?> GetAsync(long id);
 
 	/// <summary>
 	/// Gets properties based off of it's location.
 	/// </summary>
 	/// <param name="location">The search aggregate to use.</param>
 	/// <returns>Properties that match the search.</returns>
-	Task<IEnumerable<Property>?> SearchAsync(PropertyLocation location);
+	Task<IEnumerable<Property>?> SearchAsync(Location location);
 }

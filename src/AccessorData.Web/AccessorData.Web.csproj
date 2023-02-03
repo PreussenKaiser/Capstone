@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AccessorData.Core\AccessorData.Core.csproj" />
+    <ProjectReference Include="..\AccessorData.Infrastructure\AccessorData.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

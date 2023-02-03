@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<propertyCollection>
+	<properties>
+		<property>
+			<id>8273813434407</id>
+			<location>
+				<address>3017 Hoover Rd</address>
+				<parcelNumber>281-23-0802230135</parcelNumber>
+				<county>Portage</county>
+				<municipality>City of Stevens Point</municipality>
+				<city></city>
+				<state></state>
+				<zip>0</zip>
+			</location>
+			<owner>
+				<name>Linwood Holdings, LLC</name>
+				<location>
+					<address>3017 Hoover Rd Ste D</address>
+					<county>Portage</county>
+					<municipality>City of Stevens Point</municipality>
+					<city>Stevens Point</city>
+					<state>WI</state>
+					<zip>54481</zip>
+				</location>
+			</owner>
+			<assessment>
+				<year>2022</year>
+				<land>94400</land>
+				<improvements>792400</improvements>
+			</assessment>
+			<land>
+				<qty>1</qty>
+				<use>Commercial</use>
+				<width>261</width>
+				<depth>385</depth>
+				<squareFeet>100408</squareFeet>
+				<acres>2305</acres>
+				<waterFrontage>false</waterFrontage>
+				<taxClass>Commercial</taxClass>
+				<specialTaxProgram></specialTaxProgram>
+				<value>94400</value>
+			</land>
+			<buildings>
+				<building>
+					<sectionName>Section 1</sectionName>
+					<dateBuilt>1997</dateBuilt>
+					<percentCompleted>1.00</percentCompleted>
+					<stories>1</stories>
+					<perimeter>460</perimeter>
+					<totalArea>8400</totalArea>
+					<occupancies>
+						<occupancy>
+							<designedUse>Office building</designedUse>
+							<actualUse>Office, class C</actualUse>
+							<units>1</units>
+							<areaPerUnit>1200</areaPerUnit>
+							<constructionClass>Wood or steel framed exterior walls</constructionClass>
+							<averageHeight>10.00</averageHeight>
+							<quality>C (AV)</quality>
+							<cdu>Average</cdu>
+						</occupancy>
+					</occupancies>
+				</building>
+			</buildings>
+			<permits>
+				<permit>
+					<dateIssued>4/29/2022</dateIssued>
+					<permitNumber>20220415</permitNumber>
+					<purpose>Plumbing for well</purpose>
+					<cost>250</cost>
+					<dateCompleted>06/20/2022</dateCompleted>
+				</permit>
+			</permits>
+			<sales>
+				<sale>
+					<date>02/15/2018</date>
+					<price>896400</price>
+					<type>Not a market sale</type>
+				</sale>
+			</sales>
+		</property>
+	</properties>
+</propertyCollection>

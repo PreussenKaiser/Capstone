@@ -1,7 +1,14 @@
+using AccessorData.Infrastructure.Util;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
+string? xmlFilePath = builder.Configuration.GetConnectionString("XML");
+
+ArgumentNullException.ThrowIfNull(xmlFilePath);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+builder.Services.UseLocalXML(xmlFilePath);
 
 WebApplication app = builder.Build();
 

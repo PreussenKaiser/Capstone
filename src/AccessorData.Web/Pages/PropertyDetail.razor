@@ -2,7 +2,7 @@
 @using AccessorData.Core.Services;
 
 @inject IPropertyService PropertyService
-@page "/property/{id:int}"
+@page "/property/{id:long}"
 
 @if (this.Property is null)
 {
@@ -18,8 +18,7 @@ else
     /// References <see cref="Property.Id"/>
     /// </summary>
     [Parameter]
-    [SupplyParameterFromQuery(Name = "id")]
-    public int PropertyId { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// The property to display.
@@ -27,11 +26,11 @@ else
     public Property? Property { get; set; }
 
     /// <summary>
-    /// Initializes <see cref="Property"/> via the supplied <see cref="PropertyId"/>.
+    /// Initializes <see cref="Property"/> via the supplied <see cref="Id"/>.
     /// </summary>
     /// <returns>Whether the task was completed or not.</returns>
     protected override async Task OnInitializedAsync()
     {
-        this.Property = await this.PropertyService.GetAsync(this.PropertyId);
+        this.Property = await this.PropertyService.GetAsync(this.Id);
     }
 }

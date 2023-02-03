@@ -7,6 +7,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccessorData.Web", "Accesso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessorData.Core", "AccessorData.Core\AccessorData.Core.csproj", "{7865D6E6-F19C-45DC-A1CB-0CCA072BF766}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessorData.Infrastructure", "AccessorData.Infrastructure\AccessorData.Infrastructure.csproj", "{F278503A-08BA-4A26-B37A-F447E6442368}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{53A984C1-664B-484E-B3DA-43BE338EB3B3}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\.gitignore = ..\.gitignore
+		..\LICENSE.md = ..\LICENSE.md
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +31,10 @@ Global
 		{7865D6E6-F19C-45DC-A1CB-0CCA072BF766}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7865D6E6-F19C-45DC-A1CB-0CCA072BF766}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7865D6E6-F19C-45DC-A1CB-0CCA072BF766}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F278503A-08BA-4A26-B37A-F447E6442368}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F278503A-08BA-4A26-B37A-F447E6442368}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F278503A-08BA-4A26-B37A-F447E6442368}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F278503A-08BA-4A26-B37A-F447E6442368}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
