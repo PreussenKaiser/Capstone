@@ -1,8 +1,6 @@
-# AccessorData
-#### Summary
-A redesign of Stevens Point's property assessment tool.
-The current deployment can be found [here](http://www.assessordata.org/).
+# Software Developer Capstone
+### Spring 2023
 
-#### Project Structure
-- Documentation is found in /docs
-- Source code is located in /src
+#### Summary
+This repository contains all work done in the Software Developer Capstone for spring 2023.
+Each folder in root contains a project that was developed, further project details are found in READMEs in the same directory.
