@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  mssql:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=1Secure*Password1
+
+  scheduler.web:
+    image: ${DOCKER_REGISTRY-}schedulerweb
+    build:
+      context: .
+      dockerfile: src/Scheduler.Web/Dockerfile
+    depends_on:
+        - mssql

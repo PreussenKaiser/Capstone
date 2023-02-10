@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
 using Scheduler.Infrastructure.Persistence;
 
-var builder = WebApplication.CreateBuilder();
+WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
 // Configure database
-string? connectionString = builder.Configuration.GetConnectionString("Local");
+string? connectionString = builder.Configuration.GetConnectionString("Docker");
 
 ArgumentNullException.ThrowIfNull(connectionString);
 
@@ -20,7 +20,7 @@ builder.Services
 
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
