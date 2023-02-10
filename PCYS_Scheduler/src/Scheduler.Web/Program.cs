@@ -1,22 +1,21 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Scheduler.Core.Models;
 using Scheduler.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder();
 
 // Configure database
-string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-MySqlServerVersion version = new(new Version(8, 0, 31));
+string? connectionString = builder.Configuration.GetConnectionString("Local");
 
 ArgumentNullException.ThrowIfNull(connectionString);
 
 builder.Services
-	.AddDbContext<SchedulerContext>(o => o.UseMySql(connectionString, version))
+	.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
 	.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configure identity
 builder.Services
-	.AddDefaultIdentity<IdentityUser>(o => o.SignIn.RequireConfirmedAccount = true)
+	.AddDefaultIdentity<User>()
 	.AddEntityFrameworkStores<SchedulerContext>();
 
 builder.Services.AddControllersWithViews();

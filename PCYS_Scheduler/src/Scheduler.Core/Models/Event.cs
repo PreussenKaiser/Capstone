@@ -1,4 +1,6 @@
-﻿namespace Scheduler.Core.Models;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Scheduler.Core.Models;
 
 /// <summary>
 /// Represents an event held at the facility.
@@ -24,6 +26,11 @@ public sealed class Event
 	public Guid FieldId { get; set; }
 
 	/// <summary>
+	/// References <see cref="User.Id"/>.
+	/// </summary>
+	public Guid UserId { get; set; }
+
+	/// <summary>
 	/// The event's name.
 	/// </summary>
 	public string Name { get; set; }
@@ -47,4 +54,9 @@ public sealed class Event
 	/// Where the event is taking place.
 	/// </summary>
 	public Field? Field { get; set; }
+
+	/// <summary>
+	/// The user who scheduled the event.
+	/// </summary>
+	public User? User { get; set; }
 }
