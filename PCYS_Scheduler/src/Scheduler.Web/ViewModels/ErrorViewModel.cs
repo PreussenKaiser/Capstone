@@ -1,4 +1,4 @@
-namespace Scheduler.Web.Models;
+namespace Scheduler.Web.ViewModels;
 
 /// <summary>
 /// Represents an error.

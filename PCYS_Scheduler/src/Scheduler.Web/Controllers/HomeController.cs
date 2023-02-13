@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Scheduler.Web.Models;
+using Scheduler.Web.ViewModels;
 using System.Diagnostics;
 
 namespace Scheduler.Web.Controllers;
