@@ -6,14 +6,6 @@
 public sealed class Field
 {
 	/// <summary>
-	/// Initializes the <see cref="Field"/> class.
-	/// </summary>
-	public Field()
-	{
-		this.Name = string.Empty;
-	}
-
-	/// <summary>
 	/// The field's unique identifier.
 	/// </summary>
 	public Guid Id { get; init; }
@@ -21,5 +13,5 @@ public sealed class Field
 	/// <summary>
 	/// The field's name.
 	/// </summary>
-	public string Name { get; set; }
+	public required string Name { get; set; }
 }
