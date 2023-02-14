@@ -1,45 +1,31 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Scheduler.Core.Models;
+using Scheduler.Core.Models.Identity;
+using Scheduler.Web.Controllers;
 
 namespace Scheduler.Web.ViewModels;
 
 /// <summary>
-/// The view model for the Identity/Register page.
+/// Form data for <see cref="IdentityController.Register"/> POST.
 /// </summary>
-public sealed class RegisterViewModel
+public sealed record RegisterViewModel
 {
 	/// <summary>
-	/// Initializes the <see cref="RegisterViewModel"/> class.
+	/// User credentials.
 	/// </summary>
-	public RegisterViewModel()
-	{
-		this.Email = string.Empty;
-		this.Password = string.Empty;
-		this.ConfirmPassword = string.Empty;
-	}
-
-	/// <summary>
-	/// The user's email, mapped to <see cref="User.Email"/>.
-	/// </summary>
-	[Required]
-	[EmailAddress]
-	[Display(Name = "Email")]
-	public string Email { get; set; }
-	
-	/// <summary>
-	/// The user's password, hashed and mapped to <see cref="User.PasswordHashed"/>.
-	/// </summary>
-	[Required]
-	[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-	[DataType(DataType.Password)]
-	[Display(Name = "Password")]
-	public string Password { get; set; }
+	public Credentials Credentials { get; init; }
 
 	/// <summary>
 	/// Compared against <see cref="Password"/>.
 	/// </summary>
+	[Required(ErrorMessage = "Please confirm your password.")]
 	[DataType(DataType.Password)]
 	[Display(Name = "Confirm password")]
-	[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-	public string ConfirmPassword { get; set; }
+	[Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
+	public string ConfirmPassword { get; init; } = string.Empty;
+
+	/// <summary>
+	/// Used for comparison with <see cref="ConfirmPassword"/>.
+	/// </summary>
+	public string Password
+		=> this.Credentials.Password;
 }

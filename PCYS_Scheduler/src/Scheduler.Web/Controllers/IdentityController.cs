@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Scheduler.Core.Models;
+using Scheduler.Core.Models.Identity;
 using Scheduler.Web.ViewModels;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Scheduler.Web.Controllers;
 
@@ -12,6 +12,11 @@ namespace Scheduler.Web.Controllers;
 public sealed class IdentityController : Controller
 {
 	/// <summary>
+	/// Data-access for users.
+	/// </summary>
+	private readonly UserManager<User> userManager;
+
+	/// <summary>
 	/// The API to access <see cref="User"/> login information with.
 	/// </summary>
 	private readonly SignInManager<User> signInManager;
@@ -19,9 +24,13 @@ public sealed class IdentityController : Controller
 	/// <summary>
 	/// Initializes the <see cref="IdentityController"/> class.
 	/// </summary>
+	/// <param name="userManager">Data-access for users.</param>
 	/// <param name="signInManager">The API to access <see cref="User"/> login information with.</param>
-	public IdentityController(SignInManager<User> signInManager)
+	public IdentityController(
+		UserManager<User> userManager,
+		SignInManager<User> signInManager)
 	{
+		this.userManager = userManager;
 		this.signInManager = signInManager;
 	}
 
@@ -29,13 +38,8 @@ public sealed class IdentityController : Controller
 	/// Displays the <see cref="Login"/> view.
 	/// </summary>
 	/// <returns>The <see cref="Login"/> view.</returns>
-	public async Task<IActionResult> Login()
-	{
-		// Clear the existing external cookie to ensure a clean login process.
-		await this.HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-		return this.View(new LoginViewModel { ReturnUrl = this.Url.Content("~/") });
-	}
+	public IActionResult Login()
+		=> this.View();
 
 	/// <summary>
 	/// Post action for the <see cref="Login"/> view.
@@ -51,20 +55,20 @@ public sealed class IdentityController : Controller
 		if (!this.ModelState.IsValid)
 			return this.View(viewModel);
 
-		var result = await this.signInManager.PasswordSignInAsync(
-			viewModel.Email,
-			viewModel.Password,
+		SignInResult result = await this.signInManager.PasswordSignInAsync(
+			viewModel.Credentials.Email,
+			viewModel.Credentials.Password,
 			viewModel.RememberMe,
 			lockoutOnFailure: false);
 			
 		if (!result.Succeeded)
 		{
-			this.ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+			this.ModelState.AddModelError(string.Empty, "Incorrect credentials, please try again.");
 
 			return this.View(viewModel);
 		}
 
-		return this.Redirect(viewModel.ReturnUrl);
+		return this.RedirectToAction(nameof(HomeController.Index), "Home");
 	}
 
 	/// <summary>
@@ -79,14 +83,44 @@ public sealed class IdentityController : Controller
 		return this.RedirectToAction(nameof(HomeController.Index), "Home");
 	}
 
-	public async Task<IActionResult> Register()
-	{
-		return this.View();
-	}
+	/// <summary>
+	/// Displays the <see cref="Register"/> view.
+	/// </summary>
+	/// <returns>The <see cref="Register"/> view.</returns>
+	public IActionResult Register()
+		=> this.View();
 
+	/// <summary>
+	/// Handles form submission from <see cref="Register"/>.
+	/// </summary>
+	/// <param name="viewModel">View data.</param>
+	/// <returns>
+	/// If successful, redirected to <see cref="HomeController.Index"/>.
+	/// Otherwise, redirected to <see cref="Register"/>.
+	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> Register(RegisterViewModel viewModel)
 	{
-		return this.View();
+		if (!this.ModelState.IsValid)
+			return this.View(viewModel);
+
+		User user = new()
+		{
+			UserName = viewModel.Credentials.Email,
+			Email = viewModel.Credentials.Email
+		};
+
+		IdentityResult result = await this.userManager.CreateAsync(user, viewModel.Credentials.Password);
+
+		if (!result.Succeeded)
+		{
+			foreach (var e in result.Errors)
+				this.ModelState.AddModelError(string.Empty, e.Description);
+
+			return this.View(viewModel);
+		}
+		await this.signInManager.SignInAsync(user, isPersistent: false);
+
+		return this.RedirectToAction(nameof(HomeController.Index), "Home");
 	}
 }

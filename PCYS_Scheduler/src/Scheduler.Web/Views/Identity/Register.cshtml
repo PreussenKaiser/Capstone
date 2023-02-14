@@ -1,5 +1,56 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model RegisterViewModel
+
 @{
+    this.ViewData["Title"] = "Register";
+}
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <form method="post">
+
+            <h1 class="text-center">
+                @this.ViewData["Title"]
+            </h1>
+            <hr />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Credentials.Email"
+                       class="form-control"
+                       autocomplete="username"
+                       aria-required="true" />
+
+                <label asp-for="Credentials.Email" class="form-label"></label>
+                <span asp-validation-for="Credentials.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Credentials.Password"
+                       class="form-control"
+                       autocomplete="new-password"
+                       aria-required="true" />
+
+                <label asp-for="Credentials.Password" class="form-label"></label>
+                <span asp-validation-for="Credentials.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="ConfirmPassword"
+                       class="form-control"
+                       autocomplete="new-password"
+                       aria-required="true" />
+
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit"
+                    class="w-100 btn btn-lg btn-primary">
+                Register
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

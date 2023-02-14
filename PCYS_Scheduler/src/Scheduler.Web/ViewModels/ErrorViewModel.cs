@@ -3,7 +3,7 @@ namespace Scheduler.Web.ViewModels;
 /// <summary>
 /// Represents an error.
 /// </summary>
-public readonly struct ErrorViewModel
+public sealed record ErrorViewModel
 {
 	/// <summary>
 	/// The request which caused the error.

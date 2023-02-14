@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Scheduler.Core.Models.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Core.Models;
 
@@ -7,14 +9,6 @@ namespace Scheduler.Core.Models;
 /// </summary>
 public sealed class Event
 {
-	/// <summary>
-	/// Initializes the <see cref="Event"/> class.
-	/// </summary>
-	public Event()
-	{
-		this.Name = string.Empty;
-	}
-
 	/// <summary>
 	/// The event's unique identifier.
 	/// </summary>
@@ -33,7 +27,9 @@ public sealed class Event
 	/// <summary>
 	/// The event's name.
 	/// </summary>
-	public string Name { get; set; }
+	[Required]
+	[MaxLength(32)]
+	public string Name { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Whether the event is recurring or not.

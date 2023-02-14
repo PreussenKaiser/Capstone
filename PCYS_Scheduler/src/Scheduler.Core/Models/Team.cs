@@ -1,18 +1,12 @@
-﻿namespace Scheduler.Core.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Scheduler.Core.Models;
 
 /// <summary>
 /// Represents a team playing in the facility.
 /// </summary>
 public sealed class Team
 {
-	/// <summary>
-	/// Initializes the <see cref="Team"/> class.
-	/// </summary>
-	public Team()
-	{
-		this.Name = string.Empty;
-	}
-
 	/// <summary>
 	/// The team's unique identifier.
 	/// </summary>
@@ -21,5 +15,7 @@ public sealed class Team
 	/// <summary>
 	/// The team's name.
 	/// </summary>
-	public string Name { get; set; }
+	[Required]
+	[MaxLength(32)]
+	public string Name { get; set; } = string.Empty;
 }

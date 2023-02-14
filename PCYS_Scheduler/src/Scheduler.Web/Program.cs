@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
+using Scheduler.Core.Models.Identity;
 using Scheduler.Infrastructure.Persistence;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -15,7 +17,7 @@ builder.Services
 
 // Configure identity
 builder.Services
-	.AddDefaultIdentity<User>()
+	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>();
 
 builder.Services.AddControllersWithViews();

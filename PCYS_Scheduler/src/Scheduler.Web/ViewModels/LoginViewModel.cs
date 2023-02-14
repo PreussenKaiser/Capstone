@@ -1,55 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Scheduler.Core.Models;
+﻿using Scheduler.Core.Models.Identity;
+using Scheduler.Web.Controllers;
 
 namespace Scheduler.Web.ViewModels;
 
 /// <summary>
-/// View data for the Identity/Login page.
+/// Submission data from <see cref="IdentityController.Login"/> POST.
 /// </summary>
-public sealed class LoginViewModel
+public sealed record LoginViewModel
 {
 	/// <summary>
-	/// Where to redirect to on successful login.
+	/// User credentials.
 	/// </summary>
-	private string returnUrl;
+	public Credentials Credentials { get; init; }
 
 	/// <summary>
-	/// Initializes the <see cref="LoginViewModel"/> struct.
+	/// Whether to presist the user or not.
 	/// </summary>
-	public LoginViewModel()
-	{
-		this.Email = string.Empty;
-		this.Password = string.Empty;
-		this.returnUrl = string.Empty;
-	}
-
-	/// <summary>
-	/// The user's email, will be mapped to and <see cref="User.UserName"/> <see cref="User.Email"/>.
-	/// </summary>
-	[Required]
-	[EmailAddress]
-	public string Email { get; set; }
-
-	/// <summary>
-	/// The user's password, will be hashed and mapped to <see cref="User.PasswordHashed"/>
-	/// </summary>
-	[Required]
-	[DataType(DataType.Password)]
-	public string Password { get; set; }
-
-	/// <summary>
-	/// Where to redirect to on successful login.
-	/// </summary>
-	public string ReturnUrl
-	{
-		get => this.returnUrl;
-		set => this.returnUrl = string.IsNullOrEmpty(value)
-				? "../../"
-				: value;
-	}
-
-	/// <summary>
-	/// Whether to temporarily store the user's credentials.
-	/// </summary>
-	public bool RememberMe { get; set; }
+	public bool RememberMe { get; init; }
 }
