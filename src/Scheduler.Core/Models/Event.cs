@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Scheduler.Core.Models.Identity;
+﻿using Scheduler.Core.Models.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Core.Models;
@@ -22,19 +21,22 @@ public sealed class Event
 	public required string Name { get; set; }
 
 	/// <summary>
-	/// Whether the event is recurring or not.
-	/// </summary>
-	public required bool IsRecurring { get; set; }
-
-	/// <summary>
 	/// When the event starts.
 	/// </summary>
+	[Display(Name = "Start date")]
 	public required DateTime StartDate { get; set; }
 
 	/// <summary>
 	/// When the event ends.
 	/// </summary>
+	[Display(Name = "End date")]
 	public required DateTime EndDate { get; set; }
+
+	/// <summary>
+	/// Whether the event is recurring or not.
+	/// </summary>
+	[Display(Name = "Is recurring?")]
+	public required bool IsRecurring { get; set; }
 
 	/// <summary>
 	/// Where the event is taking place.

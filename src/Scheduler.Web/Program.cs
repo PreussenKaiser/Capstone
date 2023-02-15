@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Scheduler.Core.Models;
 using Scheduler.Core.Models.Identity;
+using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Persistence;
+using Scheduler.Infrastructure.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -13,6 +13,8 @@ ArgumentNullException.ThrowIfNull(connectionString);
 
 builder.Services
 	.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
+	.AddScoped<IFieldService, FieldService>()
+	.AddScoped<IEventService, EventService>()
 	.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configure identity

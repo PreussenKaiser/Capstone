@@ -1,0 +1,38 @@
+﻿@using Scheduler.Core.Models;
+@using Scheduler.Web.Controllers;
+
+@model Field
+
+@{
+    this.ViewData["Title"] = "Add Field";
+}
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <form method="post">
+            <h1 class="text-center">
+                @this.ViewData["Title"]
+            </h1>
+            <hr />
+
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" />
+                <label asp-for="Name" class="form-label"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <a asp-action="@nameof(FieldController.Index)" class="btn btn-danger w-100">
+                        Cancel
+                    </a>
+                </div>
+                <div class="col-6">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

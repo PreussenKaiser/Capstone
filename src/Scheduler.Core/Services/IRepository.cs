@@ -24,7 +24,7 @@ public interface IRepository<TModel>
 	/// All instances of <typeparamref name="TModel"/>.
 	/// An error in retrieval should return null.
 	/// </returns>
-	Task<IEnumerable<TModel>?> GetAllAsync();
+	Task<IEnumerable<TModel>> GetAllAsync();
 
 	/// <summary>
 	/// Gets a <typeparamref name="TModel"/> from the repository.
@@ -34,7 +34,7 @@ public interface IRepository<TModel>
 	/// A <typeparamref name="TModel"/>.
 	/// An error in retrievial should return null.
 	/// </returns>
-	Task<TModel?> GetAsync(Guid id);
+	Task<TModel> GetAsync(Guid id);
 
 	/// <summary>
 	/// Updates a <typeparamref name="TModel"/> in the repository.
