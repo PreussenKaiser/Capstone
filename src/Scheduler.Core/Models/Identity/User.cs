@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Scheduler.Core.Models;
+namespace Scheduler.Core.Models.Identity;
 
 /// <summary>
 /// Represents a user in the scheduler.

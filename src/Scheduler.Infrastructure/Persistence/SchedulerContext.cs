@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
+using Scheduler.Core.Models.Identity;
 
 namespace Scheduler.Infrastructure.Persistence;
 
@@ -9,7 +9,7 @@ namespace Scheduler.Infrastructure.Persistence;
 /// Handles access to a relational database.
 /// </summary>
 public sealed class SchedulerContext
-	: IdentityDbContext<User, IdentityRole<Guid>, Guid>
+	: IdentityDbContext<User, Role, Guid>
 {
 	/// <summary>
 	/// Initializes the <see cref="SchedulerContext"/> class.

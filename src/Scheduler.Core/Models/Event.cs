@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Scheduler.Core.Models.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Core.Models;
 
@@ -15,6 +17,8 @@ public sealed class Event
 	/// <summary>
 	/// The event's name.
 	/// </summary>
+	[Required]
+	[MaxLength(32)]
 	public required string Name { get; set; }
 
 	/// <summary>

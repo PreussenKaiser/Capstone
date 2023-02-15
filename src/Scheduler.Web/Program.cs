@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
+using Scheduler.Core.Models.Identity;
 using Scheduler.Infrastructure.Persistence;
 
-var builder = WebApplication.CreateBuilder();
+WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
 // Configure database
 string? connectionString = builder.Configuration.GetConnectionString("Local");
@@ -15,13 +17,13 @@ builder.Services
 
 // Configure identity
 builder.Services
-	.AddDefaultIdentity<User>()
+	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
