@@ -1,7 +1,64 @@
 ﻿@using Scheduler.Core.Models;
+@using Scheduler.Web.Controllers;
 
 @model IEnumerable<Event>
 
 @{
     this.ViewData["Title"] = "Events";
 }
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center">
+            @this.ViewData["Title"]
+        </h1>
+
+        <a asp-action="@nameof(EventController.Create)"
+           class="btn btn-primary">
+            Schedule
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Start date</th>
+                    <th scope="col">End date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var scheduledEvent in this.Model)
+                {
+                    <tr>
+                        <th scope="row">@scheduledEvent.Id</th>
+                        <td>@scheduledEvent.Name</td>
+                        <td>@scheduledEvent.StartDate</td>
+                        <td>@scheduledEvent.EndDate</td>
+                        <td>
+                            <a asp-action="@nameof(FieldController.Update)"
+                               asp-route-id="@scheduledEvent.Id"
+                               class="btn btn-sm btn-secondary me-3">
+                                Reschedule
+                            </a>
+                        </td>
+                        <td>
+                            <form asp-action="@nameof(FieldController.Delete)"
+                                  asp-route-id="@scheduledEvent.Id"
+                                  method="post">
+                                <button type="submit"
+                                    class="btn btn-sm btn-danger">
+                                    Cancel
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
