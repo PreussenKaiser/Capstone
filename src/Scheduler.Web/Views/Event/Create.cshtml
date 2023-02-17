@@ -1,43 +1,99 @@
 ﻿@using Scheduler.Core.Models;
+@using Scheduler.Core.Services;
+@using Scheduler.Web.Controllers;
 
 @model Event
+@inject IFieldService FieldService
 
 @{
     this.ViewData["Title"] = "Schedule Event";
 }
 
 <div class="row">
-    <div class="col-sm-6 mx-auto">
+    <div class="col-12">
         <form method="post">
             <h1 class="text-center">
                 @this.ViewData["Title"]
             </h1>
             <hr />
 
-            <div class="form-floating mb-3">
-                <input asp-for="Name" class="form-control"/>
-                <label asp-for="Name" class="form-label"></label>
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
             <div class="row">
-                <div class="col-6">
-                    <div class="form-floating">
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input asp-for="Name" class="form-control"/>
+                        <label asp-for="Name" class="form-label"></label>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
                         <input asp-for="StartDate" type="datetime" class="form-control"/>
                         <label asp-for="StartDate" class="form-control"></label>
                         <span asp-validation-for="StartDate" class="text-danger"></span>
                     </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-floating">
-                        <input asp-for="EndDate" type="datetime" class="form-control"/>
+                    <div class="form-floating mb-3">
+                        <input asp-for="EndDate" type="datetime" class="form-control" />
                         <label asp-for="EndDate" class="form-control"></label>
                         <span asp-validation-for="EndDate" class="text-danger"></span>
                     </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="IsRecurring" type="checkbox" class="form-check-input">
+                        <label asp-for="IsRecurring" class="form-check-label"></label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <form method="post">
+                        <div class="list-group list-group-horizontal mb-3">
+                            @{
+                                IEnumerable<Type> eventTypes = new[]
+                                {
+                                    typeof(Event),
+                                    typeof(Practice),
+                                    typeof(Game)
+                                };
+
+                                foreach (var type in eventTypes)
+                                {
+                                    string activeCssClass = this.Model is null
+                                        ? string.Empty
+                                        : this.Model.GetType().Name == type.Name
+                                        ? "active"
+                                        : string.Empty;
+
+                                    <button asp-route-type="@type" class="list-group-item list-group-item-action @activeCssClass">
+                                        @type.Name
+                                    </button>
+                                }
+                            }
+                        </div>
+                    </form>
+
+                    <div class="mb-3">
+                        <label asp-for="FieldIds" class="form-label"></label>
+                        <select class="form-select"
+                                multiple
+                                size="6"
+                                asp-for="FieldIds"
+                                asp-items="this.FieldService
+                                            .GetAllAsync()
+                                            .Result
+                                            .Select(field => new SelectListItem
+                                            {
+                                                Text = field.Name,
+                                                Value = field.Id.ToString()
+                                            })"></select>
+                    </div>
                 </div>
             </div>
-            <div class="form-check mb-3">
-                <input asp-for="IsRecurring" type="checkbox" class="form-check-input">
-                <label asp-for="IsRecurring" class="form-check-label"></label>
+            <div class="row">
+                <div class="col-6">
+                    <a asp-action="@nameof(EventController.Index)" class="btn btn-lg btn-danger w-100">
+                        Cancel
+                    </a>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-lg btn-primary w-100">
+                        Schedule
+                    </button>
+                </div>
             </div>
         </form>
     </div>

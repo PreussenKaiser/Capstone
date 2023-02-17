@@ -18,4 +18,9 @@ public sealed class Field
 	[Required]
 	[MaxLength(32)]
 	public required string Name { get; set; }
+
+	/// <summary>
+	/// Events taking place on the field.
+	/// </summary>
+	public ICollection<Event> Events { get; set; }
 }

@@ -36,6 +36,11 @@ public sealed class SchedulerContext
 	public DbSet<Game> Games { get; set; }
 
 	/// <summary>
+	/// Instances of <see cref="Practice"/> in the database.
+	/// </summary>
+	public DbSet<Practice> Practices { get; init; }
+
+	/// <summary>
 	/// Instances of <see cref="Team"/> in the database.
 	/// </summary>
 	public DbSet<Team> Teams { get; set; }
@@ -47,22 +52,9 @@ public sealed class SchedulerContext
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		builder
-			.Entity<Game>()
-			.HasNoKey();
+			.Entity<Event>()
+			.UseTptMappingStrategy();
 
 		base.OnModelCreating(builder);
-	}
-
-	/// <summary>
-	/// Executes a function against the database then saves the changes.
-	/// Intended for queries that mutate.
-	/// </summary>
-	/// <param name="function">The function to execute.</param>
-	/// <returns>Whether the task was completed or not.</returns>
-	internal async Task ExecuteAsync(Func<Task> function)
-	{
-		await function();
-
-		await this.SaveChangesAsync();
 	}
 }

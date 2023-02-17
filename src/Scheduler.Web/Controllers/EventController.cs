@@ -51,13 +51,14 @@ public sealed class EventController : Controller
 	/// <summary>
 	/// Handles POST from <see cref="Create"/>.
 	/// </summary>
-	/// <param name="event">POST values.</param>
+	/// <param name="scheduledEvent">POST values.</param>
 	/// <returns>Redirected to <see cref="Index"/>.</returns>
 	[HttpPost]
-	public async Task<IActionResult> Create(Event @event)
+	public async Task<IActionResult> Create<TEvent>(TEvent scheduledEvent)
+		where TEvent : Event
 	{
-		await this.eventService.CreateAsync(@event);
+		await this.eventService.ScheduleAsync(scheduledEvent);
 
-		return this.RedirectToAction(nameof(Index));
+		return this.RedirectToAction(nameof(this.Index));
 	}
 }

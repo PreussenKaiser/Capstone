@@ -3,20 +3,27 @@
 /// <summary>
 /// Represents a scheduled game.
 /// </summary>
-public sealed class Game
+public sealed class Game : Event
 {
 	/// <summary>
-	/// Where the game is being held.
+	/// The games home team.
+	/// References <see cref="Team.Id"/>.
 	/// </summary>
-	public required Event? Event { get; set; }
+	public required Guid HomeTeamId { get; init; }
+
+	/// <summary>
+	/// The games opposing team.
+	/// References <see cref="Team.Id"/>.
+	/// </summary>
+	public required Guid OpposingTeamId { get; init; }
 
 	/// <summary>
 	/// The games home team.
 	/// </summary>
-	public required Team? HomeTeam { get; set; }
+	public Team? HomeTeam { get; set; }
 
 	/// <summary>
 	/// The games opposing team.
 	/// </summary>
-	public required Team? OpposingTeam { get; set; }
+	public Team? OpposingTeam { get; set; }
 }

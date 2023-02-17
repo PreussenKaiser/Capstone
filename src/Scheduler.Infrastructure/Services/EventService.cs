@@ -36,6 +36,19 @@ public sealed class EventService : IEventService
 	}
 
 	/// <summary>
+	/// Creates a <typeparamref name="TScheduleable"/> which is related to <see cref="Event"/> in the database.
+	/// <typeparamref name="TScheduleable"/> must implement <see cref="ISchedulable"/>.
+	/// </summary>
+	/// <typeparam name="TScheduleable">The type of schedulable model to create.</typeparam>
+	/// <param name="schedulable"><typeparamref name="TScheduleable"/> values.</param>
+	/// <returns>Whether the task was completed or not.</returns>
+	public Task ScheduleAsync<TScheduleable>(TScheduleable schedulable)
+		where TScheduleable : Event
+	{
+		throw new NotImplementedException();
+	}
+
+	/// <summary>
 	/// Gets all instances of <see cref="Event"/> from the database.
 	/// </summary>
 	/// <returns>A list of events.</returns>

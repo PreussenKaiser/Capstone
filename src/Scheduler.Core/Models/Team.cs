@@ -10,7 +10,7 @@ public sealed class Team
 	/// <summary>
 	/// The team's unique identifier.
 	/// </summary>
-	public Guid Id { get; init; }
+	public required Guid Id { get; init; }
 
 	/// <summary>
 	/// The team's name.

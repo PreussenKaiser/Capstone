@@ -1,17 +1,31 @@
 ﻿using Scheduler.Core.Models.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Scheduler.Core.Models;
 
 /// <summary>
 /// Represents an event held at the facility.
 /// </summary>
-public sealed class Event
+public class Event
 {
 	/// <summary>
 	/// The event's unique identifier.
 	/// </summary>
-	public Guid Id { get; init; }
+	public required Guid Id { get; init; }
+
+	/// <summary>
+	/// The user who scheduled the event.
+	/// References <see cref="User.Id"/>.
+	/// </summary>
+	public required Guid UserId { get; init; }
+
+	/// <summary>
+	/// Foreign key identifiers referencing <see cref="Field.Id"/>.
+	/// </summary>
+	[NotMapped]
+	[Display(Name = "Fields")]
+	public Guid[]? FieldIds { get; set; }
 
 	/// <summary>
 	/// The event's name.
@@ -35,16 +49,16 @@ public sealed class Event
 	/// <summary>
 	/// Whether the event is recurring or not.
 	/// </summary>
-	[Display(Name = "Is recurring?")]
+	[Display(Name = "Recurring?")]
 	public required bool IsRecurring { get; set; }
-
-	/// <summary>
-	/// Where the event is taking place.
-	/// </summary>
-	public Field? Field { get; set; }
 
 	/// <summary>
 	/// The user who scheduled the event.
 	/// </summary>
 	public User? User { get; set; }
+
+	/// <summary>
+	/// Fields where the event is taking place.
+	/// </summary>
+	public ICollection<Field>? Fields { get; set; }
 }
