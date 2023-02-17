@@ -7,7 +7,7 @@ namespace Scheduler.Infrastructure.Services;
 /// <summary>
 /// Queries <see cref="Event"/> models againsts a database.
 /// </summary>
-public sealed class EventService : IEventService
+public sealed class ScheduleService : IScheduleService
 {
 	/// <summary>
 	/// The database to query.
@@ -15,10 +15,10 @@ public sealed class EventService : IEventService
 	private readonly SchedulerContext database;
 
 	/// <summary>
-	/// Initializes the <see cref="EventService"/> class.
+	/// Initializes the <see cref="ScheduleService"/> class.
 	/// </summary>
 	/// <param name="database">The database to query.</param>
-	public EventService(SchedulerContext database)
+	public ScheduleService(SchedulerContext database)
 	{
 		this.database = database;
 	}
@@ -42,10 +42,15 @@ public sealed class EventService : IEventService
 	/// <typeparam name="TScheduleable">The type of schedulable model to create.</typeparam>
 	/// <param name="schedulable"><typeparamref name="TScheduleable"/> values.</param>
 	/// <returns>Whether the task was completed or not.</returns>
-	public Task ScheduleAsync<TScheduleable>(TScheduleable schedulable)
+	public async Task CreateAsync<TScheduleable>(TScheduleable schedulable)
 		where TScheduleable : Event
 	{
-		throw new NotImplementedException();
+		await this.database.Events.AddAsync(schedulable);
+		
+		if (schedulable is not Event)
+			await this.database.AddAsync(schedulable);
+
+		await this.database.SaveChangesAsync();
 	}
 
 	/// <summary>
@@ -67,12 +72,12 @@ public sealed class EventService : IEventService
 	/// <exception cref="ArgumentException"/>
 	public async Task<Event> GetAsync(Guid id)
 	{
-		Event? @event = await this.database.Events.FindAsync(id);
+		Event? scheduledEvent = await this.database.Events.FindAsync(id);
 
-		if (@event is null)
+		if (scheduledEvent is null)
 			throw new ArgumentException($"{id} could not be resolved to an Event.");
 
-		return @event;
+		return scheduledEvent;
 	}
 
 	/// <summary>

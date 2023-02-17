@@ -1,4 +1,6 @@
-﻿namespace Scheduler.Core.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Scheduler.Core.Models;
 
 /// <summary>
 /// Represents a practice game.
@@ -9,6 +11,7 @@ public sealed class Practice : Event
 	/// The team practicing.
 	/// References <see cref="Team.Id"/>.
 	/// </summary>
+	[Display(Name = "Practicing Team")]
 	public required Guid TeamId { get; init; }
 
 	/// <summary>

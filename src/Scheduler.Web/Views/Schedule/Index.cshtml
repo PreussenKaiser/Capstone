@@ -5,6 +5,7 @@
 
 @{
     this.ViewData["Title"] = "Events";
+    this.Layout = "_Layout";
 }
 
 <div class="row">
@@ -14,6 +15,7 @@
         </h1>
 
         <a asp-action="@nameof(EventController.Create)"
+           asp-controller="@nameof(Event)"
            class="btn btn-primary">
             Schedule
         </a>

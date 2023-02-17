@@ -14,7 +14,7 @@ ArgumentNullException.ThrowIfNull(connectionString);
 builder.Services
 	.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
 	.AddScoped<IFieldService, FieldService>()
-	.AddScoped<IEventService, EventService>()
+	.AddScoped<IScheduleService, ScheduleService>()
 	.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configure identity
