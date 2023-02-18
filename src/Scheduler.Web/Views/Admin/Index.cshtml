@@ -1,0 +1,62 @@
+﻿@using Scheduler.Web.Controllers
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <h1 class="text-center">
+            @this.ViewData["Title"]
+        </h1>
+        <hr />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-8 mx-auto">
+        <h3 class="text-center">
+            Events
+        </h3>
+        <hr />
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-sm-2 mx-auto">
+        <a asp-controller="@nameof(ScheduleController)" asp-action="Index" class="btn btn-primary w-100">
+            Manage Events
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-8 mx-auto">
+        <h3 class="text-center">
+            Fields
+        </h3>
+        <hr />
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-sm-2 mx-auto">
+        <a asp-controller="@nameof(FieldController)" asp-action="Index" class="btn btn-primary w-100">
+            Manage Fields
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-8 mx-auto">
+        <h3 class="text-center">
+            Teams
+        </h3>
+        <hr />
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-sm-2 mx-auto">
+        <a asp-controller="@nameof(TeamController)" asp-action="Index" class="btn btn-primary w-100">
+            Manage Teams
+        </a>
+    </div>
+</div>
