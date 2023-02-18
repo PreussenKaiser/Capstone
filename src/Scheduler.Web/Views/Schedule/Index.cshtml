@@ -43,18 +43,19 @@
                         <td>@scheduledEvent.EndDate</td>
                         <td>
                             <a asp-action="@nameof(FieldController.Update)"
+                               asp-controller="@scheduledEvent.GetType().Name"
                                asp-route-id="@scheduledEvent.Id"
                                class="btn btn-sm btn-secondary me-3">
-                                Reschedule
+                                Update
                             </a>
                         </td>
                         <td>
                             <form asp-action="@nameof(FieldController.Delete)"
+                                  asp-controller="@scheduledEvent.GetType().Name"
                                   asp-route-id="@scheduledEvent.Id"
                                   method="post">
-                                <button type="submit"
-                                    class="btn btn-sm btn-danger">
-                                    Cancel
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
                                 </button>
                             </form>
                         </td>

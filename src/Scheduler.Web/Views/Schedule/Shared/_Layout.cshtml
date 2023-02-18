@@ -1,93 +1,61 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@using Scheduler.Core.Models;
-@using Scheduler.Core.Services;
+﻿@using Scheduler.Core.Models;
 @using Scheduler.Web.Controllers;
-@using Scheduler.Web.Controllers.Schedule;
-@using System.Security.Claims;
-
-@inject IFieldService FieldService
 
 @model Event
 
 @{
     this.Layout = "_Layout";
+
+    IEnumerable<Type> eventTypes = new[]
+    {
+        typeof(Event),
+        typeof(Practice),
+        typeof(Game)
+    };
 }
 
 <div class="row">
-    <div class="col-12">
-        <form method="post">
-            <h1 class="text-center">
-                Schedule @this.ViewData["Title"]
-            </h1>
-            <hr />
+    <div class="col-sm-4 mx-auto">
+        <h1 class="text-center">
+            Schedule Event
+        </h1>
+        <hr />
 
-            <input asp-for="UserId"
-                   type="hidden"
-                   value="@this.User.FindFirst(ClaimTypes.NameIdentifier).Value" />
+        <div class="list-group list-group-horizontal mb-3">
+            @foreach (var type in eventTypes)
+            {
+                string currentController = this.Context.GetRouteData().Values["controller"]!.ToString()!;
+                string currentAction = this.Context.GetRouteData().Values["action"]!.ToString()!;
+
+                string activeCssClass = currentController == type.Name
+                    ? "active"
+                    : string.Empty;
+
+                <a asp-controller="@type.Name"
+                   asp-action="@currentAction"
+                   class="list-group-item list-group-item-action text-center @activeCssClass">
+                    @type.Name
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <form method="post">
+            <div class="row">
+                <div class="col-12">
+                    @await this.Html.PartialAsync("Forms/_EventInputs", this.Model)
+                </div>
+            </div>
 
             <div class="row">
-                <div class="col-sm-6">
-                    <div class="mb-3">
-                        <label asp-for="Name" class="form-label"></label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="StartDate" class="form-label"></label>
-                        <input asp-for="StartDate" type="date" class="form-control" />
-                        <span asp-validation-for="StartDate" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="EndDate" class="form-label"></label>
-                        <input asp-for="EndDate" type="date" class="form-control" />
-                        <span asp-validation-for="EndDate" class="text-danger"></span>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input asp-for="IsRecurring" type="checkbox" class="form-check-input">
-                        <label asp-for="IsRecurring" class="form-check-label"></label>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="list-group list-group-horizontal mb-3">
-                        @this.Html.ActionLink(
-                            nameof(Event),
-                            "Create",
-                            nameof(Event),
-                            this.Model,
-                            new { @class = "list-group-item list-group-item-action" })
-                        @this.Html.ActionLink(
-                            nameof(Practice),
-                            "Create",
-                            nameof(Practice),
-                            this.Model,
-                            new { @class = "list-group-item list-group-item-action" })
-                        @this.Html.ActionLink(
-                            nameof(Game),
-                            "Create",
-                            nameof(Game),
-                            this.Model,
-                            new { @class = "list-group-item list-group-item-action" })
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="FieldIds" class="form-label"></label>
-                        <select class="form-select"
-                                multiple
-                                size="6"
-                                asp-for="FieldIds"
-                                asp-items="this.FieldService
-                                            .GetAllAsync()
-                                            .Result
-                                            .Select(field => new SelectListItem
-                                            {
-                                                Text = field.Name,
-                                                Value = field.Id.ToString()
-                                            })"></select>
-                    </div>
-
+                <div class="col-12">
                     @this.RenderBody()
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-6">
                     <a asp-action="@nameof(ScheduleController.Index)"
@@ -97,8 +65,8 @@
                     </a>
                 </div>
                 <div class="col-6">
-                    <button type="submit" class="btn btn-lg btn-primary w-100">
-                        Schedule
+                    <button class="btn btn-lg btn-primary w-100">
+                        Submit
                     </button>
                 </div>
             </div>
