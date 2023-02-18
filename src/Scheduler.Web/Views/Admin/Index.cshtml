@@ -13,19 +13,64 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-sm-8 mx-auto">
-        <h3 class="text-center">
-            Events
-        </h3>
-        <hr />
+<div class="row mb-3">
+
+    <div class="col-sm-6">
+        <div class="container mb-2">
+            <div class="row mb-1">
+                <div class="col-12" mx-auto>
+                    <h3 class="text-center">Current Scheduled Games</h3>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="col-sm-8 mb-2">
+                    <input class="w-100 form-control"/>
+                </div>
+                <div class="col-6 col-sm-2 mb-2">
+                    <button class="btn btn-primary w-100">
+                        Edit
+                    </button>
+                </div>
+                <div class="col-6 col-sm-2 mb-2">
+                    <button class="btn btn-danger w-100">
+                        Delete
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 border border-2 w-100 searchContainer">
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-<div class="row mb-4">
-    <div class="col-sm-2 mx-auto">
-        <a asp-controller="@nameof(ScheduleController)" asp-action="Index" class="btn btn-primary w-100">
-            Manage Events
-        </a>
+
+    <div class="col-sm-6">
+        <div class="container mb-2">
+            <div class="row mb-1">
+                <div class="col-12" mx-auto>
+                    <h3 class="text-center">Search by field</h3>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="col-sm-8 mb-2">
+                    <input class="w-100 form-control" />
+                </div>
+                <div class="col-6 col-sm-2 mb-2">
+                    <button class="btn btn-primary w-100">
+                        Edit
+                    </button>
+                </div>
+                <div class="col-6 col-sm-2 mb-2">
+                    <button class="btn btn-danger w-100">
+                        Delete
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 border border-2 w-100 searchContainer">
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -39,7 +84,7 @@
 </div>
 <div class="row mb-4">
     <div class="col-sm-2 mx-auto">
-        <a asp-controller="@nameof(FieldController)" asp-action="Index" class="btn btn-primary w-100">
+        <a asp-controller="Field" asp-action="Index" class="btn btn-primary w-100">
             Manage Fields
         </a>
     </div>
@@ -55,7 +100,7 @@
 </div>
 <div class="row mb-4">
     <div class="col-sm-2 mx-auto">
-        <a asp-controller="@nameof(TeamController)" asp-action="Index" class="btn btn-primary w-100">
+        <a asp-controller="Team" asp-action="Index" class="btn btn-primary w-100">
             Manage Teams
         </a>
     </div>
