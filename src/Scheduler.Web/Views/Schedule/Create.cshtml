@@ -1,0 +1,42 @@
+﻿@{
+    string eventType = this.ViewData["EventType"] as string ?? "Event";
+    string pageTitle = $"Schedule {eventType}";
+
+    this.ViewData["Title"] = pageTitle;
+    this.Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-sm-4 mx-auto">
+        <h1 class="text-center">
+            @pageTitle
+        </h1>
+
+        @await this.Html.PartialAsync("Navigation/_ScheduleNavbar")
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <form asp-controller="@eventType" method="post">
+            @await this.Html.PartialAsync("Forms/_EventInputs")
+
+            @await this.Html.PartialAsync($"Forms/_{eventType}Inputs")
+
+            <div class="row">
+                <div class="col-6">
+                    <a asp-action="Index"
+                       asp-controller="Schedule"
+                       class="btn btn-lg btn-danger w-100">
+                        Cancel
+                    </a>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-lg btn-primary w-100">
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

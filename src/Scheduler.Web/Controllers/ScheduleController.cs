@@ -33,4 +33,11 @@ public sealed class ScheduleController : Controller
 
 		return this.View(events);
 	}
+
+	public IActionResult Create(string type = nameof(Event))
+	{
+		this.ViewData["EventType"] = type;
+
+		return this.View();
+	}
 }

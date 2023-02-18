@@ -1,0 +1,24 @@
+﻿@{
+    string currentType = this.ViewData["EventType"] as string ?? "Event";
+
+    string[] eventTypes = new[]
+    {
+        "Event",
+        "Practice",
+        "Game"
+    };
+}
+
+<div class="list-group list-group-horizontal">
+@foreach (var eventType in eventTypes)
+{
+    string activeCssClass = eventType == currentType
+        ? "active"
+        : string.Empty;
+
+    <a asp-route-type="@eventType"
+       class="list-group-item list-group-item-action text-center @activeCssClass">
+        @eventType
+    </a>
+}
+</div>
