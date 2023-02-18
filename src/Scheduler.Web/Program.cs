@@ -15,6 +15,7 @@ builder.Services
 	.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
 	.AddScoped<IFieldService, FieldService>()
 	.AddScoped<IScheduleService, ScheduleService>()
+	.AddScoped<ITeamService, TeamService>()
 	.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configure identity

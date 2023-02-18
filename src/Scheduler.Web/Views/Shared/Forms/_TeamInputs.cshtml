@@ -1,0 +1,23 @@
+﻿@using Scheduler.Core.Models;
+@using Scheduler.Web.Controllers;
+
+@model Team
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<div class="row mb-3">
+        <div class="col-6">
+            <a asp-action="@nameof(TeamController.Index)" class="btn btn-danger w-100">
+                Cancel
+            </a>
+        </div>
+        <div class="col-6">
+            <button type="submit" class="btn btn-primary w-100">
+                Submit
+            </button>
+        </div>
+</div>
