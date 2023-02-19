@@ -4,23 +4,24 @@
 
 @inject SignInManager<User> SignInManager
 
-<ul class="navbar-nav">
 @if (this.SignInManager.IsSignedIn(this.User))
 {
-    <li class="nav-item">
-        <a class="nav-link text-dark"
-           asp-controller="Identity"
-           asp-action="Manage"
-           title="Manage">
-            Hello @this.User.Identity?.Name!
+    <li class="theme-nav-item">
+        <a class="theme-nav-link" asp-controller="Admin" asp-action="Index">
+            Dashboard
         </a>
     </li>
-    <li class="nav-item">
+    <li class="theme-nav-item">
+        <a class="theme-nav-link" asp-controller="Identity" asp-action="Manage">
+            Manage Profile
+        </a>
+    </li>
+    <li class="theme-nav-item">
         <form class="form-inline"
               asp-controller="Identity"
               asp-action="@nameof(IdentityController.Logout)">
             <button type="submit"
-                    class="nav-link btn btn-link text-dark">
+                    class="theme-nav-link btn btn-link">
                 Logout
             </button>
         </form>
@@ -28,19 +29,19 @@
 }
 else
 {
-    <li class="nav-item">
-        <a class="nav-link text-dark"
+    <li class="theme-nav-item">
+        <a class="theme-nav-link"
            asp-controller="Identity"
            asp-action="@nameof(IdentityController.Register)">
             Register
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark"
+    <li class="theme-nav-item">
+        <a class="theme-nav-link"
            asp-controller="Identity"
            asp-action="@nameof(IdentityController.Login)">
             Login
         </a>
     </li>
 }
-</ul>
+</>
