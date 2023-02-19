@@ -9,13 +9,12 @@ namespace Scheduler.Web.Controllers;
 /// Redners views which display <see cref="Game"/> models.
 /// </summary>
 [Authorize]
-[Route("Schedule/[controller]/[action]")]
 public sealed class GameController : Controller
 {
 	/// <summary>
 	/// The service to query <see cref="Game"/> models with.
 	/// </summary>
-	private readonly IScheduleService eventService;
+	private readonly IScheduleService scheduleService;
 
 	/// <summary>
 	/// Initializes the <see cref="GameController"/> class.
@@ -23,27 +22,50 @@ public sealed class GameController : Controller
 	/// <param name="eventService">The service to query <see cref="Game"/> models with.</param>
 	public GameController(IScheduleService eventService)
 	{
-		this.eventService = eventService;
+		this.scheduleService = eventService;
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Create"/> view.
+	/// Creates a <see cref="Game"/> event.
 	/// </summary>
-	/// <returns>A form which POSTs to <see cref="Create(Game)"/>.</returns>
-	public IActionResult Create()
+	/// <param name="game"><see cref="Game"/> values.</param>
+	/// <returns>
+	/// Redirected to <see cref="ScheduleController.Index"/> if successful.
+	/// Returned to <see cref="ScheduleController.Create(string)"/> otherwise.
+	/// </returns>
+	[HttpPost]
+	public async Task<IActionResult> Create(Game game)
 	{
-		return this.View("../Schedule/Game/Create");
+		if (!this.ModelState.IsValid)
+			return this.RedirectToAction(
+				nameof(ScheduleController.Create),
+				"Schedule",
+				new { type = nameof(Game) });
+
+		await this.scheduleService.CreateAsync(game);
+
+		return this.RedirectToAction(nameof(ScheduleController.Index), "Schedule");
 	}
 
 	/// <summary>
-	/// Handles POST request from <see cref="Create"/>.
+	/// Updates a <see cref="Game"/>.
 	/// </summary>
-	/// <param name="scheduledEvent">The <see cref="Game"/> to create.</param>
-	/// <returns>redirected to <see cref="EventController.Index"/>.</returns>
-	public async Task<IActionResult> Create(Game scheduledEvent)
+	/// <param name="game"><see cref="Game"/> values, <see cref="Event.Id"/> referencing the <see cref="Game"/> to update.</param>
+	/// <returns>
+	/// Redirected to <see cref="ScheduleController.Index"/>.
+	/// Returned to <see cref="ScheduleController.Update(Guid, string)"/> otherwise.
+	/// </returns>
+	[HttpPost]
+	public async Task<IActionResult> Update(Game game)
 	{
-		await this.eventService.CreateAsync(scheduledEvent);
+		if (!this.ModelState.IsValid)
+			return this.RedirectToAction(
+				nameof(ScheduleController.Update),
+				"Schedule",
+				new { type = nameof(Game) });
 
-		return this.RedirectToAction(nameof(ScheduleController.Index), nameof(Event));
+		await this.scheduleService.UpdateAsync(game);
+
+		return this.RedirectToAction(nameof(ScheduleController.Index), "Schedule");
 	}
 }

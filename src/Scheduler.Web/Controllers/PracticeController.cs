@@ -9,13 +9,12 @@ namespace Scheduler.Web.Controllers.Schedule;
 /// Renders views which display <see cref="Practice"/> models.
 /// </summary>
 [Authorize]
-[Route("Schedule/[controller]/[action]")]
 public sealed class PracticeController : Controller
 {
 	/// <summary>
 	/// The service to query <see cref="Practice"/> models with.
 	/// </summary>
-	private readonly IScheduleService eventService;
+	private readonly IScheduleService scheduleService;
 
 	/// <summary>
 	/// Initializes the <see cref="PracticeController"/> class.
@@ -23,28 +22,50 @@ public sealed class PracticeController : Controller
 	/// <param name="eventService">The service to query <see cref="Practice"/> models with.</param>
 	public PracticeController(IScheduleService eventService)
 	{
-		this.eventService = eventService;
+		this.scheduleService = eventService;
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Create"/> view.
+	/// Creates a <see cref="Practice"/> event.
 	/// </summary>
-	/// <returns>A form which POSTs to <see cref="Create(Practice)"/>.</returns>
-	public IActionResult Create()
-	{
-		return this.View("../Schedule/Practice/Create");
-	}
-
-	/// <summary>
-	/// Handles POST request from <see cref="Create"/>.
-	/// </summary>
-	/// <param name="scheduledEvent">The <see cref="Practice"/> to create.</param>
-	/// <returns>Redirected to <see cref="EventController.Index"/>.</returns>
+	/// <param name="practice">The <see cref="Practice"/> to create.</param>
+	/// <returns>
+	/// Redirected to <see cref="ScheduleController.Index"/> if successfull.
+	/// Returned to <see cref="ScheduleController.Create(string)"/> otherwise.
+	/// </returns>
 	[HttpPost]
-	public async Task<IActionResult> Create(Practice scheduledEvent)
+	public async Task<IActionResult> Create(Practice practice)
 	{
-		await this.eventService.CreateAsync(scheduledEvent);
+		if (!this.ModelState.IsValid)
+			return this.RedirectToAction(
+				nameof(ScheduleController.Create),
+				"Schedule",
+				new { type = nameof(Practice) });
 
-		return this.RedirectToAction(nameof(ScheduleController.Index), nameof(Event));
+		await this.scheduleService.CreateAsync(practice);
+
+		return this.RedirectToAction(nameof(ScheduleController.Index), "Schedule");
+	}
+
+	/// <summary>
+	/// Updates a <see cref="Practice"/> event.
+	/// </summary>
+	/// <param name="practice"><see cref="Practice"/> values, <see cref="Event.Id"/> referencing the <see cref="Practice"/> to update.</param>
+	/// <returns>
+	/// Redirected to <see cref="ScheduleController.Index"/> if successfull.
+	/// Returned to <see cref="ScheduleController.Update(Guid, string)"/> otherwise.
+	/// </returns>
+	[HttpPost]
+	public async Task<IActionResult> Update(Practice practice)
+	{
+		if (!this.ModelState.IsValid)
+			return this.RedirectToAction(
+				nameof(ScheduleController.Update),
+				"Schedule",
+				new { type = nameof(Practice) });
+
+		await this.scheduleService.UpdateAsync(practice);
+
+		return this.RedirectToAction(nameof(ScheduleController.Index), "Schedule");
 	}
 }

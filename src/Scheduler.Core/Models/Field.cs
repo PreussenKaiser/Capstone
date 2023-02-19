@@ -22,5 +22,5 @@ public sealed class Field
 	/// <summary>
 	/// Events taking place on the field.
 	/// </summary>
-	public ICollection<Event> Events { get; set; }
+	public ICollection<Event>? Events { get; set; }
 }

@@ -1,0 +1,22 @@
+﻿@using Scheduler.Core.Models;
+
+@{
+    string eventType = this.ViewData["EventType"] as string ?? "Event";
+    string pageTitle = $"Reschedule {eventType}";
+
+    this.ViewData["Title"] = pageTitle;
+}
+
+<div class="row">
+    <form action="../../@eventType/Update"
+          method="post"
+          class="col-12">
+
+        <h1 class="text-center">
+            @pageTitle
+        </h1>
+        <hr />
+
+        @await this.Html.PartialAsync("Forms/_EventInputs")
+    </form>
+</div>

@@ -34,7 +34,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("FieldsId");
 
-                    b.ToTable("EventField");
+                    b.ToTable("EventField", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -167,7 +167,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
 
                     b.UseTptMappingStrategy();
                 });
@@ -185,7 +185,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Fields");
+                    b.ToTable("Fields", (string)null);
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Identity.Role", b =>
@@ -295,7 +295,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Game", b =>
@@ -312,7 +312,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OpposingTeamId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Practice", b =>
@@ -324,7 +324,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Practices");
+                    b.ToTable("Practices", (string)null);
                 });
 
             modelBuilder.Entity("EventField", b =>

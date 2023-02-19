@@ -9,7 +9,6 @@ namespace Scheduler.Web.Controllers;
 /// Renders views which display <see cref="Event"/> models.
 /// </summary>
 [Authorize]
-[Route("Schedule/[controller]/[action]")]
 public sealed class EventController : Controller
 {
 	/// <summary>
@@ -27,27 +26,6 @@ public sealed class EventController : Controller
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Create"/> view.
-	/// </summary>
-	/// <returns>A form which POSTs to <see cref="Create(Event)"/>.</returns>\
-	public IActionResult Create()
-	{
-		return this.View("../Schedule/Event/Create");
-	}
-	
-	/// <summary>
-	/// Displays the <see cref="Update(Guid)"/> view.
-	/// </summary>
-	/// <param name="id">References the <see cref="Event"/> to update.</param>
-	/// <returns>A form which POSTs to <see cref="Update(Event)"/>.</returns>
-	public async Task<IActionResult> Update(Guid id)
-	{
-		Event scheduledEvent = await this.scheduleService.GetAsync(id);
-
-		return this.View("../Schedule/Event/Update", scheduledEvent);
-	}
-
-	/// <summary>
 	/// Handles POST from <see cref="Create"/>.
 	/// </summary>
 	/// <param name="scheduledEvent">POST values.</param>
@@ -55,6 +33,12 @@ public sealed class EventController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Create(Event scheduledEvent)
 	{
+		if (!this.ModelState.IsValid)
+			return this.RedirectToAction(
+				nameof(ScheduleController.Create),
+				"Schedule",
+				new { type = nameof(Event) });
+
 		await this.scheduleService.CreateAsync(scheduledEvent);
 
 		return this.RedirectToAction(nameof(ScheduleController.Index), "Schedule");
@@ -68,20 +52,13 @@ public sealed class EventController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Update(Event scheduledEvent)
 	{
+		if (!this.ModelState.IsValid)
+			return this.RedirectToAction(
+				nameof(ScheduleController.Update),
+				"Schedule",
+				new { type = nameof(Event) });
+
 		await this.scheduleService.UpdateAsync(scheduledEvent);
-
-		return this.RedirectToAction(nameof(ScheduleController.Index), "Schedule");
-	}
-
-	/// <summary>
-	/// Deletes a <see cref="Event"/>.
-	/// </summary>
-	/// <param name="id">References <see cref="Event.Id"/>.</param>
-	/// <returns>Redirected to <see cref="ScheduleController.Index"/>.</returns>
-	[HttpPost]
-	public async Task<IActionResult> Delete(Guid id)
-	{
-		await this.scheduleService.DeleteAsync(id);
 
 		return this.RedirectToAction(nameof(ScheduleController.Index), "Schedule");
 	}
