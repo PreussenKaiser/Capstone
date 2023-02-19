@@ -1,4 +1,5 @@
-﻿using Scheduler.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Scheduler.Core.Models;
 using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Persistence;
 
@@ -30,25 +31,12 @@ public sealed class ScheduleService : IScheduleService
 	/// <returns>Whether the task was completed or not.</returns>
 	public async Task CreateAsync(Event model)
 	{
+		if (model.FieldIds is not null)
+			model.Fields = await this.database.Fields
+				.Where(f => model.FieldIds.Contains(f.Id))
+				.ToListAsync();
+
 		await this.database.Events.AddAsync(model);
-
-		await this.database.SaveChangesAsync();
-	}
-
-	/// <summary>
-	/// Creates a <typeparamref name="TScheduleable"/> which is related to <see cref="Event"/> in the database.
-	/// <typeparamref name="TScheduleable"/> must implement <see cref="ISchedulable"/>.
-	/// </summary>
-	/// <typeparam name="TScheduleable">The type of schedulable model to create.</typeparam>
-	/// <param name="schedulable"><typeparamref name="TScheduleable"/> values.</param>
-	/// <returns>Whether the task was completed or not.</returns>
-	public async Task CreateAsync<TScheduleable>(TScheduleable schedulable)
-		where TScheduleable : Event
-	{
-		await this.database.Events.AddAsync(schedulable);
-		
-		if (schedulable is not Event)
-			await this.database.AddAsync(schedulable);
 
 		await this.database.SaveChangesAsync();
 	}
@@ -72,7 +60,9 @@ public sealed class ScheduleService : IScheduleService
 	/// <exception cref="ArgumentException"/>
 	public async Task<Event> GetAsync(Guid id)
 	{
-		Event? scheduledEvent = await this.database.Events.FindAsync(id);
+		Event? scheduledEvent = await this.database.Events
+			.Include(e => e.Fields)
+			.FirstOrDefaultAsync(e => e.Id == id);
 
 		if (scheduledEvent is null)
 			throw new ArgumentException($"{id} could not be resolved to an Event.");
@@ -87,6 +77,19 @@ public sealed class ScheduleService : IScheduleService
 	/// <returns>Whether the task was completed or not.</returns>
 	public async Task UpdateAsync(Event model)
 	{
+		model.FieldIds ??= Array.Empty<Guid>();
+
+		var entity = this.database.Entry(model);
+		entity.State = EntityState.Modified;
+
+		await entity
+			.Collection(e => e.Fields!)
+			.LoadAsync();
+
+		model.Fields = await this.database.Fields
+			.Where(f => model.FieldIds.Contains(f.Id))
+			.ToListAsync(); ;
+
 		this.database.Events.Update(model);
 
 		await this.database.SaveChangesAsync();

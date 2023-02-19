@@ -24,25 +24,27 @@ public class Event
 	/// Foreign key identifiers referencing <see cref="Field.Id"/>.
 	/// </summary>
 	[NotMapped]
-	[Display(Name = "Fields")]
+	[Display(Name = nameof(this.Fields))]
 	public Guid[]? FieldIds { get; set; }
 
 	/// <summary>
 	/// The event's name.
 	/// </summary>
-	[Required]
+	[Required(ErrorMessage = "Please enter the event's name.")]
 	[MaxLength(32)]
 	public required string Name { get; set; }
 
 	/// <summary>
 	/// When the event starts.
 	/// </summary>
+	[Required]
 	[Display(Name = "Start date")]
 	public required DateTime StartDate { get; set; }
 
 	/// <summary>
 	/// When the event ends.
 	/// </summary>
+	[Required]
 	[Display(Name = "End date")]
 	public required DateTime EndDate { get; set; }
 

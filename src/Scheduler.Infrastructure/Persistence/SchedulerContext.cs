@@ -26,9 +26,9 @@ public sealed class SchedulerContext
 	public DbSet<Event> Events { get; set; }
 
 	/// <summary>
-	/// Instances of <see cref="Field"/> in the database.
+	/// Instances of <see cref="Practice"/> in the database.
 	/// </summary>
-	public DbSet<Field> Fields { get; set; }
+	public DbSet<Practice> Practices { get; set; }
 
 	/// <summary>
 	/// Instances of <see cref="Game"/> in the database.
@@ -36,9 +36,9 @@ public sealed class SchedulerContext
 	public DbSet<Game> Games { get; set; }
 
 	/// <summary>
-	/// Instances of <see cref="Practice"/> in the database.
+	/// Instances of <see cref="Field"/> in the database.
 	/// </summary>
-	public DbSet<Practice> Practices { get; init; }
+	public DbSet<Field> Fields { get; set; }
 
 	/// <summary>
 	/// Instances of <see cref="Team"/> in the database.

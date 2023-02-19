@@ -13,7 +13,8 @@
                 .Select(team => new SelectListItem
                 {
                     Text = team.Name,
-                    Value = team.Id.ToString()
+                    Value = team.Id.ToString(),
+                    Selected = this.Model is not null && this.Model.TeamId == team.Id
                 })"
             class="form-select"></select>
 </div>
