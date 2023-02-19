@@ -1,0 +1,75 @@
+﻿@using Scheduler.Core.Models;
+@using Scheduler.Web.Controllers;
+
+@model Event
+
+@{
+    this.Layout = "_Layout";
+
+    IEnumerable<Type> eventTypes = new[]
+    {
+        typeof(Event),
+        typeof(Practice),
+        typeof(Game)
+    };
+}
+
+<div class="row">
+    <div class="col-sm-4 mx-auto">
+        <h1 class="text-center">
+            Schedule Event
+        </h1>
+        <hr />
+
+        <div class="list-group list-group-horizontal mb-3">
+            @foreach (var type in eventTypes)
+            {
+                string currentController = this.Context.GetRouteData().Values["controller"]!.ToString()!;
+                string currentAction = this.Context.GetRouteData().Values["action"]!.ToString()!;
+
+                string activeCssClass = currentController == type.Name
+                    ? "active"
+                    : string.Empty;
+
+                <a asp-controller="@type.Name"
+                   asp-action="@currentAction"
+                   class="list-group-item list-group-item-action text-center @activeCssClass">
+                    @type.Name
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <form method="post">
+            <div class="row">
+                <div class="col-12">
+                    @await this.Html.PartialAsync("Forms/_EventInputs", this.Model)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    @this.RenderBody()
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <a asp-action="@nameof(ScheduleController.Index)"
+                       asp-controller="Schedule"
+                       class="btn btn-lg btn-danger w-100">
+                        Cancel
+                    </a>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-lg btn-primary w-100">
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

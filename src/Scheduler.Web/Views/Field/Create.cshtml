@@ -1,0 +1,20 @@
+﻿@using Scheduler.Core.Models;
+
+@model Field
+
+@{
+    this.ViewData["Title"] = "Add Field";
+}
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <form method="post">
+            <h1 class="text-center">
+                @this.ViewData["Title"]
+            </h1>
+            <hr />
+
+            @await this.Html.PartialAsync("Forms/_FieldInputs", this.Model)
+        </form>
+    </div>
+</div>

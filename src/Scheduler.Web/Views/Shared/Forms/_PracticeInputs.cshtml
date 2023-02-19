@@ -1,0 +1,19 @@
+﻿@using Scheduler.Core.Models;
+@using Scheduler.Core.Services;
+
+@inject ITeamService TeamService
+@model Practice
+
+<div class="mb-3">
+    <label asp-for="TeamId" class="form-label"></label>
+    <select asp-for="TeamId"
+            asp-items="this.TeamService
+                .GetAllAsync()
+                .Result
+                .Select(team => new SelectListItem
+                {
+                    Text = team.Name,
+                    Value = team.Id.ToString()
+                })"
+            class="form-select"></select>
+</div>

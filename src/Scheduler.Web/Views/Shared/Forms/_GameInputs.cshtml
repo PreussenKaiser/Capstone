@@ -1,0 +1,34 @@
+﻿@using Scheduler.Core.Models;
+@using Scheduler.Core.Services;
+
+@inject ITeamService TeamService
+@model Game
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <label asp-for="HomeTeamId" class="form-label"></label>
+        <select asp-for="HomeTeamId"
+                asp-items="this.TeamService
+                    .GetAllAsync()
+                    .Result
+                    .Select(team => new SelectListItem
+                    {
+                        Text = team.Name,
+                        Value = team.Id.ToString()
+                    })"
+                class="form-select"></select>
+    </div>
+    <div class="col-sm-6">
+        <label asp-for="OpposingTeamId" class="form-label"></label>
+        <select asp-for="OpposingTeamId"
+                asp-items="this.TeamService
+                    .GetAllAsync()
+                    .Result
+                    .Select(team => new SelectListItem
+                    {
+                        Text = team.Name,
+                        Value = team.Id.ToString()
+                    })"
+                class="form-select"></select>
+    </div>
+</div>

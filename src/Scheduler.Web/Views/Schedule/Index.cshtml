@@ -1,0 +1,67 @@
+﻿@using Scheduler.Core.Models;
+@using Scheduler.Web.Controllers;
+
+@model IEnumerable<Event>
+
+@{
+    this.ViewData["Title"] = "Events";
+    this.Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center">
+            @this.ViewData["Title"]
+        </h1>
+
+        <a asp-action="@nameof(EventController.Create)"
+           asp-controller="@nameof(Event)"
+           class="btn btn-primary">
+            Schedule
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Start date</th>
+                    <th scope="col">End date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var scheduledEvent in this.Model)
+                {
+                    <tr>
+                        <th scope="row">@scheduledEvent.Id</th>
+                        <td>@scheduledEvent.Name</td>
+                        <td>@scheduledEvent.StartDate</td>
+                        <td>@scheduledEvent.EndDate</td>
+                        <td>
+                            <a asp-action="@nameof(FieldController.Update)"
+                               asp-controller="@scheduledEvent.GetType().Name"
+                               asp-route-id="@scheduledEvent.Id"
+                               class="btn btn-sm btn-secondary me-3">
+                                Update
+                            </a>
+                        </td>
+                        <td>
+                            <form asp-action="@nameof(FieldController.Delete)"
+                                  asp-controller="@scheduledEvent.GetType().Name"
+                                  asp-route-id="@scheduledEvent.Id"
+                                  method="post">
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

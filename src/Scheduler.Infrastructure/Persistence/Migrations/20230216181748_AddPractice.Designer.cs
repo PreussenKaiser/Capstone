@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scheduler.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Scheduler.Infrastructure.Persistence;
 namespace Scheduler.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    partial class SchedulerContextModelSnapshot : ModelSnapshot
+    [Migration("20230216181748_AddPractice")]
+    partial class AddPractice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,8 +171,6 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Events");
-
-                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Field", b =>
@@ -186,6 +187,26 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Fields");
+                });
+
+            modelBuilder.Entity("Scheduler.Core.Models.Game", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("HomeTeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OpposingTeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("HomeTeamId");
+
+                    b.HasIndex("OpposingTeamId");
+
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Identity.Role", b =>
@@ -282,6 +303,21 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Scheduler.Core.Models.Practice", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("Practices");
+                });
+
             modelBuilder.Entity("Scheduler.Core.Models.Team", b =>
                 {
                     b.Property<Guid>("Id")
@@ -296,35 +332,6 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Teams");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Game", b =>
-                {
-                    b.HasBaseType("Scheduler.Core.Models.Event");
-
-                    b.Property<Guid>("HomeTeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OpposingTeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasIndex("HomeTeamId");
-
-                    b.HasIndex("OpposingTeamId");
-
-                    b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Practice", b =>
-                {
-                    b.HasBaseType("Scheduler.Core.Models.Event");
-
-                    b.Property<Guid>("TeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Practices");
                 });
 
             modelBuilder.Entity("EventField", b =>
@@ -406,15 +413,15 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Scheduler.Core.Models.Game", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Team", "HomeTeam")
+                    b.HasOne("Scheduler.Core.Models.Event", "Event")
                         .WithMany()
-                        .HasForeignKey("HomeTeamId")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Scheduler.Core.Models.Event", null)
-                        .WithOne()
-                        .HasForeignKey("Scheduler.Core.Models.Game", "Id")
+                    b.HasOne("Scheduler.Core.Models.Team", "HomeTeam")
+                        .WithMany()
+                        .HasForeignKey("HomeTeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -424,6 +431,8 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Event");
+
                     b.Navigation("HomeTeam");
 
                     b.Navigation("OpposingTeam");
@@ -431,9 +440,9 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Scheduler.Core.Models.Practice", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Event", null)
-                        .WithOne()
-                        .HasForeignKey("Scheduler.Core.Models.Practice", "Id")
+                    b.HasOne("Scheduler.Core.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -442,6 +451,8 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Event");
 
                     b.Navigation("Team");
                 });
