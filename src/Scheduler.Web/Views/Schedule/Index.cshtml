@@ -4,7 +4,7 @@
 @model IEnumerable<Event>
 
 @{
-    this.ViewData["Title"] = "Events";
+    this.ViewData["Title"] = "Scheduled Events";
     this.Layout = "_Layout";
 }
 
@@ -14,8 +14,7 @@
             @this.ViewData["Title"]
         </h1>
 
-        <a asp-action="@nameof(EventController.Create)"
-           asp-controller="@nameof(Event)"
+        <a asp-action="@nameof(ScheduleController.Create)"
            class="btn btn-primary">
             Schedule
         </a>
@@ -31,6 +30,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Start date</th>
                     <th scope="col">End date</th>
+                    <th scope="col" colspan="2">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,16 +42,15 @@
                         <td>@scheduledEvent.StartDate</td>
                         <td>@scheduledEvent.EndDate</td>
                         <td>
-                            <a asp-action="@nameof(FieldController.Update)"
-                               asp-controller="@scheduledEvent.GetType().Name"
+                            <a asp-action="@nameof(ScheduleController.Update)"
                                asp-route-id="@scheduledEvent.Id"
+                               asp-route-type="@scheduledEvent.GetType().Name"
                                class="btn btn-sm btn-secondary me-3">
                                 Update
                             </a>
                         </td>
                         <td>
-                            <form asp-action="@nameof(FieldController.Delete)"
-                                  asp-controller="@scheduledEvent.GetType().Name"
+                            <form asp-action="@nameof(ScheduleController.Delete)"
                                   asp-route-id="@scheduledEvent.Id"
                                   method="post">
                                 <button class="btn btn-sm btn-danger">

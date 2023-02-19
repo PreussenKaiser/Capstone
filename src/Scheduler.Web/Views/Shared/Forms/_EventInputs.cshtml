@@ -6,43 +6,83 @@
 @inject IFieldService FieldService
 @model Event
 
-<input asp-for="UserId"
-       type="hidden"
-       value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
+@{
+   string eventType = this.ViewData["EventType"] as string ?? "Event";
+}
 
-<div class="mb-3">
-    <label asp-for="Name" class="form-label"></label>
-    <input asp-for="Name" class="form-control" />
-    <span asp-validation-for="Name" class="text-danger"></span>
+@if (this.Model is not null)
+{
+    <input asp-for="Id"
+           value="@this.Model.Id"
+           type="hidden" />
+}
+
+<input asp-for="UserId"
+       value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value"
+       type="hidden" />
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="row mb-3">
+            <div class="col-6">
+                <label asp-for="StartDate" class="form-label"></label>
+                <input asp-for="StartDate" type="date" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="col-6">
+                <label asp-for="EndDate" class="form-label"></label>
+                <input asp-for="EndDate" type="date" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="IsRecurring" type="checkbox" class="form-check-input">
+            <label asp-for="IsRecurring" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="mb-3">
+            <label asp-for="FieldIds" class="form-label"></label>
+            <select class="form-select"
+                    multiple
+                    size="6"
+                    asp-for="FieldIds"
+                    asp-items="this.FieldService
+                                .GetAllAsync()
+                                .Result
+                                .Select(field => new SelectListItem
+                                {
+                                    Text = field.Name,
+                                    Value = field.Id.ToString(),
+                                    Selected = this.Model is not null &&
+                                               this.Model.Fields is not null &&
+                                               this.Model.Fields.Any(f => f.Id == field.Id)
+                                })"></select>
+        </div>
+
+        @if (eventType != nameof(Event))
+        {
+            <partial name="_@(eventType)Inputs.cshtml" />
+        }
+    </div>
 </div>
-<div class="row mb-3">
+
+<div class="row">
     <div class="col-6">
-        <label asp-for="StartDate" class="form-label"></label>
-        <input asp-for="StartDate" type="date" class="form-control" />
-        <span asp-validation-for="StartDate" class="text-danger"></span>
+        <a asp-action="@nameof(ScheduleController.Index)"
+           asp-controller="Schedule"
+           class="btn btn-lg btn-danger w-100">
+            Cancel
+        </a>
     </div>
     <div class="col-6">
-        <label asp-for="EndDate" class="form-label"></label>
-        <input asp-for="EndDate" type="date" class="form-control" />
-        <span asp-validation-for="EndDate" class="text-danger"></span>
+        <button class="btn btn-lg btn-primary w-100">
+            Submit
+        </button>
     </div>
-</div>
-<div class="form-check mb-3">
-    <input asp-for="IsRecurring" type="checkbox" class="form-check-input">
-    <label asp-for="IsRecurring" class="form-check-label"></label>
-</div>
-<div class="mb-3">
-    <label asp-for="FieldIds" class="form-label"></label>
-    <select class="form-select"
-            multiple
-            size="6"
-            asp-for="FieldIds"
-            asp-items="this.FieldService
-                        .GetAllAsync()
-                        .Result
-                        .Select(field => new SelectListItem
-                        {
-                            Text = field.Name,
-                            Value = field.Id.ToString()
-                        })"></select>
 </div>
