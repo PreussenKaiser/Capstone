@@ -68,7 +68,7 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 
-		return this.RedirectToAction(nameof(HomeController.Index), "Home");
+		return this.RedirectToAction(nameof(AdminController.Index), "Admin");
 	}
 
 	/// <summary>

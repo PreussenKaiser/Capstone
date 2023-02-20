@@ -1,5 +1,26 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
+    background-color: #000000;
+    background-position: center top;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size:100%;
+    background-image: url(https://cdn1.sportngin.com/attachments/background_graphic/7671/5260/Soccer_Feet_Ball_1-000000.png)
+}
+
+.site-banner-wrapper {
+    min-height: 250px;
+    background-image: url(https://cdn1.sportngin.com/attachments/banner_graphic/e421-170839586/banner.png);
+    background-position: center;
+}
+
+.theme-nav-link {
+    text-decoration: none;
+}
+
+.btn-link {
+    color:white;
+    font-size:inherit;
 }
 
 @media (min-width: 768px) {
