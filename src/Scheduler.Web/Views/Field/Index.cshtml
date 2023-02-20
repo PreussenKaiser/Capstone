@@ -7,54 +7,55 @@
     this.ViewData["Title"] = "Fields";
 }
 
-<div class="row">
-    <div class="col-12">
-        <h1 class="text-center">
-            @this.ViewData["Title"]
-        </h1>
-
-        <a asp-action="@nameof(FieldController.Create)"
-           class="btn btn-primary">
-            Add
-        </a>
-    </div>
+<div>
+    <h1 class="text-center">
+        @this.ViewData["Title"]
+    </h1>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <table class="table">
+<div class="w-75 m-auto">
+        <table class="table table-sm">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
+                    @*<th scope="col">#</th>*@
                     <th scope="col">Name</th>
+                    <th scope="col" colspan="2" class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
             @foreach (var field in this.Model)
             {
                 <tr>
-                    <th scope="row">@field.Id</th>
+                    @*<th scope="row">@field.Id</th>*@
                     <td>@field.Name</td>
-                    <td>
+                    <td class="text-end">
                         <a asp-action="@nameof(FieldController.Update)"
                            asp-route-id="@field.Id"
-                           class="btn btn-sm btn-secondary me-3">
-                            Edit
-                        </a>
+                           class="btn btn-sm btn-secondary">Update</a>
                     </td>
-                    <td>
+                    <td class="text-start">
                         <form asp-action="@nameof(FieldController.Delete)"
                               asp-route-id="@field.Id"
                               method="post">
                             <button type="submit"
-                                    class="btn btn-sm btn-danger">
-                                Delete
-                            </button>
+                                    class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     </td>
                 </tr>
             }
             </tbody>
-        </table>
+    </table>
+    <div class="text-start">
+        <a asp-action="@nameof(FieldController.Create)"
+           class="btn btn-sm btn-primary">
+            Add New Field
+        </a>
     </div>
+</div>
+<hr />
+<div class="text-center">
+    <a asp-controller="Admin" asp-action="Index"
+       class="btn btn-sm btn-dark">
+        Back to Dashboard
+    </a>
 </div>

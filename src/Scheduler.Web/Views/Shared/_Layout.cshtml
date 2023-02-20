@@ -10,40 +10,36 @@
     <link rel="stylesheet" href="~/Scheduler.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
-    @*<header>*@
-        @*<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">*@
-            <div id="topNav" class="has-site-logo topNav">
-                <div id="sn-site-logo">
-                    <a class="sn-site-logo-wrap" asp-controller="Home" asp-action="Index">
-                        <span class="sn-site-logo-background" style="background-image: url(https://cdn1.sportngin.com/attachments/logo_graphic/f8ca-170838662/2022PCYSlogo_2COLORrednoS-Small_small.png);"></span>
-                    </a>
-                </div>
-                <div class="theme-search-wrapper">
-                    <div class="theme-search-bar">
-                        <span class="site-tagline-text">Portage County Youth Soccer</span>
-                    </div>
-                </div>
-                <div class="theme-main-nav">
-                    <ul class="theme-nav theme-nav-style-dropdown" data-nav-level="1">
-                        <li class="theme-nav-item">
-                            <a class="theme-nav-link"
-                                asp-controller="Home"
-                                asp-action="Index">
-                                Home
-                            </a>
-                        </li>
-                        <partial name="_LoginPartial" />
-                    </ul>
-                </div>
-            </div>
-            <div id="topNavPlaceholder" class="page-has-banner"></div>
-    <div id="siteContainer" class="container-fluid two_panel siteContainer">
-        <div class="site-banner-wrapper">
-            <div class="site-banner-text-wrapper"></div>
+    <div id="topNav" class="has-site-logo topNav">
+        <div id="sn-site-logo">
+            <a class="sn-site-logo-wrap" asp-controller="Home" asp-action="Index">
+                <span class="sn-site-logo-background" style="background-image: url(https://cdn1.sportngin.com/attachments/logo_graphic/f8ca-170838662/2022PCYSlogo_2COLORrednoS-Small_small.png);"></span>
+            </a>
         </div>
-        <main role="main" class="pb-3">
-            @this.RenderBody()
-        </main>
+        <div class="theme-search-wrapper">
+            <div class="theme-search-bar">
+                <span class="site-tagline-text">Portage County Youth Soccer</span>
+            </div>
+        </div>
+        <div class="theme-main-nav">
+            <ul class="theme-nav theme-nav-style-dropdown" data-nav-level="1">
+                <li class="theme-nav-item">
+                    <a class="theme-nav-link"
+                        asp-controller="Home"
+                        asp-action="Index">
+                        Home
+                    </a>
+                </li>
+                <partial name="_LoginPartial" />
+            </ul>
+        </div>
+    </div>
+    <div id="topNavPlaceholder" class="page-has-banner"></div>
+    <div class="site-banner-wrapper">
+        <div class="site-banner-text-wrapper"></div>
+    </div>
+    <div id="siteContainer" class="container-fluid siteContainer p-2">
+        @this.RenderBody()
     </div>
 
     <footer class="snFooterContainer">

@@ -8,26 +8,18 @@
     this.Layout = "_Layout";
 }
 
-<div class="row">
-    <div class="col-12">
-        <h1 class="text-center">
-            @this.ViewData["Title"]
-        </h1>
-
-        <a asp-action="@nameof(TeamController.Create)"
-           asp-controller="@nameof(Team)"
-           class="btn btn-primary">
-            Create Team
-        </a>
-    </div>
+<div>
+    <h1 class="text-center">
+        @this.ViewData["Title"]
+    </h1>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <table class="table">
+<div class="w-75 m-auto">
+        <table class="table table-sm">
             <thead>
                 <tr>
-                    <th scope="col">Name</th>
+                <th scope="col">Name</th>
+                <th scope="col" colspan="2" class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,15 +27,15 @@
                 {
                     <tr>
                         <td>@team.Name</td>
-                        <td>
+                        <td class="text-end">
                             <a asp-action="@nameof(TeamController.Update)"
                            asp-controller="@nameof(Team)"
                            asp-route-id="@team.Id"
-                           class="btn btn-sm btn-secondary me-3">
+                           class="btn btn-sm btn-secondary">
                                 Update
                             </a>
                         </td>
-                        <td>
+                        <td class="text-start">
                             <form asp-action="@nameof(FieldController.Delete)"
                               asp-controller="@nameof(Team)"
                               asp-route-id="@team.Id"
@@ -57,5 +49,18 @@
                 }
             </tbody>
         </table>
+        <div class="text-start">
+            <a asp-action="@nameof(TeamController.Create)"
+               asp-controller="@nameof(Team)"
+               class="btn btn-sm btn-primary">
+                Create Team
+            </a>
+        </div>
     </div>
+<hr />
+<div class="text-center">
+    <a asp-controller="Admin" asp-action="Index"
+       class="btn btn-sm btn-dark">
+        Back to Dashboard
+    </a>
 </div>
