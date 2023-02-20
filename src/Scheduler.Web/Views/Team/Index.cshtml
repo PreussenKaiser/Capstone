@@ -27,27 +27,30 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th scope="col">#</th>
                     <th scope="col">Name</th>
+                    <th scope="col" colspan="2">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var team in this.Model)
                 {
                     <tr>
+                        <td>@team.Id</td>
                         <td>@team.Name</td>
                         <td>
                             <a asp-action="@nameof(TeamController.Update)"
-                           asp-controller="@nameof(Team)"
-                           asp-route-id="@team.Id"
-                           class="btn btn-sm btn-secondary me-3">
+                               asp-controller="@nameof(Team)"
+                               asp-route-id="@team.Id"
+                               class="btn btn-sm btn-secondary me-3">
                                 Update
                             </a>
                         </td>
                         <td>
                             <form asp-action="@nameof(FieldController.Delete)"
-                              asp-controller="@nameof(Team)"
-                              asp-route-id="@team.Id"
-                              method="post">
+                                  asp-controller="@nameof(Team)"
+                                  asp-route-id="@team.Id"
+                                  method="post">
                                 <button class="btn btn-sm btn-danger">
                                     Delete
                                 </button>
