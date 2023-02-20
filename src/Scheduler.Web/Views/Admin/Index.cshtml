@@ -4,36 +4,61 @@
 }
 
 
-<div class="row">
-    <div class="col-sm-6 mx-auto">
-        <h1 class="text-center">
-            @this.ViewData["Title"]
-        </h1>
-        <hr />
-    </div>
+<div class="m-auto text-danger">
+    <h1 class="text-center">
+        @this.ViewData["Title"]
+    </h1>
 </div>
 
-<div class="row mb-3">
+
+<hr />
+
+<!--Top Buttons-->
+<div class="row w-75 text-center m-auto">
+    <div class="col-sm-3 m-auto">
+        <a asp-controller="Field" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage FIELDS
+        </a>
+    </div>
+    <div class="col-sm-3 m-auto">
+        <a asp-controller="Team" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage TEAMS
+        </a>
+    </div>
+    <div class="col-sm-3 m-auto">
+        <a asp-controller="Schedule" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage EVENTS
+        </a>
+    </div>
+    @*<div class="col-sm-3 m-auto">
+        <a asp-controller="Schedule" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage USERS
+        </a>
+    </div>*@
+</div>
+
+
+<hr />
+
+@*<div class="row mb-3">
 
     <!--Current Scheduled Games-->
     <div class="col-sm-6">
         <div class="container mb-2">
-            <div class="row mb-1">
-                <div class="col-12" mx-auto>
-                    <h3 class="text-center">Current Scheduled Games</h3>
+                <div>
+                    <h3>Current Scheduled Events</h3>
                 </div>
-            </div>
             <div class="row mb-1">
-                <div class="col-sm-8 mb-2">
+                <div class="col-sm-7 mb-2">
                     <input class="w-100 form-control"/>
                 </div>
-                <div class="col-6 col-sm-2 mb-2">
-                    <button class="btn btn-primary w-100">
+                <div class="col-2 mb-2">
+                    <button class="btn btn-sm btn-primary">
                         Edit
                     </button>
                 </div>
-                <div class="col-6 col-sm-2 mb-2">
-                    <button class="btn btn-danger w-100">
+                <div class="col-2 mb-2">
+                    <button class="btn btn-sm btn-danger">
                         Delete
                     </button>
                 </div>
@@ -48,22 +73,20 @@
     <!--Search by field-->
     <div class="col-sm-6">
         <div class="container mb-2">
-            <div class="row mb-1">
-                <div class="col-12" mx-auto>
-                    <h3 class="text-center">Search by field</h3>
-                </div>
+            <div>
+                <h3>Search by Field</h3>
             </div>
             <div class="row mb-1">
-                <div class="col-sm-8 mb-2">
+                <div class="col-sm-6 mb-2">
                     <input class="w-100 form-control" />
                 </div>
-                <div class="col-6 col-sm-2 mb-2">
-                    <button class="btn btn-primary w-100">
+                <div class="col-2 mb-2">
+                    <button class="btn btn-sm btn-primary">
                         Edit
                     </button>
                 </div>
-                <div class="col-6 col-sm-2 mb-2">
-                    <button class="btn btn-danger w-100">
+                <div class="col-2 mb-2">
+                    <button class="btn btn-sm btn-danger">
                         Delete
                     </button>
                 </div>
@@ -74,53 +97,5 @@
             </div>
         </div>
     </div>
-</div>
+</div>*@
 
-<!--Bottom Buttons-->
-<div class="row">
-    <div class="col-sm-8 mx-auto">
-        <h3 class="text-center">
-            Fields
-        </h3>
-        <hr />
-    </div>
-</div>
-<div class="row mb-4">
-    <div class="col-sm-2 mx-auto">
-        <a asp-controller="Field" asp-action="Index" class="btn btn-primary w-100">
-            Manage Fields
-        </a>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-8 mx-auto">
-        <h3 class="text-center">
-            Teams
-        </h3>
-        <hr />
-    </div>
-</div>
-<div class="row mb-4">
-    <div class="col-sm-2 mx-auto">
-        <a asp-controller="Team" asp-action="Index" class="btn btn-primary w-100">
-            Manage Teams
-        </a>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-8 mx-auto">
-        <h3 class="text-center">
-            Events
-        </h3>
-        <hr />
-    </div>
-</div>
-<div class="row mb-4">
-    <div class="col-sm-2 mx-auto">
-        <a asp-controller="Schedule" asp-action="Index" class="btn btn-primary w-100">
-            Manage Events
-        </a>
-    </div>
-</div>

@@ -8,48 +8,40 @@
     this.Layout = "_Layout";
 }
 
-<div class="row">
-    <div class="col-12">
-        <h1 class="text-center">
-            @this.ViewData["Title"]
-        </h1>
-
-        <a asp-action="@nameof(ScheduleController.Create)"
-           class="btn btn-primary">
-            Schedule
-        </a>
-    </div>
+<div>
+    <h1 class="text-center text-danger">
+        @this.ViewData["Title"]
+    </h1>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <table class="table">
+<div class="w-75 m-auto">
+        <table class="table table-sm">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
+                    @*<th scope="col">#</th>*@
                     <th scope="col">Name</th>
                     <th scope="col">Start date</th>
                     <th scope="col">End date</th>
-                    <th scope="col" colspan="2">Actions</th>
+                    <th scope="col" colspan="2" class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var scheduledEvent in this.Model)
                 {
                     <tr>
-                        <th scope="row">@scheduledEvent.Id</th>
+                        @*<th scope="row">@scheduledEvent.Id</th>*@
                         <td>@scheduledEvent.Name</td>
                         <td>@scheduledEvent.StartDate</td>
                         <td>@scheduledEvent.EndDate</td>
-                        <td>
+                        <td class="text-end">
                             <a asp-action="@nameof(ScheduleController.Update)"
                                asp-route-id="@scheduledEvent.Id"
                                asp-route-type="@scheduledEvent.GetType().Name"
-                               class="btn btn-sm btn-secondary me-3">
+                               class="btn btn-sm btn-secondary">
                                 Update
                             </a>
                         </td>
-                        <td>
+                        <td class="text-start">
                             <form asp-action="@nameof(ScheduleController.Delete)"
                                   asp-route-id="@scheduledEvent.Id"
                                   method="post">
@@ -61,6 +53,18 @@
                     </tr>
                 }
             </tbody>
-        </table>
+    </table>
+    <div>
+        <a asp-action="@nameof(ScheduleController.Create)"
+           class="btn btn-sm btn-primary">
+            Schedule
+        </a>
     </div>
+</div>
+<hr />
+<div class="text-center">
+    <a asp-controller="Admin" asp-action="Index"
+        class="btn btn-sm btn-dark">
+        Back to Dashboard
+    </a>
 </div>
