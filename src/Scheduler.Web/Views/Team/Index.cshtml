@@ -8,40 +8,48 @@
     this.Layout = "_Layout";
 }
 
-<div>
-    <h1 class="text-center text-danger">
-        @this.ViewData["Title"]
-    </h1>
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center">
+            @this.ViewData["Title"]
+        </h1>
+
+        <a asp-action="@nameof(TeamController.Create)"
+           asp-controller="@nameof(Team)"
+           class="btn btn-primary">
+            Create Team
+        </a>
+    </div>
 </div>
 
-<div class="w-75 m-auto">
-        <table class="table table-sm">
+<div class="row">
+    <div class="col-12">
+        <table class="table">
             <thead>
                 <tr>
-                @*<th scope="col">#</th>*@
-                <th scope="col">Name</th>
-                <th scope="col" colspan="2" class="text-center">Actions</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Team</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var team in this.Model)
                 {
                     <tr>
-                        <td>@team.Id</td>
                         <td>@team.Name</td>
-                        <td class="text-end">
+                        <td>@team.League.Name</td>
+                        <td>
                             <a asp-action="@nameof(TeamController.Update)"
                            asp-controller="@nameof(Team)"
                            asp-route-id="@team.Id"
-                           class="btn btn-sm btn-secondary">
+                           class="btn btn-sm btn-secondary me-3">
                                 Update
                             </a>
                         </td>
-                        <td class="text-start">
+                        <td>
                             <form asp-action="@nameof(FieldController.Delete)"
-                                  asp-controller="@nameof(Team)"
-                                  asp-route-id="@team.Id"
-                                  method="post">
+                              asp-controller="@nameof(Team)"
+                              asp-route-id="@team.Id"
+                              method="post">
                                 <button class="btn btn-sm btn-danger">
                                     Delete
                                 </button>
@@ -51,18 +59,5 @@
                 }
             </tbody>
         </table>
-        <div class="text-start">
-            <a asp-action="@nameof(TeamController.Create)"
-               asp-controller="@nameof(Team)"
-               class="btn btn-sm btn-primary">
-                Create Team
-            </a>
-        </div>
     </div>
-<hr />
-<div class="text-center">
-    <a asp-controller="Admin" asp-action="Index"
-       class="btn btn-sm btn-dark">
-        Back to Dashboard
-    </a>
 </div>
