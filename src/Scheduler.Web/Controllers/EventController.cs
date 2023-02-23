@@ -34,10 +34,7 @@ public sealed class EventController : Controller
 	public async Task<IActionResult> Create(Event scheduledEvent)
 	{
 		if (!this.ModelState.IsValid)
-			return this.RedirectToAction(
-				nameof(ScheduleController.Create),
-				"Schedule",
-				new { type = nameof(Event) });
+			return this.View("~/Views/Schedule/Create.cshtml", scheduledEvent);
 
 		await this.scheduleService.CreateAsync(scheduledEvent);
 

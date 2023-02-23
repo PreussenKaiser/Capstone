@@ -16,9 +16,11 @@
         ? "active"
         : string.Empty;
 
-    <a asp-route-type="@eventType"
-       class="list-group-item list-group-item-action text-center @activeCssClass">
+    <button type="button"
+            id="@eventType"
+            onclick="navClick('@eventType')"
+            class="list-group-item list-group-item-action text-center @activeCssClass">
         @eventType
-    </a>
+    </button>
 }
 </div>

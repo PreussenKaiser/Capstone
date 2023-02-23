@@ -37,10 +37,11 @@ public sealed class GameController : Controller
 	public async Task<IActionResult> Create(Game game)
 	{
 		if (!this.ModelState.IsValid)
-			return this.RedirectToAction(
-				nameof(ScheduleController.Create),
-				"Schedule",
-				new { type = nameof(Game) });
+		{
+			this.ViewData["EventType"] = nameof(Game);
+
+			return this.View("~/Views/Schedule/Create.cshtml", game);
+		}
 
 		await this.scheduleService.CreateAsync(game);
 

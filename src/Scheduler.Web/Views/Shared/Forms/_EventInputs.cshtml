@@ -7,7 +7,7 @@
 @model Event
 
 @{
-   string eventType = this.ViewData["EventType"] as string ?? "Event";
+   string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
 }
 
 @if (this.Model is not null)
@@ -65,10 +65,12 @@
                                 })"></select>
         </div>
 
-        @if (eventType != nameof(Event))
-        {
-            <partial name="_@(eventType)Inputs.cshtml" />
-        }
+        <div id="EventInputs">
+            @if (eventType != nameof(Event))
+            {
+                <partial name="Forms/_@(eventType)Inputs" />
+            }
+        </div>
     </div>
 </div>
 

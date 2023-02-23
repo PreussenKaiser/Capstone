@@ -35,16 +35,20 @@ public sealed class ScheduleController : Controller
 	}
 
 	/// <summary>
+	/// Displays partial view containing <see cref="Event"/> form inputs.
+	/// </summary>
+	/// <param name="type">The type of partial view to render.</param>
+	/// <returns>Form inputs belonging to the specified <paramref name="type"/>.</returns>
+	public IActionResult EventPartial(string type)
+		=> this.PartialView($"Forms/_{type}Inputs");
+
+	/// <summary>
 	/// Displays the <see cref="Create(string)"/> view.
 	/// </summary>
 	/// <param name="type">The type of event to create, defaults to <see cref="Event"/>.</param>
 	/// <returns>A form for creating the <see cref="Event"/> or any of it's children.</returns>
-	public IActionResult Create(string type = nameof(Event))
-	{
-		this.ViewData["EventType"] = type;
-
-		return this.View();
-	}
+	public IActionResult Create()
+		=> this.View();
 
 	/// <summary>
 	/// Displays the <see cref="Update(Guid, string)"/> view.

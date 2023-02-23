@@ -8,7 +8,8 @@
 }
 
 <div class="row">
-    <form action="../@eventType/Create"
+    <form id="EventForm"
+          action="../@eventType/Create"
           method="post"
           class="col-12">
 
@@ -27,3 +28,7 @@
         @await this.Html.PartialAsync("Forms/_EventInputs")
     </form>
 </div>
+
+@section Scripts {
+    <script src="~/js/EventForm.js"></script>
+}
