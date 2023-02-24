@@ -45,11 +45,27 @@ public sealed class ScheduleService : IScheduleService
 	/// Gets all instances of <see cref="Event"/> from the database.
 	/// </summary>
 	/// <returns>A list of events.</returns>
-	public Task<IEnumerable<Event>> GetAllAsync()
+	public async Task<IEnumerable<Event>> GetAllAsync()
 	{
-		IEnumerable<Event> events = this.database.Events;
+		IEnumerable<Event> events = await this.database.Events.ToListAsync();
 
-		return Task.FromResult(events);
+		return events;
+	}
+
+	/// <inheritdoc/>
+	public async Task<bool> OccursAtAsync(
+		Guid[] fieldIds,
+		DateTime start,
+		DateTime? end)
+	{
+		IQueryable<Event> events = this.database.Events.Include(e => e.Fields);
+
+		return await this.database.Events
+			.Include(e => e.Fields)
+			.AnyAsync(e =>
+				e.Fields!.Any(f => fieldIds.Contains(f.Id)) &&
+				e.StartDate <= end &&
+				e.EndDate >= start);
 	}
 
 	/// <summary>
