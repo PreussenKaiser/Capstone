@@ -3,19 +3,23 @@
 @using Scheduler.Core.Services;
 
 @inject ILeagueService leagueService
+@inject ITeamService teamService
 
 @model Team
 
-<div class="mb-3">
-    <label asp-for="Name" class="form-label"></label>
-    <input asp-for="Name" class="form-control" />
-    <span asp-validation-for="Name" class="text-danger"></span>
+<div class="row mb-3">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
 
-    <label asp-for="LeagueId" class="form-label">League</label>
-    <select class="form-select"
-        size="6"
-        asp-for="LeagueId"
-        asp-items="this.leagueService
+    <div>
+        <label asp-for="LeagueId" class="form-label">League</label>
+        <select class="form-select"
+                size="6"
+                asp-for="LeagueId"
+                asp-items="this.leagueService
             .GetAllAsync()
             .Result
             .Select(league => new SelectListItem {
@@ -23,6 +27,7 @@
                 Value = league.Id.ToString(),
                 Selected = this.Model is not null && this.Model.League is not null
             })"></select>
+    </div>
 </div>
 
 <div class="row mb-3">
