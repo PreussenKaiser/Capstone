@@ -1,26 +1,28 @@
-﻿@{
+﻿@using Scheduler.Core.Models;
+
+@{
     string currentType = this.ViewData["EventType"] as string ?? "Event";
 
     string[] eventTypes = new[]
     {
-        "Event",
-        "Practice",
-        "Game"
+        nameof(Event),
+        nameof(Practice),
+        nameof(Game)
     };
 }
 
 <div class="list-group list-group-horizontal">
-@foreach (var eventType in eventTypes)
-{
-    string activeCssClass = eventType == currentType
-        ? "active"
-        : string.Empty;
+    @foreach (var eventType in eventTypes)
+    {
+        string activeCssClass = eventType == currentType
+            ? "active"
+            : string.Empty;
 
-    <button type="button"
-            id="@eventType"
-            onclick="navClick('@eventType')"
-            class="list-group-item list-group-item-action text-center @activeCssClass">
-        @eventType
-    </button>
-}
+        <button type="button"
+                id="@eventType"
+                onclick="navClick('@eventType')"
+                class="list-group-item list-group-item-action text-center @activeCssClass">
+            @eventType
+        </button>
+    }
 </div>

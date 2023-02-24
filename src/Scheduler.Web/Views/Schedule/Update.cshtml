@@ -1,7 +1,7 @@
 ﻿@using Scheduler.Core.Models;
 
 @{
-    string eventType = this.ViewData["EventType"] as string ?? "Event";
+    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
     string pageTitle = $"Reschedule {eventType}";
 
     this.ViewData["Title"] = pageTitle;
@@ -20,3 +20,7 @@
         @await this.Html.PartialAsync("Forms/_EventInputs")
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

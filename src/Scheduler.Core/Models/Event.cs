@@ -37,14 +37,14 @@ public class Event
 	/// <summary>
 	/// When the event starts.
 	/// </summary>
-	[Required]
+	[Required(ErrorMessage = "Please enter when the event begins.")]
 	[Display(Name = "Start date")]
 	public required DateTime StartDate { get; set; }
 
 	/// <summary>
 	/// When the event ends.
 	/// </summary>
-	[Required]
+	[Required(ErrorMessage = "Please enter when the event ends.")]
 	[Display(Name = "End date")]
 	public required DateTime EndDate { get; set; }
 

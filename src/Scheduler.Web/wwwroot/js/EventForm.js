@@ -1,4 +1,8 @@
-﻿function navClick(eventType) {
+﻿/**
+ * Provides navigation for the EventForm.
+ * @param {string} eventType The type of event to select.
+ */
+function navClick(eventType) {
     const refresh = eventType == 'Event'
         ? $('#EventInputs').empty()
         : (result) => {
@@ -8,7 +12,7 @@
 
     $.ajax({
         type: 'GET',
-        url: `../Schedule/EventPartial`,
+        url: '../Schedule/EventPartial',
         data: { type: eventType },
         success: refresh
     })
