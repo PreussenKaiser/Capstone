@@ -9,3 +9,40 @@
     </h1>
 </div>
 
+<!--Top Buttons-->
+<div class="row w-75 text-center m-auto">
+    <div class="col-sm-3 m-auto">
+        <a asp-controller="Field" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage FIELDS
+        </a>
+    </div>
+    <div class="col-sm-3 m-auto">
+        <a asp-controller="Team" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage TEAMS
+        </a>
+    </div>
+    @*<div class="col-sm-3 m-auto">
+    <a asp-controller="Schedule" asp-action="Index" class="btn btn-sm btn-primary">
+    Manage USERS
+    </a>
+    </div>*@
+</div>
+<div class="col-sm-6">
+    <div class="container mb-2">
+        <div class="row mb-1">
+            <div class="col-6" mx-auto>
+                <h3 class="text-center text-danger">Upcoming Events</h3>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-sm-8 mb-2">
+                <input class="w-100 form-control" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 border border-2 w-100 searchContainer">
+            </div>
+        </div>
+    </div>
+</div>
+
