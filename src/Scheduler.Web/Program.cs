@@ -51,3 +51,8 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
+/// <summary>
+/// Required for Scheduler.Tests to discover the class.
+/// </summary>
+public partial class Program { }
