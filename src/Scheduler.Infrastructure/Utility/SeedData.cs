@@ -1,42 +1,17 @@
-﻿using Scheduler.Core.Models;
-using Scheduler.Core.Models.Identity;
-using Scheduler.Infrastructure.Persistence;
+﻿using Scheduler.Core.Models.Identity;
+using Scheduler.Core.Models;
 
-namespace Scheduler.Tests.Utility;
+namespace Scheduler.Infrastructure.Utility;
 
 /// <summary>
-/// Contains data and extension methods for seeding the database.
+/// Provides data for seeding a repository.
 /// </summary>
-internal static class Seed
+public static class SeedData
 {
-	/// <summary>
-	/// Seeds <see cref="SchedulerContext"/>.
-	/// </summary>
-	/// <param name="services">The service collection to get <see cref="SchedulerContext"/> from.</param>
-	internal static void SeedDatabase(this IServiceProvider services)
-	{
-		if (services.GetService(typeof(SchedulerContext)) is not SchedulerContext context)
-			return;
-
-		if (!context.Users.Any())
-			context.Users.AddRange(Users);
-
-		if (!context.Fields.Any())
-			context.Fields.AddRange(Fields);
-
-		if (!context.Teams.Any())
-			context.Teams.AddRange(Teams);
-
-		if (!context.Events.Any())
-			context.Events.AddRange(Events);
-
-		context.SaveChanges();
-	}
-
 	/// <summary>
 	/// Mock users.
 	/// </summary>
-	internal static IEnumerable<User> Users = new List<User>()
+	public readonly static IEnumerable<User> Users = new List<User>()
 	{
 		new() { Id = Guid.NewGuid() }
 	};
@@ -44,7 +19,7 @@ internal static class Seed
 	/// <summary>
 	/// Mock fields.
 	/// </summary>
-	internal static IEnumerable<Field> Fields = new List<Field>()
+	public readonly static IEnumerable<Field> Fields = new List<Field>()
 	{
 		new() { Id = Guid.NewGuid(), Name = "Field 1" },
 		new() { Id = Guid.NewGuid(), Name = "Field 2" },
@@ -54,7 +29,7 @@ internal static class Seed
 	/// <summary>
 	/// Mock teams.
 	/// </summary>
-	internal static IEnumerable<Team> Teams = new List<Team>()
+	public readonly static IEnumerable<Team> Teams = new List<Team>()
 	{
 		new() { Id = Guid.NewGuid(), Name = "Team 1" },
 		new() { Id = Guid.NewGuid(), Name = "Team 2" },
@@ -64,7 +39,7 @@ internal static class Seed
 	/// <summary>
 	/// Mock events.
 	/// </summary>
-	internal static IEnumerable<Event> Events = new List<Event>()
+	public readonly static IEnumerable<Event> Events = new List<Event>()
 	{
 		new()
 		{

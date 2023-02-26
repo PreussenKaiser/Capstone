@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Scheduler.Core.Models;
 using Scheduler.Core.Services;
+using Scheduler.Infrastructure.Utility;
 using Scheduler.Tests.Utility;
 using Xunit;
 
@@ -17,6 +18,11 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	private readonly IScheduleService scheduleService;
 
 	/// <summary>
+	/// The <see cref="Event"/> to test validation with.
+	/// </summary>
+	private readonly Event newEvent;
+
+	/// <summary>
 	/// Initializes the <see cref="EventTests"/> class.
 	/// </summary>
 	/// <param name="factory">The <see cref="WebApplicationFactory{TEntryPoint}"/> to create the mock application with.</param>
@@ -26,6 +32,15 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 			throw new NullReferenceException("Could not resolve IScheduleService");
 
 		this.scheduleService = scheduleService;
+		this.newEvent = new Event()
+		{
+			Id = Guid.Empty,
+			UserId = Guid.Empty,
+			Name = string.Empty,
+			StartDate = DateTime.MinValue,
+			EndDate = DateTime.MaxValue,
+			IsRecurring = default
+		};
 
 		factory.Services.SeedDatabase();
 	}
@@ -38,13 +53,12 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	public async Task Date_Overlap_Complete()
 	{
 		// Arrange
-		Guid[] fieldIds = Seed.Fields.Take(2).Select(f => f.Id).ToArray();
-		DateTime startDate = new(2023, 03, 24, 13, 0, 0);
-		DateTime endDate = new(2023, 03, 24, 14, 0, 0);
+		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
+		this.newEvent.StartDate = new(2023, 03, 24, 13, 0, 0);
+		this.newEvent.EndDate = new(2023, 03, 24, 14, 0, 0);
 
 		// Act
-		bool failed = await this.scheduleService.OccursAtAsync(
-			fieldIds, startDate, endDate);
+		bool failed = await this.scheduleService.HasConflictsAsync(this.newEvent);
 		
 		// Assert
 		Assert.True(failed);
@@ -58,13 +72,12 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	public async Task Date_Overlap_Partial()
 	{
 		// Arrange
-		Guid[] fieldIds = Seed.Fields.Take(2).Select(f => f.Id).ToArray();
-		DateTime startDate = new(2023, 03, 24, 11, 0, 0);
-		DateTime endDate = new(2023, 03, 24, 13, 0, 0);
+		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
+		this.newEvent.StartDate = new(2023, 03, 24, 11, 0, 0);
+		this.newEvent.EndDate = new(2023, 03, 24, 13, 0, 0);
 
 		// Act
-		bool failed = await this.scheduleService.OccursAtAsync(
-			fieldIds, startDate, endDate);
+		bool failed = await this.scheduleService.HasConflictsAsync(this.newEvent);
 
 		// Assert
 		Assert.True(failed);
@@ -78,13 +91,12 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	public async Task Date_Overlap_None()
 	{
 		// Arrange
-		Guid[] fieldIds = Seed.Fields.Take(2).Select(f => f.Id).ToArray();
-		DateTime startDate = new(2023, 03, 24, 10, 0, 0);
-		DateTime endDate = new(2023, 03, 24, 11, 0, 0);
+		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
+		this.newEvent.StartDate = new(2023, 03, 24, 10, 0, 0);
+		this.newEvent.EndDate = new(2023, 03, 24, 11, 0, 0);
 
 		// Act
-		bool succeeded = !(await this.scheduleService.OccursAtAsync(
-			fieldIds, startDate, endDate));
+		bool succeeded = !await this.scheduleService.HasConflictsAsync(this.newEvent);
 
 		// Assert
 		Assert.True(succeeded);
@@ -98,13 +110,12 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	public async Task Date_Overlap_DifferentField()
 	{
 		// Arrange
-		Guid[] fieldIds = Seed.Fields.Take(1).Select(f => f.Id).ToArray();
-		DateTime startDate = new(2023, 03, 15, 18, 0, 0);
-		DateTime endDate = new(2023, 03, 15, 19, 0, 0);
+		this.newEvent.FieldIds = SeedData.Fields.Take(1).Select(f => f.Id).ToArray();
+		this.newEvent.StartDate = new(2023, 03, 15, 18, 0, 0);
+		this.newEvent.EndDate = new(2023, 03, 15, 19, 0, 0);
 
 		// Act
-		bool succeeded = !(await this.scheduleService.OccursAtAsync(
-			fieldIds, startDate, endDate));
+		bool succeeded = !await this.scheduleService.HasConflictsAsync(this.newEvent);
 
 		// Assert
 		Assert.True(succeeded);

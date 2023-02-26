@@ -80,12 +80,11 @@ public class Event : IValidatableObject
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
 		ICollection<ValidationResult> results = new List<ValidationResult>();
-		this.FieldIds ??= Array.Empty<Guid>();
 
 		if (validationContext.GetService(typeof(IScheduleService)) is not IScheduleService service)
 			throw new NullReferenceException("Cannot retrieve IScheduleService.");
 
-		if (service.OccursAtAsync(this.FieldIds, this.StartDate, this.EndDate).Result)
+		if (service.HasConflictsAsync(this).Result)
 			results.Add(new("An event is already scheduled for that date."));
 
 		return results;

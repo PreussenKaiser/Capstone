@@ -1,4 +1,5 @@
-﻿using Scheduler.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Scheduler.Core.Models;
 using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Persistence;
 
@@ -36,11 +37,11 @@ public sealed class TeamService: ITeamService
 	/// Gets all instances of <see cref="Team"/> from the database.
 	/// </summary>
 	/// <returns></returns>
-	public Task<IEnumerable<Team>> GetAllAsync()
+	public async Task<IEnumerable<Team>> GetAllAsync()
 	{
-		IEnumerable<Team> teams = this.database.Teams;
+		IEnumerable<Team> teams = await this.database.Teams.ToListAsync();
 
-		return Task.FromResult(teams);
+		return teams;
 	}
 
 	/// <summary>
@@ -56,10 +57,9 @@ public sealed class TeamService: ITeamService
 	{
 		Team? team = await this.database.Teams.FindAsync(id);
 
-		if (team is null)
-			throw new ArgumentException($"{id} does not match any Team in the database");
-
-		return team;
+		return team is null
+			? throw new ArgumentException($"{id} does not match any Team in the database")
+			: team;
 	}
 
 	/// <summary>
@@ -69,8 +69,12 @@ public sealed class TeamService: ITeamService
 	/// <see cref="Team"/> values, <see cref="Team.Id"/> referencing the model to update.
 	/// </param>
 	/// <returns>Whether the task was completed or not.</returns>
+	/// <exception cref="ArgumentException"/>
 	public async Task UpdateAsync(Team model)
 	{
+		if (!this.database.Teams.AsNoTracking().Contains(model))
+			throw new ArgumentException($"{model.Id} could not be resolved to a Field.");
+
 		this.database.Teams.Update(model);
 
 		await this.database.SaveChangesAsync();
@@ -81,6 +85,7 @@ public sealed class TeamService: ITeamService
 	/// </summary>
 	/// <param name="id">References <see cref="Team.Id"/>.</param>
 	/// <returns>Whether this task was completed or not.</returns>
+	/// <exception cref="ArgumentException"/>
 	public async Task DeleteAsync(Guid id)
 	{
 		Team teamDelete = await this.GetAsync(id);
