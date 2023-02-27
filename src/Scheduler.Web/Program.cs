@@ -16,6 +16,7 @@ builder.Services
 	.AddScoped<IFieldService, FieldService>()
 	.AddScoped<IScheduleService, ScheduleService>()
 	.AddScoped<ITeamService, TeamService>()
+	.AddScoped<ILeagueService, LeagueService>()
 	.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configure identity

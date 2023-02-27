@@ -46,6 +46,11 @@ public sealed class SchedulerContext
 	public DbSet<Team> Teams { get; set; }
 
 	/// <summary>
+	/// Instances of <see cref="League"/> in the database.
+	/// </summary>
+	public DbSet<League> Leagues { get; set; }
+
+	/// <summary>
 	/// Provides additional configuration for models.
 	/// </summary>
 	/// <param name="builder">The API to configure with.</param>
@@ -54,6 +59,8 @@ public sealed class SchedulerContext
 		builder
 			.Entity<Event>()
 			.UseTptMappingStrategy();
+
+		builder.Entity<Role>().HasData(new Role { Name = "Admin", NormalizedName = "Admin", Id = Guid.NewGuid(), ConcurrencyStamp = Guid.NewGuid().ToString()});
 
 		base.OnModelCreating(builder);
 	}

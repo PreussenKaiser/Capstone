@@ -1,4 +1,5 @@
-﻿using Scheduler.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Scheduler.Core.Models;
 using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Persistence;
 
@@ -38,7 +39,7 @@ public sealed class TeamService: ITeamService
 	/// <returns></returns>
 	public Task<IEnumerable<Team>> GetAllAsync()
 	{
-		IEnumerable<Team> teams = this.database.Teams;
+		IEnumerable<Team> teams = this.database.Teams.Include("League");
 
 		return Task.FromResult(teams);
 	}
