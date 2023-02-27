@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Scheduler.Core.Models;
 
 namespace Scheduler.Web.Controllers;
 [Authorize]
