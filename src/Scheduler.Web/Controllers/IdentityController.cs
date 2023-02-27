@@ -123,4 +123,9 @@ public sealed class IdentityController : Controller
 
 		return this.RedirectToAction(nameof(HomeController.Index), "Home");
 	}
+
+	public IActionResult Manage()
+	{
+		return this.View();
+	}
 }

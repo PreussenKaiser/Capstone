@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler.Core", "Scheduler
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler.Infrastructure", "Scheduler.Infrastructure\Scheduler.Infrastructure.csproj", "{02786A95-B1A5-476B-A287-C612530C17D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.Tests", "Scheduler.Tests\Scheduler.Tests.csproj", "{69BA09F2-98F0-414B-B21B-CDFD01B3ACF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler.Tests", "Scheduler.Tests\Scheduler.Tests.csproj", "{69BA09F2-98F0-414B-B21B-CDFD01B3ACF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
