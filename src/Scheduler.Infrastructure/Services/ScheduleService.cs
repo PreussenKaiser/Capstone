@@ -45,11 +45,26 @@ public sealed class ScheduleService : IScheduleService
 	/// Gets all instances of <see cref="Event"/> from the database.
 	/// </summary>
 	/// <returns>A list of events.</returns>
-	public Task<IEnumerable<Event>> GetAllAsync()
+	public async Task<IEnumerable<Event>> GetAllAsync()
 	{
-		IEnumerable<Event> events = this.database.Events;
+		IEnumerable<Event> events = await this.database.Events.ToListAsync();
 
-		return Task.FromResult(events);
+		return events;
+	}
+
+	/// <inheritdoc/>
+	public async Task<bool> HasConflictsAsync(Event scheduledEvent)
+	{
+		scheduledEvent.FieldIds ??= Array.Empty<Guid>();
+
+		return await this.database.Events
+			.AsNoTracking()
+			.Where(e => e.Id != scheduledEvent.Id)
+			.Include(e => e.Fields)
+			.AnyAsync(e =>
+				e.Fields!.Any(f => scheduledEvent.FieldIds.Contains(f.Id)) &&
+				e.StartDate <= scheduledEvent.EndDate &&
+				e.EndDate >= scheduledEvent.StartDate);
 	}
 
 	/// <summary>
@@ -64,10 +79,9 @@ public sealed class ScheduleService : IScheduleService
 			.Include(e => e.Fields)
 			.FirstOrDefaultAsync(e => e.Id == id);
 
-		if (scheduledEvent is null)
-			throw new ArgumentException($"{id} could not be resolved to an Event.");
-
-		return scheduledEvent;
+		return scheduledEvent is null
+			? throw new ArgumentException($"{id} could not be resolved to an Event.")
+			: scheduledEvent;
 	}
 
 	/// <summary>
@@ -75,8 +89,12 @@ public sealed class ScheduleService : IScheduleService
 	/// </summary>
 	/// <param name="model"><see cref="Event"/> values, <see cref="Event.Id"/> referencing the <see cref="Event"/> to update.</param>
 	/// <returns>Whether the task was completed or not.</returns>
+	/// <exception cref="ArgumentException"/>
 	public async Task UpdateAsync(Event model)
 	{
+		if (!this.database.Events.AsNoTracking().Contains(model))
+			throw new ArgumentException($"{model.Id} could not be resolved to an Event");
+
 		model.FieldIds ??= Array.Empty<Guid>();
 
 		var entity = this.database.Entry(model);
@@ -100,6 +118,7 @@ public sealed class ScheduleService : IScheduleService
 	/// </summary>
 	/// <param name="id">References <see cref="Event.Id"/>.</param>
 	/// <returns>Whether the task was completed or not.</returns>
+	/// <exception cref="ArgumentException"/>
 	public async Task DeleteAsync(Guid id)
 	{
 		Event eventDelete = await this.GetAsync(id);

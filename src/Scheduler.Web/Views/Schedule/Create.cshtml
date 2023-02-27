@@ -1,14 +1,15 @@
 ﻿@using Scheduler.Core.Models;
 
 @{
-    string eventType = this.ViewData["EventType"] as string ?? "Event";
+    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
     string pageTitle = $"Schedule {eventType}";
 
     this.ViewData["Title"] = pageTitle;
 }
 
 <div class="row">
-    <form action="../@eventType/Create"
+    <form id="EventForm"
+          action="../@eventType/Create"
           method="post"
           class="col-12">
 
@@ -17,6 +18,7 @@
                 @pageTitle
             </h1>
             <hr />
+
             <div class="col-sm-4 mx-auto">
                 @await this.Html.PartialAsync("Navigation/_ScheduleNavbar")
             </div>
@@ -27,3 +29,8 @@
         @await this.Html.PartialAsync("Forms/_EventInputs")
     </form>
 </div>
+
+@section Scripts {
+    <script src="~/js/EventForm.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

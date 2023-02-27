@@ -35,34 +35,36 @@ public sealed class ScheduleController : Controller
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Create(string)"/> view.
+	/// Displays partial view containing <see cref="Event"/> form inputs.
 	/// </summary>
-	/// <param name="type">The type of event to create, defaults to <see cref="Event"/>.</param>
-	/// <returns>A form for creating the <see cref="Event"/> or any of it's children.</returns>
-	public IActionResult Create(string type = nameof(Event))
-	{
-		this.ViewData["EventType"] = type;
-
-		return this.View();
-	}
+	/// <param name="type">The type of partial view to render.</param>
+	/// <returns>Form inputs belonging to the specified <paramref name="type"/>.</returns>
+	public IActionResult EventPartial(string type)
+		=> this.PartialView($"Forms/_{type}Inputs");
 
 	/// <summary>
-	/// Displays the <see cref="Update(Guid, string)"/> view.
+	/// Displays the <see cref="Create"/> view.
+	/// </summary>
+	/// <returns>A form for creating the <see cref="Event"/> or any of it's children.</returns>
+	public IActionResult Create()
+		=> this.View();
+
+	/// <summary>
+	/// Displays the <see cref="Update(Guid)"/> view.
 	/// </summary>
 	/// <param name="id">References <see cref="Event.Id"/>.</param>
-	/// <param name="type">The type of <see cref="Event"/> to update.</param>
 	/// <returns>A form for updating an <see cref="Event"/> or any of it's children.</returns>
-	public async Task<IActionResult> Update(Guid id, string type = nameof(Event))
+	public async Task<IActionResult> Update(Guid id)
 	{
 		Event scheduledEvent = await this.scheduleService.GetAsync(id);
 
-		this.ViewData["EventType"] = type;
+		this.ViewData["EventType"] = scheduledEvent.GetType().Name;
 
 		return this.View(scheduledEvent);
 	}
 
 	/// <summary>
-	/// Deletes a <see cref="Event"/>.
+	/// Deletes an <see cref="Event"/>.
 	/// </summary>
 	/// <param name="id">References <see cref="Event.Id"/>.</param>
 	/// <returns>Redirected to <see cref="ScheduleController.Index"/>.</returns>

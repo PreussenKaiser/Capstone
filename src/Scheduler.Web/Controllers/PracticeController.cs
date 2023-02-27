@@ -37,10 +37,11 @@ public sealed class PracticeController : Controller
 	public async Task<IActionResult> Create(Practice practice)
 	{
 		if (!this.ModelState.IsValid)
-			return this.RedirectToAction(
-				nameof(ScheduleController.Create),
-				"Schedule",
-				new { type = nameof(Practice) });
+		{
+			this.ViewData["EventType"] = nameof(Practice);
+
+			return this.View("~/Views/Schedule/Create.cshtml", practice);
+		}
 
 		await this.scheduleService.CreateAsync(practice);
 
@@ -59,10 +60,11 @@ public sealed class PracticeController : Controller
 	public async Task<IActionResult> Update(Practice practice)
 	{
 		if (!this.ModelState.IsValid)
-			return this.RedirectToAction(
-				nameof(ScheduleController.Update),
-				"Schedule",
-				new { type = nameof(Practice) });
+		{
+			this.ViewData["EventType"] = nameof(Practice);
+
+			return this.View("~/Views/Schedule/Update.cshtml", practice);
+		}
 
 		await this.scheduleService.UpdateAsync(practice);
 

@@ -16,5 +16,7 @@
                     Value = team.Id.ToString(),
                     Selected = this.Model is not null && this.Model.TeamId == team.Id
                 })"
-            class="form-select"></select>
+            class="form-select">
+    </select>
+    <span asp-validation-for="TeamId" class="text-danger"></span>
 </div>
