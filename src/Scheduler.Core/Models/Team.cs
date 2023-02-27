@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Scheduler.Core.Models;
 
@@ -18,4 +19,15 @@ public sealed class Team
 	[Required]
 	[MaxLength(32)]
 	public required string Name { get; set; }
+
+	/// <summary>
+	/// The league that the team is in.
+	/// </summary>
+	public required League League { get; set; }
+
+	[Required]
+	/// <summary>
+	/// References <see cref="League.Id"/>.
+	/// </summary>
+	public required Guid LeagueId { get; set; }
 }

@@ -39,7 +39,7 @@ public sealed class TeamService: ITeamService
 	/// <returns></returns>
 	public async Task<IEnumerable<Team>> GetAllAsync()
 	{
-		IEnumerable<Team> teams = await this.database.Teams.ToListAsync();
+		IEnumerable<Team> teams = await this.database.Teams.Include("League").ToListAsync();
 
 		return teams;
 	}

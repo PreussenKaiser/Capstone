@@ -45,6 +45,11 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 	public DbSet<Team> Teams { get; set; }
 
 	/// <summary>
+	/// Instances of <see cref="League"/> in the database.
+	/// </summary>
+	public DbSet<League> Leagues { get; set; }
+
+	/// <summary>
 	/// Provides additional configuration for models.
 	/// </summary>
 	/// <param name="builder">The API to configure with.</param>

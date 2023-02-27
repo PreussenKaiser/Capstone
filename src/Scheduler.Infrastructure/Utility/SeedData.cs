@@ -1,5 +1,6 @@
 ﻿using Scheduler.Core.Models.Identity;
 using Scheduler.Core.Models;
+using System.Runtime.CompilerServices;
 
 namespace Scheduler.Infrastructure.Utility;
 
@@ -26,14 +27,22 @@ public static class SeedData
 		new() { Id = Guid.NewGuid(), Name = "Field 3" }
 	};
 
+	//Mock leagues
+	public readonly static IEnumerable<League> Leagues = new List<League>()
+	{
+		new() {Id = Guid.NewGuid(), IsArchived = false, Name = "Recreation"},
+		new() {Id = Guid.NewGuid(), IsArchived = false, Name = "Classic"},
+		new() {Id = Guid.NewGuid(), IsArchived = false, Name = "Select"}
+	};
+
 	/// <summary>
 	/// Mock teams.
 	/// </summary>
 	public readonly static IEnumerable<Team> Teams = new List<Team>()
 	{
-		new() { Id = Guid.NewGuid(), Name = "Team 1" },
-		new() { Id = Guid.NewGuid(), Name = "Team 2" },
-		new() { Id = Guid.NewGuid(), Name = "Team 3" }
+		new() { Id = Guid.NewGuid(), Name = "Team 1", LeagueId = Leagues.First().Id, League = Leagues.First()},
+		new() { Id = Guid.NewGuid(), Name = "Team 2", LeagueId = Leagues.First().Id, League = Leagues.First() },
+		new() { Id = Guid.NewGuid(), Name = "Team 3", LeagueId = Leagues.First().Id, League = Leagues.First() }
 	};
 
 	/// <summary>
