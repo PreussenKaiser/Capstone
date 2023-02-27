@@ -60,6 +60,8 @@ public sealed class SchedulerContext
 			.Entity<Event>()
 			.UseTptMappingStrategy();
 
+		builder.Entity<Role>().HasData(new Role { Name = "Admin", NormalizedName = "Admin", Id = Guid.NewGuid(), ConcurrencyStamp = Guid.NewGuid().ToString()});
+
 		base.OnModelCreating(builder);
 	}
 }
