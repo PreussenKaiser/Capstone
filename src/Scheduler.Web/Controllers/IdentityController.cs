@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models.Identity;
 using Scheduler.Web.ViewModels;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
@@ -87,6 +89,7 @@ public sealed class IdentityController : Controller
 	/// Displays the <see cref="Register"/> view.
 	/// </summary>
 	/// <returns>The <see cref="Register"/> view.</returns>
+	[Authorize(Roles ="Admin")]
 	public IActionResult Register()
 		=> this.View();
 
@@ -99,6 +102,7 @@ public sealed class IdentityController : Controller
 	/// Otherwise, redirected to <see cref="Register"/>.
 	/// </returns>
 	[HttpPost]
+	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> Register(RegisterViewModel viewModel)
 	{
 		if (!this.ModelState.IsValid)
@@ -125,8 +129,45 @@ public sealed class IdentityController : Controller
 			await userManager.AddToRoleAsync(user, "Admin");
 		}
 
-		await this.signInManager.SignInAsync(user, isPersistent: false);
+		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
+	}
 
-		return this.RedirectToAction(nameof(HomeController.Index), "Home");
+	[HttpGet]
+	[Authorize(Roles = "Admin")]
+	public async Task<IActionResult> ManageUsers()
+	{
+		var users = await userManager.Users.ToListAsync();
+		return this.View(users);
+	}
+
+	[HttpGet]
+	[Authorize(Roles = "Admin")]
+	public async Task<IActionResult> Update(Guid id)
+	{
+		var user = await userManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+		return this.View(user);
+	}
+
+	[HttpPost]
+	[Authorize(Roles = "Admin")]
+	public async Task<IActionResult> Update(User user)
+	{
+		await userManager.UpdateAsync(user);
+
+		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
+	}
+
+	[HttpPost]
+	[Authorize(Roles = "Admin")]
+	public async Task<IActionResult> Delete(Guid id)
+	{
+		var user = await userManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+
+		if (user is not null)
+		{
+			await userManager.DeleteAsync(user);
+		}
+
+		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
 	}
 }

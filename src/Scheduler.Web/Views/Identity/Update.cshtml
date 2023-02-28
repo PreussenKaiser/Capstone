@@ -1,0 +1,62 @@
+﻿@using Scheduler.Web.Controllers;
+@using Scheduler.Core.Models.Identity;
+
+@model User
+
+@{
+    this.ViewData["Title"] = "Update User";
+}
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <form method="post">
+
+            <h1 class="text-center text-danger">
+                @this.ViewData["Title"]
+            </h1>
+            <hr />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="@Model.Email"
+                       class="form-control"
+                       autocomplete="username"
+                       aria-required="true" />
+
+                <label asp-for="@Model.Email" class="form-label"></label>
+                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="@Model.FirstName"
+                       class="form-control"
+                       aria-required="true" />
+
+                <label asp-for="@Model.FirstName" class="form-label"></label>
+                <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="@Model.LastName"
+                       class="form-control"
+                       aria-required="true" />
+
+                <label asp-for="@Model.LastName" class="form-label"></label>
+                <span asp-validation-for="@Model.LastName" class="text-danger"></span>
+            </div>
+@*            <div class="form-floating mb-3">
+                <label asp-for="IsAdmin" class="form-label">Is Admin</label>
+                <input asp-for="IsAdmin"
+                       class="form-check-input" type="checkbox" />
+            </div>*@
+
+            <button type="submit"
+                    class="w-100 btn btn-lg btn-primary">
+                Register
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
