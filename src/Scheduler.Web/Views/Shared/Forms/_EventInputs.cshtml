@@ -8,6 +8,8 @@
 
 @{
    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
+
+    ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 }
 
 @if (this.Model is not null)
@@ -31,12 +33,12 @@
         <div class="row mb-3">
             <div class="col-6">
                 <label asp-for="StartDate" class="form-label"></label>
-                <input asp-for="StartDate" type="datetime-local" class="form-control" />
+                <input asp-for="StartDate" min=@ViewBag.Today type="datetime-local" class="form-control" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
             <div class="col-6">
                 <label asp-for="EndDate" class="form-label"></label>
-                <input asp-for="EndDate" type="datetime-local" class="form-control" />
+                <input asp-for="EndDate" min=@ViewBag.Today type="datetime-local" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
         </div>
