@@ -16,13 +16,28 @@ public sealed class GameController : Controller
 	/// </summary>
 	private readonly IScheduleService scheduleService;
 
+	private readonly IGameService gameService;
+
 	/// <summary>
 	/// Initializes the <see cref="GameController"/> class.
 	/// </summary>
 	/// <param name="eventService">The service to query <see cref="Game"/> models with.</param>
-	public GameController(IScheduleService eventService)
+	public GameController(IScheduleService eventService, IGameService gameService)
 	{
 		this.scheduleService = eventService;
+		this.gameService = gameService;
+	}
+
+	/// <summary>
+	/// Displays the <see cref="Index"/> view.
+	/// </summary>
+	/// <returns>A view containing a list of games as well as actions.</returns>
+	[AllowAnonymous]
+	public async Task<IActionResult> Index()
+	{
+		IEnumerable<Game> games = await this.gameService.GetAllAsync();
+
+		return this.View(games);
 	}
 
 	/// <summary>
