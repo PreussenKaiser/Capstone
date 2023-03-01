@@ -1,16 +1,18 @@
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Scheduler.Core.Models;
 using Scheduler.Core.Services;
+using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Utility;
 using Scheduler.Tests.Utility;
 using Xunit;
 
-namespace Scheduler.Tests;
+namespace Scheduler.Tests.Integration;
 
 /// <summary>
 /// Contains tests for <see cref="Event"/> scheduling.
 /// </summary>
-public class EventTests : IClassFixture<SchedulerFactory<Program>>
+public sealed class EventTests : IClassFixture<SchedulerFactory<Program>>
 {
 	/// <summary>
 	/// The service to test scheduling with.
@@ -28,10 +30,7 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	/// <param name="factory">The <see cref="WebApplicationFactory{TEntryPoint}"/> to create the mock application with.</param>
 	public EventTests(SchedulerFactory<Program> factory)
 	{
-		if (factory.Services.GetService(typeof(IScheduleService)) is not IScheduleService scheduleService)
-			throw new NullReferenceException("Could not resolve IScheduleService");
-
-		this.scheduleService = scheduleService;
+		this.scheduleService = factory.Services.GetRequiredService<IScheduleService>();
 		this.newEvent = new Event()
 		{
 			Id = Guid.Empty,
@@ -52,15 +51,12 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	[Fact]
 	public async Task Date_Overlap_Complete()
 	{
-		// Arrange
 		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
 		this.newEvent.StartDate = new(2023, 03, 24, 13, 0, 0);
 		this.newEvent.EndDate = new(2023, 03, 24, 14, 0, 0);
 
-		// Act
 		bool failed = await this.scheduleService.HasConflictsAsync(this.newEvent);
 		
-		// Assert
 		Assert.True(failed);
 	}
 
@@ -71,15 +67,12 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	[Fact]
 	public async Task Date_Overlap_Partial()
 	{
-		// Arrange
 		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
 		this.newEvent.StartDate = new(2023, 03, 24, 11, 0, 0);
 		this.newEvent.EndDate = new(2023, 03, 24, 13, 0, 0);
 
-		// Act
 		bool failed = await this.scheduleService.HasConflictsAsync(this.newEvent);
 
-		// Assert
 		Assert.True(failed);
 	}
 
@@ -90,15 +83,12 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	[Fact]
 	public async Task Date_Overlap_None()
 	{
-		// Arrange
 		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
 		this.newEvent.StartDate = new(2023, 03, 24, 10, 0, 0);
 		this.newEvent.EndDate = new(2023, 03, 24, 11, 0, 0);
 
-		// Act
 		bool succeeded = !await this.scheduleService.HasConflictsAsync(this.newEvent);
 
-		// Assert
 		Assert.True(succeeded);
 	}
 
@@ -109,15 +99,12 @@ public class EventTests : IClassFixture<SchedulerFactory<Program>>
 	[Fact]
 	public async Task Date_Overlap_DifferentField()
 	{
-		// Arrange
 		this.newEvent.FieldIds = SeedData.Fields.Take(1).Select(f => f.Id).ToArray();
 		this.newEvent.StartDate = new(2023, 03, 15, 18, 0, 0);
 		this.newEvent.EndDate = new(2023, 03, 15, 19, 0, 0);
 
-		// Act
 		bool succeeded = !await this.scheduleService.HasConflictsAsync(this.newEvent);
 
-		// Assert
 		Assert.True(succeeded);
 	}
 }

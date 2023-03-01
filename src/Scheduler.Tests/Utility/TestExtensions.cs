@@ -1,4 +1,5 @@
-﻿using Scheduler.Infrastructure.Persistence;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Utility;
 
 namespace Scheduler.Tests.Utility;
@@ -14,8 +15,7 @@ internal static class TestExtensions
 	/// <param name="services">The service collection to get <see cref="SchedulerContext"/> from.</param>
 	internal static void SeedDatabase(this IServiceProvider services)
 	{
-		if (services.GetService(typeof(SchedulerContext)) is not SchedulerContext context)
-			return;
+		var context = services.GetRequiredService<SchedulerContext>();
 
 		if (!context.Users.Any())
 			context.Users.AddRange(SeedData.Users);
