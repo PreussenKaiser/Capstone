@@ -23,9 +23,9 @@ public sealed record RegisterViewModel
 	/// <summary>
 	/// Compared against <see cref="Password"/>.
 	/// </summary>
-	[Required(ErrorMessage = "Please confirm your password.")]
-	[DataType(DataType.Password)]
 	[Display(Name = "Confirm password")]
+	[DataType(DataType.Password)]
+	[Required(ErrorMessage = "Please confirm your password.")]
 	[Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
 	public string ConfirmPassword { get; init; } = string.Empty;
 }

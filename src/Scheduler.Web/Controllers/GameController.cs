@@ -34,7 +34,7 @@ public sealed class GameController : Controller
 	/// Returned to <see cref="ScheduleController.Create(string)"/> otherwise.
 	/// </returns>
 	[HttpPost]
-	public async Task<IActionResult> Create(Game game)
+	public async ValueTask<IActionResult> Create(Game game)
 	{
 		if (!this.ModelState.IsValid)
 		{
@@ -57,7 +57,7 @@ public sealed class GameController : Controller
 	/// Returned to <see cref="ScheduleController.Update(Guid, string)"/> otherwise.
 	/// </returns>
 	[HttpPost]
-	public async Task<IActionResult> Update(Game game)
+	public async ValueTask<IActionResult> Update(Game game)
 	{
 		if (!this.ModelState.IsValid)
 		{

@@ -17,22 +17,22 @@
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Credentials.Email"
+            <div class="mb-3">
+                <label asp-for="Credentials.UserName" class="form-label"></label>
+                <input asp-for="Credentials.UserName"
                        class="form-control"
                        autocomplete="username"
                        aria-required="true" />
 
-                <label asp-for="Credentials.Email" class="form-label"></label>
-                <span asp-validation-for="Credentials.Email" class="text-danger"></span>
+                <span asp-validation-for="Credentials.UserName" class="text-danger"></span>
             </div>
-            <div class="form-floating mb-3">
+            <div class="mb-3">
+                <label asp-for="Credentials.Password" class="form-label"></label>
                 <input asp-for="Credentials.Password"
                        class="form-control"
                        autocomplete="current-password"
                        aria-required="true" />
 
-                <label asp-for="Credentials.Password" class="form-label"></label>
                 <span asp-validation-for="Credentials.Password" class="text-danger"></span>
             </div>
 

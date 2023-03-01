@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models.Identity;
 using Scheduler.Web.ViewModels;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Scheduler.Web.Controllers;
 
@@ -12,11 +12,6 @@ namespace Scheduler.Web.Controllers;
 public sealed class IdentityController : Controller
 {
 	/// <summary>
-	/// Data-access for users.
-	/// </summary>
-	private readonly UserManager<User> userManager;
-
-	/// <summary>
 	/// The API to access <see cref="User"/> login information with.
 	/// </summary>
 	private readonly SignInManager<User> signInManager;
@@ -24,13 +19,9 @@ public sealed class IdentityController : Controller
 	/// <summary>
 	/// Initializes the <see cref="IdentityController"/> class.
 	/// </summary>
-	/// <param name="userManager">Data-access for users.</param>
 	/// <param name="signInManager">The API to access <see cref="User"/> login information with.</param>
-	public IdentityController(
-		UserManager<User> userManager,
-		SignInManager<User> signInManager)
+	public IdentityController(SignInManager<User> signInManager)
 	{
-		this.userManager = userManager;
 		this.signInManager = signInManager;
 	}
 
@@ -50,13 +41,13 @@ public sealed class IdentityController : Controller
 	/// Redirected to <see cref="Login"/> if unsuccessful.
 	/// </returns>
 	[HttpPost]
-	public async Task<IActionResult> Login(LoginViewModel viewModel)
+	public async ValueTask<IActionResult> Login(LoginViewModel viewModel)
 	{
 		if (!this.ModelState.IsValid)
 			return this.View(viewModel);
 
-		SignInResult result = await this.signInManager.PasswordSignInAsync(
-			viewModel.Credentials.Email,
+		var result = await this.signInManager.PasswordSignInAsync(
+			viewModel.Credentials.UserName,
 			viewModel.Credentials.Password,
 			viewModel.RememberMe,
 			lockoutOnFailure: false);
@@ -76,6 +67,7 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <returns>Redirected to <see cref="HomeController.Index"/>.</returns>
 	[HttpPost]
+	[Authorize]	
 	public async Task<IActionResult> Logout()
 	{
 		await this.signInManager.SignOutAsync();
@@ -99,18 +91,15 @@ public sealed class IdentityController : Controller
 	/// Otherwise, redirected to <see cref="Register"/>.
 	/// </returns>
 	[HttpPost]
-	public async Task<IActionResult> Register(RegisterViewModel viewModel)
+	public async ValueTask<IActionResult> Register(RegisterViewModel viewModel)
 	{
 		if (!this.ModelState.IsValid)
 			return this.View(viewModel);
 
-		User user = new()
-		{
-			UserName = viewModel.Credentials.Email,
-			Email = viewModel.Credentials.Email
-		};
+		User user = new() { UserName = viewModel.Credentials.UserName };
 
-		IdentityResult result = await this.userManager.CreateAsync(user, viewModel.Credentials.Password);
+		IdentityResult result = await this.signInManager.UserManager
+			.CreateAsync(user, viewModel.Credentials.Password);
 
 		if (!result.Succeeded)
 		{
@@ -119,13 +108,98 @@ public sealed class IdentityController : Controller
 
 			return this.View(viewModel);
 		}
+
 		await this.signInManager.SignInAsync(user, isPersistent: false);
 
 		return this.RedirectToAction(nameof(HomeController.Index), "Home");
 	}
 
-	public IActionResult Manage()
+	/// <summary>
+	/// Displays the <see cref="Profile"/> view.
+	/// </summary>
+	/// <returns>A form which posts to <see cref="Profile(ProfileViewModel)"/>.</returns>
+	[Authorize]
+	public async Task<IActionResult> Profile()
+	{
+		User? user = await this.signInManager.UserManager.GetUserAsync(this.User);
+
+		if (user is null)
+			return this.Problem();
+
+		ProfileViewModel viewModel = new()
+		{
+			UserName = user.UserName ?? string.Empty,
+			Email = user.Email ?? string.Empty
+		};
+
+		return this.View(viewModel);
+	}
+
+	/// <summary>
+	/// Handles POST from <see cref="Profile"/>.
+	/// </summary>
+	/// <param name="viewModel">Values from the form.</param>
+	/// <returns>Redirected to <see cref="Profile"/>.</returns>
+	[HttpPost]
+	[Authorize]
+	public async ValueTask<IActionResult> Profile(ProfileViewModel viewModel)
+	{
+		if (this.ModelState.IsValid)
+		{
+			User? user = await this.signInManager.UserManager.GetUserAsync(this.User);
+
+			if (user is null)
+				return this.Problem();
+
+			user.UserName = viewModel.UserName;
+			user.Email = viewModel.Email;
+
+			var result = await this.signInManager.UserManager.UpdateAsync(user);
+
+			if (!result.Succeeded)
+				foreach (var error in result.Errors)
+					this.ModelState.AddModelError(string.Empty, error.Description);
+		}
+
+		return this.View(viewModel);
+	}
+
+	/// <summary>
+	/// Displays the <see cref="Security"/> view.
+	/// </summary>
+	/// <returns>A form which POSTs to <see cref="Security"/>.</returns>
+	[Authorize]	
+	public IActionResult Security()
 	{
 		return this.View();
+	}
+
+	/// <summary>
+	/// Handles POST from <see cref="Security"/>.
+	/// </summary>
+	/// <param name="viewModel">Form values.</param>
+	/// <returns>Redirected to <see cref="Security"/>.</returns>
+	[HttpPost]
+	[Authorize]
+	public async ValueTask<IActionResult> Security(SecurityViewModel viewModel)
+	{
+		if (this.ModelState.IsValid)
+		{
+			User? user = await this.signInManager.UserManager.GetUserAsync(this.User);
+
+			if (user is null)
+				return this.Problem();
+
+			var result = await this.signInManager.UserManager.ChangePasswordAsync(
+				user,
+				viewModel.OldPassword,
+				viewModel.NewPassword);
+
+			if (!result.Succeeded)
+				foreach (var error in result.Errors)
+					this.ModelState.AddModelError(string.Empty, error.Description);
+		}
+
+		return this.View(viewModel);
 	}
 }

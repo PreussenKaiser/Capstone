@@ -5,7 +5,6 @@
 
 @{
     this.ViewData["Title"] = "Scheduled Events";
-    this.Layout = "_Layout";
 }
 
 <div>
@@ -18,7 +17,6 @@
         <table class="table table-sm">
             <thead>
                 <tr>
-                    @*<th scope="col">#</th>*@
                     <th scope="col">Name</th>
                     <th scope="col">Start date</th>
                     <th scope="col">End date</th>
@@ -29,7 +27,6 @@
                 @foreach (var scheduledEvent in this.Model)
                 {
                     <tr>
-                        @*<th scope="row">@scheduledEvent.Id</th>*@
                         <td>@scheduledEvent.Name</td>
                         <td>@scheduledEvent.StartDate</td>
                         <td>@scheduledEvent.EndDate</td>
@@ -64,7 +61,7 @@
 <hr />
 <div class="text-center">
     <a asp-controller="Admin" asp-action="Index"
-        class="btn btn-sm btn-dark">
+       class="btn btn-sm btn-dark">
         Back to Dashboard
     </a>
 </div>
