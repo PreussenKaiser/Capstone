@@ -12,7 +12,7 @@ using Scheduler.Infrastructure.Persistence;
 namespace Scheduler.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    [Migration("20230227013116_UserRoleChanges")]
+    [Migration("20230302050809_UserRoleChanges")]
     partial class UserRoleChanges
     {
         /// <inheritdoc />
@@ -122,6 +122,13 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
+                            RoleId = new Guid("cfd242d3-2107-4563-b2a4-15383e683964")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -221,8 +228,8 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("aa7cd557-2f6d-4c4b-92ec-bf06e6ed5d35"),
-                            ConcurrencyStamp = "abb56086-2702-4155-886c-bf22d514812f",
+                            Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
+                            ConcurrencyStamp = "1dd4a233-39ea-4c38-9ff3-b9c09a36dad1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
@@ -302,6 +309,25 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "fec6665b-2b60-4804-8495-75e88c95fd32",
+                            Email = "teamnull@gmail.com",
+                            EmailConfirmed = false,
+                            FirstName = "Team",
+                            LastName = "Null",
+                            LockoutEnabled = false,
+                            NormalizedUserName = "TEAMNULL@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHY489KfvkJimBNsX39Sb+cA/+25BzWWHxHr5paI3PTQg9WAK+vTmxtwDlQnXTclGg==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "fced7ef7-6eed-4f47-b808-89b9619020a8",
+                            TwoFactorEnabled = false,
+                            UserName = "teamnull@gmail.com"
+                        });
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.League", b =>

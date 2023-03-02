@@ -89,7 +89,7 @@ public sealed class IdentityController : Controller
 	/// Displays the <see cref="Register"/> view.
 	/// </summary>
 	/// <returns>The <see cref="Register"/> view.</returns>
-	[Authorize(Roles ="Admin")]
+	[Authorize(Roles = "Admin")]
 	public IActionResult Register()
 		=> this.View();
 
@@ -112,8 +112,8 @@ public sealed class IdentityController : Controller
 		{
 			UserName = viewModel.Credentials.Email,
 			Email = viewModel.Credentials.Email,
-			FirstName = viewModel.Credentials.FirstName,
-			LastName = viewModel.Credentials.LastName
+			FirstName = viewModel.FirstName,
+			LastName = viewModel.LastName
 		};
 
 		IdentityResult result = await this.userManager.CreateAsync(user, viewModel.Credentials.Password);
@@ -152,7 +152,16 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> Update(User user)
 	{
-		await userManager.UpdateAsync(user);
+		var oldUser = await userManager.Users.Where(u => u.Id == user.Id).FirstOrDefaultAsync();
+		if (oldUser is not null)
+		{
+			oldUser.UserName = user.Email;
+			oldUser.Email = user.Email;
+			oldUser.FirstName = user.FirstName;
+			oldUser.LastName = user.LastName;
+
+			await userManager.UpdateAsync(oldUser);
+		}
 
 		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
 	}
