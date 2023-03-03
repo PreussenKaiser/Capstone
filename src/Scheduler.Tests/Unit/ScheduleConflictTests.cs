@@ -1,18 +1,14 @@
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Scheduler.Core.Models;
 using Scheduler.Core.Services;
-using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Utility;
-using Scheduler.Tests.Utility;
 using Xunit;
 
 namespace Scheduler.Tests.Integration;
 
 /// <summary>
-/// Contains tests for <see cref="Event"/> scheduling.
+/// Tests collision detection for scheduled events.
 /// </summary>
-public sealed class EventTests : IClassFixture<SchedulerFactory<Program>>
+public sealed class ScheduleConflictTests
 {
 	/// <summary>
 	/// The service to test scheduling with.
@@ -25,12 +21,12 @@ public sealed class EventTests : IClassFixture<SchedulerFactory<Program>>
 	private readonly Event newEvent;
 
 	/// <summary>
-	/// Initializes the <see cref="EventTests"/> class.
+	/// Initializes the <see cref="ScheduleConflictTests"/> class.
 	/// </summary>
 	/// <param name="factory">The <see cref="WebApplicationFactory{TEntryPoint}"/> to create the mock application with.</param>
-	public EventTests(SchedulerFactory<Program> factory)
+	public ScheduleConflictTests(IScheduleService scheduleService)
 	{
-		this.scheduleService = factory.Services.GetRequiredService<IScheduleService>();
+		this.scheduleService = scheduleService;
 		this.newEvent = new Event()
 		{
 			Id = Guid.Empty,
@@ -40,8 +36,6 @@ public sealed class EventTests : IClassFixture<SchedulerFactory<Program>>
 			EndDate = DateTime.MaxValue,
 			IsRecurring = default
 		};
-
-		factory.Services.SeedDatabase();
 	}
 
 	/// <summary>
