@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="~/Scheduler.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <div id="topNav" class="has-site-logo topNav">
+    <nav id="topNav" class="has-site-logo topNav">
         <div id="sn-site-logo">
             <a class="sn-site-logo-wrap" asp-controller="Home" asp-action="Index">
                 <span class="sn-site-logo-background" style="background-image: url(https://cdn1.sportngin.com/attachments/logo_graphic/f8ca-170838662/2022PCYSlogo_2COLORrednoS-Small_small.png);"></span>
@@ -33,7 +33,7 @@
                 <partial name="_LoginPartial" />
             </ul>
         </div>
-    </div>
+    </nav>
     <div id="topNavPlaceholder" class="page-has-banner"></div>
     <div class="site-banner-wrapper">
         <div class="site-banner-text-wrapper"></div>
@@ -49,6 +49,7 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/NavBar.js"></script>
     @await this.RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
