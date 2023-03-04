@@ -4,19 +4,16 @@ on:
   push:
     branches: [ TN-33 ]
 
-env:
-  DOTNET_VERSION: 7.0.3
-
 jobs:
   publish:
     runs-on: windows-latest
-
     steps:
+
     - uses: actions/checkout@v3
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: 7.0.x
 
     - name: Install dependencies
       run: |
