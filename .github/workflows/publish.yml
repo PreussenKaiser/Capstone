@@ -33,4 +33,4 @@ jobs:
     - name: Deploy
       run: |
         cd src
-        dotnet publish Scheduler.Web /p:${{ secrets.MWO_PUBLISH_PROFILE }}
+        dotnet publish Scheduler.Web /p:PublishProfile=WebDeploy /p:Password=${{ secrets.MWH_PASS }}
