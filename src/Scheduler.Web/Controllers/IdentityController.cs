@@ -96,7 +96,17 @@ public sealed class IdentityController : Controller
 		if (!this.ModelState.IsValid)
 			return this.View(viewModel);
 
+<<<<<<< HEAD
 		User user = new() { UserName = viewModel.Credentials.UserName };
+=======
+		User user = new()
+		{
+			UserName = viewModel.Credentials.Email,
+			Email = viewModel.Credentials.Email,
+			FirstName = viewModel.Credentials.FirstName,
+			LastName = viewModel.Credentials.LastName
+		};
+>>>>>>> origin/TN-61
 
 		IdentityResult result = await this.signInManager.UserManager
 			.CreateAsync(user, viewModel.Credentials.Password);
@@ -108,6 +118,12 @@ public sealed class IdentityController : Controller
 
 			return this.View(viewModel);
 		}
+<<<<<<< HEAD
+=======
+		else if (result.Succeeded && viewModel.IsAdmin) {
+			await userManager.AddToRoleAsync(user, "Admin");
+		}
+>>>>>>> origin/TN-61
 
 		await this.signInManager.SignInAsync(user, isPersistent: false);
 

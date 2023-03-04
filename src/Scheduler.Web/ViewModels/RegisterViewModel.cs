@@ -28,4 +28,6 @@ public sealed record RegisterViewModel
 	[Required(ErrorMessage = "Please confirm your password.")]
 	[Compare(nameof(this.Credentials.Password), ErrorMessage = "The password and confirmation password do not match.")]
 	public string ConfirmPassword { get; init; } = string.Empty;
+
+	public bool IsAdmin { get; init; } = false;
 }
