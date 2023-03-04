@@ -50,3 +50,8 @@ body {
 #logout-button .btn-link:hover {
     color:white !important;
 }
+
+#logout-button .btn:focus {
+    outline:none;
+    box-shadow:none;
+}
