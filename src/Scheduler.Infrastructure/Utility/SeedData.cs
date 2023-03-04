@@ -27,7 +27,9 @@ public static class SeedData
 		new() { Id = Guid.NewGuid(), Name = "Field 3" }
 	};
 
-	//Mock leagues
+	/// <summary>
+	/// Mock leagues.
+	/// </summary>
 	public readonly static IEnumerable<League> Leagues = new List<League>()
 	{
 		new() {Id = Guid.NewGuid(), IsArchived = false, Name = "Recreation"},

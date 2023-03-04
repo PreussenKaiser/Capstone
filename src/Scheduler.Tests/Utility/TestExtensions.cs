@@ -17,17 +17,11 @@ internal static class TestExtensions
 	{
 		var context = services.GetRequiredService<SchedulerContext>();
 
-		if (!context.Users.Any())
-			context.Users.AddRange(SeedData.Users);
-
-		if (!context.Fields.Any())
-			context.Fields.AddRange(SeedData.Fields);
-
-		if (!context.Teams.Any())
-			context.Teams.AddRange(SeedData.Teams);
-
-		if (!context.Events.Any())
-			context.Events.AddRange(SeedData.Events);
+		context.Users.AddRange(SeedData.Users);
+		context.Fields.AddRange(SeedData.Fields);
+		context.Leagues.AddRange(SeedData.Leagues);
+		context.Teams.AddRange(SeedData.Teams);
+		context.Events.AddRange(SeedData.Events);
 
 		context.SaveChanges();
 	}
