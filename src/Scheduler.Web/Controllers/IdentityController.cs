@@ -132,40 +132,83 @@ public sealed class IdentityController : Controller
 		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
 	}
 
+	/// <summary>
+	/// Displays a grid of <see cref="User"/>. View model is used so sensitive data is not sent to view if not necessary./>
+	/// </summary>
+	/// <returns>List of display users.</returns>
 	[HttpGet]
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> ManageUsers()
 	{
-		var users = await userManager.Users.ToListAsync();
+		List<ManageUserViewModel> users = await userManager.Users.Select(user => new ManageUserViewModel
+		{
+			Id = user.Id,
+			Email = user.Email,
+			FirstName = user.FirstName,
+			LastName = user.LastName,
+			IsAdmin = userManager.IsInRoleAsync(user, "Admin").Result
+		}).ToListAsync();
 		return this.View(users);
 	}
 
+	/// <summary>
+	/// Gets the update form containing data from a <see cref="User"/>.
+	/// View model is used to prevent sending sensitive data. Also contains isAdmin, which is used to assign/remove roles, and is not a part of the user class.
+	/// </summary>
+	/// <param name="id">Id of the user to be updated.</param>
+	/// <returns>ViewModel containing the user's data.</returns>
 	[HttpGet]
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> Update(Guid id)
 	{
 		var user = await userManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
-		return this.View(user);
+		bool isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+		var viewModel = new ManageUserViewModel
+		{
+			Id = user.Id,
+			FirstName = user.FirstName,
+			LastName = user.LastName,
+			IsAdmin = isAdmin,
+			Email = user.Email
+		};
+		return this.View(viewModel);
 	}
 
+	/// <summary>
+	/// Updates user based on the data from the <see cref="Update(Guid)"/> form.
+	/// </summary>
+	/// <param name="viewModel">View Model containing user data.</param>
+	/// <returns>A redirect to the <see cref="ManageUsers"/> view</returns>
 	[HttpPost]
 	[Authorize(Roles = "Admin")]
-	public async Task<IActionResult> Update(User user)
+	public async Task<IActionResult> Update(ManageUserViewModel viewModel)
 	{
-		var oldUser = await userManager.Users.Where(u => u.Id == user.Id).FirstOrDefaultAsync();
-		if (oldUser is not null)
+		var user = await userManager.Users.Where(u => u.Id == viewModel.Id).FirstOrDefaultAsync();
+		if (user is not null)
 		{
-			oldUser.UserName = user.Email;
-			oldUser.Email = user.Email;
-			oldUser.FirstName = user.FirstName;
-			oldUser.LastName = user.LastName;
+			user.UserName = user.Email;
+			user.Email = user.Email;
+			user.FirstName = user.FirstName;
+			user.LastName = user.LastName;
 
-			await userManager.UpdateAsync(oldUser);
+			await userManager.UpdateAsync(user);
+
+			bool isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+
+			if (isAdmin && !viewModel.IsAdmin)
+				await userManager.RemoveFromRoleAsync(user, "Admin");
+			else if (!isAdmin && viewModel.IsAdmin)
+				await userManager.AddToRoleAsync(user, "Admin");
 		}
 
 		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
 	}
 
+	/// <summary>
+	/// Deletes a <see cref="User"/> using the id./>
+	/// </summary>
+	/// <param name="id">Id of the user being deleted.</param>
+	/// <returns>A redirect to the <see cref="ManageUsers"/> view.</returns>
 	[HttpPost]
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> Delete(Guid id)
@@ -177,6 +220,6 @@ public sealed class IdentityController : Controller
 			await userManager.DeleteAsync(user);
 		}
 
-		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
+		return this.RedirectToAction(nameof(ManageUsers), "Identity");
 	}
 }

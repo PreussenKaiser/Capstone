@@ -29,14 +29,22 @@ public sealed record RegisterViewModel
 	[Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
 	public string ConfirmPassword { get; init; } = string.Empty;
 
-
+	/// <summary>
+	/// User's first name.
+	/// </summary>
 	[Required(ErrorMessage = "Please enter a first name.")]
 	[MaxLength(32)]
 	public string FirstName { get; init; } = string.Empty;
 
+	/// <summary>
+	/// User's last name.
+	/// </summary>
 	[Required(ErrorMessage = "Please enter a last name.")]
 	[MaxLength(32)]
 	public string LastName { get; init; } = string.Empty;
 
+	/// <summary>
+	/// Indicates whether or not the user is an admin user.
+	/// </summary>
 	public bool IsAdmin { get; init; } = false;
 }

@@ -30,12 +30,12 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("cfd242d3-2107-4563-b2a4-15383e683964"), "1dd4a233-39ea-4c38-9ff3-b9c09a36dad1", "Admin", "Admin" });
+                values: new object[] { new Guid("cfd242d3-2107-4563-b2a4-15383e683964"), "f2dea1c6-5646-4e9f-b4d0-18232668c6a7", "Admin", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"), 0, "fec6665b-2b60-4804-8495-75e88c95fd32", "teamnull@gmail.com", false, "Team", "Null", false, null, null, "TEAMNULL@GMAIL.COM", "AQAAAAIAAYagAAAAEHY489KfvkJimBNsX39Sb+cA/+25BzWWHxHr5paI3PTQg9WAK+vTmxtwDlQnXTclGg==", null, false, "fced7ef7-6eed-4f47-b808-89b9619020a8", false, "teamnull@gmail.com" });
+                values: new object[] { new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"), 0, "1a99a38a-88ff-408e-95b3-f7744eefa4c0", "teamnull@gmail.com", false, "Team", "Null", false, null, null, "TEAMNULL@GMAIL.COM", "AQAAAAIAAYagAAAAEPLI7Moxj2pm1dDKShsW16uHLi+5R3FgcVfC0mXxxwIoNBxVD+bOT2U1YYWsMijUDA==", null, false, "c6ccc3ad-caf4-460d-8aeb-5ab571152e22", false, "teamnull@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",

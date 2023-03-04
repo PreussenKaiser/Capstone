@@ -1,7 +1,7 @@
-﻿@using Scheduler.Core.Models.Identity;
+﻿@using Scheduler.Web.ViewModels;
 @using Scheduler.Web.Controllers;
 
-@model IEnumerable<User>
+@model IEnumerable<ManageUserViewModel>
 
 @{
     this.ViewData["Title"] = "Manage Users";
@@ -22,7 +22,11 @@
                 <td>@user.FirstName</td>
                 <td>@user.LastName</td>
                 <td>@user.Email</td>
-                <td></td>
+                <td>@if (@user.IsAdmin)
+                    {
+                        <span>Yes</span>
+                    }
+                </td>
                 <td>
                     <a asp-action="@nameof(IdentityController.Update)"
                    asp-route-id="@user.Id"

@@ -12,14 +12,14 @@ namespace Scheduler.Core.Models.Identity;
 public sealed class User : IdentityUser<Guid>
 {
 	/// <summary>
-	/// The league's name.
+	/// The users's first name.
 	/// </summary>
 	[Required]
 	[MaxLength(32)]
 	public required string FirstName { get; set; }
 
 	/// <summary>
-	/// The league's name.
+	/// The user's last name.
 	/// </summary>
 	[Required]
 	[MaxLength(32)]
