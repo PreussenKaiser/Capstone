@@ -1,12 +1,25 @@
 ﻿@{
     string currentType = this.ViewData["EventType"] as string ?? "Event";
 
-    string[] eventTypes = new[]
+    string[] eventTypes = new[] {""};
+    @if (User.IsInRole("Admin"))
     {
-        "Event",
-        "Practice",
-        "Game"
-    };
+        eventTypes = new[]
+        {
+            "Event",
+            "Practice",
+            "Game"
+        };
+    }
+    else
+    {
+        eventTypes = new[]
+        {
+            "Practice",
+            "Game"
+        };
+    }
+
 }
 
 <div class="list-group list-group-horizontal">

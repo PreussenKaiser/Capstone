@@ -1,7 +1,8 @@
 ﻿@using Scheduler.Core.Models;
 @using Scheduler.Web.Controllers;
 
-@model IEnumerable<Event>
+@model IEnumerable<Event>;
+
 
 @{
     this.ViewData["Title"] = "Scheduled Events";
@@ -26,7 +27,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var scheduledEvent in this.Model)
+            @if (User.IsInRole("Admin"))
+            {
+                foreach (var scheduledEvent in this.Model)
                 {
                     <tr>
                         @*<th scope="row">@scheduledEvent.Id</th>*@
@@ -35,15 +38,15 @@
                         <td>@scheduledEvent.EndDate</td>
                         <td class="text-end">
                             <a asp-action="@nameof(ScheduleController.Update)"
-                               asp-route-id="@scheduledEvent.Id"
-                               asp-route-type="@scheduledEvent.GetType().Name"
+                       asp-route-id="@scheduledEvent.Id"
+                       asp-route-type="@scheduledEvent.GetType().Name"
                                class="btn btn-sm btn-secondary">
                                 Update
                             </a>
                         </td>
                         <td class="text-start">
                             <form asp-action="@nameof(ScheduleController.Delete)"
-                                  asp-route-id="@scheduledEvent.Id"
+                          asp-route-id="@scheduledEvent.Id"
                                   method="post">
                                 <button class="btn btn-sm btn-danger">
                                     Delete
@@ -52,6 +55,63 @@
                         </td>
                     </tr>
                 }
+            }
+            else
+            {
+                foreach (var scheduledEvent in this.Model.OfType<Game>().ToList())
+                {
+                    <tr>
+                        @*<th scope="row">@scheduledEvent.Id</th>*@
+                        <td>@scheduledEvent.Name</td>
+                        <td>@scheduledEvent.StartDate</td>
+                        <td>@scheduledEvent.EndDate</td>
+                        <td class="text-end">
+                            <a asp-action="@nameof(ScheduleController.Update)"
+                       asp-route-id="@scheduledEvent.Id"
+                       asp-route-type="@scheduledEvent.GetType().Name"
+                               class="btn btn-sm btn-secondary">
+                                Update
+                            </a>
+                        </td>
+                        <td class="text-start">
+                            <form asp-action="@nameof(ScheduleController.Delete)"
+                          asp-route-id="@scheduledEvent.Id"
+                                  method="post">
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                foreach (var scheduledEvent in this.Model.OfType<Practice>().ToList())
+                {
+                    <tr>
+                        @*<th scope="row">@scheduledEvent.Id</th>*@
+                        <td>@scheduledEvent.Name</td>
+                        <td>@scheduledEvent.StartDate</td>
+                        <td>@scheduledEvent.EndDate</td>
+                        <td class="text-end">
+                            <a asp-action="@nameof(ScheduleController.Update)"
+                       asp-route-id="@scheduledEvent.Id"
+                       asp-route-type="@scheduledEvent.GetType().Name"
+                               class="btn btn-sm btn-secondary">
+                                Update
+                            </a>
+                        </td>
+                        <td class="text-start">
+                            <form asp-action="@nameof(ScheduleController.Delete)"
+                          asp-route-id="@scheduledEvent.Id"
+                                  method="post">
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            
             </tbody>
     </table>
     <div>
@@ -63,8 +123,18 @@
 </div>
 <hr />
 <div class="text-center">
-    <a asp-controller="Admin" asp-action="Index"
-        class="btn btn-sm btn-dark">
-        Back to Dashboard
-    </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="Admin" asp-action="Index"
+           class="btn btn-sm btn-dark">
+            Back to Dashboard
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Coach" asp-action="Index"
+           class="btn btn-sm btn-dark">
+            Back to Dashboard
+        </a>
+    }
 </div>
