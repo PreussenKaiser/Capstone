@@ -1,0 +1,40 @@
+name: publish
+
+on:
+  push:
+    branches: [ TN-33 ]
+
+env:
+  DOTNET_VERSION: 7.0.3
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        cd src
+        dotnet restore
+
+    - name: Build
+      run: |
+        cd src
+        dotnet build --configuration Release --no-restore
+        dotnet publish -c Release -o ../dotnet-webapp -r linux-x64 --self-contained true /p:UseAppHost=true
+
+    - name: Test
+      run: |
+        cd src
+        dotnet test --no-restore --verbosity normal
+      
+    - name: Deploy
+      run: |
+        cd src
+        dotnet publish Scheduler.Web /p:${{ secrets.MWO_PUBLISH_PROFILE }}
