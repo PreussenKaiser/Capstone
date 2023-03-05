@@ -2,7 +2,7 @@ name: Test
 
 on:
   push:
-    branches: [dev]
+    branches: [TN-33]
 
 jobs:
   test:

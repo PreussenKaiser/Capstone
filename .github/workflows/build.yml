@@ -3,7 +3,7 @@ name: Build
 on: [push]
 
 jobs:
-  test:
+  build:
     runs-on: windows-latest
     steps:
 
