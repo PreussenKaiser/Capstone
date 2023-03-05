@@ -9,8 +9,7 @@ namespace Scheduler.Infrastructure.Persistence;
 /// <summary>
 /// Handles access to a relational database.
 /// </summary>
-public sealed class SchedulerContext
-	: IdentityDbContext<User, Role, Guid>
+public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 {
 	/// <summary>
 	/// Initializes the <see cref="SchedulerContext"/> class.

@@ -7,9 +7,14 @@ using Scheduler.Infrastructure.Services;
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
 // Configure database
-string? connectionString = builder.Configuration.GetConnectionString("Local");
+#if DEBUG
+const string CONN = "Local";
+#else
+const string CONN = "Hosted";
+#endif
 
-ArgumentNullException.ThrowIfNull(connectionString);
+string connectionString = builder.Configuration.GetConnectionString(CONN)
+	?? throw new ArgumentException("Could not retrieve connection string.");
 
 builder.Services
 	.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
@@ -52,3 +57,8 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
+/// <summary>
+/// Required for Scheduler.Tests to discover the class.
+/// </summary>
+public partial class Program { }

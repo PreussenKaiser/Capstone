@@ -31,13 +31,10 @@ public sealed class EventController : Controller
 	/// <param name="scheduledEvent">POST values.</param>
 	/// <returns>Redirected to <see cref="ScheduleController.Index"/>.</returns>
 	[HttpPost]
-	public async Task<IActionResult> Create(Event scheduledEvent)
+	public async ValueTask<IActionResult> Create(Event scheduledEvent)
 	{
 		if (!this.ModelState.IsValid)
-			return this.RedirectToAction(
-				nameof(ScheduleController.Create),
-				"Schedule",
-				new { type = nameof(Event) });
+			return this.View("~/Views/Schedule/Create.cshtml", scheduledEvent);
 
 		await this.scheduleService.CreateAsync(scheduledEvent);
 
@@ -45,18 +42,15 @@ public sealed class EventController : Controller
 	}
 
 	/// <summary>
-	/// Handles POST request from <see cref="Update(Guid)"/>.
+	/// Handles POST request from <see cref="ScheduleController.Update(Guid)"/>.
 	/// </summary>
 	/// <param name="scheduledEvent">Updated <see cref="Event"/> values.</param>
 	/// <returns>Redirected to <see cref="ScheduleController.Index"/>.</returns>
 	[HttpPost]
-	public async Task<IActionResult> Update(Event scheduledEvent)
+	public async ValueTask<IActionResult> Update(Event scheduledEvent)
 	{
 		if (!this.ModelState.IsValid)
-			return this.RedirectToAction(
-				nameof(ScheduleController.Update),
-				"Schedule",
-				new { type = nameof(Event) });
+			return this.View("~/Views/Schedule/Update.cshtml", scheduledEvent);
 
 		await this.scheduleService.UpdateAsync(scheduledEvent);
 

@@ -1,5 +1,4 @@
-﻿@using Scheduler.Core.Models;
-@using Scheduler.Core.Services;
+﻿@using Scheduler.Core.Services;
 
 @inject ITeamService TeamService
 @model Game
@@ -31,4 +30,5 @@
                     })"
                 class="form-select"></select>
     </div>
+    <span asp-validation-for="OpposingTeamId" class="text-danger"></span>
 </div>

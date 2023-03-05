@@ -34,6 +34,7 @@ public interface IRepository<TModel>
 	/// A <typeparamref name="TModel"/>.
 	/// An error in retrievial should return null.
 	/// </returns>
+	/// <exception cref="ArgumentException"/>
 	Task<TModel> GetAsync(Guid id);
 
 	/// <summary>
@@ -44,12 +45,14 @@ public interface IRepository<TModel>
 	/// The unique identifier of which references the <typeparamref name="TModel"/> to update.
 	/// </param>
 	/// <returns>Whether the task was completed or not.</returns>
+	/// <exception cref="ArgumentException"/>
 	Task UpdateAsync(TModel model);
-	
+
 	/// <summary>
 	/// Deletes a <typeparamref name="TModel"/> from the repository.
 	/// </summary>
 	/// <param name="id">References <typeparamref name="TModel"/> unique identifier.</param>
 	/// <returns>Whether the task was completed or not.</returns>
+	/// <exception cref="ArgumentException"/>
 	Task DeleteAsync(Guid id);
 }

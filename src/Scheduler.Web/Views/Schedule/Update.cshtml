@@ -1,7 +1,5 @@
-﻿@using Scheduler.Core.Models;
-
-@{
-    string eventType = this.ViewData["EventType"] as string ?? "Event";
+﻿@{
+    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
     string pageTitle = $"Reschedule {eventType}";
 
     this.ViewData["Title"] = pageTitle;
@@ -17,6 +15,12 @@
         </h1>
         <hr />
 
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
         @await this.Html.PartialAsync("Forms/_EventInputs")
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

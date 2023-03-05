@@ -1,4 +1,5 @@
-﻿using Scheduler.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Scheduler.Core.Models;
 using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Persistence;
 
@@ -39,11 +40,11 @@ public sealed class FieldService : IFieldService
 	/// Gets all instances of <see cref="Field"/> from the database.
 	/// </summary>
 	/// <returns>A list of fields.</returns>
-	public Task<IEnumerable<Field>> GetAllAsync()
+	public async Task<IEnumerable<Field>> GetAllAsync()
 	{
-		IEnumerable<Field> fields = this.database.Fields;
+		IEnumerable<Field> fields = await this.database.Fields.ToListAsync();
 
-		return Task.FromResult(fields);
+		return fields;
 	}
 
 	/// <summary>
@@ -59,10 +60,9 @@ public sealed class FieldService : IFieldService
 	{
 		Field? field = await this.database.Fields.FindAsync(id);
 
-		if (field is null)
-			throw new ArgumentException($"{id} does not match any Field in the database");
-
-		return field;
+		return field is null
+			? throw new ArgumentException($"{id} does not match any Field in the database")
+			: field;
 	}
 
 	/// <summary>
@@ -70,8 +70,12 @@ public sealed class FieldService : IFieldService
 	/// </summary>
 	/// <param name="model"><see cref="Field"/> values, <see cref="Field.Id"/> referencing the model to update.</param>
 	/// <returns>Whether the task was completed or not.</returns>
+	/// <exception cref="ArgumentException"/>
 	public async Task UpdateAsync(Field model)
 	{
+		if (!this.database.Fields.Contains(model))
+			throw new ArgumentException($"{model.Id} could not be resolved to a Field.");
+
 		this.database.Fields.Update(model);
 
 		await this.database.SaveChangesAsync();
@@ -82,6 +86,7 @@ public sealed class FieldService : IFieldService
 	/// </summary>
 	/// <param name="id">References <see cref="Field.Id"/>.</param>
 	/// <returns>Whether the task was completed or not.</returns>
+	/// <exception cref="ArgumentException"/>
 	public async Task DeleteAsync(Guid id)
 	{
 		Field fieldDelete = await this.GetAsync(id);

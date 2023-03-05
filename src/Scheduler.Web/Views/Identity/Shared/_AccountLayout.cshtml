@@ -1,0 +1,25 @@
+﻿@{
+    this.Layout = "_Layout";
+
+    string[] links = new[] { "Profile", "Security" };
+}
+
+<div class="row">
+    <aside class="col-sm-2">
+        <div class="list-group">
+            @foreach (var link in links)
+            {
+                string activeCssClass = this.ViewContext.RouteData.Values["action"] as string == link
+                    ? "active"
+                    : string.Empty;
+
+                <a asp-action="@link" class="list-group-item list-group-item-action @activeCssClass">
+                    @link
+                </a>
+            }
+        </div>
+    </aside>
+    <div class="col-sm-10">
+        @this.RenderBody()
+    </div>
+</div>

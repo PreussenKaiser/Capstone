@@ -10,10 +10,10 @@ public sealed record Credentials
 	/// <summary>
 	/// The user's email.
 	/// </summary>
-	[Required(ErrorMessage = "Please enter an email address.")]
+	[Display(Name = "Username")]	
+	[Required(ErrorMessage = "Please enter your user.")]
 	[MaxLength(256)]
-	[EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-	public string Email { get; init; } = string.Empty;
+	public string UserName { get; init; } = string.Empty;
 
 	/// <summary>
 	/// The user's password.
