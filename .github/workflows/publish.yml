@@ -1,8 +1,13 @@
-name: publish
+name: Publish
 
 on:
-  push:
-    branches: [ TN-33 ]
+  workflow_run:
+    workflows:
+      - Build
+      - Test
+    types: [completed]
+    branches:
+      - TN-33
 
 jobs:
   publish:
