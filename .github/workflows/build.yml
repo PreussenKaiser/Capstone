@@ -23,4 +23,4 @@ jobs:
       run: dotnet build src --configuration Release --no-restore
 
     - name: Test
-        run: dotnet test src --no-restore
+      run: dotnet test src --no-restore
