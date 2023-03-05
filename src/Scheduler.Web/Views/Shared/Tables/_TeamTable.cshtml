@@ -1,0 +1,60 @@
+﻿@using Scheduler.Core.Models
+@using Scheduler.Web.Controllers
+
+@model IEnumerable<Team>
+
+@{
+    this.ViewData["Title"] = "Teams";
+}
+
+<div>
+    <h2 class="text-center text-danger">
+        @this.ViewData["Title"]
+    </h2>
+</div>
+
+<div class="w-75 m-auto">
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">League</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var team in this.Model)
+                {
+                        <tr>
+                            <td>@team.Name</td>
+                            <td>@team.League.Name</td>
+                            <td>
+                                <a asp-action="@nameof(TeamController.Update)"
+                           asp-controller="@nameof(Team)"
+                           asp-route-id="@team.Id"
+                           class="btn btn-sm btn-secondary me-3">
+                                    Update
+                                </a>
+                            </td>
+                            <td>
+                                <form asp-action="@nameof(FieldController.Delete)"
+                              asp-controller="@nameof(Team)"
+                              asp-route-id="@team.Id"
+                              method="post">
+                                    <button class="btn btn-sm btn-danger">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                }
+            </tbody>
+        </table>
+
+        <a asp-action="@nameof(TeamController.Create)"
+           asp-controller="@nameof(Team)"
+           class="btn btn-sm btn-primary">
+            Create Team
+        </a>
+    </div>
+</div>

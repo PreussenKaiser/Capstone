@@ -13,12 +13,6 @@
         <h1 class="text-center">
             @this.ViewData["Title"]
         </h1>
-
-        <a asp-action="@nameof(TeamController.Create)"
-           asp-controller="@nameof(Team)"
-           class="btn btn-primary">
-            Create Team
-        </a>
     </div>
 </div>
 
@@ -28,7 +22,7 @@
             <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Team</th>
+                    <th scope="col">League</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,5 +53,11 @@
                 }
             </tbody>
         </table>
+
+        <a asp-action="@nameof(TeamController.Create)"
+           asp-controller="@nameof(Team)"
+           class="btn btn-primary btn-sm">
+            Create Team
+        </a>
     </div>
 </div>

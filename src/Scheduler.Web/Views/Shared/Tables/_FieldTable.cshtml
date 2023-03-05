@@ -1,0 +1,56 @@
+﻿@using Scheduler.Core.Models
+@using Scheduler.Web.Controllers
+
+@model IEnumerable<Field>
+
+@{
+    this.ViewData["Title"] = "Fields";
+}
+
+<div>
+    <h2 class="text-center text-danger">
+        @this.ViewData["Title"]
+    </h2>
+</div>
+
+<div class="w-75 m-auto">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                @*<th scope="col">#</th>*@
+                <th scope="col">Name</th>
+                <th scope="col" colspan="2" class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var field in this.Model)
+            {
+                <tr>
+                    @*<th scope="row">@field.Id</th>*@
+                    <td>@field.Name</td>
+                    <td class="text-end">
+                        <a asp-action="@nameof(FieldController.Update)"
+                       asp-route-id="@field.Id"
+                       class="btn btn-sm btn-secondary">Update</a>
+                    </td>
+                    <td class="text-start">
+                        <form asp-action="@nameof(FieldController.Delete)"
+                          asp-route-id="@field.Id"
+                          method="post">
+                            <button type="submit"
+                                class="btn btn-sm btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="text-start">
+        <a asp-action="@nameof(FieldController.Create)" asp-controller="@nameof(Field)"
+           class="btn btn-sm btn-primary">
+            Add New Field
+        </a>
+    </div>
+</div>

@@ -1,0 +1,62 @@
+﻿@using Scheduler.Core.Models;
+@using Scheduler.Web.Controllers;
+
+@model IEnumerable<Event>
+
+@{
+    this.ViewData["Title"] = "Scheduled Events";
+}
+
+<div>
+    <h2 class="text-center text-danger">
+        @this.ViewData["Title"]
+    </h2>
+</div>
+
+<div class="w-75 m-auto">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                @*<th scope="col">#</th>*@
+                <th scope="col">Name</th>
+                <th scope="col">Start date</th>
+                <th scope="col">End date</th>
+                <th scope="col" colspan="2" class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var scheduledEvent in this.Model)
+            {
+                <tr>
+                    @*<th scope="row">@scheduledEvent.Id</th>*@
+                    <td>@scheduledEvent.Name</td>
+                    <td>@scheduledEvent.StartDate</td>
+                    <td>@scheduledEvent.EndDate</td>
+                    <td class="text-end">
+                        <a asp-action="@nameof(ScheduleController.Update)"
+                       asp-route-id="@scheduledEvent.Id"
+                       asp-route-type="@scheduledEvent.GetType().Name"
+                       class="btn btn-sm btn-secondary">
+                            Update
+                        </a>
+                    </td>
+                    <td class="text-start">
+                        <form asp-action="@nameof(ScheduleController.Delete)"
+                          asp-route-id="@scheduledEvent.Id"
+                          method="post">
+                            <button class="btn btn-sm btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        <a asp-action="@nameof(ScheduleController.Create)" asp-controller="Schedule"
+           class="btn btn-sm btn-primary">
+            Schedule
+        </a>
+    </div>
+</div>
