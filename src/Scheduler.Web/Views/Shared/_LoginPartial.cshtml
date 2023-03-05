@@ -6,11 +6,23 @@
 
 @if (this.SignInManager.IsSignedIn(this.User))
 {
+    @if (User.IsInRole("Admin"))
+    {
         <li class="theme-nav-item">
             <a class="theme-nav-link" asp-controller="Admin" asp-action="Index">
                 Dashboard
             </a>
         </li>
+    }
+    else
+    {
+        <li class="theme-nav-item">
+            <a class="theme-nav-link" asp-controller="Coach" asp-action="Index">
+                Dashboard
+            </a>
+        </li>
+    }
+
 
         @*<li class="theme-nav-item">
             <a class="theme-nav-link" asp-controller="Identity" asp-action="Manage">
