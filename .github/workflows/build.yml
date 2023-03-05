@@ -1,6 +1,8 @@
 name: Build
 
-on: [push]
+on:
+  push:
+    branches: [dev]
 
 jobs:
   build:
@@ -15,11 +17,10 @@ jobs:
         dotnet-version: 7.0.x
 
     - name: Install dependencies
-      run: |
-        cd src
-        dotnet restore
+      run: dotnet restore src
 
     - name: Build
-      run: |
-        cd src
-        dotnet build --configuration Release --no-restore
+      run: dotnet build src --configuration Release --no-restore
+
+    - name: Test
+        run: dotnet test src --no-restore
