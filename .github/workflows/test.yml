@@ -10,4 +10,6 @@ jobs:
     steps:
 
     - name: Test
-      run: dotnet test src --no-restore
+      run: |
+        ls
+        dotnet test src --no-restore
