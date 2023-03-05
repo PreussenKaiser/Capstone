@@ -8,8 +8,12 @@ jobs:
   test:
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v3
+  
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
 
-    - name: Test
-      run: |
-        ls
-        dotnet test src --no-restore
+      - name: Test
+        run: dotnet test src --no-restore

@@ -1,13 +1,8 @@
 name: Publish
 
 on:
-  workflow_run:
-    workflows:
-      - Build
-      - Test
-    types: [completed]
-    branches:
-      - TN-33
+  push:
+    branches: [TN-33]
 
 jobs:
   publish:
@@ -15,27 +10,11 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
+  
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
-
-    - name: Install dependencies
-      run: |
-        cd src
-        dotnet restore
-
-    - name: Build
-      run: |
-        cd src
-        dotnet build --configuration Release --no-restore
-
-    - name: Test
-      run: |
-        cd src
-        dotnet test --no-restore --verbosity normal
       
     - name: Deploy
-      run: |
-        cd src
-        dotnet publish Scheduler.Web /p:PublishProfile=WebDeploy /p:Password=${{ secrets.MWH_PASS }}
+      run: dotnet publish src/Scheduler.Web /p:PublishProfile=WebDeploy /p:Password=${{ secrets.MWH_PASS }}
