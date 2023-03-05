@@ -23,7 +23,6 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <param name="signInManager">The API to access <see cref="User"/> login information with.</param>
 	public IdentityController(
-		UserManager<User> userManager,
 		SignInManager<User> signInManager)
 	{
 		this.signInManager = signInManager;
@@ -112,7 +111,7 @@ public sealed class IdentityController : Controller
 
 		string randomPassword = PasswordUtils.GenerateRandomPassword();
 
-		IdentityResult result = await this.userManager.CreateAsync(user, randomPassword);
+		IdentityResult result = await this.signInManager.UserManager.CreateAsync(user, randomPassword);
 
 		if (!result.Succeeded)
 		{
@@ -122,7 +121,7 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 		else if (result.Succeeded && viewModel.IsAdmin)
-			await userManager.AddToRoleAsync(user, "Admin");
+			await signInManager.UserManager.AddToRoleAsync(user, "Admin");
 
 		this.TempData["TempPassword"] = randomPassword;
 		this.TempData["Name"] = $"{user.FirstName} {user.LastName}";
@@ -138,7 +137,7 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> ManageUsers()
 	{
-		var users = await userManager.Users.ToListAsync();
+		var users = await signInManager.UserManager.Users.ToListAsync();
 
 		return this.View(users);
 	}
@@ -153,8 +152,8 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> Update(Guid id)
 	{
-		var user = await userManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
-		bool isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+		var user = await signInManager.UserManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+		bool isAdmin = await signInManager.UserManager.IsInRoleAsync(user, "Admin");
 		var viewModel = new RegisterViewModel
 		{
 			Id = user.Id,
@@ -175,7 +174,7 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> Update(RegisterViewModel viewModel)
 	{
-		var user = await userManager.Users.Where(u => u.Id == viewModel.Id).FirstOrDefaultAsync();
+		var user = await signInManager.UserManager.Users.Where(u => u.Id == viewModel.Id).FirstOrDefaultAsync();
 		if (user is not null)
 		{
 			user.UserName = viewModel.Email;
@@ -183,14 +182,14 @@ public sealed class IdentityController : Controller
 			user.FirstName = viewModel.FirstName;
 			user.LastName = viewModel.LastName;
 
-			await userManager.UpdateAsync(user);
+			await signInManager.UserManager.UpdateAsync(user);
 
-			bool isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+			bool isAdmin = await signInManager.UserManager.IsInRoleAsync(user, "Admin");
 
 			if (isAdmin && !viewModel.IsAdmin)
-				await userManager.RemoveFromRoleAsync(user, "Admin");
+				await signInManager.UserManager.RemoveFromRoleAsync(user, "Admin");
 			else if (!isAdmin && viewModel.IsAdmin)
-				await userManager.AddToRoleAsync(user, "Admin");
+				await signInManager.UserManager.AddToRoleAsync(user, "Admin");
 		}
 
 		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
@@ -205,10 +204,10 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		var user = await userManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+		var user = await signInManager.UserManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
 
 		if (user is not null)
-			await userManager.DeleteAsync(user);
+			await signInManager.UserManager.DeleteAsync(user);
 
 		return this.RedirectToAction(nameof(ManageUsers), "Identity");
 	}

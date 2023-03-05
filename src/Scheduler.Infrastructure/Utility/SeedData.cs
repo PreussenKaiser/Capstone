@@ -14,7 +14,7 @@ public static class SeedData
 	/// </summary>
 	public readonly static IEnumerable<User> Users = new List<User>()
 	{
-		new() { Id = Guid.NewGuid() }
+		new() { Id = Guid.NewGuid(), FirstName = "Test", LastName = "User" }
 	};
 
 	/// <summary>
