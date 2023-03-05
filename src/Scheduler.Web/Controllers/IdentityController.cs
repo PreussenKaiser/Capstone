@@ -186,10 +186,10 @@ public sealed class IdentityController : Controller
 		var user = await userManager.Users.Where(u => u.Id == viewModel.Id).FirstOrDefaultAsync();
 		if (user is not null)
 		{
-			user.UserName = user.Email;
-			user.Email = user.Email;
-			user.FirstName = user.FirstName;
-			user.LastName = user.LastName;
+			user.UserName = viewModel.Email;
+			user.Email = viewModel.Email;
+			user.FirstName = viewModel.FirstName;
+			user.LastName = viewModel.LastName;
 
 			await userManager.UpdateAsync(user);
 

@@ -11,7 +11,8 @@ public static class PasswordUtils
 
 		const int PASSWORD_LENGTH = 8;
 
-		string letters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm";
+		string lowerLetters = "qwertyuiopasdfghjklzxcvbnm";
+		string upperLetters = "QWERTYUIOPASDFGHJKLZXCVBNM";
 		string numbers = "0123456789";
 		string specialCharacters = "!@#$%^&*_";
 
@@ -20,9 +21,10 @@ public static class PasswordUtils
 		builder = builder.Append(GenerateChar(specialCharacters));
 		builder = builder.Append(GenerateChar(numbers));
 		builder = builder.Append(GenerateChar(numbers));
+		builder = builder.Append(GenerateChar(upperLetters));
 		while (builder.Length < PASSWORD_LENGTH)
 		{
-			builder = builder.Append(GenerateChar(letters));
+			builder = builder.Append(GenerateChar(lowerLetters));
 		}
 
 		string randomPassword = builder.ToString();
