@@ -129,51 +129,26 @@ public sealed class IdentityController : Controller
 
 			return this.View(viewModel);
 		}
-		else if (result.Succeeded && viewModel.IsAdmin) {
+		else if (result.Succeeded && viewModel.IsAdmin)
 			await userManager.AddToRoleAsync(user, "Admin");
-		}
 
-		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
+		this.TempData["TempPassword"] = randomPassword;
+		this.TempData["Name"] = $"{user.FirstName} {user.LastName}";
+
+		return this.RedirectToAction(nameof(IdentityController.ConfirmNewUser), "Identity");
 	}
 
 	/// <summary>
-	/// Displays a grid of <see cref="User"/>. View model is used so sensitive data is not sent to view if not necessary./>
+	/// Displays a grid of <see cref="User"/>.
 	/// </summary>
 	/// <returns>List of display users.</returns>
 	[HttpGet]
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> ManageUsers()
 	{
-		var adminUsers = await userManager.GetUsersInRoleAsync("Admin");
-		List<ManageUserViewModel> listUsers = new List<ManageUserViewModel>();
+		var users = await userManager.Users.ToListAsync();
 
-		foreach (User user in adminUsers)
-		{
-			listUsers.Add(new ManageUserViewModel
-			{
-				Id= user.Id,
-				Email = user.Email,
-				FirstName = user.FirstName,
-				LastName = user.LastName,
-				IsAdmin = true
-			});
-		}
-
-		var users = userManager.Users.Where(u => !adminUsers.Contains(u));
-
-		foreach (User user in users)
-		{
-			listUsers.Add(new ManageUserViewModel
-			{
-				Id= user.Id,
-				Email = user.Email,
-				FirstName = user.FirstName,
-				LastName = user.LastName,
-				IsAdmin = false
-			});
-		}
-
-		return this.View(listUsers);
+		return this.View(users);
 	}
 
 	/// <summary>
@@ -188,7 +163,7 @@ public sealed class IdentityController : Controller
 	{
 		var user = await userManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
 		bool isAdmin = await userManager.IsInRoleAsync(user, "Admin");
-		var viewModel = new ManageUserViewModel
+		var viewModel = new RegisterViewModel
 		{
 			Id = user.Id,
 			FirstName = user.FirstName,
@@ -206,7 +181,7 @@ public sealed class IdentityController : Controller
 	/// <returns>A redirect to the <see cref="ManageUsers"/> view</returns>
 	[HttpPost]
 	[Authorize(Roles = "Admin")]
-	public async Task<IActionResult> Update(ManageUserViewModel viewModel)
+	public async Task<IActionResult> Update(RegisterViewModel viewModel)
 	{
 		var user = await userManager.Users.Where(u => u.Id == viewModel.Id).FirstOrDefaultAsync();
 		if (user is not null)
@@ -241,10 +216,22 @@ public sealed class IdentityController : Controller
 		var user = await userManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
 
 		if (user is not null)
-		{
 			await userManager.DeleteAsync(user);
-		}
 
 		return this.RedirectToAction(nameof(ManageUsers), "Identity");
+	}
+
+	/// <summary>
+	/// Confirms the registration of a new user and displays their generated password and their name on screen.
+	/// </summary>
+	/// <returns>Confirmation page with user data.</returns>
+	[HttpGet]
+	[Authorize(Roles = "Admin")]
+	public IActionResult ConfirmNewUser()
+	{
+		if (this.TempData["TempPassword"] == null || this.TempData["Name"] == null)
+			return RedirectToAction(nameof(HomeController.Index), "Home");
+		else
+			return this.View();
 	}
 }

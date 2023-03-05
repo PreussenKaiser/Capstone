@@ -9,6 +9,12 @@ namespace Scheduler.Web.ViewModels;
 /// </summary>
 public sealed record RegisterViewModel
 {
+
+	/// <summary>
+	/// The user's ID.
+	/// </summary>
+	public Guid Id { get; set; }
+
 	/// <summary>
 	/// The user's email.
 	/// </summary>
