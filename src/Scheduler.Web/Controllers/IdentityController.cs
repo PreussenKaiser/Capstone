@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models.Identity;
+using Scheduler.Infrastructure.Utilities;
 using Scheduler.Web.ViewModels;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -28,6 +29,7 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <param name="userManager">Data-access for users.</param>
 	/// <param name="signInManager">The API to access <see cref="User"/> login information with.</param>
+	/// <param name="passwordService">Access to password related methods.</param>
 	public IdentityController(
 		UserManager<User> userManager,
 		SignInManager<User> signInManager)
@@ -110,13 +112,15 @@ public sealed class IdentityController : Controller
 
 		User user = new()
 		{
-			UserName = viewModel.Credentials.Email,
-			Email = viewModel.Credentials.Email,
+			UserName = viewModel.Email,
+			Email = viewModel.Email,
 			FirstName = viewModel.FirstName,
 			LastName = viewModel.LastName
 		};
 
-		IdentityResult result = await this.userManager.CreateAsync(user, viewModel.Credentials.Password);
+		string randomPassword = PasswordUtils.GenerateRandomPassword();
+
+		IdentityResult result = await this.userManager.CreateAsync(user, randomPassword);
 
 		if (!result.Succeeded)
 		{
@@ -140,15 +144,36 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> ManageUsers()
 	{
-		List<ManageUserViewModel> users = await userManager.Users.Select(user => new ManageUserViewModel
+		var adminUsers = await userManager.GetUsersInRoleAsync("Admin");
+		List<ManageUserViewModel> listUsers = new List<ManageUserViewModel>();
+
+		foreach (User user in adminUsers)
 		{
-			Id = user.Id,
-			Email = user.Email,
-			FirstName = user.FirstName,
-			LastName = user.LastName,
-			IsAdmin = userManager.IsInRoleAsync(user, "Admin").Result
-		}).ToListAsync();
-		return this.View(users);
+			listUsers.Add(new ManageUserViewModel
+			{
+				Id= user.Id,
+				Email = user.Email,
+				FirstName = user.FirstName,
+				LastName = user.LastName,
+				IsAdmin = true
+			});
+		}
+
+		var users = userManager.Users.Where(u => !adminUsers.Contains(u));
+
+		foreach (User user in users)
+		{
+			listUsers.Add(new ManageUserViewModel
+			{
+				Id= user.Id,
+				Email = user.Email,
+				FirstName = user.FirstName,
+				LastName = user.LastName,
+				IsAdmin = false
+			});
+		}
+
+		return this.View(listUsers);
 	}
 
 	/// <summary>

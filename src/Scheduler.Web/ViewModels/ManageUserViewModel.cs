@@ -39,5 +39,5 @@ public sealed record ManageUserViewModel
 	/// <summary>
 	/// Indicates hether the user is an admin or not.
 	/// </summary>
-	public bool IsAdmin { get; init; }
+	public bool IsAdmin { get; set; }
 }

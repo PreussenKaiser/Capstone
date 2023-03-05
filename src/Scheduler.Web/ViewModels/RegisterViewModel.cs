@@ -10,24 +10,12 @@ namespace Scheduler.Web.ViewModels;
 public sealed record RegisterViewModel
 {
 	/// <summary>
-	/// User credentials.
+	/// The user's email.
 	/// </summary>
-	public required Credentials Credentials { get; init; }
-
-	/// <summary>
-	/// Used for comparison with <see cref="ConfirmPassword"/>.
-	/// </summary>
-	public string Password
-		=> this.Credentials.Password;
-
-	/// <summary>
-	/// Compared against <see cref="Password"/>.
-	/// </summary>
-	[Required(ErrorMessage = "Please confirm your password.")]
-	[DataType(DataType.Password)]
-	[Display(Name = "Confirm password")]
-	[Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
-	public string ConfirmPassword { get; init; } = string.Empty;
+	[Required(ErrorMessage = "Please enter an email address.")]
+	[MaxLength(256)]
+	[EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+	public string Email { get; init; } = string.Empty;
 
 	/// <summary>
 	/// User's first name.
