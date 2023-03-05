@@ -1,0 +1,10 @@
+﻿<div class="text-center">
+    <p class="lead">@this.TempData["Name"] added successfully</p>
+
+    <p class="lead">Password: <span class="text-danger fw-bold">@this.TempData["TempPassword"]</span></p>
+
+    <a asp-controller="Admin" asp-action="Index"
+       class="btn btn-sm btn-dark">
+        Back to Dashboard
+    </a>
+</div>

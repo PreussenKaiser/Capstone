@@ -9,23 +9,36 @@ namespace Scheduler.Web.ViewModels;
 /// </summary>
 public sealed record RegisterViewModel
 {
-	/// <summary>
-	/// User credentials.
-	/// </summary>
-	public required Credentials Credentials { get; init; }
 
 	/// <summary>
-	/// Used for comparison with <see cref="ConfirmPassword"/>.
+	/// The user's ID.
 	/// </summary>
-	public string Password
-		=> this.Credentials.Password;
+	public Guid Id { get; set; }
 
 	/// <summary>
-	/// Compared against <see cref="Password"/>.
+	/// The user's email.
 	/// </summary>
-	[Display(Name = "Confirm password")]
-	[DataType(DataType.Password)]
-	[Required(ErrorMessage = "Please confirm your password.")]
-	[Compare(nameof(this.Credentials.Password), ErrorMessage = "The password and confirmation password do not match.")]
-	public string ConfirmPassword { get; init; } = string.Empty;
+	[Required(ErrorMessage = "Please enter an email address.")]
+	[MaxLength(256)]
+	[EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+	public string Email { get; init; } = string.Empty;
+
+	/// <summary>
+	/// User's first name.
+	/// </summary>
+	[Required(ErrorMessage = "Please enter a first name.")]
+	[MaxLength(32)]
+	public string FirstName { get; init; } = string.Empty;
+
+	/// <summary>
+	/// User's last name.
+	/// </summary>
+	[Required(ErrorMessage = "Please enter a last name.")]
+	[MaxLength(32)]
+	public string LastName { get; init; } = string.Empty;
+
+	/// <summary>
+	/// Indicates whether or not the user is an admin user.
+	/// </summary>
+	public bool IsAdmin { get; init; } = false;
 }

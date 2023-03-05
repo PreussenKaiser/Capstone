@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Core.Models.Identity;
 
@@ -10,4 +11,17 @@ namespace Scheduler.Core.Models.Identity;
 /// </remarks>
 public sealed class User : IdentityUser<Guid>
 {
+	/// <summary>
+	/// The users's first name.
+	/// </summary>
+	[Required]
+	[MaxLength(32)]
+	public required string FirstName { get; set; }
+
+	/// <summary>
+	/// The user's last name.
+	/// </summary>
+	[Required]
+	[MaxLength(32)]
+	public required string LastName { get; set; }
 }
