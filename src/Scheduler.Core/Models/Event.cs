@@ -1,5 +1,6 @@
 ﻿using Scheduler.Core.Models.Identity;
 using Scheduler.Core.Services;
+using Scheduler.Core.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -86,6 +87,12 @@ public class Event : IValidatableObject
 
 		if (service.HasConflictsAsync(this).Result)
 			results.Add(new("An event is already scheduled for that date."));
+
+		if (this.StartDate < DateTime.Now)
+			results.Add(new("You cannot schedule an Event in the past"));
+
+		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
+		results.Add(new("End Time must be at least 30 minutes after Start Time"));
 
 		return results;
 	}
