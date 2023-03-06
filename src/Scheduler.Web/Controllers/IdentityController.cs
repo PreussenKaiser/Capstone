@@ -72,7 +72,10 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 
-		return this.RedirectToAction(nameof(AdminController.Index), "Admin");
+		if (User.IsInRole("Admin"))
+			return RedirectToAction(nameof(AdminController.Index), "Admin");
+		else
+			return RedirectToAction(nameof(CoachController.Index), "Coach");
 	}
 
 	/// <summary>

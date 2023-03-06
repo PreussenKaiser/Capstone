@@ -12,21 +12,53 @@
     </h1>
 </div>
 
+<!--Top Buttons-->
+<div class="row w-75 text-center m-auto">
+    <div class="col-sm-3 m-auto">
+        <a asp-controller="Field" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage FIELDS
+        </a>
+    </div>
+    <div class="col-sm-3 m-auto">
+        <a asp-controller="Team" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage TEAMS
+        </a>
+    </div>
+    <div class="col-sm-3 m-auto">
+        <a asp-controller="Schedule" asp-action="Index" class="btn btn-sm btn-primary">
+            Manage EVENTS
+        </a>
+    </div>
+    <div class="col-sm-3 m-auto">
+    <a asp-controller="Identity" asp-action="ManageUsers" class="btn btn-sm btn-primary">
+    Manage USERS
+    </a>
+    </div>
+</div>
+
 
 <hr />
 
-@await Html.PartialAsync("~/Views/Shared/Tables/_EventTable.cshtml", Model.Events)
+<div class="mb-3">
+    @await Html.PartialAsync("~/Views/Shared/Tables/_EventTable.cshtml", Model.Events)
+</div>
 
 <hr />
 
-@await Html.PartialAsync("~/Views/Shared/Tables/_FieldTable.cshtml", Model.Fields)
+<div class="mb-3">
+    @await Html.PartialAsync("~/Views/Shared/Tables/_FieldTable.cshtml", Model.Fields)
+</div>
 
 <hr />
 
-@await Html.PartialAsync("~/Views/Shared/Tables/_TeamTable.cshtml", Model.Teams)
+<div class="mb-3">
+    @await Html.PartialAsync("~/Views/Shared/Tables/_TeamTable.cshtml", Model.Teams)
+</div>
 
 <hr />
 
-@await Html.PartialAsync("~/Views/Shared/Tables/_UserTable.cshtml", Model.Users)
+<div class="mb-3">
+    @await Html.PartialAsync("~/Views/Shared/Tables/_UserTable.cshtml", Model.Users)
+</div>
 
 <hr />

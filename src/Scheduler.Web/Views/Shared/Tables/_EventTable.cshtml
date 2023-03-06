@@ -36,6 +36,7 @@
                         <a asp-action="@nameof(ScheduleController.Update)"
                        asp-route-id="@scheduledEvent.Id"
                        asp-route-type="@scheduledEvent.GetType().Name"
+                       asp-controller="Schedule"
                        class="btn btn-sm btn-secondary">
                             Update
                         </a>
@@ -43,6 +44,7 @@
                     <td class="text-start">
                         <form asp-action="@nameof(ScheduleController.Delete)"
                           asp-route-id="@scheduledEvent.Id"
+                          asp-controller="Schedule"
                           method="post">
                             <button class="btn btn-sm btn-danger">
                                 Delete

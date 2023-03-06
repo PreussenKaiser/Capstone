@@ -31,11 +31,13 @@
                     <td class="text-end">
                         <a asp-action="@nameof(FieldController.Update)"
                        asp-route-id="@field.Id"
+                       asp-controller="@nameof(Field)"
                        class="btn btn-sm btn-secondary">Update</a>
                     </td>
                     <td class="text-start">
                         <form asp-action="@nameof(FieldController.Delete)"
                           asp-route-id="@field.Id"
+                          asp-controller="@nameof(Field)"
                           method="post">
                             <button type="submit"
                                 class="btn btn-sm btn-danger">

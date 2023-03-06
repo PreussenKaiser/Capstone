@@ -40,6 +40,7 @@
                 <td>
                     <a asp-action="@nameof(IdentityController.Update)"
                    asp-route-id="@user.Id"
+                   asp-controller="Identity"
                    class="btn btn-sm btn-secondary">Update</a>
                 </td>
                 <td>
@@ -47,6 +48,7 @@
                     {
                         <form asp-action="@nameof(IdentityController.Delete)"
                       asp-route-id="@user.Id"
+                      asp-controller="Identity"
                       method="post">
                             <button type="submit"
                             class="btn btn-sm btn-danger">

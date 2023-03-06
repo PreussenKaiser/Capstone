@@ -60,4 +60,21 @@
             Create Team
         </a>
     </div>
+
+    <div class="text-center">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="Admin" asp-action="Index"
+           class="btn btn-sm btn-dark">
+                Back to Dashboard
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Coach" asp-action="Index"
+           class="btn btn-sm btn-dark">
+                Back to Dashboard
+            </a>
+        }
+    </div>
 </div>
