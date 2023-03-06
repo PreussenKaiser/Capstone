@@ -42,24 +42,24 @@
                 <td>@user.FirstName</td>
                 <td>@user.LastName</td>
                 <td>@user.Email</td>
-                <td>@if (userManager.IsInRoleAsync(user, "Admin").Result == true)
+                <td>@if (userManager.IsInRoleAsync(user, Role.ADMIN).Result == true)
                     {
                         <span>Yes</span>
                     }
                 </td>
                 <td class="text-end">
-                    <a asp-action="@nameof(IdentityController.Update)"
-                   asp-route-id="@user.Id"
-                   class="btn btn-sm btn-secondary">Update</a>
+                    <a asp-action="@nameof(IdentityController.Profile)"
+                       asp-route-id="@user.Id"
+                       class="btn btn-sm btn-secondary">Update</a>
                 </td>
                 <td class="text-start">
                     @if (userManager.GetUserAsync(User).Result?.Id != user.Id)
                     {
                        <form asp-action="@nameof(IdentityController.Delete)"
-                       asp-route-id="@user.Id"
-                       method="post">
+                             asp-route-id="@user.Id"
+                             method="post">
                             <button type="submit"
-                                class="btn btn-sm btn-danger">
+                                    class="btn btn-sm btn-danger">
 
                                 Delete
                             </button>

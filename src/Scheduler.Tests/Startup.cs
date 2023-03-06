@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Services;
+using Scheduler.Infrastructure.Utility;
 using Scheduler.Tests.Utility;
 
 namespace Scheduler.Tests;
@@ -13,14 +14,13 @@ namespace Scheduler.Tests;
 public sealed class Startup
 {
 	/// <summary>
-	/// Configures DI for test.
+	/// Configures DI for tests.
 	/// </summary>
 	/// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
-	public void ConfigureServices(IServiceCollection services)
+	public static void ConfigureServices(IServiceCollection services)
 	{
 		services
-			.AddDbContext<SchedulerContext>(o => o.UseInMemoryDatabase(nameof(Scheduler)))
-			.AddScoped<IScheduleService, ScheduleService>()
+			.UseInMemory()
 			.BuildServiceProvider()
 			.SeedDatabase();
 	}

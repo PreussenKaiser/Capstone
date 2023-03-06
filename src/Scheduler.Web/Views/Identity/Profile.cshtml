@@ -1,16 +1,29 @@
 ﻿@model ProfileViewModel
 
 @{
+    this.ViewData["Title"] = "Update Profile";
     this.Layout = "Shared/_AccountLayout.cshtml";
 }
 
 <form asp-action="Profile">
+    <h1 class="text-center text-danger">
+        @this.ViewData["Title"]
+    </h1>
+    <hr />
+
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="mb-3">
-        <label asp-for="UserName" class="form-label"></label>
-        <input asp-for="UserName" class="form-control" />
-        <span asp-validation-for="UserName" class="text-danger"></span>
+    <div class="row mb-3">
+        <div class="col-sm-6">
+            <label asp-for="FirstName" class="form-label"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="col-sm-6">
+            <label asp-for="LastName" class="form-label"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
     </div>
 
     <div class="mb-3">

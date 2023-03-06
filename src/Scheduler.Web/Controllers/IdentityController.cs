@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models.Identity;
-using Scheduler.Infrastructure.Utilities;
+using Scheduler.Core.Security;
 using Scheduler.Web.ViewModels;
 
 namespace Scheduler.Web.Controllers;
@@ -22,8 +22,7 @@ public sealed class IdentityController : Controller
 	/// Initializes the <see cref="IdentityController"/> class.
 	/// </summary>
 	/// <param name="signInManager">The API to access <see cref="User"/> login information with.</param>
-	public IdentityController(
-		SignInManager<User> signInManager)
+	public IdentityController(SignInManager<User> signInManager)
 	{
 		this.signInManager = signInManager;
 	}
@@ -50,8 +49,8 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 
 		var result = await this.signInManager.PasswordSignInAsync(
-			viewModel.Credentials.UserName,
-			viewModel.Credentials.Password,
+			viewModel.Email,
+			viewModel.Password,
 			viewModel.RememberMe,
 			lockoutOnFailure: false);
 			
@@ -100,7 +99,7 @@ public sealed class IdentityController : Controller
 	{
 		if (!this.ModelState.IsValid)
 			return this.View(viewModel);
-      
+	  
 		User user = new()
 		{
 			UserName = viewModel.Email,
@@ -109,8 +108,7 @@ public sealed class IdentityController : Controller
 			LastName = viewModel.LastName
 		};
 
-		string randomPassword = PasswordUtils.GenerateRandomPassword();
-
+		string randomPassword = Password.Random();
 		IdentityResult result = await this.signInManager.UserManager.CreateAsync(user, randomPassword);
 
 		if (!result.Succeeded)
@@ -121,7 +119,7 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 		else if (result.Succeeded && viewModel.IsAdmin)
-			await signInManager.UserManager.AddToRoleAsync(user, "Admin");
+			await this.signInManager.UserManager.AddToRoleAsync(user, "Admin");
 
 		this.TempData["TempPassword"] = randomPassword;
 		this.TempData["Name"] = $"{user.FirstName} {user.LastName}";
@@ -137,62 +135,9 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> ManageUsers()
 	{
-		var users = await signInManager.UserManager.Users.ToListAsync();
+		var users = await this.signInManager.UserManager.Users.ToListAsync();
 
 		return this.View(users);
-	}
-
-	/// <summary>
-	/// Gets the update form containing data from a <see cref="User"/>.
-	/// View model is used to prevent sending sensitive data. Also contains isAdmin, which is used to assign/remove roles, and is not a part of the user class.
-	/// </summary>
-	/// <param name="id">Id of the user to be updated.</param>
-	/// <returns>ViewModel containing the user's data.</returns>
-	[HttpGet]
-	[Authorize(Roles = "Admin")]
-	public async Task<IActionResult> Update(Guid id)
-	{
-		var user = await signInManager.UserManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
-		bool isAdmin = await signInManager.UserManager.IsInRoleAsync(user, "Admin");
-		var viewModel = new RegisterViewModel
-		{
-			Id = user.Id,
-			FirstName = user.FirstName,
-			LastName = user.LastName,
-			IsAdmin = isAdmin,
-			Email = user.Email
-		};
-		return this.View(viewModel);
-	}
-
-	/// <summary>
-	/// Updates user based on the data from the <see cref="Update(Guid)"/> form.
-	/// </summary>
-	/// <param name="viewModel">View Model containing user data.</param>
-	/// <returns>A redirect to the <see cref="ManageUsers"/> view</returns>
-	[HttpPost]
-	[Authorize(Roles = "Admin")]
-	public async Task<IActionResult> Update(RegisterViewModel viewModel)
-	{
-		var user = await signInManager.UserManager.Users.Where(u => u.Id == viewModel.Id).FirstOrDefaultAsync();
-		if (user is not null)
-		{
-			user.UserName = viewModel.Email;
-			user.Email = viewModel.Email;
-			user.FirstName = viewModel.FirstName;
-			user.LastName = viewModel.LastName;
-
-			await signInManager.UserManager.UpdateAsync(user);
-
-			bool isAdmin = await signInManager.UserManager.IsInRoleAsync(user, "Admin");
-
-			if (isAdmin && !viewModel.IsAdmin)
-				await signInManager.UserManager.RemoveFromRoleAsync(user, "Admin");
-			else if (!isAdmin && viewModel.IsAdmin)
-				await signInManager.UserManager.AddToRoleAsync(user, "Admin");
-		}
-
-		return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
 	}
 
 	/// <summary>
@@ -201,13 +146,13 @@ public sealed class IdentityController : Controller
 	/// <param name="id">Id of the user being deleted.</param>
 	/// <returns>A redirect to the <see cref="ManageUsers"/> view.</returns>
 	[HttpPost]
-	[Authorize(Roles = "Admin")]
+	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		var user = await signInManager.UserManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+		var user = await this.signInManager.UserManager.FindByIdAsync(id.ToString());
 
 		if (user is not null)
-			await signInManager.UserManager.DeleteAsync(user);
+			await this.signInManager.UserManager.DeleteAsync(user);
 
 		return this.RedirectToAction(nameof(ManageUsers), "Identity");
 	}
@@ -216,12 +161,11 @@ public sealed class IdentityController : Controller
 	/// Confirms the registration of a new user and displays their generated password and their name on screen.
 	/// </summary>
 	/// <returns>Confirmation page with user data.</returns>
-	[HttpGet]
 	[Authorize(Roles = "Admin")]
 	public IActionResult ConfirmNewUser()
 	{
 		if (this.TempData["TempPassword"] == null || this.TempData["Name"] == null)
-			return RedirectToAction(nameof(HomeController.Index), "Home");
+			return this.RedirectToAction(nameof(HomeController.Index), "Home");
 		else
 			return this.View();
 	}
@@ -229,18 +173,22 @@ public sealed class IdentityController : Controller
 	/// <summary>
 	/// Displays the <see cref="Profile"/> view.
 	/// </summary>
+	/// <param name="id">The user to view the profile of.</param>
 	/// <returns>A form which posts to <see cref="Profile(ProfileViewModel)"/>.</returns>
 	[Authorize]
-	public async Task<IActionResult> Profile()
+	public async Task<IActionResult> Profile(Guid? id = null)
 	{
-		User? user = await this.signInManager.UserManager.GetUserAsync(this.User);
+		User? user = id is null
+			? await this.signInManager.UserManager.GetUserAsync(this.User)
+			: await this.signInManager.UserManager.FindByIdAsync(id.ToString()!);
 
 		if (user is null)
 			return this.Problem();
 
 		ProfileViewModel viewModel = new()
 		{
-			UserName = user.UserName ?? string.Empty,
+			FirstName = user.FirstName,
+			LastName = user.LastName,
 			Email = user.Email ?? string.Empty
 		};
 
@@ -263,8 +211,17 @@ public sealed class IdentityController : Controller
 			if (user is null)
 				return this.Problem();
 
-			user.UserName = viewModel.UserName;
+			user.FirstName = viewModel.FirstName;
+			user.LastName = viewModel.LastName;
+			user.UserName = viewModel.Email;
 			user.Email = viewModel.Email;
+
+			bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, "Admin");
+
+			if (isAdmin && !viewModel.IsAdmin)
+				await this.signInManager.UserManager.RemoveFromRoleAsync(user, "Admin");
+			else if (!isAdmin && viewModel.IsAdmin)
+				await this.signInManager.UserManager.AddToRoleAsync(user, "Admin");
 
 			var result = await this.signInManager.UserManager.UpdateAsync(user);
 
@@ -280,7 +237,7 @@ public sealed class IdentityController : Controller
 	/// Displays the <see cref="Security"/> view.
 	/// </summary>
 	/// <returns>A form which POSTs to <see cref="Security"/>.</returns>
-	[Authorize]	
+	[Authorize]
 	public IActionResult Security()
 	{
 		return this.View();
