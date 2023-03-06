@@ -1,4 +1,12 @@
-﻿@using Scheduler.Web.Controllers
+﻿@using Scheduler.Web.Controllers;
+@using Scheduler.Core.Models;
+@using Scheduler.Core.Services;
+@using System.Security.Claims;
+
+@inject ITeamService teamService;
+@inject IFieldService fieldService;
+@model IEnumerable<Event>;
+
 @{
     ViewData["Title"] = "Coach Dashboard";
 }
@@ -24,20 +32,62 @@
 </div>
 <div class="col-sm-6">
     <div class="container mb-2">
-        <div class="row mb-1">
-            <div class="col-6" mx-auto>
-                <h3 class="text-center text-danger">Upcoming Events</h3>
-            </div>
+        <div>
+            <h3>Current Scheduled Events</h3>
         </div>
         <div class="row mb-1">
-            <div class="col-sm-8 mb-2">
-                <input class="w-100 form-control" />
+            <div class="col-sm-7 mb-2">
+                <!--<input class="w-100 form-control" />-->
             </div>
         </div>
         <div class="row">
             <div class="col-12 border border-2 w-100 searchContainer">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Home Team</th>
+                            <th scope="col">Opposing Team</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var game in this.Model.OfType<Game>())
+                        {
+                            if (game.UserId.ToString() == this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value)
+                            {
+                                <tr>
+                                    <td>@teamService.GetAsync(game.HomeTeamId).Result.Name</td>
+                                    <td>@teamService.GetAsync(game.OpposingTeamId).Result.Name</td>
+                                    <td>@game.StartDate</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
+    <div class="col-12 border border-2 w-100 searchContainer">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Team</th>
+                    <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var game in this.Model.OfType<Practice>())
+                {
+                    if (game.UserId.ToString() == this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value && game != null)
+                    {
+                        <tr>
+                            <td>@teamService.GetAsync(game.TeamId).Result.Name</td>
+                            <td>@game.StartDate</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
