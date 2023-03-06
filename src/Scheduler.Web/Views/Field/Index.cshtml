@@ -4,7 +4,7 @@
 @model IEnumerable<Field>
 
 @{
-    this.ViewData["Title"] = "Fields";
+    this.ViewData["Title"] = "Manage Fields";
 }
 
 <div>
@@ -12,13 +12,21 @@
         @this.ViewData["Title"]
     </h1>
 </div>
+<hr />
 
 <div class="w-75 m-auto">
+    <div class="text-start">
+        <a asp-action="@nameof(FieldController.Create)"
+           class="btn btn-sm btn-primary">
+            Add New Field
+        </a>
+    </div>
+    <hr />
         <table class="table table-sm">
             <thead>
                 <tr>
                     @*<th scope="col">#</th>*@
-                    <th scope="col">Name</th>
+                    <th scope="col">Field Name</th>
                     <th scope="col" colspan="2" class="text-center">Actions</th>
                 </tr>
             </thead>
@@ -45,12 +53,6 @@
             }
             </tbody>
     </table>
-    <div class="text-start">
-        <a asp-action="@nameof(FieldController.Create)"
-           class="btn btn-sm btn-primary">
-            Add New Field
-        </a>
-    </div>
 </div>
 <hr />
 <div class="text-center">

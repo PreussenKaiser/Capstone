@@ -5,7 +5,7 @@
 
 
 @{
-    this.ViewData["Title"] = "Scheduled Events";
+    this.ViewData["Title"] = "Manage Scheduled Events";
 }
 
 <div>
@@ -13,8 +13,15 @@
         @this.ViewData["Title"]
     </h1>
 </div>
-
+<hr />
 <div class="w-75 m-auto">
+    <div>
+        <a asp-action="@nameof(ScheduleController.Create)"
+           class="btn btn-sm btn-primary">
+            Schedule New Event
+        </a>
+    </div>
+    <hr />
         <table class="table table-sm">
             <thead>
                 <tr>
@@ -107,16 +114,9 @@
                         </td>
                     </tr>
                 }
-            }
-            
-            </tbody>
+            }            
+        </tbody>
     </table>
-    <div>
-        <a asp-action="@nameof(ScheduleController.Create)"
-           class="btn btn-sm btn-primary">
-            Schedule
-        </a>
-    </div>
 </div>
 <hr />
 <div class="text-center">

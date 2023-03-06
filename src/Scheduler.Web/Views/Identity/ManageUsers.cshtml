@@ -10,15 +10,32 @@
     this.ViewData["Title"] = "Manage Users";
 }
 
+<div>
+    <h1 class="text-center text-danger">
+        @this.ViewData["Title"]
+    </h1>
+</div>
+<hr />
+
 <div class="w-75 m-auto">
+    <div class="text-start">
+        <a asp-action="@nameof(IdentityController.Register)"
+           class="btn btn-sm btn-primary">
+            Add New User
+        </a>
+    </div>
+    <hr />
     <table class="table table-sm">
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Is Admin</th>
-            <th scope="col" colspan="2" class="text-center">Actions</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Is Admin</th>
+                <th scope="col" colspan="2" class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
         @foreach (var user in this.Model)
         {
             <tr>
@@ -30,12 +47,12 @@
                         <span>Yes</span>
                     }
                 </td>
-                <td>
+                <td class="text-end">
                     <a asp-action="@nameof(IdentityController.Update)"
                    asp-route-id="@user.Id"
                    class="btn btn-sm btn-secondary">Update</a>
                 </td>
-                <td>
+                <td class="text-start">
                     @if (userManager.GetUserAsync(User).Result?.Id != user.Id)
                     {
                        <form asp-action="@nameof(IdentityController.Delete)"
@@ -50,18 +67,14 @@
                     }
                 </td>
             </tr>
-        }
+            }
+        </tbody>
     </table>
-    <div class="text-start">
-        <a asp-action="@nameof(IdentityController.Register)"
-           class="btn btn-sm btn-primary">
-            Add New User
-        </a>
-    </div>
-    <div class="text-center">
-        <a asp-controller="Admin" asp-action="Index"
-           class="btn btn-sm btn-dark">
-            Back to Dashboard
-        </a>
-    </div>
+</div>
+<hr />
+<div class="text-center">
+    <a asp-controller="Admin" asp-action="Index"
+       class="btn btn-sm btn-dark">
+        Back to Dashboard
+    </a>
 </div>
