@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models.Identity;
 using Scheduler.Core.Services;

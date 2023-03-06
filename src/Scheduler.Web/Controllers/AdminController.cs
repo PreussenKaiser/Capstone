@@ -7,11 +7,18 @@ namespace Scheduler.Web.Controllers;
 public sealed class AdminController : Controller
 {
 	/// <summary>
-	/// Displays the Admin Dashboard view.
+	/// Checks the role, then either displays the Admin Dashboard view or redirects to the Coach Dashboard.
 	/// </summary>
 	/// <returns>A dashboard where admins can manage fields, teams, events, etc.</returns>
 	public IActionResult Index()
 	{
-		return View();
+		if (User.IsInRole("Admin"))
+		{
+			return View();
+		}
+		else
+		{
+			return this.RedirectToAction(nameof(CoachController.Index), "Coach");
+		}
 	}
 }
