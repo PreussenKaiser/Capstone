@@ -1,5 +1,9 @@
 ﻿@using Scheduler.Core.Services;
 
+@{
+    string eventType = this.ViewData["EventType"] as string ?? "Game";
+}
+
 @inject ITeamService TeamService
 @model Game
 

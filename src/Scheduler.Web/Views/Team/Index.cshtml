@@ -44,16 +44,20 @@
                                 Update
                             </a>
                         </td>
-                        <td>
-                            <form asp-action="@nameof(FieldController.Delete)"
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <td>
+                                <form asp-action="@nameof(FieldController.Delete)"
                               asp-controller="@nameof(Team)"
                               asp-route-id="@team.Id"
-                              method="post">
-                                <button class="btn btn-sm btn-danger">
-                                    Delete
-                                </button>
-                            </form>
-                        </td>
+                                      method="post">
+                                    <button class="btn btn-sm btn-danger">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        }
+                        
                     </tr>
                 }
             </tbody>
