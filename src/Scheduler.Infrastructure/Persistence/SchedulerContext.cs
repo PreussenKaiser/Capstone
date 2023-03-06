@@ -73,7 +73,7 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 			LastName = "Null",
 			Email = "teamnull@gmail.com",
 
-			PasswordHash = hasher.HashPassword(null, "T3am-Null-Rul3z"),
+			PasswordHash = hasher.HashPassword(null!, "T3am-Null-Rul3z"),
 			SecurityStamp = Guid.NewGuid().ToString("D")
 		});
 
