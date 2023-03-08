@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
+using Scheduler.Core.Models.Identity;
 using Scheduler.Core.Services;
 
 namespace Scheduler.Web.Controllers;
@@ -8,7 +9,7 @@ namespace Scheduler.Web.Controllers;
 /// <summary>
 /// Renders views which display <see cref="Field"/> data.
 /// </summary>
-[Authorize]
+[Authorize(Roles = Role.ADMIN)]
 public sealed class FieldController : Controller
 {
 	/// <summary>
@@ -26,25 +27,11 @@ public sealed class FieldController : Controller
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Index"/> view.
-	/// </summary>
-	/// <returns>A view containing a list of fields as well as actions.</returns>
-	[AllowAnonymous]
-	public async Task<IActionResult> Index()
-	{
-		IEnumerable<Field> fields = await this.fieldService.GetAllAsync();
-
-		return this.View(fields);
-	}
-
-	/// <summary>
 	/// Displays the <see cref="Create"/> view.
 	/// </summary>
 	/// <returns>A form which POSTs to <see cref="Create(Field)"/>.</returns>
 	public IActionResult Create()
-	{
-		return this.View();
-	}
+		=> this.View();
 
 	/// <summary>
 	/// Handles POST from <see cref="Create"/>.
@@ -56,7 +43,7 @@ public sealed class FieldController : Controller
 	{
 		await this.fieldService.CreateAsync(field);
 
-		return this.RedirectToAction(nameof(this.Index));
+		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
 
 	/// <summary>
@@ -81,7 +68,7 @@ public sealed class FieldController : Controller
 	{
 		await this.fieldService.UpdateAsync(field);
 
-		return this.RedirectToAction(nameof(this.Index));
+		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
 
 	/// <summary>
@@ -94,6 +81,6 @@ public sealed class FieldController : Controller
 	{
 		await this.fieldService.DeleteAsync(id);
 
-		return this.RedirectToAction(nameof(this.Index));
+		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
 }

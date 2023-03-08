@@ -47,7 +47,34 @@ public sealed class ScheduleService : IScheduleService
 	/// <returns>A list of events.</returns>
 	public async Task<IEnumerable<Event>> GetAllAsync()
 	{
-		IEnumerable<Event> events = await this.database.Events.ToListAsync();
+		IEnumerable<Event> events = await this.database.Events
+			.Include(e => e.Fields)
+			.ToListAsync();
+
+		return events;
+	}
+
+	/// <inheritdoc/>
+	public async Task<IEnumerable<TEvent>> GetAllAsync<TEvent>()
+		where TEvent : Event
+	{
+		IEnumerable<TEvent> events = await this.database
+			.Set<TEvent>()
+			.Include(e => e.Fields)
+			.ToListAsync();
+
+		return events;
+	}
+
+	/// <inheritdoc/>
+	public async Task<IEnumerable<TEvent>> GetAllAsync<TEvent>(Guid userId)
+		where TEvent : Event
+	{
+		IEnumerable<TEvent> events = await this.database
+			.Set<TEvent>()
+			.Include(e => e.Fields)
+			.Where(e => e.UserId == userId)
+			.ToListAsync();
 
 		return events;
 	}
@@ -106,7 +133,7 @@ public sealed class ScheduleService : IScheduleService
 
 		model.Fields = await this.database.Fields
 			.Where(f => model.FieldIds.Contains(f.Id))
-			.ToListAsync(); ;
+			.ToListAsync();
 
 		this.database.Events.Update(model);
 

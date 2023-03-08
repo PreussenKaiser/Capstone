@@ -1,10 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Scheduler.Core.Services;
-using Scheduler.Infrastructure.Persistence;
-using Scheduler.Infrastructure.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Scheduler.Infrastructure.Utility;
-using Scheduler.Tests.Utility;
 
 namespace Scheduler.Tests;
 

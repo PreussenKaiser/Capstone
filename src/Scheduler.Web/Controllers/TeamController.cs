@@ -26,17 +26,6 @@ public sealed class TeamController : Controller
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Index"/> view.
-	/// </summary>
-	/// <returns>A list of all instances of <see cref="Team"/>.</returns>
-	public async Task<IActionResult> Index()
-	{
-		IEnumerable<Team> teams = await this.teamService.GetAllAsync();
-
-		return this.View(teams);
-	}
-
-	/// <summary>
 	/// Displays the <see cref="Create"/> view.
 	/// </summary>
 	/// <returns>A form that posts to <see cref="Create(Team)"/></returns>
@@ -67,7 +56,7 @@ public sealed class TeamController : Controller
 	{
 		await this.teamService.CreateAsync(createTeam);
 
-		return this.RedirectToAction(nameof(TeamController.Index));
+		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
 
 	/// <summary>
@@ -80,7 +69,7 @@ public sealed class TeamController : Controller
 	{
 		await this.teamService.UpdateAsync(updateTeam);
 
-		return this.RedirectToAction(nameof(TeamController.Index));
+		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
 
 	/// <summary>
@@ -93,6 +82,6 @@ public sealed class TeamController : Controller
 	{
 		await this.teamService.DeleteAsync(id);
 
-		return this.RedirectToAction(nameof(TeamController.Index));
+		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
 }

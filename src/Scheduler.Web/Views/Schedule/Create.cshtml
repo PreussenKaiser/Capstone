@@ -6,11 +6,9 @@
 }
 
 <div class="row">
-    <form id="EventForm"
-          action="../@eventType/Create"
+    <form asp-action="Create@(eventType)"
           method="post"
-          class="col-12"
-          autocomplete="off">
+          class="col-12">
 
         <div class="row mb-3">
             <h1 class="text-center text-danger">

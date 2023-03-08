@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models.Identity;
 using Scheduler.Core.Security;
 using Scheduler.Web.ViewModels;
@@ -61,7 +60,7 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 
-			return this.RedirectToAction(nameof(AdminController.Index), "Admin");
+		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
 
 	/// <summary>
@@ -81,7 +80,7 @@ public sealed class IdentityController : Controller
 	/// Displays the <see cref="Register"/> view.
 	/// </summary>
 	/// <returns>The <see cref="Register"/> view.</returns>
-	[Authorize(Roles = "Admin")]
+	[Authorize(Roles = Role.ADMIN)]
 	public IActionResult Register()
 		=> this.View();
 
@@ -94,7 +93,7 @@ public sealed class IdentityController : Controller
 	/// Otherwise, redirected to <see cref="Register"/>.
 	/// </returns>
 	[HttpPost]
-	[Authorize(Roles = "Admin")]
+	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> Register(RegisterViewModel viewModel)
 	{
 		if (!this.ModelState.IsValid)
@@ -128,19 +127,6 @@ public sealed class IdentityController : Controller
 	}
 
 	/// <summary>
-	/// Displays a grid of <see cref="User"/>.
-	/// </summary>
-	/// <returns>List of display users.</returns>
-	[HttpGet]
-	[Authorize(Roles = "Admin")]
-	public async Task<IActionResult> ManageUsers()
-	{
-		var users = await this.signInManager.UserManager.Users.ToListAsync();
-
-		return this.View(users);
-	}
-
-	/// <summary>
 	/// Deletes a <see cref="User"/> using the id./>
 	/// </summary>
 	/// <param name="id">Id of the user being deleted.</param>
@@ -154,14 +140,14 @@ public sealed class IdentityController : Controller
 		if (user is not null)
 			await this.signInManager.UserManager.DeleteAsync(user);
 
-		return this.RedirectToAction(nameof(ManageUsers), "Identity");
+		return this.RedirectToAction(nameof(DashboardController.Users), "Dashboard");
 	}
 
 	/// <summary>
 	/// Confirms the registration of a new user and displays their generated password and their name on screen.
 	/// </summary>
 	/// <returns>Confirmation page with user data.</returns>
-	[Authorize(Roles = "Admin")]
+	[Authorize(Roles = Role.ADMIN)]
 	public IActionResult ConfirmNewUser()
 	{
 		if (this.TempData["TempPassword"] == null || this.TempData["Name"] == null)
@@ -236,10 +222,18 @@ public sealed class IdentityController : Controller
 	/// <summary>
 	/// Displays the <see cref="Security"/> view.
 	/// </summary>
+	/// <param name="id">The identifier of the user to adjust security settings for.</param>
 	/// <returns>A form which POSTs to <see cref="Security"/>.</returns>
 	[Authorize]
-	public IActionResult Security()
+	public async Task<IActionResult> Security(Guid? id = null)
 	{
+		User? user = id is null
+			? await this.signInManager.UserManager.GetUserAsync(this.User)
+			: await this.signInManager.UserManager.FindByIdAsync(id.ToString()!);
+
+		if (user is null)
+			return this.Problem();
+
 		return this.View();
 	}
 

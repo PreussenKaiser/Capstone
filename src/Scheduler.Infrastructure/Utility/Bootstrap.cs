@@ -39,6 +39,23 @@ public static class Bootstrap
 			.ConfigureServices();
 
 	/// <summary>
+	/// Seeds <see cref="SchedulerContext"/>.
+	/// </summary>
+	/// <returns>The configured <see cref="IServiceCollection"/>.</returns>
+	public static void SeedDatabase(this IServiceProvider services)
+	{
+		var context = services.GetRequiredService<SchedulerContext>();
+
+		context.Users.AddRange(SeedData.Users);
+		context.Fields.AddRange(SeedData.Fields);
+		context.Leagues.AddRange(SeedData.Leagues);
+		context.Teams.AddRange(SeedData.Teams);
+		context.Events.AddRange(SeedData.Events);
+
+		context.SaveChanges();
+	}
+
+	/// <summary>
 	/// Initializes services.
 	/// </summary>
 	/// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>

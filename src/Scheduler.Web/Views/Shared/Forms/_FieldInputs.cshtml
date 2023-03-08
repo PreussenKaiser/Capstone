@@ -10,7 +10,9 @@
 
 <div class="row mb-3">
     <div class="col-6">
-        <a asp-action="@nameof(FieldController.Index)" class="btn btn-danger w-100">
+        <a asp-action="@nameof(DashboardController.Fields)"
+        asp-controller="Dashboard"
+           class="btn btn-danger w-100">
             Cancel
         </a>
     </div>

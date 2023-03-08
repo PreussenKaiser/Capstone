@@ -13,4 +13,21 @@ public interface IScheduleService : IRepository<Event>
 	/// <param name="scheduledEvent">The <see cref="Event"/> to find conflicts with.</param>
 	/// <returns>Instances of <see cref="Event"/> that fall between <paramref name="start"/> and <paramref name="end"/>.</returns>
 	Task<bool> HasConflictsAsync(Event scheduledEvent);
+
+	/// <summary>
+	/// Gets all instances of <see cref="Event"/> of type <typeparamref name="TEvent"/>.
+	/// </summary>
+	/// <typeparam name="TEvent">The type of <see cref="Event"/> to get.</typeparam>
+	/// <returns>All events of type <typeparamref name="TEvent"/>.</returns>
+	Task<IEnumerable<TEvent>> GetAllAsync<TEvent>()
+		where TEvent : Event;
+
+	/// <summary>
+	/// Gets all instances of <see cref="Event"/> of type <typeparamref name="TEvent"/> created by a user.
+	/// </summary>
+	/// <typeparam name="TEvent">The type of <see cref="Event"/> to get.</typeparam>
+	/// <param name="userId">References the user who created the event.</param>
+	/// <returns>All events created by the user.</returns>
+	Task<IEnumerable<TEvent>> GetAllAsync<TEvent>(Guid userId)
+		where TEvent : Event;
 }

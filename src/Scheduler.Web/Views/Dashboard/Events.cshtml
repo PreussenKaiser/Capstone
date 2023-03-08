@@ -1,0 +1,28 @@
+﻿@using Scheduler.Web.Controllers;
+
+@model IEnumerable<Event>
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <a asp-action="@nameof(ScheduleController.Create)"
+           asp-controller="Schedule"
+           class="btn btn-primary">
+            Schedule New
+        </a>
+
+    </div>
+    <div class="col-sm-6">
+        <select class="form-select" id="scheduleFilter">
+            <option value="Event">Events</option>
+            <option value="Practice">Practices</option>
+            <option value="Game">Games</option>
+        </select>
+    </div>
+</div>
+<div class="row" id="scheduleContainer">
+    @await this.Html.PartialAsync("Tables/_EventsTable", this.Model)
+</div>
+
+@section Scripts {
+    <script src="~/js/ScheduleTable.js"></script>
+}
