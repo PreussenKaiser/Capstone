@@ -1,17 +1,13 @@
 ﻿@model ProfileViewModel
 
 @{
-    this.ViewData["Title"] = "Update Profile";
     this.Layout = "Shared/_AccountLayout.cshtml";
 }
 
 <form asp-action="Profile">
-    <h1 class="text-center text-danger">
-        @this.ViewData["Title"]
-    </h1>
-    <hr />
-
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input hidden asp-for="UserId" value="@this.Model.UserId" />
 
     <div class="row mb-3">
         <div class="col-sm-6">

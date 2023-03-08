@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Scheduler.Core.Models.Identity;
 using Scheduler.Web.Controllers;
 
 namespace Scheduler.Web.ViewModels;
@@ -26,6 +25,7 @@ public sealed record RegisterViewModel
 	/// <summary>
 	/// User's first name.
 	/// </summary>
+	[Display(Name = "First Name")]
 	[Required(ErrorMessage = "Please enter a first name.")]
 	[MaxLength(32)]
 	public required string FirstName { get; init; }
@@ -33,6 +33,7 @@ public sealed record RegisterViewModel
 	/// <summary>
 	/// User's last name.
 	/// </summary>
+	[Display(Name = "Last Name")]
 	[Required(ErrorMessage = "Please enter a last name.")]
 	[MaxLength(32)]
 	public required string LastName { get; init; }
@@ -40,5 +41,6 @@ public sealed record RegisterViewModel
 	/// <summary>
 	/// Whether the user is an admin or not.
 	/// </summary>
+	[Display(Name = "Is Admin")]
 	public bool IsAdmin { get; init; }
 }

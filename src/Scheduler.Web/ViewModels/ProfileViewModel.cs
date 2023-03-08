@@ -8,6 +8,11 @@ namespace Scheduler.Web.ViewModels;
 public sealed class ProfileViewModel
 {
 	/// <summary>
+	/// The user being profiled.
+	/// </summary>
+	public required Guid UserId { get; init; }
+
+	/// <summary>
 	/// The user's first name.
 	/// </summary>
 	[Display(Name = "First name")]
@@ -35,4 +40,5 @@ public sealed class ProfileViewModel
 	/// Whether the user is an admin or not.
 	/// </summary>
 	public bool IsAdmin { get; init; }
+
 }

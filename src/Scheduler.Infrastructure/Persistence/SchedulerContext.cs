@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
-using Scheduler.Core.Models.Identity;
 
 namespace Scheduler.Infrastructure.Persistence;
 
@@ -60,9 +59,13 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 			.Entity<Event>()
 			.UseTptMappingStrategy();
 
-		builder.Entity<Role>().HasData(new Role { Name = "Admin", NormalizedName = "Admin", Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"), ConcurrencyStamp = Guid.NewGuid().ToString()});
-
-		var hasher = new PasswordHasher<User>();
+		builder.Entity<Role>().HasData(new Role
+		{
+			Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
+			Name = "Admin",
+			NormalizedName = "Admin",
+			ConcurrencyStamp = Guid.NewGuid().ToString()
+		});
 
 		builder.Entity<User>().HasData(new User
 		{
@@ -72,18 +75,15 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 			FirstName = "Team",
 			LastName = "Null",
 			Email = "teamnull@gmail.com",
-
-			PasswordHash = hasher.HashPassword(null!, "T3am-Null-Rul3z"),
+			PasswordHash = new PasswordHasher<User>().HashPassword(null!, "T3am-Null-Rul3z"),
 			SecurityStamp = Guid.NewGuid().ToString("D")
 		});
 
-		builder.Entity<IdentityUserRole<Guid>>().HasData(
-			new IdentityUserRole<Guid>
-			{
-				RoleId = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
-				UserId = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c")
-			}
-		);
+		builder.Entity<IdentityUserRole<Guid>>().HasData(new IdentityUserRole<Guid>
+		{
+			RoleId = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
+			UserId = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c")
+		});
 
 		base.OnModelCreating(builder);
 	}

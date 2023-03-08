@@ -1,8 +1,8 @@
-﻿@using Scheduler.Core.Services;
+﻿@using Scheduler.Web.Controllers;
+@using Scheduler.Core.Services;
 @using System.Security.Claims;
-@using Scheduler.Web.Controllers;
 
-@inject IFieldService FieldService
+@inject IRepository<Field> FieldService
 @model Event
 
 @{

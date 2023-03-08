@@ -1,5 +1,4 @@
-﻿using Scheduler.Core.Models.Identity;
-using Scheduler.Core.Services;
+﻿using Scheduler.Core.Services;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

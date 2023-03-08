@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Scheduler.Core.Models.Identity;
+namespace Scheduler.Core.Models;
 
 /// <summary>
 /// Represents a role held by a <see cref="User"/> and contains string representations of roles..

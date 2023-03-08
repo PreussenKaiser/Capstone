@@ -1,13 +1,17 @@
 ﻿@using Microsoft.AspNetCore.Identity;
-@using Scheduler.Core.Models.Identity;
 @using Scheduler.Web.Controllers;
 
 @inject UserManager<User> UserManager;
 @model IEnumerable<User>
 
+@{
+    this.ViewData["ShowAdminControls"] = true;
+}
+
 <div class="row mb-3">
     <div class="col-12">
         <a asp-action="@nameof(IdentityController.Register)"
+           asp-controller="Identity"
            class="btn btn-primary">
             Register
         </a>

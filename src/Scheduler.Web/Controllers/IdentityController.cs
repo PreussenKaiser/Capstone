@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Scheduler.Core.Models.Identity;
+using Scheduler.Core.Models;
 using Scheduler.Core.Security;
 using Scheduler.Web.ViewModels;
 
@@ -173,6 +173,7 @@ public sealed class IdentityController : Controller
 
 		ProfileViewModel viewModel = new()
 		{
+			UserId = user.Id,
 			FirstName = user.FirstName,
 			LastName = user.LastName,
 			Email = user.Email ?? string.Empty
@@ -192,7 +193,7 @@ public sealed class IdentityController : Controller
 	{
 		if (this.ModelState.IsValid)
 		{
-			User? user = await this.signInManager.UserManager.GetUserAsync(this.User);
+			User? user = await this.signInManager.UserManager.FindByIdAsync(viewModel.UserId.ToString());
 
 			if (user is null)
 				return this.Problem();
@@ -202,12 +203,12 @@ public sealed class IdentityController : Controller
 			user.UserName = viewModel.Email;
 			user.Email = viewModel.Email;
 
-			bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, "Admin");
+			bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN);
 
 			if (isAdmin && !viewModel.IsAdmin)
-				await this.signInManager.UserManager.RemoveFromRoleAsync(user, "Admin");
+				await this.signInManager.UserManager.RemoveFromRoleAsync(user, Role.ADMIN);
 			else if (!isAdmin && viewModel.IsAdmin)
-				await this.signInManager.UserManager.AddToRoleAsync(user, "Admin");
+				await this.signInManager.UserManager.AddToRoleAsync(user, Role.ADMIN);
 
 			var result = await this.signInManager.UserManager.UpdateAsync(user);
 

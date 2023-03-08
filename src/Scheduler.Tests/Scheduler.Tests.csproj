@@ -24,7 +24,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Scheduler.Core\Scheduler.Core.csproj" />
         <ProjectReference Include="..\Scheduler.Infrastructure\Scheduler.Infrastructure.csproj" />
-        <ProjectReference Include="..\Scheduler.Web\Scheduler.Web.csproj" />
     </ItemGroup>
 
 </Project>

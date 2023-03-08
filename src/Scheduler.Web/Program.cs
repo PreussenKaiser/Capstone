@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Scheduler.Core.Models.Identity;
+using Scheduler.Core.Models;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Utility;
 

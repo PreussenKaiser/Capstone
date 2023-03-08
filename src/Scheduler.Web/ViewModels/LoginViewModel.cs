@@ -1,5 +1,4 @@
-﻿using Scheduler.Core.Models.Identity;
-using Scheduler.Web.Controllers;
+﻿using Scheduler.Web.Controllers;
 using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Web.ViewModels;

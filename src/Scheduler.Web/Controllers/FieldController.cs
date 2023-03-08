@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
-using Scheduler.Core.Models.Identity;
 using Scheduler.Core.Services;
 
 namespace Scheduler.Web.Controllers;
@@ -15,13 +14,13 @@ public sealed class FieldController : Controller
 	/// <summary>
 	/// The service to query <see cref="Field"/> models with.
 	/// </summary>
-	private readonly IFieldService fieldService;
+	private readonly IRepository<Field> fieldService;
 
 	/// <summary>
 	/// Initializes the <see cref="FieldController"/> class.
 	/// </summary>
 	/// <param name="fieldService">The service to query <see cref="Field"/> models with.</param>
-	public FieldController(IFieldService fieldService)
+	public FieldController(IRepository<Field> fieldService)
 	{
 		this.fieldService = fieldService;
 	}
@@ -31,7 +30,9 @@ public sealed class FieldController : Controller
 	/// </summary>
 	/// <returns>A form which POSTs to <see cref="Create(Field)"/>.</returns>
 	public IActionResult Create()
-		=> this.View();
+	{
+		return this.View();
+	}
 
 	/// <summary>
 	/// Handles POST from <see cref="Create"/>.
@@ -41,6 +42,9 @@ public sealed class FieldController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Create(Field field)
 	{
+		if (!this.ModelState.IsValid)
+			return this.View(field);
+
 		await this.fieldService.CreateAsync(field);
 
 		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
@@ -66,6 +70,9 @@ public sealed class FieldController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Update(Field field)
 	{
+		if (!this.ModelState.IsValid)
+			return this.View(field);
+
 		await this.fieldService.UpdateAsync(field);
 
 		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
-using Scheduler.Core.Models.Identity;
 using Scheduler.Core.Services;
 
 namespace Scheduler.Web.Controllers;
@@ -33,7 +32,7 @@ public sealed class DashboardController : Controller
 	/// <param name="teamService">The service to query teams with.</param>
 	/// <returns>A table containing all teams.</returns>
 	public async Task<IActionResult> Teams(
-		[FromServices] ITeamService teamService)
+		[FromServices] IRepository<Team> teamService)
 	{
 		IEnumerable<Team> teams = await teamService.GetAllAsync();
 
@@ -48,7 +47,7 @@ public sealed class DashboardController : Controller
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> Fields(
-		[FromServices] IFieldService fieldService)
+		[FromServices] IRepository<Field> fieldService)
 	{
 		IEnumerable<Field> fields = await fieldService.GetAllAsync();
 

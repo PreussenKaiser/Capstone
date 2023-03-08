@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace Scheduler.Core.Models.Identity;
+namespace Scheduler.Core.Models;
 
 /// <summary>
 /// Represents a user in the scheduler.

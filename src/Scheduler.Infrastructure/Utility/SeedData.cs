@@ -1,5 +1,4 @@
-﻿using Scheduler.Core.Models.Identity;
-using Scheduler.Core.Models;
+﻿using Scheduler.Core.Models;
 
 namespace Scheduler.Infrastructure.Utility;
 

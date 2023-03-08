@@ -3,7 +3,6 @@ using Scheduler.Core.Services;
 using Scheduler.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Scheduler.Core.Models.Identity;
 
 namespace Scheduler.Web.Controllers;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Scheduler.Core.Models;
 using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Services;
@@ -62,8 +63,8 @@ public static class Bootstrap
 	/// <returns>The configured <see cref="IServiceCollection"/>.</returns>
 	private static IServiceCollection ConfigureServices(this IServiceCollection services)
 		=> services
-			.AddScoped<IFieldService, FieldService>()
 			.AddScoped<IScheduleService, ScheduleService>()
-			.AddScoped<ITeamService, TeamService>()
-			.AddScoped<ILeagueService, LeagueService>();
+			.AddScoped<IRepository<Field>, Repository<Field>>()
+			.AddScoped<IRepository<Team>, Repository<Team>>()
+			.AddScoped<IRepository<League>, Repository<League>>();
 }

@@ -1,12 +1,13 @@
 ﻿@{
-    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
-    string pageTitle = $"Schedule {eventType}";
+    string currentType = this.ViewData["EventType"] as string ?? nameof(Event);
+    string pageTitle = $"Schedule {currentType}";
+    string[] eventTypes = new[] { nameof(Event), nameof(Practice), nameof(Game) };
 
     this.ViewData["Title"] = pageTitle;
 }
 
 <div class="row">
-    <form asp-action="Create@(eventType)"
+    <form asp-action="Create@(currentType)"
           method="post"
           class="col-12">
 
@@ -17,7 +18,17 @@
             <hr />
 
             <div class="col-sm-4 mx-auto">
-                @await this.Html.PartialAsync("Navigation/_ScheduleNavbar")
+                <div class="list-group list-group-horizontal">
+                    @foreach (var eventType in eventTypes)
+                    {
+                        <button type="button"
+                                id="@eventType"
+                                onclick="navClick('@eventType')"
+                                class="list-group-item list-group-item-action text-center">
+                            @eventType
+                        </button>
+                    }
+                </div>
             </div>
         </div>
 

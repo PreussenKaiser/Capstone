@@ -4,7 +4,7 @@
     string eventType = this.ViewData["EventType"] as string ?? "Game";
 }
 
-@inject ITeamService TeamService
+@inject IRepository<Team> TeamService
 @model Game
 
 <div class="row mb-3">

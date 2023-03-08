@@ -17,11 +17,21 @@ function navClick(eventType) {
         success: refresh
     })
 
+    refreshNav(eventType)
+}
+
+/**
+ * Refreshes navbar to show the current event type as active.
+ * @param {any} eventType The type of event to show as active.
+ */
+function refreshNav() {
+    console.log('hi')
+
     $('#Event').removeClass('active')
     $('#Practice').removeClass('active')
     $('#Game').removeClass('active')
 
     $(`#${eventType}`).addClass('active')
-
-    $('#EventForm').attr('action', `../${eventType}/Create`)
 }
+
+document.onload = refreshNav("Event")
