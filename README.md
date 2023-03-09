@@ -11,7 +11,7 @@ Parents and athletes can find out when their practices or games are scheduled, a
 #### Technologies
 - .NET CORE 7
 - ASP.NET Core
-- ASP.NET Identity
+- ASP.NET Identity Core
 - Entity Framework Core
 - SQL Server 2022
 - xUnit
