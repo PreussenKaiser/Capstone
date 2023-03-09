@@ -39,6 +39,7 @@ public sealed class ProfileViewModel
 	/// <summary>
 	/// Whether the user is an admin or not.
 	/// </summary>
+	[Display(Name = "Is Admin")]
 	public bool IsAdmin { get; init; }
 
 }

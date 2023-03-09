@@ -15,6 +15,7 @@ public sealed class Team
 	/// <summary>
 	/// References <see cref="League.Id"/>.
 	/// </summary>
+	[Display(Name = nameof(this.League))]
 	[Required(ErrorMessage = "Please select a league.")]
 	public required Guid LeagueId { get; set; }
 

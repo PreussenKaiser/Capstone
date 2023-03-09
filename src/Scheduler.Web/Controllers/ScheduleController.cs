@@ -56,7 +56,7 @@ public sealed class ScheduleController : Controller
 			? await this.scheduleService.GetAllAsync<Practice>()
 			: await this.scheduleService.GetAllAsync();
 
-		return this.PartialView($"Tables/_{type}sTable", events);
+		return this.PartialView($"Tables/_EventsTable", events);
 	}
 
 	/// <summary>
@@ -70,18 +70,23 @@ public sealed class ScheduleController : Controller
 	/// Handles POST from <see cref="Create"/>.
 	/// </summary>
 	/// <param name="scheduledEvent">POST values.</param>
-	/// <returns>Redirected to <see cref="ScheduleController.Index"/>.</returns>
+	/// <returns>
+	/// Redirected to <see cref="DashboardController.Events(IScheduleService)"/>.
+	/// Returned to <see cref="Create"/> otherwise.
+	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> CreateEvent(Event scheduledEvent)
-		=> await this.CreateAsync(scheduledEvent);
+		=> this.User.IsInRole(Role.ADMIN)
+			? await this.CreateAsync(scheduledEvent)
+			: this.Problem();
 
 	/// <summary>
 	/// Creates a <see cref="Game"/> event.
 	/// </summary>
 	/// <param name="game"><see cref="Game"/> values.</param>
 	/// <returns>
-	/// Redirected to <see cref="ScheduleController.Index"/> if successful.
-	/// Returned to <see cref="ScheduleController.Create(string)"/> otherwise.
+	/// Redirected to <see cref="DashboardController.Events(IScheduleService)"/> if successful.
+	/// Returned to <see cref="Create"/> otherwise.
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> CreateGame(Game game)
@@ -92,8 +97,8 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="practice">The <see cref="Practice"/> to create.</param>
 	/// <returns>
-	/// Redirected to <see cref="ScheduleController.Index"/> if successfull.
-	/// Returned to <see cref="ScheduleController.Create(string)"/> otherwise.
+	/// Redirected to <see cref="DashboardController.Events(IScheduleService)"/> if successfull.
+	/// Returned to <see cref="Create"/> otherwise.
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> CreatePractice(Practice practice)
@@ -106,7 +111,11 @@ public sealed class ScheduleController : Controller
 	/// <returns>A form for updating an <see cref="Event"/> or any of it's children.</returns>
 	public async Task<IActionResult> Update(Guid id)
 	{
+		User? user = await this.userManager.GetUserAsync(this.User);
 		Event scheduledEvent = await this.scheduleService.GetAsync(id);
+
+		if (user is null || scheduledEvent.UserId != user.Id && !this.User.IsInRole(Role.ADMIN))
+			return this.Problem();
 
 		this.ViewData["EventType"] = scheduledEvent.GetType().Name;
 
@@ -114,10 +123,13 @@ public sealed class ScheduleController : Controller
 	}
 
 	/// <summary>
-	/// Handles POST request from <see cref="ScheduleController.Update(Guid)"/>.
+	/// Handles POST request from <see cref="Update(Guid)"/>.
 	/// </summary>
 	/// <param name="scheduledEvent">Updated <see cref="Event"/> values.</param>
-	/// <returns>Redirected to <see cref="ScheduleController.Index"/>.</returns>
+	/// <returns>
+	/// Redirected to <see cref="DashboardController.Events(IScheduleService)"/>.
+	/// Returned to <see cref="Update(Guid)"/> otherwise.
+	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> UpdateEvent(Event scheduledEvent)
 		=> await this.UpdateAsync(scheduledEvent);
@@ -127,8 +139,8 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="game"><see cref="Game"/> values, <see cref="Event.Id"/> referencing the <see cref="Game"/> to update.</param>
 	/// <returns>
-	/// Redirected to <see cref="ScheduleController.Index"/>.
-	/// Returned to <see cref="ScheduleController.Update(Guid, string)"/> otherwise.
+	/// Redirected to <see cref="DashboardController.Events(IScheduleService)"/>.
+	/// Returned to <see cref="Update(Guid)"/> otherwise.
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> UpdateGame(Game game)
@@ -139,8 +151,8 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="practice"><see cref="Practice"/> values, <see cref="Event.Id"/> referencing the <see cref="Practice"/> to update.</param>
 	/// <returns>
-	/// Redirected to <see cref="ScheduleController.Index"/> if successfull.
-	/// Returned to <see cref="ScheduleController.Update(Guid, string)"/> otherwise.
+	/// Redirected to <see cref="DashboardController.Events(IScheduleService)"/> if successfull.
+	/// Returned to <see cref="Update(Guid)"/> otherwise.
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> UpdatePractice(Practice practice)
@@ -195,6 +207,11 @@ public sealed class ScheduleController : Controller
 
 			return this.View(nameof(this.Update), scheduledEvent);
 		}
+
+		User? user = await this.userManager.GetUserAsync(this.User);
+
+		if (user is null || scheduledEvent.UserId != user.Id && !this.User.IsInRole(Role.ADMIN))
+			return this.Problem();
 
 		await this.scheduleService.UpdateAsync(scheduledEvent);
 

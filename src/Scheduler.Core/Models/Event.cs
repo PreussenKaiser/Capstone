@@ -39,6 +39,7 @@ public class Event : IValidatableObject
 	/// When the event starts.
 	/// </summary>
 	[Display(Name = "Start date")]
+	[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "MM/dd/yyyy hh:mm")]
 	[Required(ErrorMessage = "Please enter when the event begins.")]
 	public required DateTime StartDate { get; set; }
 
@@ -46,6 +47,7 @@ public class Event : IValidatableObject
 	/// When the event ends.
 	/// </summary>
 	[Display(Name = "End date")]
+	[DisplayFormat(DataFormatString = "MM/dd/yyyy hh:mm")]
 	[Required(ErrorMessage = "Please enter when the event ends.")]
 	public required DateTime EndDate { get; set; }
 

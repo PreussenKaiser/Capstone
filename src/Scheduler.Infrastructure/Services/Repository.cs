@@ -8,18 +8,18 @@ namespace Scheduler.Infrastructure.Services;
 /// Provides CRUD operations for <typeparamref name="TModel"/>.
 /// </summary>
 /// <typeparam name="TModel">The type of model to query.</typeparam>
-public sealed class Repository<TModel> : IRepository<TModel>
+public class Repository<TModel> : IRepository<TModel>
 	where TModel : class
 {
 	/// <summary>
 	/// The database context to use.
 	/// </summary>
-	private readonly SchedulerContext context;
+	protected readonly SchedulerContext context;
 
 	/// <summary>
 	/// The set of <see cref="TModel"/> to query.
 	/// </summary>
-	private readonly DbSet<TModel> set;
+	protected readonly DbSet<TModel> set;
 
 	/// <summary>
 	/// Initializes the <see cref="Repository{TModel}"/> class.
@@ -32,7 +32,7 @@ public sealed class Repository<TModel> : IRepository<TModel>
 	}
 
 	/// <inheritdoc/>
-	public async Task CreateAsync(TModel model)
+	public virtual async Task CreateAsync(TModel model)
 	{
 		await this.set.AddAsync(model);
 
@@ -40,7 +40,7 @@ public sealed class Repository<TModel> : IRepository<TModel>
 	}
 
 	/// <inheritdoc/>
-	public async Task<IEnumerable<TModel>> GetAllAsync()
+	public virtual async Task<IEnumerable<TModel>> GetAllAsync()
 	{
 		IEnumerable<TModel> result = await this.set.ToListAsync();
 
@@ -48,7 +48,7 @@ public sealed class Repository<TModel> : IRepository<TModel>
 	}
 
 	/// <inheritdoc/>
-	public async Task<TModel> GetAsync(Guid id)
+	public virtual async Task<TModel> GetAsync(Guid id)
 	{
 		TModel? result = await this.set.FindAsync(id);
 
@@ -58,7 +58,7 @@ public sealed class Repository<TModel> : IRepository<TModel>
 	}
 
 	/// <inheritdoc/>
-	public async Task UpdateAsync(TModel model)
+	public virtual async Task UpdateAsync(TModel model)
 	{
 		if (!this.set.Contains(model))
 			throw new ArgumentException($"Could resolve to a {typeof(TModel).Name}.");
@@ -69,7 +69,7 @@ public sealed class Repository<TModel> : IRepository<TModel>
 	}
 
 	/// <inheritdoc/>
-	public async Task DeleteAsync(Guid id)
+	public virtual async Task DeleteAsync(Guid id)
 	{
 		TModel delete = await this.GetAsync(id);
 

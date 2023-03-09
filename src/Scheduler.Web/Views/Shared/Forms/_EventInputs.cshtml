@@ -8,7 +8,7 @@
 @{
    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
 
-    ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+   this.ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 }
 
 @if (this.Model is not null)
@@ -66,12 +66,7 @@
                                 })"></select>
         </div>
 
-        <div id="EventInputs">
-            @if (eventType != nameof(Event))
-            {
-                <partial name="Forms/_@(eventType)Inputs" />
-            }
-        </div>
+        <div id="eventInputs"></div>
     </div>
 </div>
 

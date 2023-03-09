@@ -1,52 +1,14 @@
-﻿@using Scheduler.Web.Controllers;
+﻿@using Scheduler.Core.Services;
 
-@model IEnumerable<Practice>
+@inject IRepository<Team> TeamService
+@model Practice
 
-@foreach (var practice in this.Model)
-{
-    <div class="col-sm-6">
-        <div class="card border border-3 border-secondary">
-            <div class="card-body">
-                <h4 class="card-title">@practice.Name</h4>
-                <p class="card-text">
-                    <h5>When:</h5>
-                    @practice.StartDate to @practice.EndDate
-                </p>
-                <p class="card-text">
-                    <h5>Where:</h5>
-                    @foreach (var field in practice.Fields)
-                    {
-                        @field.Name
-                        <br />
-                    }
-                </p>
-                <p class="card-text">
-                    <h5>Who:</h5>
-                    @practice.TeamId
-                </p>
-
-                <div class="row">
-                    <div class="col-6">
-                        <a asp-action="@nameof(ScheduleController.Update)"
-                           asp-controller="Schedule"
-                           asp-route-id="@practice.Id"
-                           asp-route-type="@practice.GetType().Name"
-                           class="btn btn-sm btn-secondary w-100">
-                            Update
-                        </a>
-                    </div>
-                    <div class="col-6">
-                        <form asp-action="@nameof(ScheduleController.Delete)"
-                              asp-controller="Schedule"
-                              asp-route-id="@practice.Id"
-                              method="post">
-                            <button class="btn btn-sm btn-danger w-100">
-                                Delete
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+@{
+    // This is slow as a database call is made for each instance.
+    this.Model.Team = await this.TeamService.GetAsync(this.Model.TeamId);
 }
+
+<p class="card-text">
+    <h5>Who:</h5>
+    @this.Model.Team.Name
+</p>

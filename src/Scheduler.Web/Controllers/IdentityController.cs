@@ -10,6 +10,7 @@ namespace Scheduler.Web.Controllers;
 /// <summary>
 /// Renders ASP.NET Identity views.
 /// </summary>
+[Authorize]
 public sealed class IdentityController : Controller
 {
 	/// <summary>
@@ -30,8 +31,11 @@ public sealed class IdentityController : Controller
 	/// Displays the <see cref="Login"/> view.
 	/// </summary>
 	/// <returns>The <see cref="Login"/> view.</returns>
+	[AllowAnonymous]
 	public IActionResult Login()
-		=> this.View();
+	{
+		return this.View();
+	}
 
 	/// <summary>
 	/// Post action for the <see cref="Login"/> view.
@@ -42,6 +46,7 @@ public sealed class IdentityController : Controller
 	/// Redirected to <see cref="Login"/> if unsuccessful.
 	/// </returns>
 	[HttpPost]
+	[AllowAnonymous]
 	public async ValueTask<IActionResult> Login(LoginViewModel viewModel)
 	{
 		if (!this.ModelState.IsValid)
@@ -68,7 +73,6 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <returns>Redirected to <see cref="HomeController.Index"/>.</returns>
 	[HttpPost]
-	[Authorize]	
 	public async Task<IActionResult> Logout()
 	{
 		await this.signInManager.SignOutAsync();
@@ -82,7 +86,9 @@ public sealed class IdentityController : Controller
 	/// <returns>The <see cref="Register"/> view.</returns>
 	[Authorize(Roles = Role.ADMIN)]
 	public IActionResult Register()
-		=> this.View();
+	{
+		return this.View();
+	}
 
 	/// <summary>
 	/// Handles form submission from <see cref="Register"/>.
@@ -150,10 +156,9 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = Role.ADMIN)]
 	public IActionResult ConfirmNewUser()
 	{
-		if (this.TempData["TempPassword"] == null || this.TempData["Name"] == null)
-			return this.RedirectToAction(nameof(HomeController.Index), "Home");
-		else
-			return this.View();
+		return this.TempData["TempPassword"] is null || this.TempData["Name"] is null
+			? this.RedirectToAction(nameof(HomeController.Index), "Home")
+			: this.View();
 	}
 
 	/// <summary>
@@ -161,14 +166,9 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <param name="id">The user to view the profile of.</param>
 	/// <returns>A form which posts to <see cref="Profile(ProfileViewModel)"/>.</returns>
-	[Authorize]
-	public async Task<IActionResult> Profile(Guid? id = null)
+	public async ValueTask<IActionResult> Profile(Guid? id = null)
 	{
-		User? user = id is null
-			? await this.signInManager.UserManager.GetUserAsync(this.User)
-			: await this.signInManager.UserManager.FindByIdAsync(id.ToString()!);
-
-		if (user is null)
+		if (!this.IsUser(out User? user, id) || user is null)
 			return this.Problem();
 
 		ProfileViewModel viewModel = new()
@@ -176,11 +176,13 @@ public sealed class IdentityController : Controller
 			UserId = user.Id,
 			FirstName = user.FirstName,
 			LastName = user.LastName,
-			Email = user.Email ?? string.Empty
+			Email = user.Email ?? string.Empty,
+			IsAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN)
 		};
 
 		return this.View(viewModel);
 	}
+
 
 	/// <summary>
 	/// Handles POST from <see cref="Profile"/>.
@@ -188,13 +190,13 @@ public sealed class IdentityController : Controller
 	/// <param name="viewModel">Values from the form.</param>
 	/// <returns>Redirected to <see cref="Profile"/>.</returns>
 	[HttpPost]
-	[Authorize]
 	public async ValueTask<IActionResult> Profile(ProfileViewModel viewModel)
 	{
+		if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
+			return this.Problem();
+
 		if (this.ModelState.IsValid)
 		{
-			User? user = await this.signInManager.UserManager.FindByIdAsync(viewModel.UserId.ToString());
-
 			if (user is null)
 				return this.Problem();
 
@@ -225,17 +227,14 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <param name="id">The identifier of the user to adjust security settings for.</param>
 	/// <returns>A form which POSTs to <see cref="Security"/>.</returns>
-	[Authorize]
-	public async Task<IActionResult> Security(Guid? id = null)
+	public IActionResult Security(Guid? id = null)
 	{
-		User? user = id is null
-			? await this.signInManager.UserManager.GetUserAsync(this.User)
-			: await this.signInManager.UserManager.FindByIdAsync(id.ToString()!);
-
-		if (user is null)
+		if (!this.IsUser(out User? user, id) || user is null)
 			return this.Problem();
 
-		return this.View();
+		SecurityViewModel viewModel = new() { UserId = user.Id };
+
+		return this.View(viewModel);
 	}
 
 	/// <summary>
@@ -244,14 +243,11 @@ public sealed class IdentityController : Controller
 	/// <param name="viewModel">Form values.</param>
 	/// <returns>Redirected to <see cref="Security"/>.</returns>
 	[HttpPost]
-	[Authorize]
 	public async ValueTask<IActionResult> Security(SecurityViewModel viewModel)
 	{
 		if (this.ModelState.IsValid)
 		{
-			User? user = await this.signInManager.UserManager.GetUserAsync(this.User);
-
-			if (user is null)
+			if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
 				return this.Problem();
 
 			var result = await this.signInManager.UserManager.ChangePasswordAsync(
@@ -265,5 +261,27 @@ public sealed class IdentityController : Controller
 		}
 
 		return this.View(viewModel);
+	}
+
+	/// <summary>
+	/// Determines if the current user matches the provided identifier.
+	/// </summary>
+	/// <param name="user"></param>
+	/// <param name="id"></param>
+	/// <returns></returns>
+	private bool IsUser(out User? user, Guid? id)
+	{
+		User? userActual = this.signInManager.UserManager.GetUserAsync(this.User).Result;
+		user = id is null
+			? userActual
+			: this.signInManager.UserManager.FindByIdAsync(id.ToString()!).Result;
+
+		if (user is null || userActual is null)
+			return false;
+
+		if (id is not null && userActual.Id != id && !this.User.IsInRole(Role.ADMIN))
+			return false;
+
+		return true;
 	}
 }

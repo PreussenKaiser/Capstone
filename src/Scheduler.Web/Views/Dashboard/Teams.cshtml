@@ -26,7 +26,7 @@
             {
                 <tr>
                     <th scope="row">@team.Name</th>
-                    <td>@team.League.Name</td>
+                    <td>@(team.League is null ? string.Empty : team.League.Name)</td>
                     <td class="text-end">
                         <a asp-action="@nameof(TeamController.Update)"
                            asp-controller="@nameof(Team)"

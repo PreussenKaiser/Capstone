@@ -65,6 +65,6 @@ public static class Bootstrap
 		=> services
 			.AddScoped<IScheduleService, ScheduleService>()
 			.AddScoped<IRepository<Field>, Repository<Field>>()
-			.AddScoped<IRepository<Team>, Repository<Team>>()
+			.AddScoped<IRepository<Team>, TeamService>()
 			.AddScoped<IRepository<League>, Repository<League>>();
 }

@@ -11,17 +11,28 @@
             <div class="card-body">
                 <h4 class="card-title">@scheduledEvent.Name</h4>
                 <p class="card-text">
-                    <h5>When:</h5>
-                    @scheduledEvent.StartDate to @scheduledEvent.EndDate
+                    <h5>When</h5>
+                    <b>Starts</b> @scheduledEvent.StartDate.ToString("MM/dd/yyyy hh:mm tt")
+                    <br />
+                    <b>Ends</b> @scheduledEvent.EndDate.ToString("MM/dd/yyyy hh:mm tt")
                 </p>
                 <p class="card-text">
-                    <h5>Where:</h5>
-                    @foreach (var field in scheduledEvent.Fields)
-                    {
-                        @field.Name
-                        <br />
-                    }
+                    <h5>Where</h5>
+                    @if (scheduledEvent.Fields is not null)
+                        @foreach (var field in scheduledEvent.Fields)
+                        {
+                            @field.Name
+                            <br />
+                        }
                 </p>
+                @{
+                    string eventType = scheduledEvent.GetType().Name;
+
+                    if (eventType != nameof(Event))
+                    {
+                        <partial name="Tables/_@(eventType)sTable" model="scheduledEvent"/>
+                    }
+                }
 
                 @if (this.User.IsInRole(Role.ADMIN) ||
                      scheduledEvent.UserId.ToString() == this.UserManager.GetUserId(this.User))

@@ -4,10 +4,6 @@
 @inject UserManager<User> UserManager;
 @model IEnumerable<User>
 
-@{
-    this.ViewData["ShowAdminControls"] = true;
-}
-
 <div class="row mb-3">
     <div class="col-12">
         <a asp-action="@nameof(IdentityController.Register)"
@@ -24,7 +20,7 @@
             <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Is Admin</th>
+                <th>Admin</th>
                 <th scope="col" colspan="2" class="text-center">Actions</th>
             </tr>
         </thead>
@@ -35,19 +31,21 @@
                     <th scope="row">@user.FirstName @user.LastName</th>
                     <td>@user.Email</td>
                     <td>
-                        @if (this.UserManager.IsInRoleAsync(user, Role.ADMIN).Result == true)
+                        @if (this.UserManager.IsInRoleAsync(user, Role.ADMIN).Result)
                         {
-                            <span>Yes</span>
+                            <span>✔</span>
                         }
                     </td>
                     <td class="text-end">
                         <a asp-action="@nameof(IdentityController.Profile)"
                            asp-controller="Identity"
                            asp-route-id="@user.Id"
-                           class="btn btn-sm btn-secondary">Update</a>
+                           class="btn btn-sm btn-secondary">
+                            Update
+                        </a>
                     </td>
                     <td class="text-start">
-                        @if (this.UserManager.GetUserAsync(User).Result?.Id != user.Id)
+                        @if (this.UserManager.GetUserAsync(this.User).Result?.Id != user.Id)
                         {
                             <form asp-action="@nameof(IdentityController.Delete)"
                                   asp-controller="Identity"

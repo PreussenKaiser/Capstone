@@ -3,18 +3,20 @@
  * @param {string} eventType The type of event to select.
  */
 function navClick(eventType) {
-    const refresh = eventType == 'Event'
-        ? $('#EventInputs').empty()
+    const eventInputs = $('#eventInputs')
+
+    const refreshInputs = eventType == 'Event'
+        ? eventInputs.empty()
         : (result) => {
-            $('#EventInputs').empty();
-            $('#EventInputs').html(result);
+            eventInputs.empty();
+            eventInputs.html(result);
         }
 
     $.ajax({
         type: 'GET',
         url: '../Schedule/EventPartial',
         data: { type: eventType },
-        success: refresh
+        success: refreshInputs
     })
 
     refreshNav(eventType)
@@ -22,16 +24,27 @@ function navClick(eventType) {
 
 /**
  * Refreshes navbar to show the current event type as active.
- * @param {any} eventType The type of event to show as active.
+ * @param {string} eventType The type of event to show as active.
  */
-function refreshNav() {
-    console.log('hi')
-
+function refreshNav(eventType) {
     $('#Event').removeClass('active')
     $('#Practice').removeClass('active')
     $('#Game').removeClass('active')
 
     $(`#${eventType}`).addClass('active')
+
+    $('#eventForm').attr('action', `Create${eventType}`)
+
+    refreshTitle(eventType)
 }
 
-document.onload = refreshNav("Event")
+/**
+ * Refreshes the title to reflect the current event type.
+ * @param {string} eventType The current event type.
+ */
+function refreshTitle(eventType) {
+    const title = $('#title')
+
+    title.empty()
+    title.html(eventType)
+}
