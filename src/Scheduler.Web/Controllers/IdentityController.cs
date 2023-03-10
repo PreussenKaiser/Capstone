@@ -124,9 +124,9 @@ public sealed class IdentityController : Controller
 			await signInManager.UserManager.AddToRoleAsync(user, "Admin");
 
 		this.TempData["TempPassword"] = randomPassword;
-		this.TempData["Name"] = $"{user.FirstName} {user.LastName}";
+		this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added!";
 
-		return this.RedirectToAction(nameof(IdentityController.ConfirmNewUser), "Identity");
+		return this.RedirectToAction(nameof(IdentityController.ConfirmAdminChange), "Identity");
 	}
 
 	/// <summary>
@@ -213,14 +213,14 @@ public sealed class IdentityController : Controller
 	}
 
 	/// <summary>
-	/// Confirms the registration of a new user and displays their generated password and their name on screen.
+	/// Confirms the change of a user and displays their name and generated password on the page.
 	/// </summary>
 	/// <returns>Confirmation page with user data.</returns>
 	[HttpGet]
 	[Authorize(Roles = "Admin")]
-	public IActionResult ConfirmNewUser()
+	public IActionResult ConfirmAdminChange()
 	{
-		if (this.TempData["TempPassword"] == null || this.TempData["Name"] == null)
+		if (this.TempData["TempPassword"] == null || this.TempData["ConfirmStatement"] == null)
 			return RedirectToAction(nameof(HomeController.Index), "Home");
 		else
 			return this.View();
@@ -313,5 +313,31 @@ public sealed class IdentityController : Controller
 		}
 
 		return this.View(viewModel);
+	}
+
+	/// <summary>
+	/// Generates a new password for the user that replaces their old password.
+	/// </summary>
+	/// <param name="id">Identifier for the user.</param>
+	/// <returns>A redirect to <see cref="ConfirmAdminChange"/> if successful. Redirect to <see cref="ManageUsers"/> if the password change fails.</returns>
+	public async Task<IActionResult> AdminResetPassword(Guid id)
+	{
+		string newPassword = PasswordUtils.GenerateRandomPassword();
+
+		var user = await signInManager.UserManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+		if (user != null)
+		{
+			var removeResult = await this.signInManager.UserManager.RemovePasswordAsync(user);
+			if (removeResult.Succeeded)
+			{
+				await this.signInManager.UserManager.AddPasswordAsync(user, newPassword);
+
+				this.TempData["ConfirmStatement"] = $"Password for {user.FirstName} {user.LastName} successfully changed!";
+				this.TempData["TempPassword"] = newPassword;
+
+				return this.RedirectToAction(nameof(IdentityController.ConfirmAdminChange), "Identity");
+			}
+		}
+			return this.RedirectToAction(nameof(IdentityController.ManageUsers), "Identity");
 	}
 }
