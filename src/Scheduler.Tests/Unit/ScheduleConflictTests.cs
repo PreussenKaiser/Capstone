@@ -23,7 +23,6 @@ public sealed class ScheduleConflictTests
 	/// <summary>
 	/// Initializes the <see cref="ScheduleConflictTests"/> class.
 	/// </summary>
-	/// <param name="factory">The <see cref="WebApplicationFactory{TEntryPoint}"/> to create the mock application with.</param>
 	public ScheduleConflictTests(IScheduleService scheduleService)
 	{
 		this.scheduleService = scheduleService;

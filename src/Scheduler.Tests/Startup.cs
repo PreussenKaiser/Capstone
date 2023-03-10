@@ -6,7 +6,7 @@ namespace Scheduler.Tests;
 /// <summary>
 /// Represents the entry-point for tests.
 /// </summary>
-public sealed class Program
+public sealed class Startup
 {
 	/// <summary>
 	/// Configures DI for tests.
