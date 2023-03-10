@@ -14,26 +14,15 @@ public sealed class TeamController : Controller
 	/// <summary>
 	/// The service to query <see cref="Team"/> models with.
 	/// </summary>
-	private readonly ITeamService teamService;
+	private readonly IRepository<Team> teamService;
 
 	/// <summary>
 	/// Initializes the <see cref="TeamController"/> class.
 	/// </summary>
-	/// <param name="scheduleService">The service to query <see cref="Team"/> models with.</param>
-	public TeamController(ITeamService scheduleService)
+	/// <param name="teamService">The service to query <see cref="Team"/> models with.</param>
+	public TeamController(IRepository<Team> teamService)
 	{
-		this.teamService = scheduleService;
-	}
-
-	/// <summary>
-	/// Displays the <see cref="Index"/> view.
-	/// </summary>
-	/// <returns>A list of all instances of <see cref="Team"/>.</returns>
-	public async Task<IActionResult> Index()
-	{
-		IEnumerable<Team> teams = await this.teamService.GetAllAsync();
-
-		return this.View(teams);
+		this.teamService = teamService;
 	}
 
 	/// <summary>
@@ -43,6 +32,22 @@ public sealed class TeamController : Controller
 	public IActionResult Create()
 	{
 		return this.View();
+	}
+
+	/// <summary>
+	/// Handles POSTs from <see cref="Create"/>.
+	/// </summary>
+	/// <param name="team">POST values</param>
+	/// <returns>Redirected to <see cref="Index"/>.</returns>
+	[HttpPost]
+	public async Task<IActionResult> Create(Team team)
+	{
+		if (!this.ModelState.IsValid)
+			return this.View(team);
+
+		await this.teamService.CreateAsync(team);
+
+		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
 
 	/// <summary>
@@ -58,29 +63,19 @@ public sealed class TeamController : Controller
 	}
 
 	/// <summary>
-	/// Handles POSTs from <see cref="Create"/>.
-	/// </summary>
-	/// <param name="createTeam">POST values</param>
-	/// <returns>Redirected to <see cref="Index"/>.</returns>
-	[HttpPost]
-	public async Task<IActionResult> Create(Team createTeam)
-	{
-		await this.teamService.CreateAsync(createTeam);
-
-		return this.RedirectToAction(nameof(TeamController.Index));
-	}
-
-	/// <summary>
 	/// Handles POST request from <see cref="Update(Guid)"/>.
 	/// </summary>
-	/// <param name="updateTeam">Updates <see cref="Team"/> values.</param>
+	/// <param name="team">Updated <see cref="Team"/> values.</param>
 	/// <returns>Redirected to <see cref="Index"/>.</returns>
 	[HttpPost]
-	public async Task<IActionResult> Update(Team updateTeam)
+	public async Task<IActionResult> Update(Team team)
 	{
-		await this.teamService.UpdateAsync(updateTeam);
+		if (!this.ModelState.IsValid)
+			return this.View(team);
 
-		return this.RedirectToAction(nameof(TeamController.Index));
+		await this.teamService.UpdateAsync(team);
+
+		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
 
 	/// <summary>
@@ -93,6 +88,6 @@ public sealed class TeamController : Controller
 	{
 		await this.teamService.DeleteAsync(id);
 
-		return this.RedirectToAction(nameof(TeamController.Index));
+		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
 }

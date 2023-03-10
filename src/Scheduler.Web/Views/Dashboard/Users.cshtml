@@ -1,0 +1,78 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using Scheduler.Web.Controllers;
+
+@inject UserManager<User> UserManager;
+@model IEnumerable<User>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <a asp-action="@nameof(IdentityController.Register)"
+           asp-controller="Identity"
+           class="btn btn-primary">
+            Register
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Admin</th>
+                <th scope="col" colspan="3" class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in this.Model)
+            {
+                <tr>
+                    <th scope="row">@user.FirstName @user.LastName</th>
+                    <td>@user.Email</td>
+                    <td>
+                        @if (this.UserManager.IsInRoleAsync(user, Role.ADMIN).Result)
+                        {
+                            <span>✔</span>
+                        }
+                    </td>
+                    <td>
+                        @if (this.UserManager.GetUserAsync(User).Result?.Id != user.Id)
+                        {
+                            <form asp-action="@nameof(IdentityController.AdminResetPassword)"
+                                  asp-controller="Identity"
+                                  asp-route-id="@user.Id"
+                                  method="post">
+                                <button type="submit"
+                                        class="btn btn-sm btn-warning">
+                                    Reset Password
+                                </button>
+                            </form>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="@nameof(IdentityController.Profile)"
+                           asp-controller="Identity"
+                           asp-route-id="@user.Id"
+                           class="btn btn-sm btn-secondary">
+                            Update
+                        </a>
+                    </td>
+                    <td>
+                        @if (this.UserManager.GetUserAsync(this.User).Result?.Id != user.Id)
+                        {
+                            <form asp-action="@nameof(IdentityController.Delete)"
+                                  asp-controller="Identity"
+                                  asp-route-id="@user.Id"
+                                  method="post">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

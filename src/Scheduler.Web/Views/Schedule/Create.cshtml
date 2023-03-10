@@ -1,35 +1,55 @@
-﻿@{
-    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
-    string pageTitle = $"Schedule {eventType}";
+﻿<div class="row">
+    <div class="col-12">
+        <form id="eventForm" method="post">
+            <div class="row mb-3">
+                <h1 class="text-center text-danger">
+                    Schedule <span id="title"></span>
+                </h1>
+                <hr />
 
-    this.ViewData["Title"] = pageTitle;
-}
-
-<div class="row">
-    <form id="EventForm"
-          action="../@eventType/Create"
-          method="post"
-          class="col-12"
-          autocomplete="off">
-
-        <div class="row mb-3">
-            <h1 class="text-center text-danger">
-                @pageTitle
-            </h1>
-            <hr />
-
-            <div class="col-sm-4 mx-auto">
-                @await this.Html.PartialAsync("Navigation/_ScheduleNavbar")
+                <div class="col-sm-4 mx-auto">
+                    <div class="list-group list-group-horizontal">
+                        @if (this.User.IsInRole(Role.ADMIN))
+                        {                
+                            <button type="button"
+                                    id="Event"
+                                    onclick="navClick('Event')"
+                                    class="list-group-item list-group-item-action text-center">
+                                Event
+                            </button>
+                        }
+                        <button type="button"
+                                id="Practice"
+                                onclick="navClick('Practice')"
+                                class="list-group-item list-group-item-action text-center">
+                            Practice
+                        </button>
+                        <button type="button"
+                                id="Game"
+                                onclick="navClick('Game')"
+                                class="list-group-item list-group-item-action text-center">
+                            Game
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-        @await this.Html.PartialAsync("Forms/_EventInputs")
-    </form>
+            @await this.Html.PartialAsync("Forms/_EventInputs")
+        </form>
+    </div>
 </div>
 
 @section Scripts {
     <script src="~/js/EventForm.js"></script>
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        @{
+            string selectedNav = this.User.IsInRole(Role.ADMIN)
+                    ? nameof(Event) : nameof(Practice);
+        }
+
+        document.onload = refreshNav('@selectedNav')
+    </script>
 }

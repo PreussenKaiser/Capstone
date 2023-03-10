@@ -1,6 +1,4 @@
-﻿using Scheduler.Core.Models.Identity;
-using Scheduler.Core.Services;
-using Scheduler.Core.Validation;
+﻿using Scheduler.Core.Services;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,6 +25,7 @@ public class Event : IValidatableObject
 	/// </summary>
 	[NotMapped]
 	[Display(Name = nameof(this.Fields))]
+	[Required(ErrorMessage = "Event must be on at least one field.")]
 	public Guid[]? FieldIds { get; set; }
 
 	/// <summary>
@@ -39,15 +38,17 @@ public class Event : IValidatableObject
 	/// <summary>
 	/// When the event starts.
 	/// </summary>
-	[Required(ErrorMessage = "Please enter when the event begins.")]
 	[Display(Name = "Start date")]
+	[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "MM/dd/yyyy hh:mm")]
+	[Required(ErrorMessage = "Please enter when the event begins.")]
 	public required DateTime StartDate { get; set; }
 
 	/// <summary>
 	/// When the event ends.
 	/// </summary>
-	[Required(ErrorMessage = "Please enter when the event ends.")]
 	[Display(Name = "End date")]
+	[DisplayFormat(DataFormatString = "MM/dd/yyyy hh:mm")]
+	[Required(ErrorMessage = "Please enter when the event ends.")]
 	public required DateTime EndDate { get; set; }
 
 	/// <summary>
@@ -89,10 +90,10 @@ public class Event : IValidatableObject
 			results.Add(new("An event is already scheduled for that date."));
 
 		if (this.StartDate < DateTime.Now)
-			results.Add(new("You cannot schedule an Event in the past"));
+			results.Add(new("You cannot schedule an Event in the past."));
 
 		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
-		results.Add(new("End Time must be at least 30 minutes after Start Time"));
+			results.Add(new("End Time must be at least 30 minutes after Start Time."));
 
 		return results;
 	}

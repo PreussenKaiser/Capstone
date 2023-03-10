@@ -1,14 +1,14 @@
-﻿@using Scheduler.Core.Services;
+﻿@using Scheduler.Web.Controllers;
+@using Scheduler.Core.Services;
 @using System.Security.Claims;
-@using Scheduler.Web.Controllers;
 
-@inject IFieldService FieldService
+@inject IRepository<Field> FieldService
 @model Event
 
 @{
    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
 
-    ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+   this.ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 }
 
 @if (this.Model is not null)
@@ -66,19 +66,14 @@
                                 })"></select>
         </div>
 
-        <div id="EventInputs">
-            @if (eventType != nameof(Event))
-            {
-                <partial name="Forms/_@(eventType)Inputs" />
-            }
-        </div>
+        <div id="eventInputs"></div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-6">
-        <a asp-action="@nameof(ScheduleController.Index)"
-           asp-controller="Schedule"
+        <a asp-action="@nameof(DashboardController.Events)"
+           asp-controller="Dashboard"
            class="btn btn-lg btn-danger w-100">
             Cancel
         </a>

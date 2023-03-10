@@ -8,33 +8,21 @@ namespace Scheduler.Web.Controllers;
 /// <summary>
 /// Renders views which display <see cref="Field"/> data.
 /// </summary>
-[Authorize]
+[Authorize(Roles = Role.ADMIN)]
 public sealed class FieldController : Controller
 {
 	/// <summary>
 	/// The service to query <see cref="Field"/> models with.
 	/// </summary>
-	private readonly IFieldService fieldService;
+	private readonly IRepository<Field> fieldService;
 
 	/// <summary>
 	/// Initializes the <see cref="FieldController"/> class.
 	/// </summary>
 	/// <param name="fieldService">The service to query <see cref="Field"/> models with.</param>
-	public FieldController(IFieldService fieldService)
+	public FieldController(IRepository<Field> fieldService)
 	{
 		this.fieldService = fieldService;
-	}
-
-	/// <summary>
-	/// Displays the <see cref="Index"/> view.
-	/// </summary>
-	/// <returns>A view containing a list of fields as well as actions.</returns>
-	[AllowAnonymous]
-	public async Task<IActionResult> Index()
-	{
-		IEnumerable<Field> fields = await this.fieldService.GetAllAsync();
-
-		return this.View(fields);
 	}
 
 	/// <summary>
@@ -54,9 +42,12 @@ public sealed class FieldController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Create(Field field)
 	{
+		if (!this.ModelState.IsValid)
+			return this.View(field);
+
 		await this.fieldService.CreateAsync(field);
 
-		return this.RedirectToAction(nameof(this.Index));
+		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
 
 	/// <summary>
@@ -79,9 +70,12 @@ public sealed class FieldController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Update(Field field)
 	{
+		if (!this.ModelState.IsValid)
+			return this.View(field);
+
 		await this.fieldService.UpdateAsync(field);
 
-		return this.RedirectToAction(nameof(this.Index));
+		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
 
 	/// <summary>
@@ -94,6 +88,6 @@ public sealed class FieldController : Controller
 	{
 		await this.fieldService.DeleteAsync(id);
 
-		return this.RedirectToAction(nameof(this.Index));
+		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
 }

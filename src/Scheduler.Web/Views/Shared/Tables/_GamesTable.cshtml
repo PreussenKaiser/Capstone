@@ -1,0 +1,15 @@
+﻿@using Scheduler.Core.Services;
+
+@inject IRepository<Team> TeamService
+@model Game
+
+@{
+    // This is slow as two database calls are made for each instance.
+    this.Model.HomeTeam = await this.TeamService.GetAsync(this.Model.HomeTeamId);
+    this.Model.OpposingTeam = await this.TeamService.GetAsync(this.Model.OpposingTeamId);
+}
+
+<p class="card-text">
+    <h5>Who</h5>
+    @this.Model.HomeTeam.Name vs. @this.Model.OpposingTeam.Name
+</p>

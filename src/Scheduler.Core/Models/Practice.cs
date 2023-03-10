@@ -11,8 +11,8 @@ public sealed class Practice : Event
 	/// The team practicing.
 	/// References <see cref="Team.Id"/>.
 	/// </summary>
-	[Required(ErrorMessage = "Please select the practicing team.")]
 	[Display(Name = "Practicing Team")]
+	[Required(ErrorMessage = "Please select the practicing team.")]
 	public required Guid TeamId { get; init; }
 
 	/// <summary>

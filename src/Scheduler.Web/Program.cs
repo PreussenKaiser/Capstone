@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Scheduler.Core.Models.Identity;
-using Scheduler.Core.Services;
+using Scheduler.Core.Models;
 using Scheduler.Infrastructure.Persistence;
-using Scheduler.Infrastructure.Services;
+using Scheduler.Infrastructure.Utility;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -18,11 +16,7 @@ string connectionString = builder.Configuration.GetConnectionString(CONN)
 	?? throw new ArgumentException("Could not retrieve connection string.");
 
 builder.Services
-	.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
-	.AddScoped<IFieldService, FieldService>()
-	.AddScoped<IScheduleService, ScheduleService>()
-	.AddScoped<ITeamService, TeamService>()
-	.AddScoped<ILeagueService, LeagueService>()
+	.UseSqlServer(connectionString)
 	.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configure identity
@@ -58,8 +52,3 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
-
-/// <summary>
-/// Required for Scheduler.Tests to discover the class.
-/// </summary>
-public partial class Program { }

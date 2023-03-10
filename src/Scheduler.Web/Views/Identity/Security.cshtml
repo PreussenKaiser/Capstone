@@ -7,6 +7,8 @@
 <form asp-action="Security">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+    <input hidden asp-for="UserId" value="@this.Model.UserId" />
+
     <div class="mb-3">
         <label asp-for="OldPassword" class="form-label"></label>
         <input asp-for="OldPassword" class="form-control" />

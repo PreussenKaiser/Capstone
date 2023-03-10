@@ -13,15 +13,15 @@ public sealed class ScheduleService : IScheduleService
 	/// <summary>
 	/// The database to query.
 	/// </summary>
-	private readonly SchedulerContext database;
+	private readonly SchedulerContext context;
 
 	/// <summary>
 	/// Initializes the <see cref="ScheduleService"/> class.
 	/// </summary>
-	/// <param name="database">The database to query.</param>
-	public ScheduleService(SchedulerContext database)
+	/// <param name="context">The database to query.</param>
+	public ScheduleService(SchedulerContext context)
 	{
-		this.database = database;
+		this.context = context;
 	}
 
 	/// <summary>
@@ -32,13 +32,13 @@ public sealed class ScheduleService : IScheduleService
 	public async Task CreateAsync(Event model)
 	{
 		if (model.FieldIds is not null)
-			model.Fields = await this.database.Fields
+			model.Fields = await this.context.Fields
 				.Where(f => model.FieldIds.Contains(f.Id))
 				.ToListAsync();
 
-		await this.database.Events.AddAsync(model);
+		await this.context.Events.AddAsync(model);
 
-		await this.database.SaveChangesAsync();
+		await this.context.SaveChangesAsync();
 	}
 
 	/// <summary>
@@ -47,7 +47,34 @@ public sealed class ScheduleService : IScheduleService
 	/// <returns>A list of events.</returns>
 	public async Task<IEnumerable<Event>> GetAllAsync()
 	{
-		IEnumerable<Event> events = await this.database.Events.ToListAsync();
+		IEnumerable<Event> events = await this.context.Events
+			.Include(e => e.Fields)
+			.ToListAsync();
+
+		return events;
+	}
+
+	/// <inheritdoc/>
+	public async Task<IEnumerable<TEvent>> GetAllAsync<TEvent>()
+		where TEvent : Event
+	{
+		IEnumerable<TEvent> events = await this.context
+			.Set<TEvent>()
+			.Include(e => e.Fields)
+			.ToListAsync();
+
+		return events;
+	}
+
+	/// <inheritdoc/>
+	public async Task<IEnumerable<TEvent>> GetAllAsync<TEvent>(Guid userId)
+		where TEvent : Event
+	{
+		IEnumerable<TEvent> events = await this.context
+			.Set<TEvent>()
+			.Include(e => e.Fields)
+			.Where(e => e.UserId == userId)
+			.ToListAsync();
 
 		return events;
 	}
@@ -57,7 +84,7 @@ public sealed class ScheduleService : IScheduleService
 	{
 		scheduledEvent.FieldIds ??= Array.Empty<Guid>();
 
-		return await this.database.Events
+		return await this.context.Events
 			.AsNoTracking()
 			.Where(e => e.Id != scheduledEvent.Id)
 			.Include(e => e.Fields)
@@ -75,7 +102,7 @@ public sealed class ScheduleService : IScheduleService
 	/// <exception cref="ArgumentException"/>
 	public async Task<Event> GetAsync(Guid id)
 	{
-		Event? scheduledEvent = await this.database.Events
+		Event? scheduledEvent = await this.context.Events
 			.Include(e => e.Fields)
 			.FirstOrDefaultAsync(e => e.Id == id);
 
@@ -92,25 +119,25 @@ public sealed class ScheduleService : IScheduleService
 	/// <exception cref="ArgumentException"/>
 	public async Task UpdateAsync(Event model)
 	{
-		if (!this.database.Events.AsNoTracking().Contains(model))
+		if (!this.context.Events.AsNoTracking().Contains(model))
 			throw new ArgumentException($"{model.Id} could not be resolved to an Event");
 
 		model.FieldIds ??= Array.Empty<Guid>();
 
-		var entity = this.database.Entry(model);
+		var entity = this.context.Entry(model);
 		entity.State = EntityState.Modified;
 
 		await entity
 			.Collection(e => e.Fields!)
 			.LoadAsync();
 
-		model.Fields = await this.database.Fields
+		model.Fields = await this.context.Fields
 			.Where(f => model.FieldIds.Contains(f.Id))
-			.ToListAsync(); ;
+			.ToListAsync();
 
-		this.database.Events.Update(model);
+		this.context.Events.Update(model);
 
-		await this.database.SaveChangesAsync();
+		await this.context.SaveChangesAsync();
 	}
 
 	/// <summary>
@@ -123,8 +150,8 @@ public sealed class ScheduleService : IScheduleService
 	{
 		Event eventDelete = await this.GetAsync(id);
 
-		this.database.Events.Remove(eventDelete);
+		this.context.Events.Remove(eventDelete);
 
-		await this.database.SaveChangesAsync();
+		await this.context.SaveChangesAsync();
 	}
 }

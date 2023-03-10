@@ -1,5 +1,4 @@
 ﻿@using Scheduler.Web.Controllers;
-@using Scheduler.Web.ViewModels;
 
 @model LoginViewModel
 
@@ -18,22 +17,22 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="mb-3">
-                <label asp-for="Credentials.UserName" class="form-label"></label>
-                <input asp-for="Credentials.UserName"
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email"
                        class="form-control"
-                       autocomplete="username"
+                       autocomplete="email"
                        aria-required="true" />
 
-                <span asp-validation-for="Credentials.UserName" class="text-danger"></span>
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="Credentials.Password" class="form-label"></label>
-                <input asp-for="Credentials.Password"
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password"
                        class="form-control"
                        autocomplete="current-password"
                        aria-required="true" />
 
-                <span asp-validation-for="Credentials.Password" class="text-danger"></span>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
@@ -48,7 +47,7 @@
             <div class="mb-3">
                 <button id="login-submit"
                         type="submit"
-                        class="w-100 btn btn-lg btn-primary">
+                        class="btn btn-lg btn-primary w-100">
                     Log in
                 </button>
             </div>

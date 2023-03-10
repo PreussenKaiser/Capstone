@@ -1,6 +1,4 @@
-﻿using Scheduler.Core.Models.Identity;
-using Scheduler.Core.Models;
-using System.Runtime.CompilerServices;
+﻿using Scheduler.Core.Models;
 
 namespace Scheduler.Infrastructure.Utility;
 
@@ -32,9 +30,9 @@ public static class SeedData
 	/// </summary>
 	public readonly static IEnumerable<League> Leagues = new List<League>()
 	{
-		new() {Id = Guid.NewGuid(), IsArchived = false, Name = "Recreation"},
-		new() {Id = Guid.NewGuid(), IsArchived = false, Name = "Classic"},
-		new() {Id = Guid.NewGuid(), IsArchived = false, Name = "Select"}
+		new() {Id = Guid.NewGuid(), Name = "Recreation"},
+		new() {Id = Guid.NewGuid(), Name = "Classic"},
+		new() {Id = Guid.NewGuid(), Name = "Select"}
 	};
 
 	/// <summary>

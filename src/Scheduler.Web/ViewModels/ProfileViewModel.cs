@@ -8,12 +8,25 @@ namespace Scheduler.Web.ViewModels;
 public sealed class ProfileViewModel
 {
 	/// <summary>
-	/// The user's username.
+	/// The user being profiled.
 	/// </summary>
-	[Display(Name = "Username")]
-	[Required(ErrorMessage = "Please enter a username.")]
-	[MaxLength(256)]
-	public required string UserName { get; set; }
+	public required Guid UserId { get; init; }
+
+	/// <summary>
+	/// The user's first name.
+	/// </summary>
+	[Display(Name = "First name")]
+	[Required(ErrorMessage = "Please enter your first name.")]
+	[MaxLength(32, ErrorMessage = "First name must be below 32 characters in length.")]
+	public required string FirstName { get; init; }
+
+	/// <summary>
+	/// The user's last name.
+	/// </summary>
+	[Display(Name = "Last name")]
+	[Required(ErrorMessage = "Please enter your first name.")]
+	[MaxLength(32, ErrorMessage = "Last name must be below 32 characters in length.")]
+	public required string LastName { get; init; }
 
 	/// <summary>
 	/// The user's email.
@@ -22,4 +35,11 @@ public sealed class ProfileViewModel
 	[MaxLength(256)]
 	[EmailAddress(ErrorMessage = "Please enter a valid email address.")]
 	public required string Email { get; set; }
+
+	/// <summary>
+	/// Whether the user is an admin or not.
+	/// </summary>
+	[Display(Name = "Is Admin")]
+	public bool IsAdmin { get; init; }
+
 }

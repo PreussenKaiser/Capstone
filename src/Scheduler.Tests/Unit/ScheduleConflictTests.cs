@@ -3,7 +3,7 @@ using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Utility;
 using Xunit;
 
-namespace Scheduler.Tests.Integration;
+namespace Scheduler.Tests.Unit;
 
 /// <summary>
 /// Tests collision detection for scheduled events.

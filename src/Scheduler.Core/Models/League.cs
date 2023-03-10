@@ -18,9 +18,4 @@ public sealed class League
 	[Required]
 	[MaxLength(32)]
 	public required string Name { get; set; }
-
-	/// <summary>
-	/// A value that indicates whether or not the league is currently active.
-	/// </summary>
-	public required bool IsArchived { get; set; }
 }
