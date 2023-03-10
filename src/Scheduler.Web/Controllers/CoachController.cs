@@ -31,4 +31,13 @@ public sealed class CoachController : Controller
 
 		return this.View(games);
 	}
+
+	/// <summary>
+	/// Get the coach's scheduled games based off of the search.
+	/// </summary>
+	/// <returns>The coaches games.</returns>
+	public Task<Game> GetGames()
+	{
+
+	}
 }

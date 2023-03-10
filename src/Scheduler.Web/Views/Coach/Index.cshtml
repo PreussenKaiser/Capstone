@@ -36,8 +36,16 @@
         <h3>Current Scheduled Events</h3>
     </div>
     <div class="row mb-1">
-        <div class="col-sm-7 mb-2">
-            <!--<input class="w-100 form-control" />-->
+        <div class="col-sm-6 mb-2">
+            <form method="get" asp-controller="Coach" asp-action="GetGames">
+                <input type="text" name="coachGame" />
+            </form>
+            <input class="w-100 form-control" onkeypress="" />
+        </div>
+        <div class="col-sm-6 mb-2">
+            <form method="get">
+                <input type="text" name="coachPractice" />
+            </form>
         </div>
     </div>
     <div class="row">
