@@ -9,7 +9,7 @@ The public can then search this schedule to find events of interest to them.
 Parents and athletes can find out when their practices or games are scheduled, and which field they are on, and spectators can plan their attendance of the facility easily through the use of this app.
 
 #### Technologies
-- .NET CORE 7
+- .NET Core 7
 - ASP.NET Core
 - ASP.NET Identity Core
 - Entity Framework Core
