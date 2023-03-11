@@ -48,6 +48,8 @@ public static class Bootstrap
 		var context = services.GetRequiredService<SchedulerContext>();
 
 		context.Users.AddRange(SeedData.Users);
+		context.Roles.AddRange(SeedData.Roles);
+		context.UserRoles.AddRange(SeedData.UserRoles);
 		context.Fields.AddRange(SeedData.Fields);
 		context.Leagues.AddRange(SeedData.Leagues);
 		context.Teams.AddRange(SeedData.Teams);

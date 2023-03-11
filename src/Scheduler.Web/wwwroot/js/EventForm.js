@@ -14,7 +14,7 @@ function navClick(eventType) {
 
     $.ajax({
         type: 'GET',
-        url: '../Schedule/EventPartial',
+        url: '/Schedule/EventPartial',
         data: { type: eventType },
         success: refreshInputs
     })

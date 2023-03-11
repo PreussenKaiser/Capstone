@@ -12,13 +12,13 @@ public class Event : IValidatableObject
 	/// <summary>
 	/// The event's unique identifier.
 	/// </summary>
-	public required Guid Id { get; init; }
+	public Guid Id { get; init; }
 
 	/// <summary>
 	/// The user who scheduled the event.
 	/// References <see cref="User.Id"/>.
 	/// </summary>
-	public required Guid UserId { get; init; }
+	public Guid UserId { get; init; }
 
 	/// <summary>
 	/// Foreign key identifiers referencing <see cref="Field.Id"/>.
@@ -33,15 +33,15 @@ public class Event : IValidatableObject
 	/// </summary>
 	[Required(ErrorMessage = "Please enter the event's name.")]
 	[MaxLength(32)]
-	public required string Name { get; set; }
+	public required string Name { get; init; }
 
 	/// <summary>
 	/// When the event starts.
 	/// </summary>
 	[Display(Name = "Start date")]
-	[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:M/dd/yyyy h:mm tt}")]
+	[DisplayFormat(DataFormatString = "{0:M/dd/yyyy h:mm tt}")]
 	[Required(ErrorMessage = "Please enter when the event begins.")]
-	public required DateTime StartDate { get; set; }
+	public DateTime StartDate { get; set; }
 
 	/// <summary>
 	/// When the event ends.
@@ -49,18 +49,18 @@ public class Event : IValidatableObject
 	[Display(Name = "End date")]
 	[DisplayFormat(DataFormatString = "{0:M/dd/yyyy h:mm tt}")]
 	[Required(ErrorMessage = "Please enter when the event ends.")]
-	public required DateTime EndDate { get; set; }
+	public DateTime EndDate { get; set; }
 
 	/// <summary>
 	/// Whether the event is recurring or not.
 	/// </summary>
 	[Display(Name = "Recurring?")]
-	public required bool IsRecurring { get; set; }
+	public bool IsRecurring { get; init; }
 
 	/// <summary>
-	/// The user who scheduled the event.
+	/// The event's reccurence pattern if it's recurring.
 	/// </summary>
-	public User? User { get; set; }
+	public Recurrence? Recurrence { get; set; }
 
 	/// <summary>
 	/// Fields where the event is taking place.

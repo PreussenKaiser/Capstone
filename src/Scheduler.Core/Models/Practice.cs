@@ -13,7 +13,7 @@ public sealed class Practice : Event
 	/// </summary>
 	[Display(Name = "Practicing Team")]
 	[Required(ErrorMessage = "Please select the practicing team.")]
-	public required Guid TeamId { get; init; }
+	public Guid TeamId { get; init; }
 
 	/// <summary>
 	/// The team practicing.

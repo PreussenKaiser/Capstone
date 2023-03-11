@@ -48,6 +48,7 @@ public sealed class ScheduleService : IScheduleService
 	public async Task<IEnumerable<Event>> GetAllAsync()
 	{
 		IEnumerable<Event> events = await this.context.Events
+			.Include(e => e.Recurrence)
 			.Include(e => e.Fields)
 			.ToListAsync();
 
@@ -103,6 +104,7 @@ public sealed class ScheduleService : IScheduleService
 	public async Task<Event> GetAsync(Guid id)
 	{
 		Event? scheduledEvent = await this.context.Events
+			.Include(e => e.Recurrence)
 			.Include(e => e.Fields)
 			.FirstOrDefaultAsync(e => e.Id == id);
 
@@ -134,6 +136,27 @@ public sealed class ScheduleService : IScheduleService
 		model.Fields = await this.context.Fields
 			.Where(f => model.FieldIds.Contains(f.Id))
 			.ToListAsync();
+
+		if (model.Recurrence is null)
+		{
+			Recurrence? recurrence = await this.context.Recurrences.FindAsync(model.Id);
+
+			if (recurrence is not null)
+				this.context.Recurrences.Remove(recurrence);
+		}
+		else
+		{
+			model.Recurrence.Id = model.Id;
+
+			if (await this.context.Recurrences.ContainsAsync(model.Recurrence))
+			{
+				this.context.Recurrences.Update(model.Recurrence);
+			}
+			else
+			{
+				await this.context.Recurrences.AddAsync(model.Recurrence);
+			}
+		}
 
 		this.context.Events.Update(model);
 

@@ -42,14 +42,16 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/EventForm.js"></script>
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/EventForm.js"></script>
+    <script src="~/js/RecurrenceForm.js"></script>
+
     <script>
         @{
             string selectedNav = this.User.IsInRole(Role.ADMIN)
-                    ? nameof(Event) : nameof(Practice);
+            ? nameof(Event) : nameof(Practice);
         }
 
-        document.onload = refreshNav('@selectedNav')
+            document.onload = refreshNav('@selectedNav')
     </script>
 }

@@ -5,11 +5,10 @@
 <div class="row mb-3">
     <div class="col-sm-6">
         <a asp-action="@nameof(ScheduleController.Create)"
-           asp-controller="Schedule"
-           class="btn btn-primary">
+            asp-controller="Schedule"
+            class="btn btn-primary">
             Schedule New
         </a>
-
     </div>
     <div class="col-sm-6">
         <select class="form-select border border-3 border-secondary" id="scheduleFilter">
@@ -19,9 +18,7 @@
         </select>
     </div>
 </div>
-<div class="row" id="scheduleContainer">
-    @await this.Html.PartialAsync("Tables/_EventsTable", this.Model)
-</div>
+<div class="row" id="scheduleContainer"></div>
 
 @section Scripts {
     <script src="~/js/ScheduleTable.js"></script>

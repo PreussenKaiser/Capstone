@@ -1,4 +1,5 @@
-﻿using Scheduler.Core.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Scheduler.Core.Models;
 
 namespace Scheduler.Infrastructure.Utility;
 
@@ -8,25 +9,69 @@ namespace Scheduler.Infrastructure.Utility;
 public static class SeedData
 {
 	/// <summary>
-	/// Mock users.
+	/// Seeded users.
 	/// </summary>
 	public readonly static IEnumerable<User> Users = new List<User>()
 	{
-		new() { Id = Guid.NewGuid(), FirstName = "Test", LastName = "User" }
+		new()
+		{
+			Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
+			UserName = "teamnull@gmail.com",
+			NormalizedUserName = "TEAMNULL@GMAIL.COM",
+			FirstName = "Team",
+			LastName = "Null",
+			Email = "teamnull@gmail.com",
+			PasswordHash = new PasswordHasher<User>().HashPassword(null!, "T3am-Null-Rul3z"),
+			SecurityStamp = Guid.NewGuid().ToString("D")
+		}
 	};
 
 	/// <summary>
-	/// Mock fields.
+	/// Seeded application roles.
+	/// </summary>
+	public readonly static IEnumerable<Role> Roles = new List<Role>
+	{
+		new()
+		{
+			Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
+			Name = Role.ADMIN,
+			NormalizedName = Role.ADMIN,
+			ConcurrencyStamp = Guid.NewGuid().ToString()
+		}
+	};
+
+	/// <summary>
+	/// Seeded user-role relationships.
+	/// </summary>
+	public readonly static IEnumerable<IdentityUserRole<Guid>> UserRoles = new List<IdentityUserRole<Guid>>
+	{
+		new()
+		{
+			RoleId = Roles.First().Id,
+			UserId = Users.First().Id
+		}
+	};
+
+	/// <summary>
+	/// Seeded fields.
 	/// </summary>
 	public readonly static IEnumerable<Field> Fields = new List<Field>()
 	{
 		new() { Id = Guid.NewGuid(), Name = "Field 1" },
-		new() { Id = Guid.NewGuid(), Name = "Field 2" },
-		new() { Id = Guid.NewGuid(), Name = "Field 3" }
+		new() { Id = Guid.NewGuid(), Name = "Field 2 (Scaffidi)" },
+		new() { Id = Guid.NewGuid(), Name = "Field 3" },
+		new() { Id = Guid.NewGuid(), Name = "Field 4" },
+		new() { Id = Guid.NewGuid(), Name = "Field 5" },
+		new() { Id = Guid.NewGuid(), Name = "Field 6" },
+		new() { Id = Guid.NewGuid(), Name = "Field 7" },
+		new() { Id = Guid.NewGuid(), Name = "Field 8" },
+		new() { Id = Guid.NewGuid(), Name = "Field 9M" },
+		new() { Id = Guid.NewGuid(), Name = "Field 9S" },
+		new() { Id = Guid.NewGuid(), Name = "Field 10" }
 	};
 
 	/// <summary>
-	/// Mock leagues.
+	/// Seeded leagues.
 	/// </summary>
 	public readonly static IEnumerable<League> Leagues = new List<League>()
 	{
@@ -36,28 +81,34 @@ public static class SeedData
 	};
 
 	/// <summary>
-	/// Mock teams.
+	/// Seeded teams.
 	/// </summary>
 	public readonly static IEnumerable<Team> Teams = new List<Team>()
 	{
-		new() { Id = Guid.NewGuid(), Name = "Team 1", LeagueId = Leagues.First().Id, League = Leagues.First()},
-		new() { Id = Guid.NewGuid(), Name = "Team 2", LeagueId = Leagues.First().Id, League = Leagues.First() },
-		new() { Id = Guid.NewGuid(), Name = "Team 3", LeagueId = Leagues.First().Id, League = Leagues.First() }
+		new() { Id = Guid.NewGuid(), Name = "Null", LeagueId = Leagues.First().Id, League = Leagues.First()},
+		new() { Id = Guid.NewGuid(), Name = "Gondolin", LeagueId = Leagues.Skip(1).First().Id, League = Leagues.Skip(1).First() },
+		new() { Id = Guid.NewGuid(), Name = "Numenor", LeagueId = Leagues.Last().Id, League = Leagues.Last() }
 	};
 
 	/// <summary>
-	/// Mock events.
+	/// Seeded events.
 	/// </summary>
 	public readonly static IEnumerable<Event> Events = new List<Event>()
 	{
 		new()
 		{
-			Id = Guid.NewGuid(),
+			Id = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 			UserId = Users.First().Id,
-			Name = "Event 1",
+			Name = "Event",
 			StartDate = new(2023, 3, 24, 12, 0, 0),
 			EndDate = new(2023, 3, 24, 15, 0, 0),
 			IsRecurring = true,
+			Recurrence = new()
+			{
+				Id = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
+				Occurences = 3,
+				Type = RecurrenceType.Weekly
+			},
 			Fields = Fields.ToList()
 		},
 		new Practice()
@@ -65,7 +116,7 @@ public static class SeedData
 			Id = Guid.NewGuid(),
 			UserId = Users.First().Id,
 			TeamId = Teams.First().Id,
-			Name = "Practice 1",
+			Name = "Practice",
 			StartDate = new(2023, 3, 14, 17, 0, 0),
 			EndDate = new(2023, 3, 14, 19, 0, 0),
 			IsRecurring = false,
@@ -77,7 +128,7 @@ public static class SeedData
 			UserId = Users.First().Id,
 			HomeTeamId = Teams.First().Id,
 			OpposingTeamId = Teams.Last().Id,
-			Name = "Game 1",
+			Name = "Game",
 			StartDate = new(2023, 3, 15, 17, 0, 0),
 			EndDate = new(2023, 3, 15, 20, 0, 0),
 			IsRecurring = false,

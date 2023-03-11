@@ -17,7 +17,7 @@ public sealed class Field
 	/// </summary>
 	[Required]
 	[MaxLength(32)]
-	public required string Name { get; set; }
+	public required string Name { get; init; }
 
 	/// <summary>
 	/// Events taking place on the field.

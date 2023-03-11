@@ -10,12 +10,12 @@ public sealed class League
 	/// <summary>
 	/// The league's unique id.
 	/// </summary>
-	public required Guid Id { get; init; }
+	public Guid Id { get; init; }
 
 	/// <summary>
 	/// The league's name.
 	/// </summary>
 	[Required]
 	[MaxLength(32)]
-	public required string Name { get; set; }
+	public required string Name { get; init; }
 }

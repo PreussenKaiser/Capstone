@@ -14,17 +14,11 @@ namespace Scheduler.Web.Controllers;
 public sealed class DashboardController : Controller
 {
 	/// <summary>
-	/// Displays the <see cref="Events(IScheduleService)"/> view.
+	/// Displays the <see cref="Events"/> view.
 	/// </summary>
-	/// <param name="scheduleService">The service to query the inital events list with.</param>
 	/// <returns>A view containing scheduled events.</returns>
-	public async Task<IActionResult> Events(
-		[FromServices] IScheduleService scheduleService)
-	{
-		IEnumerable<Event> events = await scheduleService.GetAllAsync();
-
-		return this.View(events);
-	}
+	public IActionResult Events()
+		=> this.View();
 
 	/// <summary>
 	/// Displays the <see cref="Teams(ITeamService)"/> view.

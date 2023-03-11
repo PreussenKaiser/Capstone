@@ -42,8 +42,15 @@
             </div>
         </div>
         <div class="form-check mb-3">
-            <input asp-for="IsRecurring" type="checkbox" class="form-check-input">
+            <input asp-for="IsRecurring" type="checkbox" class="form-check-input" id="recurrenceCheck">
             <label asp-for="IsRecurring" class="form-check-label"></label>
+        </div>
+        <div id="recurrenceInputs">
+            @if (this.Model is not null &&
+                 this.Model.Recurrence is not null)
+            {
+                <partial name="Forms/_RecurrenceInputs" />
+            }
         </div>
     </div>
     <div class="col-sm-6">
