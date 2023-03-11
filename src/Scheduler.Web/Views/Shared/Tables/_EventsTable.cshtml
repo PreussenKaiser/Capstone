@@ -12,9 +12,9 @@
                 <h4 class="card-title">@scheduledEvent.Name</h4>
                 <p class="card-text">
                     <h5>When</h5>
-                    <b>Starts</b> @scheduledEvent.StartDate.ToString("MM/dd/yyyy hh:mm tt")
+                    <b>Starts</b> @Html.DisplayFor(model => scheduledEvent.StartDate)
                     <br />
-                    <b>Ends</b> @scheduledEvent.EndDate.ToString("MM/dd/yyyy hh:mm tt")
+                    <b>Ends</b> @Html.DisplayFor(model => scheduledEvent.EndDate)
                 </p>
                 <p class="card-text">
                     <h5>Where</h5>

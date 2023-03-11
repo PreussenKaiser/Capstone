@@ -36,7 +36,7 @@
                     <tr>
                         <td>@teamService.GetAsync(game.HomeTeamId).Result.Name</td>
                         <td>@teamService.GetAsync(game.OpposingTeamId).Result.Name</td>
-                        <td>@game.StartDate</td>
+                            <td>@Html.DisplayFor(model => game.StartDate)</td>
                     </tr>
                     }
                 </tbody>
@@ -59,7 +59,7 @@
                     {
                         <tr>
                             <td>@events.Name</td>
-                            <td>@events.StartDate</td>
+                            <td>@Html.DisplayFor(model => events.StartDate)</td>
                         </tr>
                     }
                 </tbody>
