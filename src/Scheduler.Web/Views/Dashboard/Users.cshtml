@@ -44,7 +44,8 @@
                                   asp-route-id="@user.Id"
                                   method="post">
                                 <button type="submit"
-                                        class="btn btn-sm btn-warning">
+                                        class="btn btn-sm btn-warning"
+                                        onclick="return confirm('Are you sure you want to reset the password for @user.FirstName @user.LastName?')">
                                     Reset Password
                                 </button>
                             </form>
@@ -65,7 +66,7 @@
                                   asp-controller="Identity"
                                   asp-route-id="@user.Id"
                                   method="post">
-                                <button type="submit" class="btn btn-sm btn-danger">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete @user.FirstName @user.LastName?')">
                                     Delete
                                 </button>
                             </form>

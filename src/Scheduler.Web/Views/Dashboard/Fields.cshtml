@@ -36,7 +36,8 @@
                                   asp-route-id="@field.Id"
                                   method="post">
                                 <button type="submit"
-                                        class="btn btn-sm btn-danger">
+                                        class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Are you sure you want to delete @field.Name?')">
                                     Delete
                                 </button>
                             </form>
