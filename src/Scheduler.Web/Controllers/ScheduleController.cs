@@ -15,9 +15,9 @@ namespace Scheduler.Web.Controllers;
 public sealed class ScheduleController : Controller
 {
 	/// <summary>
-	/// The database to schedule events with.
+	/// The service to query events with.
 	/// </summary>
-	private readonly SchedulerContext context;
+	private readonly IScheduleService scheduleService;
 
 	/// <summary>
 	/// The service to query users with.
@@ -27,11 +27,11 @@ public sealed class ScheduleController : Controller
 	/// <summary>
 	/// Initializes the <see cref="ScheduleController"/> class.
 	/// </summary>
-	/// <param name="context">The database to schedule events with.</param>
+	/// <param name="schedulerService">The service to query events with.</param>
 	/// <param name="userManager">The service to query users with.</param>
-	public ScheduleController(SchedulerContext context, UserManager<User> userManager)
+	public ScheduleController(IScheduleService schedulerService, UserManager<User> userManager)
 	{
-		this.context = context;
+		this.scheduleService = schedulerService;
 		this.userManager = userManager;
 	}
 
@@ -50,29 +50,9 @@ public sealed class ScheduleController : Controller
 	/// <returns>A table of scheduled events.</returns>
 	public async Task<IActionResult> TablePartial(string type)
 	{
-		IEnumerable<Event>? events = type switch
-		{
-			nameof(Event) => await this.context.Events
-				.Include(e => e.Fields)
-				.ToListAsync(),
+		IEnumerable<Event> events = await this.scheduleService.GetAllAsync(type);
 
-			nameof(Practice) => await this.context.Practices
-				.Include(p => p.Fields)
-				.Include(p => p.Team)
-				.ToListAsync(),
-
-			nameof(Game) => await this.context.Games
-				.Include(g => g.Fields)
-				.Include(g => g.HomeTeam)
-				.Include(g => g.OpposingTeam)
-				.ToListAsync(),
-
-			_ => null
-		};
-
-		return events is null
-			? this.BadRequest($"No event of type {type} exists")
-			: this.PartialView($"Tables/_EventsTable", events);
+		return this.PartialView($"Tables/_EventsTable", events);
 	}
 
 	/// <summary>
@@ -91,7 +71,7 @@ public sealed class ScheduleController : Controller
 	/// Returned to <see cref="Create"/> otherwise.
 	/// </returns>
 	[HttpPost]
-	public async Task<IActionResult> CreateEvent(dynamic scheduledEvent)
+	public async Task<IActionResult> CreateEvent(Event scheduledEvent)
 		=> this.User.IsInRole(Role.ADMIN)
 			? await this.CreateAsync(scheduledEvent)
 			: this.Problem();
@@ -130,7 +110,7 @@ public sealed class ScheduleController : Controller
 		if (await this.userManager.GetUserAsync(this.User) is not User user)
 			return this.BadRequest("Please log in.");
 
-		if (await this.context.Events.FindAsync(id) is not Event scheduledEvent)
+		if (await this.scheduleService.GetAsync(id) is not Event scheduledEvent)
 			return this.NotFound($"No event with id {id} exists.");
 
 		if (scheduledEvent.UserId != user.Id && !this.User.IsInRole(Role.ADMIN))
@@ -185,12 +165,7 @@ public sealed class ScheduleController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		if (await this.context.Events.FindAsync(id) is not Event scheduledEvent)
-			return this.BadRequest($"Event with id {id} does not exist.");
-
-		this.context.Events.Remove(scheduledEvent);
-
-		await this.context.SaveChangesAsync();
+		await this.scheduleService.DeleteAsync(id);
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
@@ -210,14 +185,7 @@ public sealed class ScheduleController : Controller
 			return this.View(nameof(this.Create), scheduledEvent);
 		}
 
-		if (scheduledEvent.FieldIds is not null)
-			scheduledEvent.Fields = await this.context.Fields
-				.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
-				.ToListAsync();
-
-		await this.context.Events.AddAsync(scheduledEvent);
-
-		await this.context.SaveChangesAsync();
+		await this.scheduleService.CreateAsync(scheduledEvent);
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
@@ -243,7 +211,7 @@ public sealed class ScheduleController : Controller
 		if (scheduledEvent.UserId != user.Id && !this.User.IsInRole(Role.ADMIN))
 			return this.Problem();
 
-		this.context.Events.Update(scheduledEvent);
+		await this.scheduleService.UpdateAsync(scheduledEvent);
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}

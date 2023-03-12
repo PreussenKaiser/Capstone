@@ -15,12 +15,11 @@ public interface IScheduleService : IRepository<Event>
 	Task<bool> HasConflictsAsync(Event scheduledEvent);
 
 	/// <summary>
-	/// Gets all instances of <see cref="Event"/> of type <typeparamref name="TEvent"/>.
+	/// Gets all instances of <see cref="Event"/> tht match the discriminator.
 	/// </summary>
-	/// <typeparam name="TEvent">The type of <see cref="Event"/> to get.</typeparam>
-	/// <returns>All events of type <typeparamref name="TEvent"/>.</returns>
-	Task<IEnumerable<TEvent>> GetAllAsync<TEvent>()
-		where TEvent : Event;
+	/// <param name="type">The type of <see cref="Event"/> to search for.</param>
+	/// <returns>All events that match the discriminator.</returns>
+	Task<IEnumerable<Event>> GetAllAsync(string type);
 
 	/// <summary>
 	/// Gets all instances of <see cref="Event"/> of type <typeparamref name="TEvent"/> created by a user.

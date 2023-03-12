@@ -1,5 +1,5 @@
 $(() => {
-    refresh('Event')
+    refresh('')
 
     $('#scheduleFilter').on('change', () => {
         const type = $('#scheduleFilter option:selected').val()

@@ -32,12 +32,12 @@
         <div class="row mb-3">
             <div class="col-6">
                 <label asp-for="StartDate" class="form-label"></label>
-                <input asp-for="StartDate" min=@ViewBag.Today type="datetime-local" class="form-control" />
+                <input asp-for="StartDate" min=@this.ViewBag.Today type="datetime-local" class="form-control" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
             <div class="col-6">
                 <label asp-for="EndDate" class="form-label"></label>
-                <input asp-for="EndDate" min=@ViewBag.Today type="datetime-local" class="form-control" />
+                <input asp-for="EndDate" min=@this.ViewBag.Today type="datetime-local" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
         </div>

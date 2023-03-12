@@ -63,7 +63,9 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 	{
 		builder.Entity<Event>(builder =>
 		{
-			builder.UseTptMappingStrategy();
+			builder
+				.Property("Discriminator")
+				.HasMaxLength(8);
 
 			builder
 				.HasOne(e => e.Recurrence)

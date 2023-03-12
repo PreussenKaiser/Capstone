@@ -56,13 +56,30 @@ public sealed class ScheduleService : IScheduleService
 	}
 
 	/// <inheritdoc/>
-	public async Task<IEnumerable<TEvent>> GetAllAsync<TEvent>()
-		where TEvent : Event
+	public async Task<IEnumerable<Event>> GetAllAsync(string type)
 	{
-		IEnumerable<TEvent> events = await this.context
-			.Set<TEvent>()
-			.Include(e => e.Fields)
-			.ToListAsync();
+		IEnumerable<Event>? events = type switch
+		{
+			nameof(Event) => await this.context.Events
+				.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}")
+				.Include(e => e.Fields)
+				.ToListAsync(),
+
+			nameof(Practice) => await this.context.Practices
+				.Include(p => p.Fields)
+				.Include(p => p.Team)
+				.ToListAsync(),
+
+			nameof(Game) => await this.context.Games
+				.Include(g => g.Fields)
+				.Include(g => g.HomeTeam)
+				.Include(g => g.OpposingTeam)
+				.ToListAsync(),
+
+			_ => await this.context.Events
+				.Include(e => e.Fields)
+				.ToListAsync()
+		};
 
 		return events;
 	}
