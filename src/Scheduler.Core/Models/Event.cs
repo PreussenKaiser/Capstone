@@ -26,6 +26,7 @@ public class Event : IValidatableObject
 	[NotMapped]
 	[Display(Name = nameof(this.Fields))]
 	[Required(ErrorMessage = "Event must be on at least one field.")]
+	[MinLength(1, ErrorMessage = "Event must be on at least one field.")]
 	public Guid[]? FieldIds { get; set; }
 
 	/// <summary>

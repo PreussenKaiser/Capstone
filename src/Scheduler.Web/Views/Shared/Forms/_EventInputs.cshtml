@@ -64,6 +64,7 @@
                                                this.Model.Fields is not null &&
                                                this.Model.Fields.Any(f => f.Id == field.Id)
                                 })"></select>
+            <span asp-validation-for="FieldIds" class="text-danger"></span>
         </div>
 
         <div id="eventInputs"></div>
@@ -79,7 +80,7 @@
         </a>
     </div>
     <div class="col-6">
-        <button class="btn btn-lg btn-primary w-100">
+        <button class="btn btn-lg btn-primary w-100" type="submit">
             Submit
         </button>
     </div>
