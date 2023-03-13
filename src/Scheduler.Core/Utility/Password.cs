@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Scheduler.Core.Security;
+namespace Scheduler.Core.Utility;
 
 /// <summary>
 /// Password utility methods.

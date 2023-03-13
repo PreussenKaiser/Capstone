@@ -1,18 +1,19 @@
-﻿@using Scheduler.Core.Services;
+﻿@using Scheduler.Web.Persistence;
+@using Scheduler.Web.Extensions;
 
 @{
    string eventType = this.ViewData["EventType"] as string ?? "Practice";
 }
 
-@inject IRepository<Team> TeamService
+@inject SchedulerContext Scheduler
 @model Practice
 
 <div class="mb-3">
     <label asp-for="TeamId" class="form-label"></label>
     <select asp-for="TeamId"
-            asp-items="this.TeamService
-                .GetAllAsync()
-                .Result
+            asp-items="this.Scheduler
+                .GetAll<Team>()
+                .ToList()
                 .Select(team => new SelectListItem
                 {
                     Text = team.Name,

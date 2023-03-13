@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
-using Scheduler.Infrastructure.Persistence;
-using Scheduler.Infrastructure.Utility;
+using Scheduler.Web.Persistence;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -16,7 +15,7 @@ string connectionString = builder.Configuration.GetConnectionString(CONN)
 	?? throw new ArgumentException("Could not retrieve connection string.");
 
 builder.Services
-	.UseSqlServer(connectionString)
+	.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
 	.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configure identity

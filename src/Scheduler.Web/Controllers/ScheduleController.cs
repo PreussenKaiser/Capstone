@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
-using Scheduler.Core.Services;
 using Scheduler.Core.Validation;
+using Scheduler.Web.Persistence;
+using Scheduler.Web.Extensions;
 
 namespace Scheduler.Web.Controllers;
 
@@ -14,9 +15,9 @@ namespace Scheduler.Web.Controllers;
 public sealed class ScheduleController : Controller
 {
 	/// <summary>
-	/// The service to query events with.
+	/// The database to schedule events with.
 	/// </summary>
-	private readonly IScheduleService scheduleService;
+	private readonly SchedulerContext context;
 
 	/// <summary>
 	/// The service to query users with.
@@ -26,11 +27,12 @@ public sealed class ScheduleController : Controller
 	/// <summary>
 	/// Initializes the <see cref="ScheduleController"/> class.
 	/// </summary>
-	/// <param name="schedulerService">The service to query events with.</param>
+	/// <param name="context">The database to query events with.</param>
 	/// <param name="userManager">The service to query users with.</param>
-	public ScheduleController(IScheduleService schedulerService, UserManager<User> userManager)
+	public ScheduleController(
+		SchedulerContext context, UserManager<User> userManager)
 	{
-		this.scheduleService = schedulerService;
+		this.context = context;
 		this.userManager = userManager;
 	}
 
@@ -47,10 +49,10 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="type">The type of instances to display.</param>
 	/// <returns>A table of scheduled events.</returns>
-	public async Task<IActionResult> TablePartial(string type)
+	public IActionResult TablePartial(string type)
 	{
 		List<Event> eventsWithRecurring = new();
-		IEnumerable<Event> events = await this.scheduleService.GetAllAsync(type);
+		IEnumerable<Event> events = this.context.GetSchedule(type);
 
 		foreach (Event e in events)
 			eventsWithRecurring.AddRange(e.GenerateSchedule());
@@ -115,7 +117,7 @@ public sealed class ScheduleController : Controller
 		if (await this.userManager.GetUserAsync(this.User) is not User user)
 			return this.BadRequest("Please log in.");
 
-		if (await this.scheduleService.GetAsync(id) is not Event scheduledEvent)
+		if (await this.context.GetAsync<Event>(id) is not Event scheduledEvent)
 			return this.NotFound($"No event with id {id} exists.");
 
 		if (scheduledEvent.UserId != user.Id && !this.User.IsInRole(Role.ADMIN))
@@ -170,7 +172,7 @@ public sealed class ScheduleController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		await this.scheduleService.DeleteAsync(id);
+		await this.context.DeleteAsync<Event>(id);
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
@@ -189,7 +191,16 @@ public sealed class ScheduleController : Controller
 			return this.View(nameof(this.Create), scheduledEvent);
 		}
 
-		await this.scheduleService.CreateAsync(scheduledEvent);
+		Event? conflict = scheduledEvent.FindConflict(this.context.GetSchedule());
+
+		if (conflict is not null)
+		{
+			this.ModelState.AddModelError(string.Empty, "An event is already scheduled for that date");
+
+			return this.View(nameof(this.Create), scheduledEvent);
+		}
+
+		await this.context.CreateAsync(scheduledEvent);
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
@@ -208,13 +219,22 @@ public sealed class ScheduleController : Controller
 			return this.View(nameof(this.Update), scheduledEvent);
 		}
 
+		Event? conflict = scheduledEvent.FindConflict(this.context.GetSchedule());
+
+		if (conflict is not null)
+		{
+			this.ModelState.AddModelError(string.Empty, "An event is already scheduled for that date");
+
+			return this.View(nameof(this.Create), scheduledEvent);
+		}
+
 		if (await this.userManager.GetUserAsync(this.User) is not User user)
 			return this.BadRequest("Please log in.");
 
 		if (scheduledEvent.UserId != user.Id && !this.User.IsInRole(Role.ADMIN))
 			return this.Problem();
 
-		await this.scheduleService.UpdateAsync(scheduledEvent);
+		await this.context.UpdateAsync(scheduledEvent);
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}

@@ -1,8 +1,4 @@
-﻿@using Scheduler.Web.Controllers;
-@using Scheduler.Core.Services;
-
-@inject IRepository<Team> teamService
-@model IEnumerable<Event>
+﻿@model IEnumerable<Event>
 
 @{
     this.ViewData["Title"] = "Home Page";
@@ -31,14 +27,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var game in this.Model.OfType<Game>())
-                    {
-                    <tr>
-                        <td>@teamService.GetAsync(game.HomeTeamId).Result.Name</td>
-                        <td>@teamService.GetAsync(game.OpposingTeamId).Result.Name</td>
-                            <td>@Html.DisplayFor(model => game.StartDate)</td>
-                    </tr>
-                    }
                 </tbody>
             </table>
         </div>
@@ -59,7 +47,7 @@
                     {
                         <tr>
                             <td>@events.Name</td>
-                            <td>@Html.DisplayFor(model => events.StartDate)</td>
+                            <td>@this.Html.DisplayFor(model => events.StartDate)</td>
                         </tr>
                     }
                 </tbody>

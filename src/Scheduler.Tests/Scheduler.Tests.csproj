@@ -22,7 +22,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Scheduler.Core\Scheduler.Core.csproj" />
-        <ProjectReference Include="..\Scheduler.Infrastructure\Scheduler.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

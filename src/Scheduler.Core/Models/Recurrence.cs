@@ -5,14 +5,8 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents a pattern of recurrence.
 /// </summary>
-public sealed class Recurrence
+public sealed class Recurrence : ModelBase
 {
-	/// <summary>
-	/// The pattern's unique identifier.
-	/// References <see cref="Event.Id"/>.
-	/// </summary>
-	public Guid Id { get; init; }
-
 	/// <summary>
 	/// How many times the pattern occurs.
 	/// </summary>

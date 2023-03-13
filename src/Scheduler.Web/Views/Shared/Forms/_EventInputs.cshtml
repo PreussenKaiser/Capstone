@@ -1,8 +1,9 @@
-﻿@using Scheduler.Web.Controllers;
-@using Scheduler.Core.Services;
+﻿@using Scheduler.Web.Persistence;
+@using Scheduler.Web.Extensions;
+@using Scheduler.Web.Controllers;
 @using System.Security.Claims;
 
-@inject IRepository<Field> FieldService
+@inject SchedulerContext Scheduler
 @model Event
 
 @{
@@ -60,9 +61,9 @@
                     multiple
                     size="6"
                     asp-for="FieldIds"
-                    asp-items="this.FieldService
-                                .GetAllAsync()
-                                .Result
+                    asp-items="this.Scheduler
+                                .GetAll<Field>()
+                                .ToList()
                                 .Select(field => new SelectListItem
                                 {
                                     Text = field.Name,

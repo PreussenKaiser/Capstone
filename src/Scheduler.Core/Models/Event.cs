@@ -1,5 +1,4 @@
-﻿using Scheduler.Core.Services;
-using Scheduler.Core.Validation;
+﻿using Scheduler.Core.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,13 +7,8 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents an event held at the facility.
 /// </summary>
-public class Event : IValidatableObject
+public class Event : ModelBase, IValidatableObject
 {
-	/// <summary>
-	/// The event's unique identifier.
-	/// </summary>
-	public Guid Id { get; init; }
-
 	/// <summary>
 	/// The user who scheduled the event.
 	/// References <see cref="User.Id"/>.
@@ -84,14 +78,6 @@ public class Event : IValidatableObject
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
 		ICollection<ValidationResult> results = new List<ValidationResult>();
-
-		if (validationContext.GetService(typeof(IScheduleService)) is not IScheduleService service)
-			throw new NullReferenceException($"Cannot retrieve {nameof(IScheduleService)}.");
-
-		Event? conflict = this.FindConflict(service.GetAllAsync().Result);
-
-		if (conflict is not null)
-			results.Add(new("An event is already scheduled for that date"));
 
 		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
 			results.Add(new("End Time must be at least 30 minutes after Start Time."));

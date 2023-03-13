@@ -1,13 +1,14 @@
-﻿@using Scheduler.Core.Services;
+﻿@using Scheduler.Web.Persistence;
+@using Scheduler.Web.Extensions;
 
-@inject IRepository<Team> TeamService
+@inject SchedulerContext Scheduler
 @model Practice
 
 @{
-    this.Model.Team ??= await this.TeamService.GetAsync(this.Model.TeamId);
+	this.Model.Team ??= await this.Scheduler.GetAsync<Team>(this.Model.TeamId);
 }
 
 <p class="card-text">
-    <h5>Who:</h5>
-    @this.Model.Team.Name
+	<h5>Who:</h5>
+	@this.Model.Team.Name
 </p>

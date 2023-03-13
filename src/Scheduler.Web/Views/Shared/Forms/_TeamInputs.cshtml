@@ -1,7 +1,8 @@
-﻿@using Scheduler.Web.Controllers;
-@using Scheduler.Core.Services;
+﻿@using Scheduler.Web.Persistence;
+@using Scheduler.Web.Extensions;
+@using Scheduler.Web.Controllers;
 
-@inject IRepository<League> LeagueService
+@inject SchedulerContext Scheduler
 @model Team
 
 @if (this.Model is not null)
@@ -20,9 +21,9 @@
         <label asp-for="LeagueId" class="form-label"></label>
         <select class="form-select"
                 asp-for="LeagueId"
-                asp-items="this.LeagueService
-            .GetAllAsync()
-            .Result
+                asp-items="this.Scheduler
+            .GetAll<League>()
+            .ToList()
             .Select(league => new SelectListItem
             {
                 Text = league.Name,

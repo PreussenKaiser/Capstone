@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
-using Scheduler.Core.Services;
+using Scheduler.Web.Persistence;
+using Scheduler.Web.Extensions;
 
 namespace Scheduler.Web.Controllers;
 
@@ -12,17 +13,17 @@ namespace Scheduler.Web.Controllers;
 public sealed class FieldController : Controller
 {
 	/// <summary>
-	/// The service to query <see cref="Field"/> models with.
+	/// The database to command and query.
 	/// </summary>
-	private readonly IRepository<Field> fieldService;
+	private readonly SchedulerContext context;
 
 	/// <summary>
 	/// Initializes the <see cref="FieldController"/> class.
 	/// </summary>
-	/// <param name="fieldService">The service to query <see cref="Field"/> models with.</param>
-	public FieldController(IRepository<Field> fieldService)
+	/// <param name="context">The database to command and query.</param>
+	public FieldController(SchedulerContext context)
 	{
-		this.fieldService = fieldService;
+		this.context = context;
 	}
 
 	/// <summary>
@@ -45,7 +46,7 @@ public sealed class FieldController : Controller
 		if (!this.ModelState.IsValid)
 			return this.View(field);
 
-		await this.fieldService.CreateAsync(field);
+		await this.context.CreateAsync(field);
 
 		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
@@ -57,9 +58,9 @@ public sealed class FieldController : Controller
 	/// <returns>A form which posts to <see cref="Update(Field)"/>.</returns>
 	public async Task<IActionResult> Update(Guid id)
 	{
-		Field field = await this.fieldService.GetAsync(id);
-
-		return this.View(field);
+		return await this.context.GetAsync<Field>(id) is Field field
+			? this.View(field)
+			: this.BadRequest("There was a problem finding the selected field.");
 	}
 
 	/// <summary>
@@ -73,7 +74,7 @@ public sealed class FieldController : Controller
 		if (!this.ModelState.IsValid)
 			return this.View(field);
 
-		await this.fieldService.UpdateAsync(field);
+		await this.context.UpdateAsync(field);
 
 		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
@@ -86,7 +87,7 @@ public sealed class FieldController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		await this.fieldService.DeleteAsync(id);
+		await this.context.DeleteAsync<Field>(id);
 
 		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}

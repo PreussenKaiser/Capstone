@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
-using Scheduler.Core.Security;
+using Scheduler.Core.Utility;
 using Scheduler.Web.ViewModels;
 
 namespace Scheduler.Web.Controllers;

@@ -1,11 +1,12 @@
-﻿@using Scheduler.Core.Services;
+﻿@using Scheduler.Web.Persistence;
+@using Scheduler.Web.Extensions;
 
-@inject IRepository<Team> TeamService
+@inject SchedulerContext Scheduler
 @model Game
 
 @{
-    this.Model.HomeTeam ??= await this.TeamService.GetAsync(this.Model.HomeTeamId);
-    this.Model.OpposingTeam ??= await this.TeamService.GetAsync(this.Model.OpposingTeamId);
+    this.Model.HomeTeam ??= await this.Scheduler.GetAsync<Team>(this.Model.HomeTeamId);
+    this.Model.OpposingTeam ??= await this.Scheduler.GetAsync<Team>(this.Model.OpposingTeamId);
 }
 
 <p class="card-text">

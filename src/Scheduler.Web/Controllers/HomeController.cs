@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
-using Scheduler.Core.Services;
+using Scheduler.Web.Persistence;
+using Scheduler.Web.Extensions;
 using Scheduler.Web.ViewModels;
 using System.Diagnostics;
 
@@ -12,26 +14,15 @@ namespace Scheduler.Web.Controllers;
 public sealed class HomeController : Controller
 {
 	/// <summary>
-	/// The service to query <see cref="Game"/> and it's children with.
-	/// </summary>
-	private readonly IScheduleService scheduleService;
-
-	/// <summary>
-	/// Initializes the <see cref="HomeController"/> class.
-	/// </summary>
-	/// <param name="logger">Logs controller processes.</param>
-	public HomeController(IScheduleService scheduleService)
-	{
-		this.scheduleService = scheduleService;
-	}
-
-	/// <summary>
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
 	/// <returns>The rendered view.</returns>
-	public async Task<IActionResult> Index()
+	public async Task<IActionResult> Index(
+		[FromServices] SchedulerContext context)
 	{
-		IEnumerable<Event> games = await this.scheduleService.GetAllAsync();
+		IEnumerable<Event> games = await context
+			.GetSchedule(nameof(Game))
+			.ToListAsync();
 
 		return this.View(games);
 	}

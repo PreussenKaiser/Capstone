@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
-using Scheduler.Core.Services;
+using Scheduler.Web.Persistence;
+using Scheduler.Web.Extensions;
 
 namespace Scheduler.Web.Controllers;
 
@@ -12,17 +13,17 @@ namespace Scheduler.Web.Controllers;
 public sealed class TeamController : Controller
 {
 	/// <summary>
-	/// The service to query <see cref="Team"/> models with.
+	/// The database to manage teams with.
 	/// </summary>
-	private readonly IRepository<Team> teamService;
+	private readonly SchedulerContext context;
 
 	/// <summary>
 	/// Initializes the <see cref="TeamController"/> class.
 	/// </summary>
-	/// <param name="teamService">The service to query <see cref="Team"/> models with.</param>
-	public TeamController(IRepository<Team> teamService)
+	/// <param name="context">The database to manage teams with.</param>
+	public TeamController(SchedulerContext context)
 	{
-		this.teamService = teamService;
+		this.context = context;
 	}
 
 	/// <summary>
@@ -45,7 +46,7 @@ public sealed class TeamController : Controller
 		if (!this.ModelState.IsValid)
 			return this.View(team);
 
-		await this.teamService.CreateAsync(team);
+		await this.context.CreateAsync(team);
 
 		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
@@ -57,9 +58,9 @@ public sealed class TeamController : Controller
 	/// <returns>A form which posts to <see cref="Update(Team)"/>.</returns>
 	public async Task<IActionResult> Update(Guid id)
 	{
-		Team updateTeam = await this.teamService.GetAsync(id);
-
-		return this.View(updateTeam);
+		return await this.context.GetAsync<Team>(id) is Team team
+			? this.View(team)
+			: this.BadRequest("Could not find selected team.");
 	}
 
 	/// <summary>
@@ -73,7 +74,7 @@ public sealed class TeamController : Controller
 		if (!this.ModelState.IsValid)
 			return this.View(team);
 
-		await this.teamService.UpdateAsync(team);
+		await this.context.UpdateAsync(team);
 
 		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
@@ -86,7 +87,7 @@ public sealed class TeamController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		await this.teamService.DeleteAsync(id);
+		await this.context.DeleteAsync<Team>(id);
 
 		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}

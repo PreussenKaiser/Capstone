@@ -5,13 +5,8 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents a PCYS league
 /// </summary>
-public sealed class League
+public sealed class League : ModelBase
 {
-	/// <summary>
-	/// The league's unique id.
-	/// </summary>
-	public Guid Id { get; init; }
-
 	/// <summary>
 	/// The league's name.
 	/// </summary>

@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Scheduler.Core.Models;
-using Scheduler.Core.Services;
 using Scheduler.Infrastructure.Persistence;
-using Scheduler.Infrastructure.Services;
 
 namespace Scheduler.Infrastructure.Utility;
 
@@ -22,22 +20,7 @@ public static class Bootstrap
 	/// <param name="connectionString">The connection string to the database.</param>
 	/// <returns>The configured <see cref="IServiceCollection"/>.</returns>
 	public static IServiceCollection UseSqlServer(this IServiceCollection services, string connectionString)
-		=> services
-			.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
-			.ConfigureServices();
-
-	/// <summary>
-	/// Initializes <see cref="SchedulerContext"/> with an in-memory database.
-	/// </summary>
-	/// <remarks>
-	/// Used for testing or presentation purposes.
-	/// </remarks>
-	/// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
-	/// <returns>The configured <see cref="IServiceCollection"/>.</returns>
-	public static IServiceCollection UseInMemory(this IServiceCollection services)
-		=> services
-			.AddDbContext<SchedulerContext>(o => o.UseInMemoryDatabase(nameof(Scheduler)))
-			.ConfigureServices();
+		=> services.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString));
 
 	/// <summary>
 	/// Seeds <see cref="SchedulerContext"/>.
@@ -57,16 +40,4 @@ public static class Bootstrap
 
 		context.SaveChanges();
 	}
-
-	/// <summary>
-	/// Initializes services.
-	/// </summary>
-	/// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
-	/// <returns>The configured <see cref="IServiceCollection"/>.</returns>
-	private static IServiceCollection ConfigureServices(this IServiceCollection services)
-		=> services
-			.AddScoped<IScheduleService, ScheduleService>()
-			.AddScoped<IRepository<Field>, Repository<Field>>()
-			.AddScoped<IRepository<Team>, TeamService>()
-			.AddScoped<IRepository<League>, Repository<League>>();
 }

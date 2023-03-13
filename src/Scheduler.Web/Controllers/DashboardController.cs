@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
-using Scheduler.Core.Services;
+using Scheduler.Web.Persistence;
+using Scheduler.Web.Extensions;
 
 namespace Scheduler.Web.Controllers;
 
@@ -14,6 +15,20 @@ namespace Scheduler.Web.Controllers;
 public sealed class DashboardController : Controller
 {
 	/// <summary>
+	/// The database to query.
+	/// </summary>
+	private readonly SchedulerContext context;
+
+	/// <summary>
+	/// Initializes the <see cref="DashboardController"/> class.
+	/// </summary>
+	/// <param name="context">The database to query.</param>
+	public DashboardController(SchedulerContext context)
+	{
+		this.context = context;
+	}
+
+	/// <summary>
 	/// Displays the <see cref="Events"/> view.
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
@@ -23,14 +38,14 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Teams(ITeamService)"/> view.
+	/// Displays the <see cref="Teams"/> view.
 	/// </summary>
-	/// <param name="teamService">The service to query teams with.</param>
 	/// <returns>A table containing all teams.</returns>
-	public async Task<IActionResult> Teams(
-		[FromServices] IRepository<Team> teamService)
+	public IActionResult Teams()
 	{
-		IEnumerable<Team> teams = await teamService.GetAllAsync();
+		IEnumerable<Team> teams = this.context
+			.GetAll<Team>()
+			.Include(t => t.League);
 
 		return this.View(teams);
 	}
@@ -39,13 +54,11 @@ public sealed class DashboardController : Controller
 	/// Displays the <see cref="Fields(IFieldService)"/> view.
 	/// Only accessible to administrators.
 	/// </summary>
-	/// <param name="fieldService">The service to get fields with.</param>
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
-	public async Task<IActionResult> Fields(
-		[FromServices] IRepository<Field> fieldService)
+	public IActionResult Fields()
 	{
-		IEnumerable<Field> fields = await fieldService.GetAllAsync();
+		IEnumerable<Field> fields = this.context.GetAll<Field>();
 
 		return this.View(fields);
 	}
