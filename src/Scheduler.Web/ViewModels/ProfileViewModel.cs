@@ -5,12 +5,12 @@ namespace Scheduler.Web.ViewModels;
 /// <summary>
 /// The view model for profile management.
 /// </summary>
-public sealed class ProfileViewModel
+public sealed record ProfileViewModel
 {
 	/// <summary>
 	/// The user being profiled.
 	/// </summary>
-	public required Guid UserId { get; init; }
+	public Guid UserId { get; init; }
 
 	/// <summary>
 	/// The user's first name.
@@ -34,12 +34,11 @@ public sealed class ProfileViewModel
 	[Required(ErrorMessage = "Please enter an email address.")]
 	[MaxLength(256)]
 	[EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-	public required string Email { get; set; }
+	public required string Email { get; init; }
 
 	/// <summary>
 	/// Whether the user is an admin or not.
 	/// </summary>
 	[Display(Name = "Is Admin")]
 	public bool IsAdmin { get; init; }
-
 }

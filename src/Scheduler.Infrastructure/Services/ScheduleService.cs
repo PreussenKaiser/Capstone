@@ -41,13 +41,11 @@ public sealed class ScheduleService : IScheduleService
 		await this.context.SaveChangesAsync();
 	}
 
-	/// <summary>
-	/// Gets all instances of <see cref="Event"/> from the database.
-	/// </summary>
-	/// <returns>A list of events.</returns>
+	/// <inheritdoc/>
 	public async Task<IEnumerable<Event>> GetAllAsync()
 	{
 		IEnumerable<Event> events = await this.context.Events
+			.AsNoTracking()
 			.Include(e => e.Recurrence)
 			.Include(e => e.Fields)
 			.ToListAsync();
@@ -62,21 +60,29 @@ public sealed class ScheduleService : IScheduleService
 		{
 			nameof(Event) => await this.context.Events
 				.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}")
+				.AsNoTracking()
+				.Include(e => e.Recurrence)
 				.Include(e => e.Fields)
 				.ToListAsync(),
 
 			nameof(Practice) => await this.context.Practices
+				.AsNoTracking()
+				.Include(e => e.Recurrence)
 				.Include(p => p.Fields)
 				.Include(p => p.Team)
 				.ToListAsync(),
 
 			nameof(Game) => await this.context.Games
+				.AsNoTracking()
+				.Include(e => e.Recurrence)
 				.Include(g => g.Fields)
 				.Include(g => g.HomeTeam)
 				.Include(g => g.OpposingTeam)
 				.ToListAsync(),
 
 			_ => await this.context.Events
+				.AsNoTracking()
+			    .Include(e => e.Recurrence)
 				.Include(e => e.Fields)
 				.ToListAsync()
 		};
@@ -85,42 +91,10 @@ public sealed class ScheduleService : IScheduleService
 	}
 
 	/// <inheritdoc/>
-	public async Task<IEnumerable<TEvent>> GetAllAsync<TEvent>(Guid userId)
-		where TEvent : Event
-	{
-		IEnumerable<TEvent> events = await this.context
-			.Set<TEvent>()
-			.Include(e => e.Fields)
-			.Where(e => e.UserId == userId)
-			.ToListAsync();
-
-		return events;
-	}
-
-	/// <inheritdoc/>
-	public async Task<bool> HasConflictsAsync(Event scheduledEvent)
-	{
-		scheduledEvent.FieldIds ??= Array.Empty<Guid>();
-
-		return await this.context.Events
-			.AsNoTracking()
-			.Where(e => e.Id != scheduledEvent.Id)
-			.Include(e => e.Fields)
-			.AnyAsync(e =>
-				e.Fields!.Any(f => scheduledEvent.FieldIds.Contains(f.Id)) &&
-				e.StartDate <= scheduledEvent.EndDate &&
-				e.EndDate >= scheduledEvent.StartDate);
-	}
-
-	/// <summary>
-	/// Gets an <see cref="Event"/> from the database.
-	/// </summary>
-	/// <param name="id">References <see cref="Event.Id"/>.</param>
-	/// <returns>The found event.</returns>
-	/// <exception cref="ArgumentException"/>
 	public async Task<Event> GetAsync(Guid id)
 	{
 		Event? scheduledEvent = await this.context.Events
+			.AsNoTracking()
 			.Include(e => e.Recurrence)
 			.Include(e => e.Fields)
 			.FirstOrDefaultAsync(e => e.Id == id);
@@ -130,12 +104,7 @@ public sealed class ScheduleService : IScheduleService
 			: scheduledEvent;
 	}
 
-	/// <summary>
-	/// Updates an <see cref="Event"/> in the database.
-	/// </summary>
-	/// <param name="model"><see cref="Event"/> values, <see cref="Event.Id"/> referencing the <see cref="Event"/> to update.</param>
-	/// <returns>Whether the task was completed or not.</returns>
-	/// <exception cref="ArgumentException"/>
+	/// <inheritdoc/>
 	public async Task UpdateAsync(Event model)
 	{
 		if (!this.context.Events.AsNoTracking().Contains(model))
@@ -163,8 +132,6 @@ public sealed class ScheduleService : IScheduleService
 		}
 		else
 		{
-			model.Recurrence.Id = model.Id;
-
 			if (await this.context.Recurrences.ContainsAsync(model.Recurrence))
 			{
 				this.context.Recurrences.Update(model.Recurrence);
@@ -180,12 +147,7 @@ public sealed class ScheduleService : IScheduleService
 		await this.context.SaveChangesAsync();
 	}
 
-	/// <summary>
-	/// Deletes a <see cref="Event"/> from the database.
-	/// </summary>
-	/// <param name="id">References <see cref="Event.Id"/>.</param>
-	/// <returns>Whether the task was completed or not.</returns>
-	/// <exception cref="ArgumentException"/>
+	/// <inheritdoc/>
 	public async Task DeleteAsync(Guid id)
 	{
 		Event eventDelete = await this.GetAsync(id);

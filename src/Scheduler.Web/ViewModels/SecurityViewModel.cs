@@ -5,7 +5,7 @@ namespace Scheduler.Web.ViewModels;
 /// <summary>
 /// The view model for account security.
 /// </summary>
-public sealed class SecurityViewModel
+public sealed record SecurityViewModel
 {
 	/// <summary>
 	/// The user to adjust security settings for.

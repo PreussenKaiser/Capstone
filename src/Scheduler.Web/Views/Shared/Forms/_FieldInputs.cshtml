@@ -2,6 +2,11 @@
 
 @model Field
 
+@if (this.Model is not null)
+{
+    <input hidden asp-for="Id" />
+}
+
 <div class="mb-3">
     <label asp-for="Name" class="form-label"></label>
     <input asp-for="Name" class="form-control" />
@@ -11,7 +16,7 @@
 <div class="row mb-3">
     <div class="col-6">
         <a asp-action="@nameof(DashboardController.Fields)"
-        asp-controller="Dashboard"
+           asp-controller="Dashboard"
            class="btn btn-lg btn-danger w-100">
             Cancel
         </a>

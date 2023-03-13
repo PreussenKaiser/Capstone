@@ -4,6 +4,11 @@
 @inject IRepository<League> LeagueService
 @model Team
 
+@if (this.Model is not null)
+{
+    <input hidden asp-for="Id" />
+}
+
 <div class="row mb-3">
     <div class="col-sm-6">
         <label asp-for="Name" class="form-label"></label>

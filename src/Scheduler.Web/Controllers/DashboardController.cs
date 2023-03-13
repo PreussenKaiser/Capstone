@@ -18,7 +18,9 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
 	public IActionResult Events()
-		=> this.View();
+	{
+		return this.View();
+	}
 
 	/// <summary>
 	/// Displays the <see cref="Teams(ITeamService)"/> view.

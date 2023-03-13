@@ -22,7 +22,9 @@ public sealed class Game : Event
 	/// </summary>
 	[Display(Name = "Opposing Team")]
 	[Required(ErrorMessage = "Select an opposing team.")]
-	[ReverseCompare(nameof(this.HomeTeamId), ErrorMessage = "Home and opposing teams must be different.")]
+	[ReverseCompare(
+		OtherProperty = nameof(this.HomeTeamId),
+		ErrorMessage = "Home and opposing teams must be different.")]
 	public Guid OpposingTeamId { get; init; }
 
 	/// <summary>

@@ -11,18 +11,19 @@ public sealed class Recurrence
 	/// The pattern's unique identifier.
 	/// References <see cref="Event.Id"/>.
 	/// </summary>
-	public Guid Id { get; set; }
+	public Guid Id { get; init; }
 
 	/// <summary>
 	/// How many times the pattern occurs.
 	/// </summary>
-	public byte Occurences { get; set; }
+	[Range(1, byte.MaxValue, ErrorMessage = "There must be at least one occurrence.")]
+	public byte Occurrences { get; init; }
 
 	/// <summary>
 	/// The pattern's type.
 	/// </summary>
 	[Display(Name = "Repeats")]
-	public RecurrenceType Type { get; set; }
+	public RecurrenceType Type { get; init; }
 
 	/// <summary>
 	/// The <see cref="Event"/> with recurrence.

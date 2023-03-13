@@ -1,4 +1,5 @@
 ﻿using Scheduler.Core.Services;
+using Scheduler.Core.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -41,6 +42,7 @@ public class Event : IValidatableObject
 	[Display(Name = "Start date")]
 	[DisplayFormat(DataFormatString = "{0:M/dd/yyyy h:mm tt}")]
 	[Required(ErrorMessage = "Please enter when the event begins.")]
+	[RequireFuture(ErrorMessage = "Date must not be in the past.")]
 	public DateTime StartDate { get; set; }
 
 	/// <summary>
@@ -84,13 +86,12 @@ public class Event : IValidatableObject
 		ICollection<ValidationResult> results = new List<ValidationResult>();
 
 		if (validationContext.GetService(typeof(IScheduleService)) is not IScheduleService service)
-			throw new NullReferenceException("Cannot retrieve IScheduleService.");
+			throw new NullReferenceException($"Cannot retrieve {nameof(IScheduleService)}.");
 
-		if (service.HasConflictsAsync(this).Result)
-			results.Add(new("An event is already scheduled for that date."));
+		Event? conflict = this.FindConflict(service.GetAllAsync().Result);
 
-		if (this.StartDate < DateTime.Now)
-			results.Add(new("You cannot schedule an Event in the past."));
+		if (conflict is not null)
+			results.Add(new("An event is already scheduled for that date"));
 
 		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
 			results.Add(new("End Time must be at least 30 minutes after Start Time."));

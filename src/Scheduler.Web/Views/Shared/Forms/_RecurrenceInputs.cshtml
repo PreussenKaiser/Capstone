@@ -1,5 +1,12 @@
 ﻿@model Event
 
+@if (this.Model is not null)
+{ 
+    <input hidden
+           asp-for="Recurrence.Id"
+           value="@this.Model.Id" />
+}
+
 <div class="row mb-3">
     <div class="col-6">
         <label asp-for="Recurrence.Type" class="form-label"></label>
@@ -8,7 +15,8 @@
                 class="form-control"></select>
     </div>
     <div class="col-6">
-        <label asp-for="Recurrence.Occurences" class="form-label"></label>
-        <input type="number" asp-for="Recurrence.Occurences" class="form-control" />
+        <label asp-for="Recurrence.Occurrences" class="form-label"></label>
+        <input type="number" asp-for="Recurrence.Occurrences" class="form-control" />
+        <span asp-validation-for="Recurrence.Occurrences" class="text-danger"></span>
     </div>
 </div>

@@ -19,7 +19,7 @@ public partial class EventRecurrence : Migration
             columns: table => new
             {
                 Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                Occurences = table.Column<byte>(type: "tinyint", nullable: false),
+                Occurrences = table.Column<byte>(type: "tinyint", nullable: false),
                 Type = table.Column<byte>(type: "tinyint", nullable: false)
             },
             constraints: table =>

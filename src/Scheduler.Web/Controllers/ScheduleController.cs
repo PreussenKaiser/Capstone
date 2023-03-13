@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
 using Scheduler.Core.Services;
-using Scheduler.Infrastructure.Persistence;
+using Scheduler.Core.Validation;
 
 namespace Scheduler.Web.Controllers;
 
@@ -50,9 +49,13 @@ public sealed class ScheduleController : Controller
 	/// <returns>A table of scheduled events.</returns>
 	public async Task<IActionResult> TablePartial(string type)
 	{
+		List<Event> eventsWithRecurring = new();
 		IEnumerable<Event> events = await this.scheduleService.GetAllAsync(type);
 
-		return this.PartialView($"Tables/_EventsTable", events);
+		foreach (Event e in events)
+			eventsWithRecurring.AddRange(e.GenerateSchedule());
+
+		return this.PartialView($"Tables/_EventsTable", eventsWithRecurring);
 	}
 
 	/// <summary>
@@ -60,7 +63,9 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <returns>A form for creating the <see cref="Event"/> or any of it's children.</returns>
 	public IActionResult Create()
-		=> this.View();
+	{
+		return this.View();
+	}
 
 	/// <summary>
 	/// Handles POST from <see cref="Create"/>.
@@ -171,9 +176,8 @@ public sealed class ScheduleController : Controller
 	}
 
 	/// <summary>
-	/// Schedules a <typeparamref name="TEvent"/>.
+	/// Schedules an <see cref="Event"/>.
 	/// </summary>
-	/// <typeparam name="TEvent">The type of <see cref="Event"/> to create.</typeparam>
 	/// <param name="scheduledEvent">The <see cref="Event"/> to create.</param>
 	/// <returns></returns>
 	private async ValueTask<IActionResult> CreateAsync(Event scheduledEvent)
@@ -191,9 +195,8 @@ public sealed class ScheduleController : Controller
 	}
 
 	/// <summary>
-	/// Updates a scheduled <typeparamref name="TEvent"/>.
+	/// Updates a scheduled <see cref="Event"/>.
 	/// </summary>
-	/// <typeparam name="TEvent">The type of <see cref="Event"/> to reschedule.</typeparam>
 	/// <param name="scheduledEvent"></param>
 	/// <returns></returns>
 	private async ValueTask<IActionResult> UpdateAsync(Event scheduledEvent)
