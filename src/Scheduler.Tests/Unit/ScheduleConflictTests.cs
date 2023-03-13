@@ -81,7 +81,7 @@ public sealed class ScheduleConflictTests
 	[Fact]
 	public void Date_Overlap_Edge()
 	{
-		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
+		this.newEvent.FieldIds = SeedData.Fields.TakeLast(2).Select(f => f.Id).ToArray();
 		this.newEvent.StartDate = new(2023, 3, 15, 20, 0, 0);
 		this.newEvent.EndDate = new(2023, 3, 15, 20, 30, 0);
 

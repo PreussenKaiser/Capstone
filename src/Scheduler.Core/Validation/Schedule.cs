@@ -27,7 +27,7 @@ public static class Schedule
 					e.Fields is not null && occurrence.FieldIds is not null &&
 					e.Fields.Any(f => occurrence.FieldIds.Contains(f.Id)) &&
 					e.StartDate <= occurrence.EndDate &&
-					e.EndDate >= occurrence.StartDate)
+					e.EndDate > occurrence.StartDate)
 				{
 					return e;
 				}
