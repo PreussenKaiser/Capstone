@@ -41,10 +41,12 @@ public sealed class TeamController : Controller
 	/// <param name="team">POST values</param>
 	/// <returns>Redirected to <see cref="Index"/>.</returns>
 	[HttpPost]
-	public async Task<IActionResult> Create(Team team)
+	public async ValueTask<IActionResult> Create(Team team)
 	{
 		if (!this.ModelState.IsValid)
+		{
 			return this.View(team);
+		}
 
 		await this.context.CreateAsync(team);
 
@@ -58,7 +60,7 @@ public sealed class TeamController : Controller
 	/// <returns>A form which posts to <see cref="Update(Team)"/>.</returns>
 	public async Task<IActionResult> Update(Guid id)
 	{
-		return await this.context.GetAsync<Team>(id) is Team team
+		return await this.context.Teams.FindAsync(id) is Team team
 			? this.View(team)
 			: this.BadRequest("Could not find selected team.");
 	}
@@ -69,10 +71,12 @@ public sealed class TeamController : Controller
 	/// <param name="team">Updated <see cref="Team"/> values.</param>
 	/// <returns>Redirected to <see cref="Index"/>.</returns>
 	[HttpPost]
-	public async Task<IActionResult> Update(Team team)
+	public async ValueTask<IActionResult> Update(Team team)
 	{
 		if (!this.ModelState.IsValid)
+		{
 			return this.View(team);
+		}
 
 		await this.context.UpdateAsync(team);
 

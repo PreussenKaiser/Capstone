@@ -1,6 +1,9 @@
-﻿@using Microsoft.AspNetCore.Identity;
+﻿@using Scheduler.Web.Persistence
+@using Scheduler.Web.Extensions
 @using Scheduler.Web.Controllers;
+@using Microsoft.AspNetCore.Identity;
 
+@inject SchedulerContext Scheduler
 @inject UserManager<User> UserManager
 @model IEnumerable<Event>
 
@@ -25,33 +28,51 @@
                             <br />
                         }
                 </p>
-                @{
-                    string eventType = scheduledEvent.GetType().Name;
+                @if (scheduledEvent is Practice practice)
+                {
+	                practice.Team ??= await this.Scheduler.Teams.FindAsync(practice.TeamId);
 
-                    if (eventType != nameof(Event))
+                    if (practice.Team is not null)
                     {
-                        <partial name="Tables/_@(eventType)sTable" model="scheduledEvent"/>
+                        <p class="card-text">
+                            <h5>Who:</h5>
+                            @practice.Team.Name
+                        </p>
+                    }
+                }
+                else if (scheduledEvent is Game game)
+                {
+                    game.HomeTeam ??= await this.Scheduler.Teams.FindAsync(game.HomeTeamId);
+                    game.OpposingTeam ??= await this.Scheduler.Teams.FindAsync(game.OpposingTeamId);
+
+                    if (game.HomeTeam is not null &&
+                        game.OpposingTeam is not null)
+                    {
+                        <p class="card-text">
+                            <h5>Who</h5>
+                            @game.HomeTeam.Name vs. @game.OpposingTeam.Name
+                        </p>
                     }
                 }
 
                 @if (this.User.IsInRole(Role.ADMIN) ||
-                        scheduledEvent.UserId.ToString() == this.UserManager.GetUserId(this.User))
+                     scheduledEvent.UserId.ToString() == this.UserManager.GetUserId(this.User))
                 {           
                     <div class="row">
                         <div class="col-6">
                             <a asp-action="@nameof(ScheduleController.Update)"
-                                asp-controller="Schedule"
-                                asp-route-id="@scheduledEvent.Id"
-                                asp-route-type="@scheduledEvent.GetType().Name"
-                                class="btn btn-sm btn-secondary w-100">
+                               asp-route-id="@scheduledEvent.Id"
+                               asp-route-type="@scheduledEvent.GetType().Name"
+                               asp-controller="Schedule"
+                               class="btn btn-sm btn-secondary w-100">
                                 Update
                             </a>
                         </div>
                         <div class="col-6">
                             <form asp-action="@nameof(ScheduleController.Delete)"
-                                    asp-controller="Schedule"
-                                    asp-route-id="@scheduledEvent.Id"
-                                    method="post">
+                                  asp-controller="Schedule"
+                                  asp-route-id="@scheduledEvent.Id"
+                                  method="post">
                                 <button class="btn btn-sm btn-danger w-100">
                                     Delete
                                 </button>

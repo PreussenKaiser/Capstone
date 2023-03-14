@@ -26,43 +26,6 @@ public static class DbContextExtensions
 	}
 
 	/// <summary>
-	/// Gets all instances of <typeparamref name="TEntity"/> form the <see cref="DbContext"/>.
-	/// </summary>
-	/// <typeparam name="TEntity">The type of entitiews to retrieve.</typeparam>
-	/// <param name="context">The <see cref="DbContext"/> to query.</param>
-	/// <returns>All instances of <typeparamref name="TEntity"/> in the <see cref="DbContext"/>.</returns>
-	public static IQueryable<TEntity> GetAll<TEntity>(this DbContext context)
-		where TEntity : class
-	{
-		IQueryable<TEntity> entities = context
-			.Set<TEntity>()
-			.AsNoTracking()
-			.AsQueryable();
-
-		return entities;
-	}
-
-	/// <summary>
-	/// Gets a <typeparamref name="TEntity"/> from the <see cref="DbContext"/>.
-	/// </summary>
-	/// <typeparam name="TEntity">The type of entity to get.</typeparam>
-	/// <param name="context">The <see cref="DbContext"/> to query.</param>
-	/// <param name="id">References <see cref="ModelBase.Id"/>.</param>
-	/// <returns>
-	/// <typeparamref name="TEntity"/>, <see langword="null"/> if none were found.
-	/// </returns>
-	public static async Task<TEntity?> GetAsync<TEntity>(this DbContext context, Guid id)
-		where TEntity : ModelBase
-	{
-		TEntity? entity = await context
-			.Set<TEntity>()
-			.AsNoTracking()
-			.FirstOrDefaultAsync(e => e.Id == id);
-
-		return entity;
-	}
-
-	/// <summary>
 	/// Updates a <typeparamref name="TEntity"/> in the <see cref="DbContext"/>.
 	/// </summary>
 	/// <typeparam name="TEntity">The type of entity to update.</typeparam>
@@ -88,7 +51,9 @@ public static class DbContextExtensions
 		where TEntity : ModelBase
 	{
 		if (await context.FindAsync<TEntity>(id) is not TEntity entity)
+		{
 			return;
+		}
 
 		context.Remove(entity);
 

@@ -19,41 +19,41 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 		: base(options)
 	{
 	}
-
+	
 	/// <summary>
 	/// Instances of <see cref="Event"/> in the database.
 	/// </summary>
-	public DbSet<Event> Events { get; set; }
+	public required DbSet<Event> Events { get; init; }
 
 	/// <summary>
 	/// Instances of <see cref="Practice"/> in the database.
 	/// </summary>
-	public DbSet<Practice> Practices { get; set; }
+	public required DbSet<Practice> Practices { get; init; }
 
 	/// <summary>
 	/// Instances of <see cref="Game"/> in the database.
 	/// </summary>
-	public DbSet<Game> Games { get; set; }
+	public required DbSet<Game> Games { get; init; }
 
 	/// <summary>
 	/// Instances of <see cref="Recurrence"/> in the database.
 	/// </summary>
-	public DbSet<Recurrence> Recurrences { get; set; }
+	public required DbSet<Recurrence> Recurrences { get; init; }
 
 	/// <summary>
 	/// Instances of <see cref="Field"/> in the database.
 	/// </summary>
-	public DbSet<Field> Fields { get; set; }
+	public required DbSet<Field> Fields { get; init; }
 
 	/// <summary>
 	/// Instances of <see cref="Team"/> in the database.
 	/// </summary>
-	public DbSet<Team> Teams { get; set; }
+	public required DbSet<Team> Teams { get; init; }
 
 	/// <summary>
 	/// Instances of <see cref="League"/> in the database.
 	/// </summary>
-	public DbSet<League> Leagues { get; set; }
+	public required DbSet<League> Leagues { get; init; }
 
 	/// <summary>
 	/// Provides additional configuration for models.

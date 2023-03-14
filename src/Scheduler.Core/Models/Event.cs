@@ -61,7 +61,7 @@ public class Event : ModelBase, IValidatableObject
 	/// <summary>
 	/// Fields where the event is taking place.
 	/// </summary>
-	public ICollection<Field>? Fields { get; set; }
+	public List<Field>? Fields { get; set; }
 
 	/// <summary>
 	/// Performs additional validation for the <see cref="Event"/>.

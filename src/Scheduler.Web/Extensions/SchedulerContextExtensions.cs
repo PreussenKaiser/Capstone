@@ -15,7 +15,7 @@ public static class SchedulerContextExtensions
 	/// <param name="context">The <see cref="SchedulerContext"/> to command.</param>
 	/// <param name="newEvent">New <see cref="Event"/> values.</param>
 	/// <returns>Whether the task was completed or not.</returns>
-	public static async Task ScheduleEventAsync(
+	public static async Task ScheduleAsync(
 		this SchedulerContext context, Event newEvent)
 	{
 		if (newEvent.FieldIds is not null)
@@ -35,19 +35,14 @@ public static class SchedulerContextExtensions
 	public static IQueryable<Event> GetSchedule(
 		this SchedulerContext context, string? type = null)
 	{
-		IQueryable<Event> events = context
-			.GetAll<Event>()
+		IQueryable<Event> events = context.Events
 			.Include(e => e.Recurrence)
 			.Include(e => e.Fields);
-
-		if (type is null)
-			return events;
 
 		events = type switch
 		{
 			nameof(Event) => context.Events
-				.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}")
-				.AsNoTracking(),
+				.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}"),
 
 			nameof(Practice) => events
 				.Cast<Practice>()
@@ -70,43 +65,57 @@ public static class SchedulerContextExtensions
 	/// <param name="context">The <see cref="SchedulerContext"/> to command.</param>
 	/// <param name="scheduledEvent">Rescheduled <see cref="Event"/> values. <see cref="ModelBase.Id"/> referencing the <see cref="Event"/> to reschedule.</param>
 	/// <returns>Whether the task was completed or not.</returns>
-	/// <exception cref="ArgumentException"></exception>
 	public static async Task RescheduleAsync(
 		this SchedulerContext context, Event scheduledEvent)
 	{
-		if (!context.Events.AsNoTracking().Contains(scheduledEvent))
-			throw new ArgumentException($"{scheduledEvent.Id} could not be resolved to an Event");
-
-		scheduledEvent.FieldIds ??= Array.Empty<Guid>();
-
-		var entity = context.Entry(scheduledEvent);
-		entity.State = EntityState.Modified;
-
-		await entity
-			.Collection(e => e.Fields!)
-			.LoadAsync();
-
-		scheduledEvent.Fields = await context.Fields
-			.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
-			.ToListAsync();
+		await context.UpdateEventFieldsAsync(
+			scheduledEvent.Id,
+			scheduledEvent.FieldIds ?? Array.Empty<Guid>());
 
 		if (scheduledEvent.Recurrence is null)
 		{
-			if (await context.GetAsync<Recurrence>(scheduledEvent.Id) is Recurrence recurrence)
-				context.Recurrences.Remove(recurrence);
-		}
-		else
-		{
-			if (await context.Recurrences.ContainsAsync(scheduledEvent.Recurrence))
-			{
-				context.Recurrences.Update(scheduledEvent.Recurrence);
-			}
-			else
-			{
-				await context.Recurrences.AddAsync(scheduledEvent.Recurrence);
-			}
+			await context.DeleteAsync<Recurrence>(scheduledEvent.Id);
 		}
 
-		context.Update(scheduledEvent);
+		await context.UpdateAsync(scheduledEvent);
+	}
+
+	private static async Task UpdateEventFieldsAsync(
+		this SchedulerContext context,
+		Guid id,
+		params Guid[] fieldIds)
+	{
+		if (await context.Events
+			.Include(e => e.Fields)
+			.FirstOrDefaultAsync(e => e.Id == id)
+			is not Event scheduledEvent)
+		{
+			return;
+		}
+
+		if (scheduledEvent.Fields is null)
+		{
+			return;
+		}
+
+		var existingFieldIds = scheduledEvent.Fields.Select(f => f.Id).ToList();
+		var fieldIdsToAdd = fieldIds.Except(existingFieldIds).ToList();
+		var fieldIdsToRemove = existingFieldIds.Except(fieldIds).ToList();
+
+		foreach (var fieldId in fieldIdsToRemove)
+		{
+			var field = scheduledEvent.Fields.First(f => f.Id == fieldId);
+
+			scheduledEvent.Fields.Remove(field);
+		}
+
+		if (fieldIdsToAdd.Any())
+		{
+			var fieldsToAdd = context.Fields.Where(f => fieldIdsToAdd.Contains(f.Id));
+
+			scheduledEvent.Fields.AddRange(fieldsToAdd);
+		}
+
+		await context.SaveChangesAsync();
 	}
 }

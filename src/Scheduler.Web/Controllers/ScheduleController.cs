@@ -5,6 +5,8 @@ using Scheduler.Core.Models;
 using Scheduler.Core.Validation;
 using Scheduler.Web.Persistence;
 using Scheduler.Web.Extensions;
+using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace Scheduler.Web.Controllers;
 
@@ -20,20 +22,12 @@ public sealed class ScheduleController : Controller
 	private readonly SchedulerContext context;
 
 	/// <summary>
-	/// The service to query users with.
-	/// </summary>
-	private readonly UserManager<User> userManager;
-
-	/// <summary>
 	/// Initializes the <see cref="ScheduleController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query events with.</param>
-	/// <param name="userManager">The service to query users with.</param>
-	public ScheduleController(
-		SchedulerContext context, UserManager<User> userManager)
+	public ScheduleController(SchedulerContext context)
 	{
 		this.context = context;
-		this.userManager = userManager;
 	}
 
 	/// <summary>
@@ -42,7 +36,9 @@ public sealed class ScheduleController : Controller
 	/// <param name="type">The type of partial view to render.</param>
 	/// <returns>Form inputs belonging to the specified <paramref name="type"/>.</returns>
 	public IActionResult EventPartial(string type)
-		=> this.PartialView($"Forms/_{type}Inputs");
+	{
+		return this.PartialView($"Forms/_{type}Inputs");
+	}
 
 	/// <summary>
 	/// Displays a partial view containing <see cref="Event"/> instances.
@@ -55,7 +51,9 @@ public sealed class ScheduleController : Controller
 		IEnumerable<Event> events = this.context.GetSchedule(type);
 
 		foreach (Event e in events)
+		{
 			eventsWithRecurring.AddRange(e.GenerateSchedule());
+		}
 
 		return this.PartialView($"Tables/_EventsTable", eventsWithRecurring);
 	}
@@ -78,10 +76,11 @@ public sealed class ScheduleController : Controller
 	/// Returned to <see cref="Create"/> otherwise.
 	/// </returns>
 	[HttpPost]
+	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> CreateEvent(Event scheduledEvent)
-		=> this.User.IsInRole(Role.ADMIN)
-			? await this.CreateAsync(scheduledEvent)
-			: this.Problem();
+	{
+		return await this.Create(scheduledEvent);
+	}
 
 	/// <summary>
 	/// Creates a <see cref="Game"/> event.
@@ -93,7 +92,9 @@ public sealed class ScheduleController : Controller
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> CreateGame(Game game)
-		=> await this.CreateAsync(game);
+	{
+		return await this.Create(game);
+	}
 
 	/// <summary>
 	/// Creates a <see cref="Practice"/> event.
@@ -105,23 +106,27 @@ public sealed class ScheduleController : Controller
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> CreatePractice(Practice practice)
-		=> await this.CreateAsync(practice);
+	{
+		return await this.Create(practice);
+	}
 
 	/// <summary>
 	/// Displays the <see cref="Update(Guid)"/> view.
 	/// </summary>
 	/// <param name="id">References <see cref="Event.Id"/>.</param>
 	/// <returns>A form for updating an <see cref="Event"/> or any of it's children.</returns>
+	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> Update(Guid id)
 	{
-		if (await this.userManager.GetUserAsync(this.User) is not User user)
-			return this.BadRequest("Please log in.");
+		Event? scheduledEvent = await this.context.Events
+			.Include(e => e.Recurrence)
+			.Include(e => e.Fields)
+			.FirstOrDefaultAsync(e => e.Id == id);
 
-		if (await this.context.GetAsync<Event>(id) is not Event scheduledEvent)
+		if (scheduledEvent is null)
+		{
 			return this.NotFound($"No event with id {id} exists.");
-
-		if (scheduledEvent.UserId != user.Id && !this.User.IsInRole(Role.ADMIN))
-			return this.Problem();
+		}
 
 		this.ViewData["EventType"] = scheduledEvent.GetType().Name;
 
@@ -138,7 +143,9 @@ public sealed class ScheduleController : Controller
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> UpdateEvent(Event scheduledEvent)
-		=> await this.UpdateAsync(scheduledEvent);
+	{
+		return await this.UpdateAsync(scheduledEvent);
+	}
 
 	/// <summary>
 	/// Updates a <see cref="Game"/>.
@@ -150,7 +157,9 @@ public sealed class ScheduleController : Controller
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> UpdateGame(Game game)
-		=> await this.UpdateAsync(game);
+	{
+		return await this.UpdateAsync(game);
+	}
 
 	/// <summary>
 	/// Updates a <see cref="Practice"/> event.
@@ -162,7 +171,9 @@ public sealed class ScheduleController : Controller
 	/// </returns>
 	[HttpPost]
 	public async Task<IActionResult> UpdatePractice(Practice practice)
-		=> await this.UpdateAsync(practice);
+	{
+		return await this.UpdateAsync(practice);
+	}
 
 	/// <summary>
 	/// Deletes an <see cref="Event"/>.
@@ -182,25 +193,14 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="scheduledEvent">The <see cref="Event"/> to create.</param>
 	/// <returns></returns>
-	private async ValueTask<IActionResult> CreateAsync(Event scheduledEvent)
+	private async ValueTask<IActionResult> Create(Event scheduledEvent)
 	{
-		if (!this.ModelState.IsValid)
+		if (this.ValidateEvent(scheduledEvent) is IActionResult result)
 		{
-			this.ViewData["EventType"] = scheduledEvent.GetType().Name;
-
-			return this.View(nameof(this.Create), scheduledEvent);
+			return result;
 		}
 
-		Event? conflict = scheduledEvent.FindConflict(this.context.GetSchedule());
-
-		if (conflict is not null)
-		{
-			this.ModelState.AddModelError(string.Empty, "An event is already scheduled for that date");
-
-			return this.View(nameof(this.Create), scheduledEvent);
-		}
-
-		await this.context.CreateAsync(scheduledEvent);
+		await this.context.ScheduleAsync(scheduledEvent);
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
@@ -212,11 +212,31 @@ public sealed class ScheduleController : Controller
 	/// <returns></returns>
 	private async ValueTask<IActionResult> UpdateAsync(Event scheduledEvent)
 	{
+		if (this.ValidateEvent(scheduledEvent) is IActionResult result)
+		{
+			return result;
+		}
+
+		await this.context.RescheduleAsync(scheduledEvent);
+
+		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="scheduledEvent"></param>
+	/// <param name="action"></param>
+	/// <returns></returns>
+	private IActionResult? ValidateEvent(
+		in Event scheduledEvent,
+		[CallerMemberName] string action = "")
+	{
 		if (!this.ModelState.IsValid)
 		{
 			this.ViewData["EventType"] = scheduledEvent.GetType().Name;
 
-			return this.View(nameof(this.Update), scheduledEvent);
+			return this.View(action, scheduledEvent);
 		}
 
 		Event? conflict = scheduledEvent.FindConflict(this.context.GetSchedule());
@@ -225,17 +245,9 @@ public sealed class ScheduleController : Controller
 		{
 			this.ModelState.AddModelError(string.Empty, "An event is already scheduled for that date");
 
-			return this.View(nameof(this.Create), scheduledEvent);
+			return this.View(action, scheduledEvent);
 		}
 
-		if (await this.userManager.GetUserAsync(this.User) is not User user)
-			return this.BadRequest("Please log in.");
-
-		if (scheduledEvent.UserId != user.Id && !this.User.IsInRole(Role.ADMIN))
-			return this.Problem();
-
-		await this.context.UpdateAsync(scheduledEvent);
-
-		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
+		return null;
 	}
 }

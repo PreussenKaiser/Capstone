@@ -41,10 +41,12 @@ public sealed class FieldController : Controller
 	/// <param name="field"><see cref="Field"/> values.</param>
 	/// <returns>Redirected to <see cref="Index"/>.</returns>
 	[HttpPost]
-	public async Task<IActionResult> Create(Field field)
+	public async ValueTask<IActionResult> Create(Field field)
 	{
 		if (!this.ModelState.IsValid)
+		{
 			return this.View(field);
+		}
 
 		await this.context.CreateAsync(field);
 
@@ -58,7 +60,7 @@ public sealed class FieldController : Controller
 	/// <returns>A form which posts to <see cref="Update(Field)"/>.</returns>
 	public async Task<IActionResult> Update(Guid id)
 	{
-		return await this.context.GetAsync<Field>(id) is Field field
+		return await this.context.Fields.FindAsync(id) is Field field
 			? this.View(field)
 			: this.BadRequest("There was a problem finding the selected field.");
 	}
@@ -69,10 +71,12 @@ public sealed class FieldController : Controller
 	/// <param name="field"><see cref="Field"/> values, <see cref="Field.Id"/> referencing the <see cref="Field"/> to update.</param>
 	/// <returns>Redirected to <see cref="Index"/>.</returns>
 	[HttpPost]
-	public async Task<IActionResult> Update(Field field)
+	public async ValueTask<IActionResult> Update(Field field)
 	{
 		if (!this.ModelState.IsValid)
+		{
 			return this.View(field);
+		}
 
 		await this.context.UpdateAsync(field);
 

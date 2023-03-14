@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
 using Scheduler.Web.Persistence;
 using Scheduler.Web.Extensions;
+using System.Collections.Immutable;
 
 namespace Scheduler.Web.Controllers;
 
@@ -41,11 +42,11 @@ public sealed class DashboardController : Controller
 	/// Displays the <see cref="Teams"/> view.
 	/// </summary>
 	/// <returns>A table containing all teams.</returns>
-	public IActionResult Teams()
+	public async Task<IActionResult> Teams()
 	{
-		IEnumerable<Team> teams = this.context
-			.GetAll<Team>()
-			.Include(t => t.League);
+		IEnumerable<Team> teams = await this.context.Teams
+			.Include(t => t.League)
+			.ToListAsync();
 
 		return this.View(teams);
 	}
@@ -56,9 +57,9 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
-	public IActionResult Fields()
+	public async Task<IActionResult> Fields()
 	{
-		IEnumerable<Field> fields = this.context.GetAll<Field>();
+		IEnumerable<Field> fields = await this.context.Fields.ToListAsync();
 
 		return this.View(fields);
 	}

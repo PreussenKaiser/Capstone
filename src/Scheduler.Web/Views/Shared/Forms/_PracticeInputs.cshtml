@@ -11,8 +11,7 @@
 <div class="mb-3">
     <label asp-for="TeamId" class="form-label"></label>
     <select asp-for="TeamId"
-            asp-items="this.Scheduler
-                .GetAll<Team>()
+            asp-items="this.Scheduler.Teams
                 .ToList()
                 .Select(team => new SelectListItem
                 {

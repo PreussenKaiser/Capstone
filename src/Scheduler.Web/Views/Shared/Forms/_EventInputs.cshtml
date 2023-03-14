@@ -1,5 +1,4 @@
 ﻿@using Scheduler.Web.Persistence;
-@using Scheduler.Web.Extensions;
 @using Scheduler.Web.Controllers;
 @using System.Security.Claims;
 
@@ -50,7 +49,19 @@
             @if (this.Model is not null &&
                  this.Model.Recurrence is not null)
             {
-                <partial name="Forms/_RecurrenceInputs" />
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label asp-for="Recurrence.Type" class="form-label"></label>
+                        <select asp-for="Recurrence.Type"
+                                asp-items="@this.Html.GetEnumSelectList<RecurrenceType>()"
+                                class="form-control"></select>
+                    </div>
+                    <div class="col-6">
+                        <label asp-for="Recurrence.Occurrences" class="form-label"></label>
+                        <input type="number" asp-for="Recurrence.Occurrences" class="form-control" />
+                        <span asp-validation-for="Recurrence.Occurrences" class="text-danger"></span>
+                    </div>
+                </div>
             }
         </div>
     </div>
@@ -61,8 +72,7 @@
                     multiple
                     size="6"
                     asp-for="FieldIds"
-                    asp-items="this.Scheduler
-                                .GetAll<Field>()
+                    asp-items="this.Scheduler.Fields
                                 .ToList()
                                 .Select(field => new SelectListItem
                                 {

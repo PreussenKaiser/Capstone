@@ -50,7 +50,9 @@ public sealed class IdentityController : Controller
 	public async ValueTask<IActionResult> Login(LoginViewModel viewModel)
 	{
 		if (!this.ModelState.IsValid)
+		{
 			return this.View(viewModel);
+		}
 
 		var result = await this.signInManager.PasswordSignInAsync(
 			viewModel.Email,
@@ -103,7 +105,9 @@ public sealed class IdentityController : Controller
 	public async Task<IActionResult> Register(RegisterViewModel viewModel)
 	{
 		if (!this.ModelState.IsValid)
+		{
 			return this.View(viewModel);
+		}
 	  
 		User user = new()
 		{
@@ -119,12 +123,16 @@ public sealed class IdentityController : Controller
 		if (!result.Succeeded)
 		{
 			foreach (var e in result.Errors)
+			{
 				this.ModelState.AddModelError(string.Empty, e.Description);
+			}
 
 			return this.View(viewModel);
 		}
 		else if (result.Succeeded && viewModel.IsAdmin)
+		{
 			await this.signInManager.UserManager.AddToRoleAsync(user, "Admin");
+		}
 
 		this.TempData["TempPassword"] = randomPassword;
 		this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added!";
@@ -141,10 +149,12 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		var user = await this.signInManager.UserManager.FindByIdAsync(id.ToString());
+		User? user = await this.signInManager.UserManager.FindByIdAsync(id.ToString());
 
 		if (user is not null)
+		{
 			await this.signInManager.UserManager.DeleteAsync(user);
+		}
 
 		return this.RedirectToAction(nameof(DashboardController.Users), "Dashboard");
 	}
@@ -170,7 +180,9 @@ public sealed class IdentityController : Controller
 	public async ValueTask<IActionResult> Profile(Guid? id = null)
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
+		{
 			return this.Problem();
+		}
 
 		ProfileViewModel viewModel = new()
 		{
@@ -194,12 +206,16 @@ public sealed class IdentityController : Controller
 	public async ValueTask<IActionResult> Profile(ProfileViewModel viewModel)
 	{
 		if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
+		{
 			return this.Problem();
+		}
 
 		if (this.ModelState.IsValid)
 		{
 			if (user is null)
+			{
 				return this.Problem();
+			}
 
 			user.FirstName = viewModel.FirstName;
 			user.LastName = viewModel.LastName;
@@ -209,15 +225,23 @@ public sealed class IdentityController : Controller
 			bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN);
 
 			if (isAdmin && !viewModel.IsAdmin)
+			{
 				await this.signInManager.UserManager.RemoveFromRoleAsync(user, Role.ADMIN);
+			}
 			else if (!isAdmin && viewModel.IsAdmin)
+			{
 				await this.signInManager.UserManager.AddToRoleAsync(user, Role.ADMIN);
+			}
 
 			var result = await this.signInManager.UserManager.UpdateAsync(user);
 
 			if (!result.Succeeded)
+			{
 				foreach (var error in result.Errors)
+				{
 					this.ModelState.AddModelError(string.Empty, error.Description);
+				}
+			}
 		}
 
 		return this.View(viewModel);
@@ -231,7 +255,9 @@ public sealed class IdentityController : Controller
 	public IActionResult Security(Guid? id = null)
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
+		{
 			return this.Problem();
+		}
 
 		SecurityViewModel viewModel = new() { UserId = user.Id };
 
@@ -249,7 +275,9 @@ public sealed class IdentityController : Controller
 		if (this.ModelState.IsValid)
 		{
 			if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
+			{
 				return this.Problem();
+			}
 
 			var result = await this.signInManager.UserManager.ChangePasswordAsync(
 				user,
@@ -257,8 +285,12 @@ public sealed class IdentityController : Controller
 				viewModel.NewPassword);
 
 			if (!result.Succeeded)
+			{
 				foreach (var error in result.Errors)
+				{
 					this.ModelState.AddModelError(string.Empty, error.Description);
+				}
+			}
 		}
 
 		return this.View(viewModel);
@@ -278,6 +310,7 @@ public sealed class IdentityController : Controller
 		if (user is not null)
 		{
 			var removeResult = await this.signInManager.UserManager.RemovePasswordAsync(user);
+
 			if (removeResult.Succeeded)
 			{
 				await this.signInManager.UserManager.AddPasswordAsync(user, newPassword);
@@ -301,15 +334,20 @@ public sealed class IdentityController : Controller
 	private bool IsUser(out User? user, Guid? id)
 	{
 		User? userActual = this.signInManager.UserManager.GetUserAsync(this.User).Result;
+		
 		user = id is null
 			? userActual
 			: this.signInManager.UserManager.FindByIdAsync(id.ToString()!).Result;
 
 		if (user is null || userActual is null)
+		{
 			return false;
+		}
 
 		if (id is not null && userActual.Id != id && !this.User.IsInRole(Role.ADMIN))
+		{
 			return false;
+		}
 
 		return true;
 	}

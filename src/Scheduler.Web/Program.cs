@@ -15,14 +15,16 @@ string connectionString = builder.Configuration.GetConnectionString(CONN)
 	?? throw new ArgumentException("Could not retrieve connection string.");
 
 builder.Services
-	.AddDbContext<SchedulerContext>(o => o.UseSqlServer(connectionString))
-	.AddDatabaseDeveloperPageExceptionFilter();
+	.AddDbContext<SchedulerContext>(o => o
+		.UseSqlServer(connectionString)
+		.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
 // Configure identity
 builder.Services
 	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>();
 
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 

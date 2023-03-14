@@ -4,9 +4,7 @@
 @{
     string eventType = this.ViewData["EventType"] as string ?? "Game";
 
-    var items = this.Scheduler
-        .GetAll<Team>()
-        .ToList()
+    var items = this.Scheduler.Teams
         .Select(t => new SelectListItem()
         {
             Text = t.Name,
