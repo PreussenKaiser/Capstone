@@ -69,6 +69,7 @@ public class Event : IValidatableObject
 	/// <summary>
 	/// The search term applied when searching for a game, practice, or event.
 	/// </summary>
+	[NotMapped]
 	public string? SearchTerm { get; set; }
 
 	/// <summary>
