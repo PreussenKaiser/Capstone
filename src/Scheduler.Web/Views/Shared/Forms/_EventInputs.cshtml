@@ -49,19 +49,7 @@
             @if (this.Model is not null &&
                  this.Model.Recurrence is not null)
             {
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <label asp-for="Recurrence.Type" class="form-label"></label>
-                        <select asp-for="Recurrence.Type"
-                                asp-items="@this.Html.GetEnumSelectList<RecurrenceType>()"
-                                class="form-control"></select>
-                    </div>
-                    <div class="col-6">
-                        <label asp-for="Recurrence.Occurrences" class="form-label"></label>
-                        <input type="number" asp-for="Recurrence.Occurrences" class="form-control" />
-                        <span asp-validation-for="Recurrence.Occurrences" class="text-danger"></span>
-                    </div>
-                </div>
+                <partial name="Forms/_RecurrenceInputs" />
             }
         </div>
     </div>

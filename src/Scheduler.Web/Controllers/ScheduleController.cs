@@ -118,9 +118,8 @@ public sealed class ScheduleController : Controller
 	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> Update(Guid id)
 	{
-		Event? scheduledEvent = await this.context.Events
-			.Include(e => e.Recurrence)
-			.Include(e => e.Fields)
+		Event? scheduledEvent = await this.context
+			.GetSchedule()
 			.FirstOrDefaultAsync(e => e.Id == id);
 
 		if (scheduledEvent is null)
@@ -144,7 +143,7 @@ public sealed class ScheduleController : Controller
 	[HttpPost]
 	public async Task<IActionResult> UpdateEvent(Event scheduledEvent)
 	{
-		return await this.UpdateAsync(scheduledEvent);
+		return await this.Update(scheduledEvent);
 	}
 
 	/// <summary>
@@ -158,7 +157,7 @@ public sealed class ScheduleController : Controller
 	[HttpPost]
 	public async Task<IActionResult> UpdateGame(Game game)
 	{
-		return await this.UpdateAsync(game);
+		return await this.Update(game);
 	}
 
 	/// <summary>
@@ -172,7 +171,7 @@ public sealed class ScheduleController : Controller
 	[HttpPost]
 	public async Task<IActionResult> UpdatePractice(Practice practice)
 	{
-		return await this.UpdateAsync(practice);
+		return await this.Update(practice);
 	}
 
 	/// <summary>
@@ -183,7 +182,15 @@ public sealed class ScheduleController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		await this.context.DeleteAsync<Event>(id);
+		if (await this.context.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id)
+			is not Event scheduledEvent)
+		{
+			return this.BadRequest();
+		}
+
+		this.context.Events.Remove(scheduledEvent);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
@@ -200,7 +207,15 @@ public sealed class ScheduleController : Controller
 			return result;
 		}
 
-		await this.context.ScheduleAsync(scheduledEvent);
+		if (scheduledEvent.FieldIds is not null)
+			scheduledEvent.Fields = await this.context.Fields
+				.AsTracking()
+				.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
+				.ToListAsync();
+
+		await this.context.Events.AddAsync(scheduledEvent);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
@@ -210,14 +225,20 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="scheduledEvent"></param>
 	/// <returns></returns>
-	private async ValueTask<IActionResult> UpdateAsync(Event scheduledEvent)
+	private async ValueTask<IActionResult> Update(Event scheduledEvent)
 	{
 		if (this.ValidateEvent(scheduledEvent) is IActionResult result)
 		{
 			return result;
 		}
 
-		await this.context.RescheduleAsync(scheduledEvent);
+		await this.context.UpdateEventFieldsAsync(
+			scheduledEvent.Id,
+			scheduledEvent.FieldIds ?? Array.Empty<Guid>());
+
+		this.context.Events.Update(scheduledEvent);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}

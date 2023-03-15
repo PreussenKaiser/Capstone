@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
 using Scheduler.Web.Persistence;
-using Scheduler.Web.Extensions;
-using System.Collections.Immutable;
 
 namespace Scheduler.Web.Controllers;
 

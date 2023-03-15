@@ -1,0 +1,21 @@
+﻿@model Event
+
+@if (this.Model is not null &&
+     this.Model.Recurrence is not null)
+{
+    <input hidden asp-for="Id" value="@this.Model.Recurrence.Id" />
+}
+
+<div class="row mb-3">
+    <div class="col-6">
+        <label asp-for="Recurrence!.Type" class="form-label"></label>
+        <select asp-for="Recurrence!.Type"
+                asp-items="@this.Html.GetEnumSelectList<RecurrenceType>()"
+                class="form-control"></select>
+    </div>
+    <div class="col-6">
+        <label asp-for="Recurrence!.Occurrences" class="form-label"></label>
+        <input type="number" min="1" asp-for="Recurrence!.Occurrences" class="form-control" />
+        <span asp-validation-for="Recurrence!.Occurrences" class="text-danger"></span>
+    </div>
+</div>

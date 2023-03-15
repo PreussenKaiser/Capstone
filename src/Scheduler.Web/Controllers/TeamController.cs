@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
 using Scheduler.Web.Persistence;
 using Scheduler.Web.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Scheduler.Web.Controllers;
 
@@ -48,7 +49,9 @@ public sealed class TeamController : Controller
 			return this.View(team);
 		}
 
-		await this.context.CreateAsync(team);
+		await this.context.Teams.AddAsync(team);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
@@ -78,7 +81,9 @@ public sealed class TeamController : Controller
 			return this.View(team);
 		}
 
-		await this.context.UpdateAsync(team);
+		this.context.Teams.Update(team);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}
@@ -91,7 +96,14 @@ public sealed class TeamController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		await this.context.DeleteAsync<Team>(id);
+		if (await this.context.Teams.FindAsync(id) is not Team team)
+		{
+			return this.BadRequest();
+		}
+
+		this.context.Teams.Remove(team);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Teams), "Dashboard");
 	}

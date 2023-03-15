@@ -10,23 +10,6 @@ namespace Scheduler.Web.Extensions;
 public static class SchedulerContextExtensions
 {
 	/// <summary>
-	/// Schedules and <see cref="Event"/> in the <see cref="SchedulerContext"/>.
-	/// </summary>
-	/// <param name="context">The <see cref="SchedulerContext"/> to command.</param>
-	/// <param name="newEvent">New <see cref="Event"/> values.</param>
-	/// <returns>Whether the task was completed or not.</returns>
-	public static async Task ScheduleAsync(
-		this SchedulerContext context, Event newEvent)
-	{
-		if (newEvent.FieldIds is not null)
-			newEvent.Fields = await context.Fields
-				.Where(f => newEvent.FieldIds.Contains(f.Id))
-				.ToListAsync();
-
-		await context.CreateAsync(newEvent);
-	}
-
-	/// <summary>
 	/// Gets a list of scheduled events based on their type.
 	/// </summary>
 	/// <param name="context">The <see cref="SchedulerContext"/> to query.</param>
@@ -42,7 +25,7 @@ public static class SchedulerContextExtensions
 		events = type switch
 		{
 			nameof(Event) => context.Events
-				.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}"),
+				.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}s"),
 
 			nameof(Practice) => events
 				.Cast<Practice>()
@@ -60,27 +43,13 @@ public static class SchedulerContextExtensions
 	}
 
 	/// <summary>
-	/// Reschedules an <see cref="Event"/> in the <see cref="SchedulerContext"/>.
+	/// Updates an event's fields.
 	/// </summary>
 	/// <param name="context">The <see cref="SchedulerContext"/> to command.</param>
-	/// <param name="scheduledEvent">Rescheduled <see cref="Event"/> values. <see cref="ModelBase.Id"/> referencing the <see cref="Event"/> to reschedule.</param>
+	/// <param name="id">References <see cref="ModelBase.Id"/>.</param>
+	/// <param name="fieldIds">The fields to associate with the <see cref="Event"/>.</param>
 	/// <returns>Whether the task was completed or not.</returns>
-	public static async Task RescheduleAsync(
-		this SchedulerContext context, Event scheduledEvent)
-	{
-		await context.UpdateEventFieldsAsync(
-			scheduledEvent.Id,
-			scheduledEvent.FieldIds ?? Array.Empty<Guid>());
-
-		if (scheduledEvent.Recurrence is null)
-		{
-			await context.DeleteAsync<Recurrence>(scheduledEvent.Id);
-		}
-
-		await context.UpdateAsync(scheduledEvent);
-	}
-
-	private static async Task UpdateEventFieldsAsync(
+	public static async Task UpdateEventFieldsAsync(
 		this SchedulerContext context,
 		Guid id,
 		params Guid[] fieldIds)

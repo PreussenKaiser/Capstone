@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
 using Scheduler.Web.Persistence;
 using Scheduler.Web.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Scheduler.Web.Controllers;
 
@@ -48,7 +49,9 @@ public sealed class FieldController : Controller
 			return this.View(field);
 		}
 
-		await this.context.CreateAsync(field);
+		this.context.Fields.Add(field);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
@@ -78,7 +81,9 @@ public sealed class FieldController : Controller
 			return this.View(field);
 		}
 
-		await this.context.UpdateAsync(field);
+		this.context.Fields.Update(field);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
@@ -91,7 +96,14 @@ public sealed class FieldController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		await this.context.DeleteAsync<Field>(id);
+		if (await this.context.Fields.FindAsync(id) is not Field field)
+		{
+			return this.BadRequest();
+		}
+
+		this.context.Fields.Remove(field);
+
+		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction(nameof(DashboardController.Fields), "Dashboard");
 	}
