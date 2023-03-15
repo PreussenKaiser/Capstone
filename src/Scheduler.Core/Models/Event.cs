@@ -67,6 +67,11 @@ public class Event : IValidatableObject
 	public ICollection<Field>? Fields { get; set; }
 
 	/// <summary>
+	/// The search term applied when searching for a game, practice, or event.
+	/// </summary>
+	public string? SearchTerm { get; set; }
+
+	/// <summary>
 	/// Performs additional validation for the <see cref="Event"/>.
 	/// <para>
 	/// <b>Validation performed:</b>

@@ -13,12 +13,33 @@ public sealed class CoachController : Controller
 	private readonly IScheduleService scheduleService;
 
 	/// <summary>
+	/// The service used to get the teams.
+	/// </summary>
+	private ITeamService? teamService;
+
+	/// <summary>
+	/// The teams from the coach.
+	/// </summary>
+	private IEnumerable<Team>? _teams;
+
+	/// <summary>
+	/// The games and practices of the coach.
+	/// </summary>
+	private IEnumerable<Event> gamesAndPractices;
+
+	/// <summary>
 	/// Initializes the <see cref="CoachController"/> class.
 	/// </summary>
 	/// <param name="logger">Logs controller processes.</param>
 	public CoachController(IScheduleService scheduleService)
 	{
 		this.scheduleService = scheduleService;
+
+		if(this.teamService != null)
+		{
+			_teams = (IEnumerable<Team>?)this.teamService.GetAllAsync();
+		}
+		this.gamesAndPractices = (IEnumerable<Event>?)this.scheduleService.GetAllAsync();
 	}
 
 	/// <summary>
@@ -27,17 +48,33 @@ public sealed class CoachController : Controller
 	/// <returns>A dashboard where coaches can manage fields, teams, etc.</returns>
 	public async Task<IActionResult> Index()
 	{
-		IEnumerable<Event> games = await this.scheduleService.GetAllAsync();
+		this.gamesAndPractices = await this.scheduleService.GetAllAsync();
 
-		return this.View(games);
+		if (this.gamesAndPractices != null)
+		{
+			return this.View(gamesAndPractices);
+		}
+		else
+		{
+			return this.View();
+		}
 	}
 
 	/// <summary>
 	/// Get the coach's scheduled games based off of the search.
 	/// </summary>
 	/// <returns>The coaches games.</returns>
-	public Task<Game> GetGames()
+	public async Task<IActionResult> SearchGame(string searchTerm)
 	{
-
+		if (this.teamService != null)
+		{
+			IEnumerable<Event> events = this.gamesAndPractices.OfType<Game>().Where(g => g.Name.Contains(searchTerm) ||
+																teamService.GetAsync(g.HomeTeamId).Result.Name.Contains(searchTerm));
+			return View(events);
+		}
+		else
+		{
+			return View();
+		}
 	}
 }

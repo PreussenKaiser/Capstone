@@ -1,4 +1,6 @@
-﻿namespace Scheduler.Core.Services;
+﻿using Scheduler.Core.Models;
+
+namespace Scheduler.Core.Services;
 
 /// <summary>
 /// Implements query methods for <see cref="TModel"/>.

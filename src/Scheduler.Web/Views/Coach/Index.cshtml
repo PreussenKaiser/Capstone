@@ -37,14 +37,16 @@
     </div>
     <div class="row mb-1">
         <div class="col-sm-6 mb-2">
-            <form method="get" asp-controller="Coach" asp-action="GetGames">
-                <input type="text" name="coachGame" />
+            <form method="get" asp-controller="Coach" asp-action="SearchGame">
+                <input type="text" name="coachGame" id="gameSearch"/>
+                <input type="submit" value="Search" />
             </form>
             <input class="w-100 form-control" onkeypress="" />
         </div>
         <div class="col-sm-6 mb-2">
-            <form method="get">
+            <form asp-controller="Coach" asp-action="GetPractices">
                 <input type="text" name="coachPractice" />
+                <input type="submit" value="Search" />
             </form>
         </div>
     </div>
