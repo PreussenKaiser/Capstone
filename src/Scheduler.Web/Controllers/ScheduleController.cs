@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
 using Scheduler.Core.Validation;
@@ -47,15 +46,12 @@ public sealed class ScheduleController : Controller
 	/// <returns>A table of scheduled events.</returns>
 	public IActionResult TablePartial(string type)
 	{
-		List<Event> eventsWithRecurring = new();
-		IEnumerable<Event> events = this.context.GetSchedule(type);
+		IEnumerable<Event> events = this.context.Events
+			.FromDiscriminator(type)
+			.WithScheduling()
+			.AsRecurring();
 
-		foreach (Event e in events)
-		{
-			eventsWithRecurring.AddRange(e.GenerateSchedule());
-		}
-
-		return this.PartialView($"Tables/_EventsTable", eventsWithRecurring);
+		return this.PartialView($"Tables/_EventsTable", events);
 	}
 
 	/// <summary>
@@ -118,8 +114,8 @@ public sealed class ScheduleController : Controller
 	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> Update(Guid id)
 	{
-		Event? scheduledEvent = await this.context
-			.GetSchedule()
+		Event? scheduledEvent = await this.context.Events
+			.WithScheduling()
 			.FirstOrDefaultAsync(e => e.Id == id);
 
 		if (scheduledEvent is null)
@@ -182,8 +178,7 @@ public sealed class ScheduleController : Controller
 	[HttpPost]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		if (await this.context.Events.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id)
-			is not Event scheduledEvent)
+		if (await this.context.Events.FindAsync(id) is not Event scheduledEvent)
 		{
 			return this.BadRequest();
 		}
@@ -199,7 +194,10 @@ public sealed class ScheduleController : Controller
 	/// Schedules an <see cref="Event"/>.
 	/// </summary>
 	/// <param name="scheduledEvent">The <see cref="Event"/> to create.</param>
-	/// <returns></returns>
+	/// <returns>
+	/// Redirected to <see cref="DashboardController.Events"/>.
+	/// Otherwise, the <see cref="Create"/> form.
+	/// </returns>
 	private async ValueTask<IActionResult> Create(Event scheduledEvent)
 	{
 		if (this.ValidateEvent(scheduledEvent) is IActionResult result)
@@ -224,7 +222,10 @@ public sealed class ScheduleController : Controller
 	/// Updates a scheduled <see cref="Event"/>.
 	/// </summary>
 	/// <param name="scheduledEvent"></param>
-	/// <returns></returns>
+	/// <returns>
+	/// Redirected to <see cref="DashboardController.Events"/>.
+	/// Otherwise, the <see cref="Update(Guid)"/> form.
+	/// </returns>
 	private async ValueTask<IActionResult> Update(Event scheduledEvent)
 	{
 		if (this.ValidateEvent(scheduledEvent) is IActionResult result)
@@ -232,9 +233,11 @@ public sealed class ScheduleController : Controller
 			return result;
 		}
 
-		await this.context.UpdateEventFieldsAsync(
+		await this.context.UpdateFieldsAsync(
 			scheduledEvent.Id,
 			scheduledEvent.FieldIds ?? Array.Empty<Guid>());
+
+		await this.context.UpdateRecurrenceAsync(scheduledEvent);
 
 		this.context.Events.Update(scheduledEvent);
 
@@ -260,7 +263,9 @@ public sealed class ScheduleController : Controller
 			return this.View(action, scheduledEvent);
 		}
 
-		Event? conflict = scheduledEvent.FindConflict(this.context.GetSchedule());
+		Event? conflict = scheduledEvent.FindConflict(this.context.Events
+				.WithScheduling()
+				.ToList());
 
 		if (conflict is not null)
 		{

@@ -5,8 +5,13 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents a field in the facility.
 /// </summary>
-public sealed class Field : ModelBase
+public sealed class Field
 {
+	/// <summary>
+	/// The model's unique identifier.
+	/// </summary>
+	public Guid Id { get; init; }
+
 	/// <summary>
 	/// The field's name.
 	/// </summary>

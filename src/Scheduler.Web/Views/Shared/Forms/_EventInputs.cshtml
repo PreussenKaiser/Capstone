@@ -13,9 +13,7 @@
 
 @if (this.Model is not null)
 {
-    <input asp-for="Id"
-           value="@this.Model.Id"
-           type="hidden" />
+    <input hidden asp-for="Id" value="@this.Model.Id" />
 }
 
 <input asp-for="UserId"
@@ -72,7 +70,12 @@
                                 })"></select>
         </div>
 
-        <div id="eventInputs"></div>
+        <div id="eventInputs">
+            @if (eventType != nameof(Event))
+            {
+                <partial name="Forms/_@(eventType)Inputs" />
+            }
+        </div>
     </div>
 </div>
 

@@ -61,15 +61,18 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 	/// <param name="builder">The API to configure with.</param>
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
-		builder.Entity<Event>(builder =>
+		builder
+			.Entity<Event>()
+			.Property("Discriminator")
+			.HasMaxLength(8);
+
+		builder.Entity<Recurrence>(builder =>
 		{
-			builder
-				.Property("Discriminator")
-				.HasMaxLength(8);
+			builder.HasKey(e => e.Id);
 
 			builder
-				.HasOne(e => e.Recurrence)
-				.WithOne(r => r.Event)
+				.HasOne(r => r.Event)
+				.WithOne(e => e.Recurrence)
 				.HasForeignKey<Recurrence>(r => r.Id);
 		});
 

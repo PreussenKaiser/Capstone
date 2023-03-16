@@ -5,8 +5,13 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents a pattern of recurrence.
 /// </summary>
-public sealed class Recurrence : ModelBase
+public sealed class Recurrence
 {
+	/// <summary>
+	/// The model's unique identifier.
+	/// </summary>
+	public Guid Id { get; set; }
+
 	/// <summary>
 	/// How many times the pattern occurs.
 	/// </summary>
@@ -32,6 +37,5 @@ public enum RecurrenceType : byte
 {
 	Daily,
 	Weekly,
-	Monthly,
-	Yearly
+	Monthly
 }

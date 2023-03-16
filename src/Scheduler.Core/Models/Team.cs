@@ -5,8 +5,13 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents a team playing in the facility.
 /// </summary>
-public sealed class Team : ModelBase
+public sealed class Team
 {
+	/// <summary>
+	/// The model's unique identifier.
+	/// </summary>
+	public Guid Id { get; init; }
+
 	/// <summary>
 	/// References <see cref="League.Id"/>.
 	/// </summary>

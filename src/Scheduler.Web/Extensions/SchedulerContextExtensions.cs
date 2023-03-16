@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
+using Scheduler.Core.Validation;
 using Scheduler.Web.Persistence;
 
 namespace Scheduler.Web.Extensions;
@@ -9,37 +10,31 @@ namespace Scheduler.Web.Extensions;
 /// </summary>
 public static class SchedulerContextExtensions
 {
-	/// <summary>
-	/// Gets a list of scheduled events based on their type.
-	/// </summary>
-	/// <param name="context">The <see cref="SchedulerContext"/> to query.</param>
-	/// <param name="type">The type of <see cref="Event"/> to search for.</param>
-	/// <returns>All scheduled events.</returns>
-	public static IQueryable<Event> GetSchedule(
-		this SchedulerContext context, string? type = null)
+	public static IQueryable<Event> WithScheduling(this IQueryable<Event> events)
 	{
-		IQueryable<Event> events = context.Events
+		return events
 			.Include(e => e.Recurrence)
 			.Include(e => e.Fields);
+	}
 
-		events = type switch
+	public static IQueryable<Event> FromDiscriminator(
+		this DbSet<Event> events, string? type = null)
+	{
+		return string.IsNullOrEmpty(type)
+			? events
+			: events.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}");
+	}
+
+	public static IEnumerable<Event> AsRecurring(this IQueryable<Event> events)
+	{
+		List<Event> eventsWithRecurring = new();
+
+		foreach (var e in events)
 		{
-			nameof(Event) => context.Events
-				.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}s"),
+			eventsWithRecurring.AddRange(e.GenerateSchedule());
+		}
 
-			nameof(Practice) => events
-				.Cast<Practice>()
-				.Include(p => p.Team),
-
-			nameof(Game) => events
-				.Cast<Game>()
-				.Include(g => g.HomeTeam)
-				.Include(g => g.OpposingTeam),
-
-			_ => events
-		};
-
-		return events;
+		return eventsWithRecurring;
 	}
 
 	/// <summary>
@@ -49,12 +44,13 @@ public static class SchedulerContextExtensions
 	/// <param name="id">References <see cref="ModelBase.Id"/>.</param>
 	/// <param name="fieldIds">The fields to associate with the <see cref="Event"/>.</param>
 	/// <returns>Whether the task was completed or not.</returns>
-	public static async Task UpdateEventFieldsAsync(
+	public static async Task UpdateFieldsAsync(
 		this SchedulerContext context,
 		Guid id,
 		params Guid[] fieldIds)
 	{
 		if (await context.Events
+			.AsTracking()
 			.Include(e => e.Fields)
 			.FirstOrDefaultAsync(e => e.Id == id)
 			is not Event scheduledEvent)
@@ -86,5 +82,31 @@ public static class SchedulerContextExtensions
 		}
 
 		await context.SaveChangesAsync();
+
+		context.Entry(scheduledEvent).State = EntityState.Detached;
+	}
+
+	/// <summary>
+	/// Updates the <see cref="Recurrence"/> pattern of an <see cref="Event"/>.
+	/// </summary>
+	/// <param name="context">The <see cref="SchedulerContext"/> to command.</param>
+	/// <param name="scheduledEvent">The <see cref="Event"/> to update.</param>
+	/// <returns>Whether the task was completed or not.</returns>
+	public static async ValueTask UpdateRecurrenceAsync(
+		this SchedulerContext context, Event scheduledEvent)
+	{
+		if (scheduledEvent.Recurrence is null)
+		{
+			Recurrence? recurrence = await context.Recurrences.FindAsync(scheduledEvent.Id);
+
+			if (recurrence is not null)
+			{
+				context.Recurrences.Remove(recurrence);
+			}
+
+			return;
+		}
+
+		scheduledEvent.Recurrence.Id = scheduledEvent.Id;
 	}
 }

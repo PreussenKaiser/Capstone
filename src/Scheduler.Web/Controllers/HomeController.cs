@@ -16,15 +16,23 @@ public sealed class HomeController : Controller
 	/// <summary>
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
+	/// <param name="context">The <see cref="SchedulerContext"/> to get events with.</param>
 	/// <returns>The rendered view.</returns>
 	public async Task<IActionResult> Index(
 		[FromServices] SchedulerContext context)
 	{
-		IEnumerable<Event> games = await context
-			.GetSchedule(nameof(Game))
-			.ToListAsync();
+		var events = context.Events
+			.FromDiscriminator()
+			.WithScheduling();
 
-		return this.View(games);
+		var games = events
+			.OfType<Game>()
+			.Include(g => g.HomeTeam)
+			.Include(g => g.OpposingTeam);
+
+		return this.View(new IndexViewModel(
+			events.AsRecurring(),
+			games.AsRecurring()));
 	}
 
 	/// <summary>

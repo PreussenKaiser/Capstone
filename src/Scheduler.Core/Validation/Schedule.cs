@@ -57,7 +57,6 @@ public static class Schedule
 				RecurrenceType.Daily => (start.AddDays(1), end.AddDays(1)),
 				RecurrenceType.Weekly => (start.AddDays(7), end.AddDays(7)),
 				RecurrenceType.Monthly => (start.AddMonths(1), end.AddMonths(1)),
-				RecurrenceType.Yearly => (start.AddYears(1), end.AddYears(1)),
 				_ => throw new Exception("How did we get here?")
 			};
 

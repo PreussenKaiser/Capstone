@@ -44,6 +44,12 @@ public sealed class DashboardController : Controller
 	{
 		IEnumerable<Team> teams = await this.context.Teams
 			.Include(t => t.League)
+			.Select(t => new Team()
+			{
+				Id = t.Id,
+				Name = t.Name,
+				League = new() { Name = t.League!.Name }
+			})
 			.ToListAsync();
 
 		return this.View(teams);

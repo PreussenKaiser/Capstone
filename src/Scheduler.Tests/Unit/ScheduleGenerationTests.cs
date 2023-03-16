@@ -27,7 +27,6 @@ public sealed class ScheduleGenerationTests
 	[InlineData(RecurrenceType.Daily)]
 	[InlineData(RecurrenceType.Weekly)]
 	[InlineData(RecurrenceType.Monthly)]
-	[InlineData(RecurrenceType.Yearly)]
 	public void Schedule_Generated(RecurrenceType type)
 	{
 		this.scheduledEvent.Recurrence = new Recurrence()

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Event>
+﻿@model IndexViewModel
 
 @{
     this.ViewData["Title"] = "Home Page";
@@ -27,6 +27,14 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach (var game in this.Model.Games)
+                    {
+                        <tr>
+                            <td>@game.HomeTeam.Name</td>
+                            <td>@game.OpposingTeam.Name</td>
+                            <td>@game.StartDate</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -43,7 +51,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var events in this.Model)
+                    @foreach (var events in this.Model.Events)
                     {
                         <tr>
                             <td>@events.Name</td>

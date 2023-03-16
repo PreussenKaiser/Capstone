@@ -1,4 +1,5 @@
-﻿using Scheduler.Core.Validation;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Scheduler.Core.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,8 +8,13 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents an event held at the facility.
 /// </summary>
-public class Event : ModelBase, IValidatableObject
+public class Event : IValidatableObject
 {
+	/// <summary>
+	/// The event's unique identifier.
+	/// </summary>
+	public Guid Id { get; init; }
+
 	/// <summary>
 	/// The user who scheduled the event.
 	/// References <see cref="User.Id"/>.
