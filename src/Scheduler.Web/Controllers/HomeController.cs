@@ -18,7 +18,7 @@ public sealed class HomeController : Controller
 	/// </summary>
 	/// <param name="context">The <see cref="SchedulerContext"/> to get events with.</param>
 	/// <returns>The rendered view.</returns>
-	public async Task<IActionResult> Index(
+	public IActionResult Index(
 		[FromServices] SchedulerContext context)
 	{
 		var events = context.Events

@@ -10,16 +10,6 @@ namespace Scheduler.Tests.Unit;
 public sealed class ScheduleGenerationTests
 {
 	/// <summary>
-	/// The event to test schedule generation with..
-	/// </summary>
-	private readonly Event scheduledEvent = new()
-	{
-		Name = string.Empty,
-		StartDate = new(2023, 3, 24, 15, 0, 0),
-		EndDate = new(2023, 3, 24, 17, 0, 0)
-	};
-
-	/// <summary>
 	/// Asserts the a schedule will be generated regardless of the <see cref="RecurrenceType"/>.
 	/// </summary>
 	/// <param name="type">The type of <see cref="Recurrence"/> to generate.</param>
@@ -29,13 +19,16 @@ public sealed class ScheduleGenerationTests
 	[InlineData(RecurrenceType.Monthly)]
 	public void Schedule_Generated(RecurrenceType type)
 	{
-		this.scheduledEvent.Recurrence = new Recurrence()
+		Event scheduledEvent = new()
 		{
-			Occurrences = 3,
-			Type = type
+			Recurrence = new()
+			{
+				Occurrences = 3,
+				Type = type
+			}
 		};
 
-		IEnumerable<Event> schedule = this.scheduledEvent.GenerateSchedule();
+		IEnumerable<Event> schedule = scheduledEvent.GenerateSchedule();
 
 		Assert.Equal(4, schedule.Count());
 	}
@@ -46,9 +39,9 @@ public sealed class ScheduleGenerationTests
 	[Fact]
 	public void Schedule_Generated_Null()
 	{
-		this.scheduledEvent.Recurrence = null;
+		Event scheduledEvent = new();
 
-		IEnumerable<Event> schedule = this.scheduledEvent.GenerateSchedule();
+		IEnumerable<Event> schedule = scheduledEvent.GenerateSchedule();
 
 		Assert.Single(schedule);
 	}

@@ -25,9 +25,10 @@ public static class SchedulerContextExtensions
 			: events.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}");
 	}
 
-	public static IEnumerable<Event> AsRecurring(this IQueryable<Event> events)
+	public static IEnumerable<TEvent> AsRecurring<TEvent>(this IQueryable<TEvent> events)
+		where TEvent : Event
 	{
-		List<Event> eventsWithRecurring = new();
+		List<TEvent> eventsWithRecurring = new();
 
 		foreach (var e in events)
 		{

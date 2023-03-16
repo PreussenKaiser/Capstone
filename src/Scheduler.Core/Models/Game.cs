@@ -6,7 +6,7 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents a scheduled game.
 /// </summary>
-public sealed class Game : Event
+public sealed record Game : Event
 {
 	/// <summary>
 	/// The games home team.
@@ -30,10 +30,10 @@ public sealed class Game : Event
 	/// <summary>
 	/// The games home team.
 	/// </summary>
-	public Team? HomeTeam { get; set; }
+	public Team? HomeTeam { get; init; }
 
 	/// <summary>
 	/// The games opposing team.
 	/// </summary>
-	public Team? OpposingTeam { get; set; }
+	public Team? OpposingTeam { get; init; }
 }

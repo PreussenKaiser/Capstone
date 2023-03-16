@@ -11,21 +11,19 @@ namespace Scheduler.Tests.Unit;
 public sealed class ScheduleConflictTests
 {
 	/// <summary>
-	/// The <see cref="Event"/> to test validation with.
-	/// </summary>
-	private readonly Event newEvent = new() { Name = string.Empty };
-
-	/// <summary>
 	/// Asserts that a complete overlap fails.
 	/// </summary>
 	[Fact]
 	public void Date_Overlap_Complete()
 	{
-		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
-		this.newEvent.StartDate = new(2023, 03, 24, 13, 0, 0);
-		this.newEvent.EndDate = new(2023, 03, 24, 14, 0, 0);
+		Event newEvent = new()
+		{
+			FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray(),
+			StartDate = new(2023, 03, 24, 13, 0, 0),
+			EndDate = new(2023, 03, 24, 14, 0, 0)
+		};
 
-		Event? conflictingEvent = this.newEvent.FindConflict(SeedData.Events);
+		Event? conflictingEvent = newEvent.FindConflict(SeedData.Events);
 		
 		Assert.NotNull(conflictingEvent);
 	}
@@ -36,11 +34,14 @@ public sealed class ScheduleConflictTests
 	[Fact]
 	public void Date_Overlap_Partial()
 	{
-		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
-		this.newEvent.StartDate = new(2023, 03, 24, 11, 0, 0);
-		this.newEvent.EndDate = new(2023, 03, 24, 13, 0, 0);
+		Event newEvent = new()
+		{
+			FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray(),
+			StartDate = new(2023, 03, 24, 11, 0, 0),
+			EndDate = new(2023, 03, 24, 13, 0, 0)
+		};
 
-		Event? conflictingEvent = this.newEvent.FindConflict(SeedData.Events);
+		Event? conflictingEvent = newEvent.FindConflict(SeedData.Events);
 
 		Assert.NotNull(conflictingEvent);
 	}
@@ -51,11 +52,14 @@ public sealed class ScheduleConflictTests
 	[Fact]
 	public void Date_Overlap_None()
 	{
-		this.newEvent.FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray();
-		this.newEvent.StartDate = new(2023, 03, 24, 10, 0, 0);
-		this.newEvent.EndDate = new(2023, 03, 24, 11, 0, 0);
+		Event newEvent = new()
+		{
+			FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray(),
+			StartDate = new(2023, 03, 24, 10, 0, 0),
+			EndDate = new(2023, 03, 24, 11, 0, 0)
+		};
 
-		Event? conflict = this.newEvent.FindConflict(SeedData.Events);
+		Event? conflict = newEvent.FindConflict(SeedData.Events);
 
 		Assert.Null(conflict);
 	}
@@ -66,11 +70,14 @@ public sealed class ScheduleConflictTests
 	[Fact]
 	public void Date_Overlap_DifferentField()
 	{
-		this.newEvent.FieldIds = SeedData.Fields.Take(1).Select(f => f.Id).ToArray();
-		this.newEvent.StartDate = new(2023, 03, 15, 18, 0, 0);
-		this.newEvent.EndDate = new(2023, 03, 15, 19, 0, 0);
+		Event newEvent = new()
+		{
+			FieldIds = SeedData.Fields.Take(1).Select(f => f.Id).ToArray(),
+			StartDate = new(2023, 03, 15, 18, 0, 0),
+			EndDate = new(2023, 03, 15, 19, 0, 0)
+		};
 
-		Event? conflict = this.newEvent.FindConflict(SeedData.Events);
+		Event? conflict = newEvent.FindConflict(SeedData.Events);
 
 		Assert.Null(conflict);
 	}
@@ -81,11 +88,14 @@ public sealed class ScheduleConflictTests
 	[Fact]
 	public void Date_Overlap_Edge()
 	{
-		this.newEvent.FieldIds = SeedData.Fields.TakeLast(2).Select(f => f.Id).ToArray();
-		this.newEvent.StartDate = new(2023, 3, 15, 20, 0, 0);
-		this.newEvent.EndDate = new(2023, 3, 15, 20, 30, 0);
+		Event newEvent = new()
+		{
+			FieldIds = SeedData.Fields.TakeLast(2).Select(f => f.Id).ToArray(),
+			StartDate = new(2023, 3, 15, 20, 0, 0),
+			EndDate = new(2023, 3, 15, 20, 30, 0)
+		};
 
-		Event? conflict = this.newEvent.FindConflict(SeedData.Events);
+		Event? conflict = newEvent.FindConflict(SeedData.Events);
 
 		Assert.Null(conflict);
 	}

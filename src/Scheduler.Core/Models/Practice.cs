@@ -5,7 +5,7 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents a practice game.
 /// </summary>
-public sealed class Practice : Event
+public sealed record Practice : Event
 {
 	/// <summary>
 	/// The team practicing.

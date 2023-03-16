@@ -205,11 +205,13 @@ public sealed class ScheduleController : Controller
 			return result;
 		}
 
+		/*
 		if (scheduledEvent.FieldIds is not null)
 			scheduledEvent.Fields = await this.context.Fields
 				.AsTracking()
 				.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
 				.ToListAsync();
+		*/
 
 		await this.context.Events.AddAsync(scheduledEvent);
 

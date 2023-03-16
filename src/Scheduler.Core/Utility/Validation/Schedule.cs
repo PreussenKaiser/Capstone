@@ -41,9 +41,10 @@ public static class Schedule
 	/// </summary>
 	/// <param name="scheduledEvent">The <see cref="Event"/> to build a schedule from.</param>
 	/// <returns>The new schedule, if the event doesn't recur then it is returned.</returns>
-	public static IEnumerable<Event> GenerateSchedule(this Event scheduledEvent)
+	public static IEnumerable<TEvent> GenerateSchedule<TEvent>(this TEvent scheduledEvent)
+		where TEvent : Event
 	{
-		ICollection<Event> schedule = new List<Event> { scheduledEvent };
+		ICollection<TEvent> schedule = new List<TEvent> { scheduledEvent };
 
 		if (scheduledEvent.Recurrence is null)
 			return schedule;
@@ -60,6 +61,13 @@ public static class Schedule
 				_ => throw new Exception("How did we get here?")
 			};
 
+			schedule.Add(scheduledEvent with
+			{
+				StartDate = start,
+				EndDate = end,
+			});
+
+			/*
 			schedule.Add(new()
 			{
 				Id = scheduledEvent.Id,
@@ -72,6 +80,7 @@ public static class Schedule
 				Recurrence = scheduledEvent.Recurrence,
 				Fields = scheduledEvent.Fields
 			});
+			*/
 		}
 
 		return schedule;
