@@ -35,21 +35,6 @@
     <div class="text-center text-danger">
         <h3>Current Scheduled Events</h3>
     </div>
-    <div class="row mb-1">
-        <div class="col-sm-6 mb-2">
-            @using (Html.BeginForm("SearchGame", "Coach", FormMethod.Get, new { @class = "form-horizontal" }))
-            {
-                <input type="text" id="searchTerm" name="searchTerm" />
-                <button type="submit">Search</button>
-            }
-        </div>
-        <div class="col-sm-6 mb-2">
-            <form asp-controller="Coach" asp-action="SearchPractice">
-                <input type="text" name="coachPractice" />
-                <input type="submit" value="Search" />
-            </form>
-        </div>
-    </div>
     <div class="row">
         <div class="col-6 border border-2 searchContainer">
             <div class="text-center text-danger">

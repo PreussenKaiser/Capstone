@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
 using Scheduler.Core.Services;
+using Scheduler.Infrastructure.Services;
 using Scheduler.Web.ViewModels;
 using System.Diagnostics;
 
@@ -29,13 +30,24 @@ public sealed class HomeController : Controller
 	private readonly IScheduleService scheduleService;
 
 	/// <summary>
+	/// The service used to get the teams.
+	/// </summary>
+	private ITeamService? teamService;
+
+	/// <summary>
+	/// The games and practices of the coach.
+	/// </summary>
+	private IEnumerable<Event> gamesAndPractices;
+
+	/// <summary>
 	/// Initializes the <see cref="HomeController"/> class.
 	/// </summary>
 	/// <param name="logger">Logs controller processes.</param>
-	public HomeController(ILogger<HomeController> logger, IScheduleService scheduleService)
+	public HomeController(ILogger<HomeController> logger, IScheduleService scheduleService, ITeamService teamService)
 	{
 		this.logger = logger;
 		this.scheduleService = scheduleService;
+		this.teamService = teamService;
 	}
 
 	/// <summary>
@@ -47,6 +59,57 @@ public sealed class HomeController : Controller
 		IEnumerable<Event> games = await this.scheduleService.GetAllAsync();
 
 		return this.View(games);
+	}
+
+	/// <summary>
+	/// Get the scheduled games based off of the search.
+	/// </summary>
+	/// <returns>The games.</returns>
+	[HttpGet]
+	public async Task<IActionResult> SearchGame(string searchTerm)
+	{
+		this.gamesAndPractices = await this.scheduleService.GetAllAsync();
+		IEnumerable<Event> events = this.gamesAndPractices.OfType<Game>().Where(g => g.Name.Contains(searchTerm) ||
+																teamService.GetAsync(g.HomeTeamId).Result.Name.Contains(searchTerm) ||
+																g.StartDate.ToString("MM/dd/yy").Contains(searchTerm) ||
+																g.EndDate.ToString("MM/dd/yy").Contains(searchTerm));
+		foreach (var p in this.gamesAndPractices.OfType<Event>())
+		{
+			events.ToList().Add(p);
+		}
+		if (events != null)
+		{
+			return View("Index", events);
+		}
+		else
+		{
+			return View("Index");
+		}
+	}
+
+	/// <summary>
+	/// Get the scheduled events based off of the search.
+	/// </summary>
+	/// <returns>The events.</returns>
+	[HttpGet]
+	public async Task<IActionResult> SearchEvent(string searchTerm)
+	{
+		this.gamesAndPractices = await this.scheduleService.GetAllAsync();
+		IEnumerable<Event> events = this.gamesAndPractices.OfType<Event>().Where(g => g.Name.Contains(searchTerm) ||
+																g.StartDate.ToString("MM/dd/yy").Contains(searchTerm) ||
+																g.EndDate.ToString("MM/dd/yy").Contains(searchTerm));
+		foreach (var p in this.gamesAndPractices.OfType<Event>())
+		{
+			events.ToList().Add(p);
+		}
+		if (events != null)
+		{
+			return View("Index", events);
+		}
+		else
+		{
+			return View("Index");
+		}
 	}
 
 	/// <summary>

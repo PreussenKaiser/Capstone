@@ -21,7 +21,12 @@
             <div class="text-center text-danger">
                 <h3>Upcoming Games</h3>
             </div>
-            <hr />        
+            <hr />
+            @using (Html.BeginForm("SearchGame", "Home", FormMethod.Get, new { @class = "form-horizontal" }))
+            {
+                <input type="text" id="searchTerm" name="searchTerm" />
+                <button type="submit">Search</button>
+            }
             <table class="table table-sm">
                 <thead>
                     <tr>
@@ -47,6 +52,11 @@
                 <h3>All Upcoming Events</h3>
             </div>
             <hr />
+            @using (Html.BeginForm("SearchEvent", "Home", FormMethod.Get, new { @class = "form-horizontal" }))
+            {
+                <input type="text" id="searchTerm" name="searchTerm" />
+                <button type="submit">Search</button>
+            }
             <table class="table table-sm">
                 <thead>
                     <tr>

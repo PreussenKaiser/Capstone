@@ -13,28 +13,12 @@ public sealed class CoachController : Controller
 	private readonly IScheduleService scheduleService;
 
 	/// <summary>
-	/// The service used to get the teams.
-	/// </summary>
-	private ITeamService? teamService;
-
-	/// <summary>
-	/// The teams from the coach.
-	/// </summary>
-	private IEnumerable<Team>? _teams;
-
-	/// <summary>
-	/// The games and practices of the coach.
-	/// </summary>
-	private IEnumerable<Event> gamesAndPractices;
-
-	/// <summary>
 	/// Initializes the <see cref="CoachController"/> class.
 	/// </summary>
 	/// <param name="logger">Logs controller processes.</param>
-	public CoachController(IScheduleService scheduleService, ITeamService teamService)
+	public CoachController(IScheduleService scheduleService)
 	{
 		this.scheduleService = scheduleService;
-		this.teamService = teamService;
 	}
 
 	/// <summary>
@@ -46,25 +30,5 @@ public sealed class CoachController : Controller
 		IEnumerable<Event> events = await this.scheduleService.GetAllAsync();
 
 		return this.View(events);
-	}
-
-	/// <summary>
-	/// Get the coach's scheduled games based off of the search.
-	/// </summary>
-	/// <returns>The coaches games.</returns>
-	[HttpGet]
-	public async Task<IActionResult> SearchGame(string searchTerm)
-	{
-		this.gamesAndPractices = await this.scheduleService.GetAllAsync();
-		IEnumerable<Event> events = this.gamesAndPractices.OfType<Game>().Where(g => g.Name.Contains(searchTerm) ||
-																teamService.GetAsync(g.HomeTeamId).Result.Name.Contains(searchTerm));
-		if (events != null)
-		{
-			return View("Index", events);
-		}
-		else
-		{
-			return View("Index");
-		}
 	}
 }
