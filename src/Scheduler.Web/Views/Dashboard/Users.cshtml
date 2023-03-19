@@ -4,7 +4,7 @@
 @inject UserManager<User> UserManager;
 @model IEnumerable<User>
 
-<div class="row mb-3">
+<div class="row mb-3 mt-3">
     <div class="col-12">
         <a asp-action="@nameof(IdentityController.Register)"
            asp-controller="Identity"
@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row table-responsive">
     <table class="table table-sm">
         <thead>
             <tr>

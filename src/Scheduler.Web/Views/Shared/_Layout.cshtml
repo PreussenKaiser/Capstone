@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PCYS Scheduler - @this.ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MobileNavSlideOut.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Scheduler.Web.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <nav id="topNav" class="has-site-logo topNav">
+<body class="site-body itasca user_mode home v4">
+    <div class="site-background"></div>
+    <div id="topNav" class="has-site-logo topNav">
         <div id="sn-site-logo">
             <a class="sn-site-logo-wrap" asp-controller="Home" asp-action="Index">
                 <span class="sn-site-logo-background" style="background-image: url(https://cdn1.sportngin.com/attachments/logo_graphic/f8ca-170838662/2022PCYSlogo_2COLORrednoS-Small_small.png);"></span>
@@ -33,13 +36,40 @@
                 <partial name="_LoginPartial" />
             </ul>
         </div>
-    </nav>
-    <div id="topNavPlaceholder" class="page-has-banner"></div>
-    <div class="site-banner-wrapper">
-        <div class="site-banner-text-wrapper"></div>
+        <input type="checkbox" class="slideOutMenu" id="slideOutMenu" hidden />
+        <label for="slideOutMenu" class="sidebarIconToggle">
+            <div class="spinner diagonal part-1"></div>
+            <div class="spinner horizontal"></div>
+            <div class="spinner diagonal part-2"></div>
+        </label>
+        <div class="theme-mobile-nav">
+            <div class="theme-nav theme-nav-style-slide">
+                @*<span class="theme-slide-nav-toggle"></span>*@
+                <div class="theme-nav-menus">
+                    <ul class="theme-nav-menu">
+                        <li class="theme-nav-item">
+                            <a class="theme-nav-link"
+                               asp-controller="Home"
+                               asp-action="Index">
+                                Home
+                            </a>
+                        </li>
+                        <partial name="_LoginPartial" />
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="siteContainer" class="container-fluid siteContainer p-2">
-        @this.RenderBody()
+    <div id="topNavPlaceholder" class="page-has-banner"></div>
+        <div id="siteHeader">
+        <div class="site-banner-wrapper">
+            <div class="site-banner-text-wrapper"></div>
+        </div>
+    </div>
+    <div id="siteContainer" class="container-fluid siteContainer">
+        <div class="container">
+            @this.RenderBody()
+        </div>
     </div>
 
     <footer class="snFooterContainer">
