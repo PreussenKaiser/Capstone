@@ -1,10 +1,8 @@
-﻿@using Scheduler.Web.Controllers;
-
-@model IEnumerable<Team>
+﻿@model IEnumerable<Team>
 
 <div class="row mb-3">
     <div class="col-12">
-        <a asp-action="@nameof(TeamController.Create)"
+        <a asp-action="Create"
            asp-controller="Team"
            class="btn btn-primary">
             Add new
@@ -28,16 +26,16 @@
                     <th scope="row">@team.Name</th>
                     <td>@(team.League is null ? string.Empty : team.League.Name)</td>
                     <td class="text-end">
-                        <a asp-action="@nameof(TeamController.Update)"
-                           asp-controller="@nameof(Team)"
+                        <a asp-action="Update"
+                           asp-controller="Team"
                            asp-route-id="@team.Id"
                            class="btn btn-sm btn-secondary me-3">
                             Update
                         </a>
                     </td>
                         <td class="text-start">
-                            <form asp-action="@nameof(FieldController.Delete)"
-                                  asp-controller="@nameof(Team)"
+                            <form asp-action="Delete"
+                                  asp-controller="Team"
                                   asp-route-id="@team.Id"
                                   method="post">
                                 <button class="btn btn-sm btn-danger">

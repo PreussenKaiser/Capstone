@@ -1,6 +1,4 @@
-﻿@using Scheduler.Web.Controllers;
-
-@model Field
+﻿@model Field
 
 @if (this.Model is not null)
 {
@@ -15,7 +13,7 @@
 
 <div class="row mb-3">
     <div class="col-6">
-        <a asp-action="@nameof(DashboardController.Fields)"
+        <a asp-action="Fields"
            asp-controller="Dashboard"
            class="btn btn-lg btn-danger w-100">
             Cancel

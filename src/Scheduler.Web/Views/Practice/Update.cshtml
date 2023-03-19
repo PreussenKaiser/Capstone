@@ -1,0 +1,124 @@
+﻿@using Scheduler.Web.Persistence;
+@using System.Security.Claims;
+
+@inject SchedulerContext Scheduler
+@model ScheduleViewModel<Practice>
+
+@{
+    this.ViewData["Title"] = "Schedule Practice";
+    string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+
+    IEnumerable<SelectListItem> teams = this.Scheduler.Teams
+        .Select(team => new SelectListItem()
+        {
+            Text = team.Name,
+            Value = team.Id.ToString()
+        })
+        .ToList();
+}
+
+<div class="row">
+    <div class="col-12 px-sm-5">
+        <form asp-action="Update" method="post">
+            <div class="row mb-3">
+                <h1 class="text-center">
+                    @this.ViewData["Title"]
+                </h1>
+                <hr />
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row mb-3">
+                <div class="col-sm-6">
+                    <input hidden asp-for="Event.Id" value="@this.Model.Event.Id" />
+                    <input hidden asp-for="Event.UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
+
+                    <div class="mb-3">
+                        <label asp-for="Event.Name" class="form-label"></label>
+                        <input asp-for="Event.Name" class="form-control" />
+                        <span asp-validation-for="Event.Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Event.TeamId" class="form-label"></label>
+                        <select asp-for="Event.TeamId" asp-items="teams" class="form-select"></select>
+                        <span asp-validation-for="Event.TeamId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="mb-3">
+                        <label asp-for="FieldIds" class="form-label"></label>
+                        <select class="form-select"
+                                multiple
+                                size="6"
+                                asp-for="FieldIds"
+                                asp-items="this.Scheduler.Fields
+                                    .ToList()
+                                    .Select(field => new SelectListItem
+                                    {
+                                        Text = field.Name,
+                                        Value = field.Id.ToString(),
+                                        Selected = this.Model.Event.Fields.Any(f => f.Id == field.Id)
+                                    })"></select>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label asp-for="Event.StartDate" class="form-label"></label>
+                            <input asp-for="Event.StartDate" min=@today type="datetime-local" class="form-control" />
+                            <span asp-validation-for="Event.StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Event.EndDate" class="form-label"></label>
+                            <input asp-for="Event.EndDate" min=@today type="datetime-local" class="form-control" />
+                            <span asp-validation-for="Event.EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check mb-3">
+                            <input asp-for="IsRecurring" type="checkbox" class="form-check-input" id="recurrenceCheck">
+                            <label asp-for="IsRecurring" class="form-check-label"></label>
+                        </div>
+                        <div id="recurrenceInputs">
+                            @if (this.Model.Event.Recurrence is not null)
+                            {
+                                <input hidden asp-for="Event.Recurrence!.Id" value="@this.Model.Event.Recurrence.Id" />
+
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <label asp-for="Event.Recurrence!.Type" class="form-label"></label>
+                                        <select asp-for="Event.Recurrence!.Type"
+                                                asp-items="@this.Html.GetEnumSelectList<RecurrenceType>()"
+                                                class="form-control"></select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label asp-for="Event.Recurrence!.Occurrences" class="form-label"></label>
+                                        <input type="number" min="1" max="255" asp-for="Event.Recurrence!.Occurrences" class="form-control" />
+                                        <span asp-validation-for="Event.Recurrence!.Occurrences" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <a asp-action="Events"
+                       asp-controller="Dashboard"
+                       class="btn btn-lg btn-danger w-100">
+                        Cancel
+                    </a>
+                </div>
+                <div class="col-6">
+                    <input type="submit" class="btn btn-lg btn-primary w-100" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/RecurrenceForm.js"></script>
+}

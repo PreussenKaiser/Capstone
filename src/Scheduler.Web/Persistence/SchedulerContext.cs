@@ -61,10 +61,7 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 	/// <param name="builder">The API to configure with.</param>
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
-		builder
-			.Entity<Event>()
-			.Property("Discriminator")
-			.HasMaxLength(8);
+		builder.Entity<Event>().UseTptMappingStrategy();
 
 		builder.Entity<Recurrence>(builder =>
 		{
@@ -79,6 +76,7 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 		builder.Entity<User>().HasData(SeedData.Users);
 		builder.Entity<Role>().HasData(SeedData.Roles);
 		builder.Entity<IdentityUserRole<Guid>>().HasData(SeedData.UserRoles);
+		builder.Entity<League>().HasData(SeedData.Leagues);
 
 		base.OnModelCreating(builder);
 	}

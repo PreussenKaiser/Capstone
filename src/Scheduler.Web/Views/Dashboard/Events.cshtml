@@ -1,28 +1,128 @@
-﻿@using Scheduler.Web.Controllers;
+﻿@using Microsoft.AspNetCore.Identity;
+@using Scheduler.Web.Controllers;
+@using Scheduler.Web.Persistence;
+
+@inject UserManager<User> UserManager
+@inject SchedulerContext Scheduler
 
 @model IEnumerable<Event>
 
-<div class="row mb-3">
-    <div class="col-sm-6">
-        <a asp-action="@nameof(ScheduleController.Create)"
-           asp-controller="Schedule"
-           class="btn btn-primary">
-            Schedule New
-        </a>
-    </div>
-    <div class="col-sm-6">
-        <select class="form-select border border-3 border-secondary" id="scheduleFilter">
-            <option value="">All</option>
-            <option value="Event">Events</option>
-            <option value="Practice">Practices</option>
-            <option value="Game">Games</option>
-        </select>
-    </div>
-</div>
-<div class="row" id="scheduleContainer">
+@{
+	IEnumerable<Field> fields = this.Scheduler.Fields.ToList();
+	IEnumerable<Team> teams = this.Scheduler.Teams.ToList();
 
-</div>
-
-@section Scripts {
-    <script src="~/js/ScheduleTable.js"></script>
+	string controller = this.User.IsInRole(Role.ADMIN)
+		? nameof(Event)
+		: nameof(Practice);
 }
+
+<div class="row mb-3">
+	<div class="col-sm-6">
+		<div class="btn-group">
+			<a asp-action="Create" asp-controller="@controller" class="btn btn-primary rounded me-3">
+				Schedule
+			</a>
+			<form class="me-3" method="post">
+				<div class="btn-group">
+					<input type="submit" class="btn btn-secondary" value="Filter" />
+					<button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
+					<ul class="dropdown-menu w-100 p-3">
+						<div class="mb-3">
+							<label class="form-label">Type</label>
+							<select name="type" class="form-select">
+								<option value="Event">Events</option>
+								<option value="Practice">Practices</option>
+								<option value="Game">Games</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Name</label>
+							<input type="text" name="searchTerm" class="form-control" />
+						</div>
+					</ul>
+				</div>
+			</form>
+			<a asp-action="Events" class="btn btn-danger rounded">Reset</a>
+		</div>
+	</div>
+	<div class="col-sm-6">
+	</div>
+</div>
+<div class="row">
+	@foreach (var scheduledEvent in this.Model)
+	{
+		<div class="col-sm-6 mb-4">
+			<div class="card border border-3 border-secondary">
+				<div class="card-body">
+					<h4 class="card-title">@scheduledEvent.Name</h4>
+					<p class="card-text">
+						<h5>When</h5>
+						<b>Starts</b> @this.Html.DisplayFor(model => scheduledEvent.StartDate)
+						<br />
+						<b>Ends</b> @this.Html.DisplayFor(model => scheduledEvent.EndDate)
+					</p>
+					<p class="card-text">
+						<h5>Where</h5>
+						@if (scheduledEvent.Fields is not null)
+							@foreach (var field in scheduledEvent.Fields)
+							{
+								@field.Name
+								<br />
+							}
+					</p>
+					@if (scheduledEvent is Practice practice)
+					{
+						practice.Team ??= teams.FirstOrDefault(t => t.Id == practice.TeamId);
+
+						if (practice.Team is not null)
+						{
+							<p class="card-text">
+								<h5>Who:</h5>
+								@practice.Team.Name
+							</p>
+						}
+					}
+					else if (scheduledEvent is Game game)
+					{
+						game.HomeTeam ??= teams.FirstOrDefault(g => g.Id == game.HomeTeamId);
+						game.OpposingTeam ??= teams.FirstOrDefault(g => g.Id == game.OpposingTeamId);
+
+						if (game.HomeTeam is not null &&
+							game.OpposingTeam is not null)
+						{
+							<p class="card-text">
+								<h5>Who</h5>
+								@game.HomeTeam.Name vs. @game.OpposingTeam.Name
+							</p>
+						}
+					}
+
+					@if (this.User.IsInRole(Role.ADMIN) ||
+							scheduledEvent.UserId.ToString() == this.UserManager.GetUserId(this.User))
+					{
+						<div class="row">
+							<div class="col-6">
+								<a asp-action="Update"
+								   asp-controller="@scheduledEvent.GetType().Name"
+								   asp-route-id="@scheduledEvent.Id"
+								   class="btn btn-sm btn-secondary w-100">
+									Update
+								</a>
+							</div>
+							<div class="col-6">
+								<form asp-action="Delete"
+									  asp-controller="@scheduledEvent.GetType().Name"
+									  asp-route-id="@scheduledEvent.Id"
+									  method="post">
+									<button class="btn btn-sm btn-danger w-100">
+										Delete
+									</button>
+								</form>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	}
+</div>

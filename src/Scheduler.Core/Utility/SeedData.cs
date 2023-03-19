@@ -102,7 +102,6 @@ public static class SeedData
 			Name = "Event",
 			StartDate = new(2023, 3, 24, 12, 0, 0),
 			EndDate = new(2023, 3, 24, 15, 0, 0),
-			IsRecurring = true,
 			Recurrence = new()
 			{
 				Id = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
@@ -119,7 +118,6 @@ public static class SeedData
 			Name = "Practice",
 			StartDate = new(2023, 3, 14, 17, 0, 0),
 			EndDate = new(2023, 3, 14, 19, 0, 0),
-			IsRecurring = false,
 			Fields = Fields.Take(1).ToList()
 		},
 		new Game()
@@ -131,7 +129,6 @@ public static class SeedData
 			Name = "Game",
 			StartDate = new(2023, 3, 15, 17, 0, 0),
 			EndDate = new(2023, 3, 15, 20, 0, 0),
-			IsRecurring = false,
 			Fields = Fields.TakeLast(2).ToList()
 		}
 	};

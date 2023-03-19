@@ -10,19 +10,12 @@ namespace Scheduler.Web.Extensions;
 /// </summary>
 public static class SchedulerContextExtensions
 {
-	public static IQueryable<Event> WithScheduling(this IQueryable<Event> events)
+	public static IQueryable<TEvent> WithScheduling<TEvent>(this IQueryable<TEvent> events)
+		where TEvent : Event
 	{
 		return events
 			.Include(e => e.Recurrence)
 			.Include(e => e.Fields);
-	}
-
-	public static IQueryable<Event> FromDiscriminator(
-		this DbSet<Event> events, string? type = null)
-	{
-		return string.IsNullOrEmpty(type)
-			? events
-			: events.FromSql($"SELECT * FROM Events WHERE Discriminator = {type}");
 	}
 
 	public static IEnumerable<TEvent> AsRecurring<TEvent>(this IQueryable<TEvent> events)
@@ -108,6 +101,13 @@ public static class SchedulerContextExtensions
 			return;
 		}
 
-		scheduledEvent.Recurrence.Id = scheduledEvent.Id;
+		if (await context.Recurrences.ContainsAsync(scheduledEvent.Recurrence))
+		{
+			context.Recurrences.Update(scheduledEvent.Recurrence);
+		}
+		else
+		{
+			await context.Recurrences.AddAsync(scheduledEvent.Recurrence);
+		}
 	}
 }

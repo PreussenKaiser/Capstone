@@ -14,6 +14,17 @@ namespace Scheduler.Web.Controllers;
 public sealed class HomeController : Controller
 {
 	/// <summary>
+	/// Renders a partial view.
+	/// For use with AJAX.
+	/// </summary>
+	/// <param name="viewName">The partial view to display.</param>
+	/// <returns>The specified partial view.</returns>
+	public PartialViewResult Partial(string viewName)
+	{
+		return this.PartialView(viewName);
+	}
+
+	/// <summary>
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
 	/// <param name="context">The <see cref="SchedulerContext"/> to get events with.</param>
@@ -21,9 +32,7 @@ public sealed class HomeController : Controller
 	public IActionResult Index(
 		[FromServices] SchedulerContext context)
 	{
-		var events = context.Events
-			.FromDiscriminator()
-			.WithScheduling();
+		var events = context.Events.WithScheduling();
 
 		var games = events
 			.OfType<Game>()
