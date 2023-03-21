@@ -2,20 +2,20 @@
 @using System.Security.Claims;
 
 @inject SchedulerContext Scheduler
-@model ScheduleViewModel<Event>
+@model Event
 
 @{
-    this.ViewData["Title"] = "Schedule Event";
+    this.ViewData["Title"] = "Schedule";
 
     string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 }
 
 <div class="row">
     <div class="col-12 px-sm-5">
-        <form method="post">
+        <form id="eventForm" method="post">
             <div class="row mb-3">
                 <h1 class="text-center">
-                    @this.ViewData["Title"]
+                    @this.ViewData["Title"] <span id="title"></span>
                 </h1>
                 <hr />
             </div>
@@ -24,28 +24,39 @@
 
             <div class="row mb-3">
                 <div class="col-sm-6">
-                    <input hidden asp-for="Event.UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
+                    <input hidden asp-for="UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
 
                     <div class="list-group list-group-horizontal mb-3">
                         @if (this.User.IsInRole(Role.ADMIN))
                         {
-                            <a asp-controller="Event" class="list-group-item list-group-item-action text-center active">
+                            <button type="button"
+                                    id="Event"
+                                    onclick="navClick('Event')"
+                                    class="list-group-item list-group-item-action text-center">
                                 Event
-                            </a>
+                            </button>
                         }
-                        <a asp-controller="Practice" class="list-group-item list-group-item-action text-center">
+                        <button type="button"
+                                id="Practice"
+                                onclick="navClick('Practice')"
+                                class="list-group-item list-group-item-action text-center">
                             Practice
-                        </a>
-                        <a asp-controller="Game" class="list-group-item list-group-item-action text-center">
+                        </button>
+                        <button type="button"
+                                id="Game"
+                                onclick="navClick('Game')"
+                                class="list-group-item list-group-item-action text-center">
                             Game
-                        </a>
+                        </button>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Event.Name" class="form-label"></label>
-                        <input asp-for="Event.Name" class="form-control" />
-                        <span asp-validation-for="Event.Name" class="text-danger"></span>
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
+
+                    <div id="eventInputs"></div>
                 </div>
                 <div class="col-sm-6">
                     <div class="mb-3">
@@ -61,21 +72,21 @@
                                         Text = field.Name,
                                         Value = field.Id.ToString(),
                                         Selected = this.Model is not null &&
-                                                   this.Model.Event is not null &&
-                                                   this.Model.Event.Fields is not null &&
-                                                   this.Model.Event.Fields.Any(f => f.Id == field.Id)
+                                                   this.Model.Fields is not null &&
+                                                   this.Model.Fields.Any(f => f.Id == field.Id)
                                     })"></select>
+                        <span asp-validation-for="FieldIds" class="text-danger"></span>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label asp-for="Event.StartDate" class="form-label"></label>
-                            <input asp-for="Event.StartDate" min=@today type="datetime-local" class="form-control" />
-                            <span asp-validation-for="Event.StartDate" class="text-danger"></span>
+                            <label asp-for="StartDate" class="form-label"></label>
+                            <input asp-for="StartDate" min="@today" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
                         </div>
                         <div class="col-6">
-                            <label asp-for="Event.EndDate" class="form-label"></label>
-                            <input asp-for="Event.EndDate" min=@today type="datetime-local" class="form-control" />
-                            <span asp-validation-for="Event.EndDate" class="text-danger"></span>
+                            <label asp-for="EndDate" class="form-label"></label>
+                            <input asp-for="EndDate" min="@today" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -83,7 +94,13 @@
                             <input asp-for="IsRecurring" type="checkbox" class="form-check-input" id="recurrenceCheck">
                             <label asp-for="IsRecurring" class="form-check-label"></label>
                         </div>
-                        <div id="recurrenceInputs"></div>
+                        <div id="recurrenceInputs">
+                            @if (this.Model is not null &&
+                                 this.Model.Recurrence is not null)
+                            {
+                                <partial name="Forms/_RecurrenceInputs" />
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -107,4 +124,14 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/RecurrenceForm.js"></script>
+    <script src="~/js/EventForm.js"></script>
+    <script>
+        @{
+            string selectedNav = this.User.IsInRole(Role.ADMIN)
+                ? nameof(Event) : nameof(Practice);
+        }
+
+        document.onload = refreshNav('@selectedNav')
+    </script>
 }
+

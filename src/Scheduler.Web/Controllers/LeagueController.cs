@@ -2,7 +2,7 @@
 using Scheduler.Core.Models;
 using Scheduler.Web.Persistence;
 
-namespace Scheduler.Web.Controllers.Facility;
+namespace Scheduler.Web.Controllers;
 
 /// <summary>
 /// Renders views which display <see cref="League"/> data.

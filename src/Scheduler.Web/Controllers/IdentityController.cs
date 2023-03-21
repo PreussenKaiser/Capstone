@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
 using Scheduler.Core.Utility;
-using Scheduler.Web.Controllers.Facility;
 using Scheduler.Web.ViewModels;
 
 namespace Scheduler.Web.Controllers;

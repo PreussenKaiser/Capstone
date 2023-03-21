@@ -6,7 +6,7 @@ namespace Scheduler.Core.Validation;
 /// <summary>
 /// Similar to <see cref="CompareAttribute"/> but will fail if the applied property and <see cref="otherProperty"/> are equal.
 /// </summary>
-[AttributeUsage(AttributeTargets.Property)]
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
 public sealed class ReverseCompareAttribute : ValidationAttribute
 {
 	/// <summary>

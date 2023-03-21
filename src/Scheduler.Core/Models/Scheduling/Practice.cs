@@ -13,7 +13,7 @@ public sealed record Practice : Event
 	/// </summary>
 	[Display(Name = "Practicing Team")]
 	[Required(ErrorMessage = "Please select the practicing team.")]
-	public Guid TeamId { get; init; }
+	public Guid TeamId { get; set; }
 
 	/// <summary>
 	/// The team practicing.

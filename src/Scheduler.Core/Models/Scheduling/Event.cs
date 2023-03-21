@@ -1,5 +1,6 @@
 ﻿using Scheduler.Core.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Scheduler.Core.Models;
 
@@ -13,6 +14,8 @@ public record Event : IValidatableObject
 	/// </summary>
 	public Event()
 	{
+		this.Id = Guid.NewGuid();
+		this.FieldIds = Array.Empty<Guid>();
 		this.Name = string.Empty;
 		this.Fields = new List<Field>();
 	}
@@ -27,6 +30,14 @@ public record Event : IValidatableObject
 	/// References <see cref="User.Id"/>.
 	/// </summary>
 	public Guid UserId { get; set; }
+
+	/// <summary>
+	/// Field(s) where the event occurs.
+	/// </summary>
+	[Display(Name = "Fields")]
+	[Required(ErrorMessage = "Please select at least one field.")]
+	[NotMapped]
+	public Guid[] FieldIds { get; set; }
 
 	/// <summary>
 	/// The event's name.
@@ -53,6 +64,14 @@ public record Event : IValidatableObject
 	public DateTime EndDate { get; set; }
 
 	/// <summary>
+	/// Whether the <see cref="Event"/> recurs or not.
+	/// </summary>
+	[Display(Name = "Repeating?")]
+	[NotMapped]
+	public bool IsRecurring
+		=> this.Recurrence is not null;
+
+	/// <summary>
 	/// The event's reccurence pattern if it's recurring.
 	/// </summary>
 	public Recurrence? Recurrence { get; set; }
@@ -60,7 +79,7 @@ public record Event : IValidatableObject
 	/// <summary>
 	/// Fields where the event is taking place.
 	/// </summary>
-	public List<Field> Fields { get; init; }
+	public List<Field> Fields { get; set; }
 
 	/// <summary>
 	/// Performs additional validation for the <see cref="Event"/>.

@@ -24,9 +24,7 @@ public static class Schedule
 
 			foreach (var occurrence in schedule)
 				if (e.Id != occurrence.Id &&
-					e.Fields is not null &&
-					occurrence.Fields is not null &&
-					e.Fields.Any(occurrence.Fields.Contains) &&
+					e.Fields.Any(f => occurrence.FieldIds.Contains(f.Id)) &&
 					e.StartDate <= occurrence.EndDate &&
 					e.EndDate > occurrence.StartDate)
 				{

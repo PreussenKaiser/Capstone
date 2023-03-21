@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using Scheduler.Web.Controllers;
 @using Scheduler.Web.Persistence;
+@using System.Text;
 
 @inject UserManager<User> UserManager
 @inject SchedulerContext Scheduler
@@ -10,16 +11,12 @@
 @{
 	IEnumerable<Field> fields = this.Scheduler.Fields.ToList();
 	IEnumerable<Team> teams = this.Scheduler.Teams.ToList();
-
-	string controller = this.User.IsInRole(Role.ADMIN)
-		? nameof(Event)
-		: nameof(Practice);
 }
 
 <div class="row mb-3">
-	<div class="col-sm-6">
+	<div class="col-12">
 		<div class="btn-group">
-			<a asp-action="Create" asp-controller="@controller" class="btn btn-primary rounded me-3">
+			<a asp-controller="Schedule" asp-action="" class="btn btn-primary rounded me-3">
 				Schedule
 			</a>
 			<form class="me-3" method="post">
@@ -45,84 +42,68 @@
 			<a asp-action="Events" class="btn btn-danger rounded">Reset</a>
 		</div>
 	</div>
-	<div class="col-sm-6">
-	</div>
 </div>
 <div class="row">
-	@foreach (var scheduledEvent in this.Model)
-	{
-		<div class="col-sm-6 mb-4">
-			<div class="card border border-3 border-secondary">
-				<div class="card-body">
-					<h4 class="card-title">@scheduledEvent.Name</h4>
-					<p class="card-text">
-						<h5>When</h5>
-						<b>Starts</b> @this.Html.DisplayFor(model => scheduledEvent.StartDate)
-						<br />
-						<b>Ends</b> @this.Html.DisplayFor(model => scheduledEvent.EndDate)
-					</p>
-					<p class="card-text">
-						<h5>Where</h5>
-						@if (scheduledEvent.Fields is not null)
-							@foreach (var field in scheduledEvent.Fields)
-							{
-								@field.Name
-								<br />
+	<div class="col-12">
+		<div class="list-group">
+			@foreach (var scheduledEvent in this.Model)
+			{
+				<a asp-action="Details" asp-controller="Schedule" asp-route-id="@scheduledEvent.Id" class="list-group-item list-group-item-action border-3 border-secondary mb-3">
+					<div class="d-flex w-100 justify-content-between">
+						<h5>@scheduledEvent.Name</h5>
+						<small>
+							@this.Html.DisplayFor(x => scheduledEvent.StartDate)
+							to
+							@this.Html.DisplayFor(x => scheduledEvent.EndDate)
+						</small>
+					</div>
+					<div class="row">
+						<div class="col-6">
+							<h6>Fields</h6>
+							@{
+								StringBuilder builder = new();
+								int fieldCount = scheduledEvent.Fields.Count;
+
+								for (int i = 0; i < fieldCount; i++)
+								{
+									Field field = scheduledEvent.Fields[i];
+
+									builder.AppendLine(i == fieldCount - 1
+										? field.Name
+										: $"{field.Name},");
+								}
+
+								<small>@builder.ToString()</small>
 							}
-					</p>
-					@if (scheduledEvent is Practice practice)
-					{
-						practice.Team ??= teams.FirstOrDefault(t => t.Id == practice.TeamId);
 
-						if (practice.Team is not null)
-						{
-							<p class="card-text">
-								<h5>Who:</h5>
-								@practice.Team.Name
-							</p>
-						}
-					}
-					else if (scheduledEvent is Game game)
-					{
-						game.HomeTeam ??= teams.FirstOrDefault(g => g.Id == game.HomeTeamId);
-						game.OpposingTeam ??= teams.FirstOrDefault(g => g.Id == game.OpposingTeamId);
-
-						if (game.HomeTeam is not null &&
-							game.OpposingTeam is not null)
-						{
-							<p class="card-text">
-								<h5>Who</h5>
-								@game.HomeTeam.Name vs. @game.OpposingTeam.Name
-							</p>
-						}
-					}
-
-					@if (this.User.IsInRole(Role.ADMIN) ||
-							scheduledEvent.UserId.ToString() == this.UserManager.GetUserId(this.User))
-					{
-						<div class="row">
-							<div class="col-6">
-								<a asp-action="Update"
-								   asp-controller="@scheduledEvent.GetType().Name"
-								   asp-route-id="@scheduledEvent.Id"
-								   class="btn btn-sm btn-secondary w-100">
-									Update
-								</a>
-							</div>
-							<div class="col-6">
-								<form asp-action="Delete"
-									  asp-controller="@scheduledEvent.GetType().Name"
-									  asp-route-id="@scheduledEvent.Id"
-									  method="post">
-									<button class="btn btn-sm btn-danger w-100">
-										Delete
-									</button>
-								</form>
-							</div>
 						</div>
-					}
-				</div>
-			</div>
+						<div class="col-6">
+							@if (scheduledEvent is Practice practice)
+							{
+								practice.Team ??= teams.FirstOrDefault(t => t.Id == practice.TeamId);
+
+								if (practice.Team is not null)
+								{							
+									<h6>Practicing Team</h6>
+									<small>@practice.Team.Name</small>
+								}
+							}
+							else if (scheduledEvent is Game game)
+							{
+								game.HomeTeam ??= teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
+								game.OpposingTeam ??= teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+
+								if (game.HomeTeam is not null &&
+									game.OpposingTeam is not null)
+								{							
+									<h6>Teams</h6>
+									<small>@game.HomeTeam.Name vs. @game.OpposingTeam.Name</small>
+								}
+							}
+						</div>
+					</div>
+				</a>
+			}
 		</div>
-	}
+	</div>
 </div>

@@ -14,7 +14,7 @@ public sealed record Game : Event
 	/// </summary>
 	[Display(Name = "Home Team")]
 	[Required(ErrorMessage = "Select a home team.")]
-	public Guid HomeTeamId { get; init; }
+	public Guid HomeTeamId { get; set; }
 
 	/// <summary>
 	/// The games opposing team.
@@ -25,7 +25,7 @@ public sealed record Game : Event
 	[ReverseCompare(
 		OtherProperty = nameof(this.HomeTeamId),
 		ErrorMessage = "Home and opposing teams must be different.")]
-	public Guid OpposingTeamId { get; init; }
+	public Guid OpposingTeamId { get; set; }
 
 	/// <summary>
 	/// The games home team.
