@@ -1,39 +1,44 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
-using Scheduler.Core.Validation;
+using Scheduler.Web.Controllers.Facility;
 using Scheduler.Web.Extensions;
 using Scheduler.Web.Persistence;
+using Scheduler.Web.ViewModels.Scheduling;
 
-namespace Scheduler.Web.Controllers;
+namespace Scheduler.Web.Controllers.Scheduling;
 
 public sealed class EventController : Controller
 {
 	private readonly SchedulerContext context;
+	private readonly IMapper mapper;
 
-	public EventController(SchedulerContext context)
+	public EventController(SchedulerContext context, IMapper mapper)
 	{
 		this.context = context;
+		this.mapper = mapper;
 	}
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Schedule(Event values)
+	public async ValueTask<IActionResult> Schedule(EventModel values)
 	{
-		if (this.ValidateEvent(values) is not null)
+		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Index.cshtml", values);
 		}
 
-		values.Fields.AddRange(await this.context.Fields
+		var scheduledEvent = this.mapper.Map<Event>(values);
+		scheduledEvent.Relocate(await this.context.Fields
 			.AsTracking()
 			.Where(f => values.FieldIds.Contains(f.Id))
-			.ToListAsync());
+			.ToArrayAsync());
 
-		await this.context.Events.AddAsync(values);
+		await this.context.Events.AddAsync(scheduledEvent);
 
 		await this.context.SaveChangesAsync();
 
-		return this.RedirectToAction("Details", "Schedule", new { values.Id });
+		return this.RedirectToAction("Details", "Schedule", new { scheduledEvent.Id });
 	}
 
 	[HttpPost]
@@ -63,9 +68,9 @@ public sealed class EventController : Controller
 	[HttpPost]
 	public async ValueTask<IActionResult> Reschedule(Event values)
 	{
-		if (this.ValidateEvent(values) is IActionResult result)
+		if (!this.ModelState.IsValid)
 		{
-			return result;
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
 		Event? scheduledEvent = await this.context.Events
@@ -88,38 +93,16 @@ public sealed class EventController : Controller
 	}
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Relocate(Event values)
+	public async ValueTask<IActionResult> Relocate(EventModel values)
 	{
-		if (this.ValidateEvent(values) is IActionResult result)
+		if (!this.ModelState.IsValid)
 		{
-			return result;
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
 		await this.context.UpdateFieldsAsync(values.Id, values.FieldIds);
 
 		return this.RedirectToAction("Details", "Schedule", new { values.Id });
-	}
-
-	private IActionResult? ValidateEvent(in Event? scheduledEvent)
-	{
-		if (!this.ModelState.IsValid)
-		{
-			return this.View("~/Views/Schedule/Details.cshtml", scheduledEvent);
-		}
-
-		Event? conflict = scheduledEvent
-			?.FindConflict(this.context.Events
-			.WithScheduling()
-			.ToList());
-
-		if (conflict is not null)
-		{
-			this.ModelState.AddModelError(string.Empty, "An event is already scheduled for that date");
-
-			return this.View("~/Views/Schedule/Details.cshtml", scheduledEvent);
-		}
-
-		return null;
 	}
 
 	[HttpPost]

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Core.Models;
 using Scheduler.Web.Persistence;
 
-namespace Scheduler.Web.Controllers;
+namespace Scheduler.Web.Controllers.Facility;
 
 /// <summary>
 /// Renders the views which display <see cref="Team"/> models.

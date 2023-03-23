@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
+using Scheduler.Web.Controllers.Facility;
 using Scheduler.Web.Persistence;
 
 namespace Scheduler.Web.Controllers;

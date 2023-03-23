@@ -60,22 +60,7 @@
 					<div class="row">
 						<div class="col-6">
 							<h6>Fields</h6>
-							@{
-								StringBuilder builder = new();
-								int fieldCount = scheduledEvent.Fields.Count;
-
-								for (int i = 0; i < fieldCount; i++)
-								{
-									Field field = scheduledEvent.Fields[i];
-
-									builder.AppendLine(i == fieldCount - 1
-										? field.Name
-										: $"{field.Name},");
-								}
-
-								<small>@builder.ToString()</small>
-							}
-
+							<small>@string.Join(", ", scheduledEvent.Fields.Select(f => f.Name))</small>
 						</div>
 						<div class="col-6">
 							@if (scheduledEvent is Practice practice)

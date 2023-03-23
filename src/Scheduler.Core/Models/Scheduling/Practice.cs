@@ -19,4 +19,10 @@ public sealed record Practice : Event
 	/// The team practicing.
 	/// </summary>
 	public Team? Team { get; set; }
+
+	public void EditDetails(Team team, string name)
+	{
+		this.Team = team;
+		base.ChangeName(name);
+	}
 }

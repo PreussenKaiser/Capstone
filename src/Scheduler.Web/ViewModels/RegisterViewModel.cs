@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Scheduler.Web.Controllers;
+using Scheduler.Web.Controllers.Facility;
 
 namespace Scheduler.Web.ViewModels;
 

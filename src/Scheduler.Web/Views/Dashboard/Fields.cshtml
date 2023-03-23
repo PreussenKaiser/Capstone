@@ -1,10 +1,8 @@
-﻿@using Scheduler.Web.Controllers;
-
-@model IEnumerable<Field>
+﻿@model IEnumerable<Field>
 
 <div class="row mb-3">
     <div class="col-12">
-        <a asp-action="@nameof(FieldController.Create)"
+        <a asp-action="Create"
            asp-controller="Field"
            class="btn btn-primary">
             Add new
@@ -23,7 +21,7 @@
 
                     <div class="row">
                         <div class="col-6">
-                            <a asp-action="@nameof(FieldController.Update)"
+                            <a asp-action="Update"
                                asp-controller="Field"
                                asp-route-id="@field.Id"
                                class="btn btn-sm btn-secondary">
@@ -31,7 +29,7 @@
                             </a>
                         </div>
                         <div class="col-6">
-                            <form asp-action="@nameof(FieldController.Delete)"
+                            <form asp-action="Delete"
                                   asp-controller="Field"
                                   asp-route-id="@field.Id"
                                   method="post">

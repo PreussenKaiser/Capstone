@@ -5,7 +5,7 @@ using Scheduler.Core.Models;
 using Scheduler.Core.Utility;
 using Scheduler.Web.ViewModels;
 
-namespace Scheduler.Web.Controllers;
+namespace Scheduler.Web.Controllers.Facility;
 
 /// <summary>
 /// Renders ASP.NET Identity views.
@@ -59,7 +59,7 @@ public sealed class IdentityController : Controller
 			viewModel.Password,
 			viewModel.RememberMe,
 			lockoutOnFailure: false);
-			
+
 		if (!result.Succeeded)
 		{
 			this.ModelState.AddModelError(string.Empty, "Incorrect credentials, please try again.");
@@ -108,7 +108,7 @@ public sealed class IdentityController : Controller
 		{
 			return this.View(viewModel);
 		}
-	  
+
 		User user = new()
 		{
 			UserName = viewModel.Email,
@@ -167,7 +167,7 @@ public sealed class IdentityController : Controller
 	[Authorize(Roles = Role.ADMIN)]
 	public IActionResult ConfirmAdminChange()
 	{
-		return (this.TempData["TempPassword"] is null || this.TempData["ConfirmStatement"] is null)
+		return this.TempData["TempPassword"] is null || this.TempData["ConfirmStatement"] is null
 			? this.RedirectToAction(nameof(HomeController.Index), "Home")
 			: this.View();
 	}
@@ -334,7 +334,7 @@ public sealed class IdentityController : Controller
 	private bool IsUser(out User? user, Guid? id)
 	{
 		User? userActual = this.signInManager.UserManager.GetUserAsync(this.User).Result;
-		
+
 		user = id is null
 			? userActual
 			: this.signInManager.UserManager.FindByIdAsync(id.ToString()!).Result;

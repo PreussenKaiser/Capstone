@@ -30,8 +30,8 @@
                     @foreach (var game in this.Model.Games)
                     {
                         <tr>
-                            <td>@game.HomeTeam.Name</td>
-                            <td>@game.OpposingTeam.Name</td>
+                            <td>@game.HomeTeam!.Name</td>
+                            <td>@game.OpposingTeam!.Name</td>
                             <td>@game.StartDate</td>
                         </tr>
                     }

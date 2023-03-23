@@ -1,35 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
 using Scheduler.Core.Validation;
+using Scheduler.Web.Controllers.Facility;
 using Scheduler.Web.Extensions;
 using Scheduler.Web.Persistence;
+using Scheduler.Web.ViewModels.Scheduling;
 
-namespace Scheduler.Web.Controllers;
+namespace Scheduler.Web.Controllers.Scheduling;
 
 public sealed class PracticeController : Controller
 {
 	private readonly SchedulerContext context;
+	private readonly IMapper mapper;
 
-	public PracticeController(SchedulerContext context)
+	public PracticeController(SchedulerContext context, IMapper mapper)
 	{
 		this.context = context;
+		this.mapper = mapper;
 	}
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Schedule(Practice values)
+	public async ValueTask<IActionResult> Schedule(PracticeModel values)
 	{
-		if (this.ValidatePractice(values) is not null)
+		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Index.cshtml", values);
 		}
 
-		values.Fields.AddRange(await this.context.Fields
+		var practice = this.mapper.Map<Practice>(values);
+		practice.Relocate(await this.context.Fields
 			.AsTracking()
 			.Where(f => values.FieldIds.Contains(f.Id))
-			.ToListAsync());
+			.ToArrayAsync());
 
-		await this.context.Practices.AddAsync(values);
+		await this.context.Practices.AddAsync(practice);
 
 		await this.context.SaveChangesAsync();
 
@@ -64,9 +70,9 @@ public sealed class PracticeController : Controller
 	[HttpPost]
 	public async ValueTask<IActionResult> Reschedule(Practice values)
 	{
-		if (this.ValidatePractice(values) is IActionResult result)
+		if (!this.ModelState.IsValid)
 		{
-			return result;
+			return this.View("~/Views/Schedule/Index.cshtml", values);
 		}
 
 		Practice? practice = await this.context.Practices
@@ -89,11 +95,11 @@ public sealed class PracticeController : Controller
 	}
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Relocate(Practice values)
+	public async ValueTask<IActionResult> Relocate(PracticeModel values)
 	{
-		if (this.ValidatePractice(values) is IActionResult result)
+		if (!this.ModelState.IsValid)
 		{
-			return result;
+			return this.View("~/Views/Schedule/Index.cshtml", values);
 		}
 
 		Practice? practice = await this.context.Practices
@@ -114,28 +120,6 @@ public sealed class PracticeController : Controller
 		await this.context.SaveChangesAsync();
 
 		return this.View("~/Views/Schedule/Details.cshtml", practice);
-	}
-
-	private IActionResult? ValidatePractice(in Practice? practice)
-	{
-		if (!this.ModelState.IsValid)
-		{
-			return this.View("~/Views/Schedule/Details.cshtml", practice);
-		}
-
-		Event? conflict = practice
-			?.FindConflict(this.context.Events
-			.WithScheduling()
-			.ToList());
-
-		if (conflict is not null)
-		{
-			this.ModelState.AddModelError(string.Empty, "An event is already scheduled for that date");
-
-			return this.View("~/Views/Schedule/Details.cshtml", practice);
-		}
-
-		return null;
 	}
 
 	[HttpPost]

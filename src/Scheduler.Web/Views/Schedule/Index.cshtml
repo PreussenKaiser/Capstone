@@ -1,13 +1,22 @@
-﻿@using Scheduler.Web.Persistence;
-@using System.Security.Claims;
+﻿@using System.Security.Claims;
+@using Scheduler.Web.Persistence;
+@using Scheduler.Web.ViewModels.Scheduling;
 
-@inject SchedulerContext Scheduler
-@model Event
+@inject SchedulerContext SchedulerContext
+@model EventModel
 
 @{
     this.ViewData["Title"] = "Schedule";
 
     string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+
+    IEnumerable<SelectListItem> fields = this.SchedulerContext.Fields
+        .Select(f => new SelectListItem
+        {
+            Text = f.Name,
+            Value = f.Id.ToString()
+        })
+        .ToList();
 }
 
 <div class="row">
@@ -61,20 +70,7 @@
                 <div class="col-sm-6">
                     <div class="mb-3">
                         <label asp-for="FieldIds" class="form-label"></label>
-                        <select class="form-select"
-                                multiple
-                                size="6"
-                                asp-for="FieldIds"
-                                asp-items="this.Scheduler.Fields
-                                    .ToList()
-                                    .Select(field => new SelectListItem
-                                    {
-                                        Text = field.Name,
-                                        Value = field.Id.ToString(),
-                                        Selected = this.Model is not null &&
-                                                   this.Model.Fields is not null &&
-                                                   this.Model.Fields.Any(f => f.Id == field.Id)
-                                    })"></select>
+                        <select class="form-select" multiple size="6" asp-for="FieldIds" asp-items="fields"></select>
                         <span asp-validation-for="FieldIds" class="text-danger"></span>
                     </div>
                     <div class="row mb-3">

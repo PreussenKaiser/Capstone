@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
+using Scheduler.Web.Mapping;
 using Scheduler.Web.Persistence;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -23,6 +24,8 @@ builder.Services
 builder.Services
 	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>();
+
+builder.Services.AddAutoMapper(typeof(ScheduleProfile));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllersWithViews();

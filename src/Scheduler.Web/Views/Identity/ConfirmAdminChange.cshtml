@@ -1,11 +1,8 @@
-﻿@using Scheduler.Web.Controllers;
-
 ﻿<div class="text-center">
     <p class="lead">@this.TempData["ConfirmStatement"]</p>
-
     <p class="lead">Password: <span class="text-danger fw-bold">@this.TempData["TempPassword"]</span></p>
 
-    <a asp-action="@nameof(DashboardController.Users)"
+    <a asp-action="Users"
        asp-controller="Dashboard"
        class="btn btn-sm btn-dark">
         Back to Dashboard

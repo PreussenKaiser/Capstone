@@ -5,22 +5,23 @@ namespace Scheduler.Core.Models;
 /// <summary>
 /// Represents a field in the facility.
 /// </summary>
-public sealed class Field
+public sealed record Field : Entity
 {
-	/// <summary>
-	/// The model's unique identifier.
-	/// </summary>
-	public Guid Id { get; init; }
+	public Field()
+	{
+		this.Name = string.Empty;
+		this.Events = new List<Event>();
+	}
 
 	/// <summary>
 	/// The field's name.
 	/// </summary>
 	[Required]
 	[MaxLength(32)]
-	public required string Name { get; init; }
+	public string Name { get; init; }
 
 	/// <summary>
 	/// Events taking place on the field.
 	/// </summary>
-	public ICollection<Event>? Events { get; set; }
+	public List<Event> Events { get; init; }
 }

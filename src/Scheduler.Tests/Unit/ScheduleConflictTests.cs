@@ -18,7 +18,7 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray(),
+			Fields = SeedData.Fields.Take(2).ToList(),
 			StartDate = new(2023, 03, 24, 13, 0, 0),
 			EndDate = new(2023, 03, 24, 14, 0, 0)
 		};
@@ -36,7 +36,7 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray(),
+			Fields = SeedData.Fields.Take(2).ToList(),
 			StartDate = new(2023, 03, 24, 11, 0, 0),
 			EndDate = new(2023, 03, 24, 13, 0, 0)
 		};
@@ -54,7 +54,7 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			FieldIds = SeedData.Fields.Take(2).Select(f => f.Id).ToArray(),
+			Fields = SeedData.Fields.Take(2).ToList(),
 			StartDate = new(2023, 03, 24, 10, 0, 0),
 			EndDate = new(2023, 03, 24, 11, 0, 0)
 		};
@@ -72,7 +72,7 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			FieldIds = SeedData.Fields.Take(1).Select(f => f.Id).ToArray(),
+			Fields = SeedData.Fields.Take(1).ToList(),
 			StartDate = new(2023, 03, 15, 18, 0, 0),
 			EndDate = new(2023, 03, 15, 19, 0, 0)
 		};
@@ -90,7 +90,7 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			FieldIds = SeedData.Fields.TakeLast(2).Select(f => f.Id).ToArray(),
+			Fields = SeedData.Fields.TakeLast(2).ToList(),
 			StartDate = new(2023, 3, 15, 20, 0, 0),
 			EndDate = new(2023, 3, 15, 20, 30, 0)
 		};

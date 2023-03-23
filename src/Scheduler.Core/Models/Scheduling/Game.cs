@@ -36,4 +36,11 @@ public sealed record Game : Event
 	/// The games opposing team.
 	/// </summary>
 	public Team? OpposingTeam { get; set; }
+
+	public void EditDetails(Team homeTeam, Team opposingTeam, string name)
+	{
+		this.HomeTeam = homeTeam;
+		this.OpposingTeam = opposingTeam;
+		base.ChangeName(name);
+	}
 }

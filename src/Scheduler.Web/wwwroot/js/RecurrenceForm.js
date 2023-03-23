@@ -5,8 +5,8 @@ $(() => {
         if ($('#recurrenceCheck').is(':checked')) {
             $.ajax({
                 type: 'GET',
-                url: '/Home/Partial',
-                data: { viewName: 'Forms/_RecurrenceInputs' },
+                url: '/Schedule/RenderInputs',
+                data: { type: 'Recurrence' },
                 success: (result) => {
                     inputs.empty()
                     inputs.html(result)

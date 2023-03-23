@@ -1,35 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
-using Scheduler.Web.Extensions;
 using Scheduler.Web.Persistence;
-using Scheduler.Core.Validation;
+using Scheduler.Web.Controllers.Facility;
+using Scheduler.Web.ViewModels.Scheduling;
+using AutoMapper;
 
-namespace Scheduler.Web.Controllers;
+namespace Scheduler.Web.Controllers.Scheduling;
 
 public sealed class GameController : Controller
 {
 	private readonly SchedulerContext context;
+	private readonly IMapper mapper;
 
-	public GameController(SchedulerContext context)
+	public GameController(SchedulerContext context, IMapper mapper)
 	{
 		this.context = context;
+		this.mapper = mapper;
 	}
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Schedule(Game values)
+	public async ValueTask<IActionResult> Schedule(GameModel values)
 	{
-		if (this.ValidateGame(values) is not null)
+		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Index.cshtml", values);
 		}
 
-		values.Fields.AddRange(await this.context.Fields
+		var game = this.mapper.Map<Game>(values);
+		game.Relocate(await this.context.Fields
 			.AsTracking()
 			.Where(f => values.FieldIds.Contains(f.Id))
-			.ToListAsync());
+			.ToArrayAsync());
 
-		await this.context.Games.AddAsync(values);
+		await this.context.Games.AddAsync(game);
 
 		await this.context.SaveChangesAsync();
 
@@ -37,7 +41,7 @@ public sealed class GameController : Controller
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> EditDetails(Game values)
+	public async Task<IActionResult> EditDetails(GameModel values)
 	{
 		Game? game = await this.context.Games
 			.AsTracking()
@@ -65,9 +69,9 @@ public sealed class GameController : Controller
 	[HttpPost]
 	public async ValueTask<IActionResult> Reschedule(Game values)
 	{
-		if (this.ValidateGame(values) is IActionResult result)
+		if (!this.ModelState.IsValid)
 		{
-			return result;
+			return this.View("~/Views/Schedule/Index.cshtml", values);
 		}
 
 		Game? game = await this.context.Games
@@ -90,11 +94,11 @@ public sealed class GameController : Controller
 	}
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Relocate(Game values)
+	public async ValueTask<IActionResult> Relocate(GameModel values)
 	{
-		if (this.ValidateGame(values) is IActionResult result)
+		if (!this.ModelState.IsValid)
 		{
-			return result;
+			return this.View("~/Views/Schedule/Index.cshtml", values);
 		}
 
 		Game? game = await this.context.Games
@@ -115,28 +119,6 @@ public sealed class GameController : Controller
 		await this.context.SaveChangesAsync();
 
 		return this.RedirectToAction("Details", "Schedule", new { values.Id });
-	}
-
-	private IActionResult? ValidateGame(in Game? game)
-	{
-		if (!this.ModelState.IsValid)
-		{
-			return this.View("~/Views/Schedule/Details.cshtml", game);
-		}
-
-		Event? conflict = game
-			?.FindConflict(this.context.Events
-			.WithScheduling()
-			.ToList());
-
-		if (conflict is not null)
-		{
-			this.ModelState.AddModelError(string.Empty, "An event is already scheduled for that date");
-
-			return this.View("~/Views/Schedule/Details.cshtml", game);
-		}
-
-		return null;
 	}
 
 	[HttpPost]

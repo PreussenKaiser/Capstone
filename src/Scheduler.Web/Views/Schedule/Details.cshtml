@@ -1,38 +1,26 @@
-﻿@using Scheduler.Web.Persistence;
+﻿@using Microsoft.EntityFrameworkCore;
+@using Scheduler.Web.Persistence;
 @using System.Security.Claims;
 @using System.Text;
+@using Scheduler.Web.ViewModels.Scheduling;
 
 @inject SchedulerContext Scheduler
-@model Event
+@model EventModel
 
 @{
     this.ViewData["Title"] = "Reschedule Event";
     this.ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 
-    string eventType = this.Model.GetType().Name;
+    string eventType = this.ViewData["EventType"] as string
+        ?? nameof(Event);
 
-    IEnumerable<SelectListItem> fields = this.Scheduler.Fields
-        .ToList()
-        .Select(field => new SelectListItem
+    IEnumerable<SelectListItem> fieldList = this.Scheduler.Fields
+        .Select(f => new SelectListItem
         {
-            Text = field.Name,
-            Value = field.Id.ToString(),
-            Selected = this.Model.Fields.Contains(field)
-        });
-
-    StringBuilder builder = new();
-    int fieldCount = this.Model.Fields.Count;
-
-    for (int i = 0; i < fieldCount; i++)
-    {
-        Field field = this.Model.Fields[i];
-
-        builder.AppendLine(i == fieldCount - 1
-            ? field.Name
-            : $"{field.Name},");
-    }
-
-    string formattedFields = builder.ToString();
+            Text = f.Name,
+            Value = f.Id.ToString()
+        })
+        .ToList();
 }
 
 <div class="row">
@@ -89,26 +77,25 @@
                             @this.Model.Name
                         </div>
                         <div class="col-6">
-                            @if (this.Model is Practice practice)
+                            @if (this.Model is PracticeModel practiceVm)
                             {
-                                practice.Team ??= await this.Scheduler.Teams.FindAsync(practice.TeamId);
+                                Team? team = await this.Scheduler.Teams.FindAsync(practiceVm.TeamId);
 
-                                if (practice.Team is not null)
+                                if (team is not null)
                                 {                                
                                     <h6>Team</h6>
-                                    <small>@practice.Team.Name</small>
+                                    <small>@team.Name</small>
                                 }
                             }
-                            else if (this.Model is Game game)
+                            else if (this.Model is GameModel game)
                             {
-                                game.HomeTeam ??= await this.Scheduler.Teams.FindAsync(game.HomeTeamId);
-                                game.OpposingTeam ??= await this.Scheduler.Teams.FindAsync(game.OpposingTeamId);
+                                Team? homeTeam = await this.Scheduler.Teams.FindAsync(game.HomeTeamId);
+                                Team? opposingTeam = await this.Scheduler.Teams.FindAsync(game.OpposingTeamId);
 
-                                if (game.HomeTeam is not null &&
-                                    game.OpposingTeam is not null)
+                                if (homeTeam is not null && opposingTeam is not null)
                                 {
                                     <h6>Teams</h6>
-                                    <small>@game.HomeTeam.Name vs. @game.OpposingTeam.Name</small>
+                                    <small>@homeTeam.Name vs. @opposingTeam.Name</small>
                                 }
                             }
                         </div>
@@ -172,7 +159,7 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            Are you sure you want to cancel <b>@this.Model.Name</b>?
+                                            Are you sure you want to cancel <b>@this.Model!.Name</b>?
                                             It and all recurrences will be permanently removed.
                                         </div>
                                         <div class="modal-footer">
@@ -211,7 +198,7 @@
                                     </div>
                                     <div class="modal-body">                   
                                         <label asp-for="FieldIds" class="form-label"></label>
-                                        <select asp-for="FieldIds" asp-items="fields" class="form-select" multiple size="6"></select>
+                                        <select asp-for="FieldIds" asp-items="fieldList" class="form-select" multiple size="6"></select>
                                         <span asp-validation-for="FieldIds" class="text-danger"></span>
                                     </div>
                                     <div class="modal-footer">
@@ -223,7 +210,7 @@
                         </div>
                     </div>
                     <h6>Field(s)</h6>
-                    @formattedFields
+                    @string.Join(", ", fieldList.Select(f => f.Text))
                 </li>
             </ul>
         </form>

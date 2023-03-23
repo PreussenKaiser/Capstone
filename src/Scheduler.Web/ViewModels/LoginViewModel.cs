@@ -1,4 +1,4 @@
-﻿using Scheduler.Web.Controllers;
+﻿using Scheduler.Web.Controllers.Facility;
 using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Web.ViewModels;

@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Scheduler.Core.Models;
 using Scheduler.Web.Extensions;
 using Scheduler.Web.Persistence;
-using Scheduler.Web.ViewModels;
 
-namespace Scheduler.Web.Controllers;
+namespace Scheduler.Web.Controllers.Facility;
 
 /// <summary>
 /// Renders Scheduler management views.

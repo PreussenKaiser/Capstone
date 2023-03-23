@@ -3,15 +3,10 @@
 namespace Scheduler.Core.Models;
 
 /// <summary>
-/// Represents a PCYS league
+/// Represents a PCYS league.
 /// </summary>
-public sealed class League
+public sealed record League : Entity
 {
-	/// <summary>
-	/// The model's unique identifier.
-	/// </summary>
-	public Guid Id { get; init; }
-
 	/// <summary>
 	/// The league's name.
 	/// </summary>
