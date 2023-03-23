@@ -1,0 +1,67 @@
+﻿.calendar table td, th {
+    width: 130px;
+}
+
+.calendar table td {
+    height:130px;
+}
+
+.calendar table td {
+}
+
+.calendar-title {
+    font-size: 30px;
+    text-shadow: 1px 1px 2px grey;
+}
+
+.monthly-arrow {
+    font-size: 30px;
+    color: black;
+}
+
+.calendar a {
+    text-decoration: none;    
+}
+
+.calendar a:hover {
+    cursor:pointer;
+    color: red;
+}
+
+#weekly-button {
+    vertical-align: middle;
+}
+
+.calendar-date {
+    display:block;
+    width:30px;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.calendar .grey {
+    background-color: darkgrey;
+    opacity:0.5;
+}
+
+.calendar .brown {
+    background-color: rgb(196, 127, 91, 0.75) !important;
+}
+
+.calendar .current {
+    background-color: lightskyblue;
+}
+
+.day-button {
+    padding:2px;
+    width:45%;
+    max-height: 20px;
+    border-radius:0px;
+    font-size:12px;
+    line-height: 15px;
+}
+
+.calendar .btn:hover {
+    cursor:pointer;
+    box-shadow: 1px 1px 12px red;
+}
