@@ -8,25 +8,50 @@ using System.Diagnostics;
 
 namespace Scheduler.Web.Controllers;
 
-/// <summary>
-/// Renders homepage views.
-/// </summary>
 public sealed class HomeController : Controller
 {
-	/// <summary>
-	/// Displays the <see cref="Index"/> view.
-	/// </summary>
-	/// <param name="context">The <see cref="SchedulerContext"/> to get events with.</param>
-	/// <returns>The rendered view.</returns>
-	public IActionResult Index(
-		[FromServices] SchedulerContext context)
-	{
-		var events = context.Events.WithScheduling();
+	private readonly SchedulerContext context;
 
-		var games = events
-			.OfType<Game>()
+	public HomeController(SchedulerContext context)
+	{
+		this.context = context;
+	}
+
+	public IActionResult Index()
+	{
+		IQueryable<Event> events = this.context.Events.WithScheduling();
+
+		IQueryable<Game> games = this.context.Games
+			.WithScheduling()
 			.Include(g => g.HomeTeam)
 			.Include(g => g.OpposingTeam);
+
+		return this.View(new IndexViewModel(
+			events.AsRecurring(),
+			games.AsRecurring()));
+	}
+
+	[HttpPost]
+	public IActionResult Index(
+		string? eventSearch = null,
+		string? gameSearch = null)
+	{
+		IQueryable<Event> events = this.context.Events.WithScheduling();
+
+		IQueryable<Game> games = this.context.Games
+			.WithScheduling()
+			.Include(g => g.HomeTeam)
+			.Include(g => g.OpposingTeam);
+
+		if (!string.IsNullOrEmpty(eventSearch))
+		{
+			events = events.Where(e => e.Name.Contains(eventSearch));
+		}
+
+		if (!string.IsNullOrEmpty(gameSearch))
+		{
+			games = games.Where(e => e.Name.Contains(gameSearch));
+		}
 
 		return this.View(new IndexViewModel(
 			events.AsRecurring(),
