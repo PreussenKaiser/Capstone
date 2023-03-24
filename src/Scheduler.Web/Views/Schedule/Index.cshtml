@@ -1,14 +1,17 @@
 ﻿@using System.Security.Claims;
 @using Scheduler.Web.Persistence;
-@using Scheduler.Web.ViewModels.Scheduling;
 
 @inject SchedulerContext SchedulerContext
-@model EventModel
+@model ScheduleViewModel
 
 @{
     this.ViewData["Title"] = "Schedule";
 
     string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    string eventType = this.ViewData["EventType"] as string
+        ?? (this.User.IsInRole(Role.ADMIN)
+        ? nameof(Event)
+        : nameof(Practice));
 
     IEnumerable<SelectListItem> fields = this.SchedulerContext.Fields
         .Select(f => new SelectListItem
@@ -33,7 +36,7 @@
 
             <div class="row mb-3">
                 <div class="col-sm-6">
-                    <input hidden asp-for="UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
+                    <input hidden asp-for="Event.UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
 
                     <div class="list-group list-group-horizontal mb-3">
                         @if (this.User.IsInRole(Role.ADMIN))
@@ -60,9 +63,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Name" class="form-label"></label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <label asp-for="Event.Name" class="form-label"></label>
+                        <input asp-for="Event.Name" class="form-control" />
+                        <span asp-validation-for="Event.Name" class="text-danger"></span>
                     </div>
 
                     <div id="eventInputs"></div>
@@ -75,24 +78,25 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate" min="@today" type="datetime-local" class="form-control" />
-                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                            <label asp-for="Event.StartDate" class="form-label"></label>
+                            <input asp-for="Event.StartDate" min="@today" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="Event.StartDate" class="text-danger"></span>
                         </div>
                         <div class="col-6">
-                            <label asp-for="EndDate" class="form-label"></label>
-                            <input asp-for="EndDate" min="@today" type="datetime-local" class="form-control" />
-                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                            <label asp-for="Event.EndDate" class="form-label"></label>
+                            <input asp-for="Event.EndDate" min="@today" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="Event.EndDate" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check mb-3">
-                            <input asp-for="IsRecurring" type="checkbox" class="form-check-input" id="recurrenceCheck">
-                            <label asp-for="IsRecurring" class="form-check-label"></label>
+                            <input type="checkbox" checked="@(this.Model is not null && this.Model.Event.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                            <label class="form-check-label">Repeating?</label>
                         </div>
                         <div id="recurrenceInputs">
                             @if (this.Model is not null &&
-                                 this.Model.Recurrence is not null)
+                                 this.Model.Event is not null &&
+                                 this.Model.Event.Recurrence is not null)
                             {
                                 <partial name="Forms/_RecurrenceInputs" />
                             }
@@ -122,12 +126,7 @@
     <script src="~/js/RecurrenceForm.js"></script>
     <script src="~/js/EventForm.js"></script>
     <script>
-        @{
-            string selectedNav = this.User.IsInRole(Role.ADMIN)
-                ? nameof(Event) : nameof(Practice);
-        }
-
-        document.onload = refreshNav('@selectedNav')
+        document.onload = navClick('@eventType')
     </script>
 }
 

@@ -1,11 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
 
 namespace Scheduler.Core.Validation;
 
 /// <summary>
 /// Constrains a <see cref="DateTime"/> to only occur past <see cref="DateTime.Now"/>.
 /// </summary>
-[AttributeUsage(AttributeTargets.Property)]
+[AttributeUsage(
+	AttributeTargets.Property |
+	AttributeTargets.Field |
+	AttributeTargets.Parameter)]
 public sealed class RequireFutureAttribute : ValidationAttribute
 {
 	/// <inheritdoc />

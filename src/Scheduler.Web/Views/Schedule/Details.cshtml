@@ -2,17 +2,15 @@
 @using Scheduler.Web.Persistence;
 @using System.Security.Claims;
 @using System.Text;
-@using Scheduler.Web.ViewModels.Scheduling;
 
 @inject SchedulerContext Scheduler
-@model EventModel
+@model ScheduleViewModel
 
 @{
     this.ViewData["Title"] = "Reschedule Event";
     this.ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 
-    string eventType = this.ViewData["EventType"] as string
-        ?? nameof(Event);
+    string eventType = this.Model.Event.GetType().Name;
 
     IEnumerable<SelectListItem> fieldList = this.Scheduler.Fields
         .Select(f => new SelectListItem
@@ -34,8 +32,8 @@
         <form method="post" action="">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <input hidden asp-for="Id" value="@this.Model.Id" />
-            <input hidden asp-for="UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
+            <input hidden asp-for="Event.Id" value="@this.Model.Event.Id" />
+            <input hidden asp-for="Event.UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
 
             <ul class="list-group">
                 <li class="list-group-item">
@@ -48,19 +46,19 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">@this.Model.Name Details</h5>
+                                        <h5 class="modal-title">@this.Model.Event.Name Details</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label asp-for="Name" class="form-label h6"></label>
-                                            <input asp-for="Name" class="form-control" />
-                                            <span asp-validation-for="Name" class="text-danger"></span>
+                                            <label asp-for="Event.Name" class="form-label h6"></label>
+                                            <input asp-for="Event.Name" class="form-control" />
+                                            <span asp-validation-for="Event.Name" class="text-danger"></span>
                                         </div>
 
                                         @if (eventType != nameof(Event))
                                         {
-                                            <partial name="Forms/_@(eventType)Inputs" />
+                                            <partial name="Forms/_@(eventType)Inputs" model="@this.Model.Event" />
                                         }
                                     </div>
                                     <div class="modal-footer">
@@ -74,28 +72,33 @@
                     <div class="row">
                         <div class="col-6">
                             <h6>Name</h6>
-                            @this.Model.Name
+                            @this.Model.Event.Name
                         </div>
                         <div class="col-6">
-                            @if (this.Model is PracticeModel practiceVm)
+                            @if (this.Model.Event is Practice practice)
                             {
-                                Team? team = await this.Scheduler.Teams.FindAsync(practiceVm.TeamId);
-
+                                Team? team = await this.Scheduler.Teams.FindAsync(practice.TeamId);
+                                
                                 if (team is not null)
                                 {                                
                                     <h6>Team</h6>
                                     <small>@team.Name</small>
                                 }
                             }
-                            else if (this.Model is GameModel game)
+                            else if (this.Model.Event is Game game)
                             {
                                 Team? homeTeam = await this.Scheduler.Teams.FindAsync(game.HomeTeamId);
                                 Team? opposingTeam = await this.Scheduler.Teams.FindAsync(game.OpposingTeamId);
 
-                                if (homeTeam is not null && opposingTeam is not null)
+                                if (homeTeam is not null &&
+                                    opposingTeam is not null)
                                 {
                                     <h6>Teams</h6>
-                                    <small>@homeTeam.Name vs. @opposingTeam.Name</small>
+                                    <small>
+                                        @homeTeam.Name
+                                        vs.
+                                        @opposingTeam.Name
+                                    </small>
                                 }
                             }
                         </div>
@@ -116,24 +119,23 @@
                                         <div class="modal-body">
                                             <div class="row mb-3">
                                                 <div class="col-6">
-                                                    <label asp-for="StartDate" class="form-label"></label>
-                                                    <input asp-for="StartDate" min=@this.ViewBag.Today type="datetime-local" class="form-control" />
-                                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                                    <label asp-for="Event.StartDate" class="form-label"></label>
+                                                    <input asp-for="Event.StartDate" min=@this.ViewBag.Today type="datetime-local" class="form-control" />
+                                                    <span asp-validation-for="Event.StartDate" class="text-danger"></span>
                                                 </div>
                                                 <div class="col-6">
-                                                    <label asp-for="EndDate" class="form-label"></label>
-                                                    <input asp-for="EndDate" min=@this.ViewBag.Today type="datetime-local" class="form-control" />
-                                                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                                                    <label asp-for="Event.EndDate" class="form-label"></label>
+                                                    <input asp-for="Event.EndDate" min=@this.ViewBag.Today type="datetime-local" class="form-control" />
+                                                    <span asp-validation-for="Event.EndDate" class="text-danger"></span>
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <div class="form-check mb-3">
-                                                    <input asp-for="IsRecurring" type="checkbox" class="form-check-input" id="recurrenceCheck">
-                                                    <label asp-for="IsRecurring" class="form-check-label"></label>
+                                                    <input checked="@(this.Model.Event.Recurrence is not null)" type="checkbox" class="form-check-input" id="recurrenceCheck">
+                                                    <label class="form-check-label">Repeating?</label>
                                                 </div>
                                                 <div id="recurrenceInputs">
-                                                    @if (this.Model is not null &&
-                                                         this.Model.Recurrence is not null)
+                                                    @if (this.Model.Event.Recurrence is not null)
                                                     {
                                                         <partial name="Forms/_RecurrenceInputs" />
                                                     }
@@ -159,7 +161,7 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            Are you sure you want to cancel <b>@this.Model!.Name</b>?
+                                            Are you sure you want to cancel <b>@this.Model.Event.Name</b>?
                                             It and all recurrences will be permanently removed.
                                         </div>
                                         <div class="modal-footer">
@@ -175,11 +177,11 @@
                     <div class="row">
                         <div class="col-6">
                             <h6>Starts</h6>
-                            @this.Html.DisplayFor(x => x.StartDate)
+                            @this.Html.DisplayFor(x => x.Event.StartDate)
                         </div>
                         <div class="col-6">
                             <h6>Ends</h6>
-                            @this.Html.DisplayFor(x => x.EndDate)
+                            @this.Html.DisplayFor(x => x.Event.EndDate)
                         </div>
                     </div>
                 </li>
@@ -210,11 +212,10 @@
                         </div>
                     </div>
                     <h6>Field(s)</h6>
-                    @string.Join(", ", fieldList.Select(f => f.Text))
+                    @string.Join(", ", this.Model.Event.Fields.Select(f => f.Name))
                 </li>
             </ul>
         </form>
-
     </div>
 </div>
 

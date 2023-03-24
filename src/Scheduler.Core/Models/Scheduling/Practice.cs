@@ -7,13 +7,22 @@ namespace Scheduler.Core.Models;
 /// </summary>
 public sealed record Practice : Event
 {
+	public Practice() : base()
+	{
+	}
+
+	public Practice(Team team)
+	{
+		this.Team = team;
+	}
+
 	/// <summary>
 	/// The team practicing.
 	/// References <see cref="Team.Id"/>.
 	/// </summary>
 	[Display(Name = "Practicing Team")]
 	[Required(ErrorMessage = "Please select the practicing team.")]
-	public Guid TeamId { get; set; }
+	public Guid TeamId { get; init; }
 
 	/// <summary>
 	/// The team practicing.

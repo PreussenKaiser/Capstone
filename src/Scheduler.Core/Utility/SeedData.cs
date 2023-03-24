@@ -95,14 +95,14 @@ public static class SeedData
 	/// </summary>
 	public readonly static IEnumerable<Event> Events = new List<Event>()
 	{
-		new()
+		new Event
 		{
 			Id = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 			UserId = Users.First().Id,
 			Name = "Event",
-			StartDate = new(2023, 3, 24, 12, 0, 0),
-			EndDate = new(2023, 3, 24, 15, 0, 0),
-			Recurrence = new()
+			StartDate = new DateTime(2023, 3, 24, 12, 0, 0),
+			EndDate = new DateTime(2023, 3, 24, 15, 0, 0),
+			Recurrence = new Recurrence()
 			{
 				Id = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 				Occurrences = 3,
@@ -110,25 +110,25 @@ public static class SeedData
 			},
 			Fields = Fields.ToList()
 		},
-		new Practice()
+		new Practice
 		{
 			Id = Guid.NewGuid(),
 			UserId = Users.First().Id,
 			TeamId = Teams.First().Id,
 			Name = "Practice",
-			StartDate = new(2023, 3, 14, 17, 0, 0),
-			EndDate = new(2023, 3, 14, 19, 0, 0),
+			StartDate = new DateTime(2023, 3, 14, 17, 0, 0),
+			EndDate = new DateTime(2023, 3, 14, 19, 0, 0),
 			Fields = Fields.Take(1).ToList()
 		},
-		new Game()
+		new Game
 		{
 			Id = Guid.NewGuid(),
 			UserId = Users.First().Id,
 			HomeTeamId = Teams.First().Id,
 			OpposingTeamId = Teams.Last().Id,
 			Name = "Game",
-			StartDate = new(2023, 3, 15, 17, 0, 0),
-			EndDate = new(2023, 3, 15, 20, 0, 0),
+			StartDate = new DateTime(2023, 3, 15, 17, 0, 0),
+			EndDate = new DateTime(2023, 3, 15, 20, 0, 0),
 			Fields = Fields.TakeLast(2).ToList()
 		}
 	};

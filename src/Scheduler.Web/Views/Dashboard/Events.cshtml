@@ -65,24 +65,24 @@
 						<div class="col-6">
 							@if (scheduledEvent is Practice practice)
 							{
-								practice.Team ??= teams.FirstOrDefault(t => t.Id == practice.TeamId);
+								Team? team = teams.FirstOrDefault(t => t.Id == practice.TeamId);
 
-								if (practice.Team is not null)
+								if (team is not null)
 								{							
 									<h6>Practicing Team</h6>
-									<small>@practice.Team.Name</small>
+									<small>@team.Name</small>
 								}
 							}
 							else if (scheduledEvent is Game game)
 							{
-								game.HomeTeam ??= teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
-								game.OpposingTeam ??= teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+								Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
+								Team? opposingTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
 
-								if (game.HomeTeam is not null &&
-									game.OpposingTeam is not null)
+								if (homeTeam is not null &&
+									opposingTeam is not null)
 								{							
 									<h6>Teams</h6>
-									<small>@game.HomeTeam.Name vs. @game.OpposingTeam.Name</small>
+									<small>@homeTeam.Name vs. @opposingTeam.Name</small>
 								}
 							}
 						</div>

@@ -8,13 +8,23 @@ namespace Scheduler.Core.Models;
 /// </summary>
 public sealed record Game : Event
 {
+	public Game() : base()
+	{
+	}
+
+	public Game(Team homeTeam, Team opposingTeam)
+	{
+		this.HomeTeam = homeTeam;
+		this.OpposingTeam = opposingTeam;
+	}
+
 	/// <summary>
 	/// The games home team.
 	/// References <see cref="Team.Id"/>.
 	/// </summary>
 	[Display(Name = "Home Team")]
 	[Required(ErrorMessage = "Select a home team.")]
-	public Guid HomeTeamId { get; set; }
+	public Guid HomeTeamId { get; init; }
 
 	/// <summary>
 	/// The games opposing team.
@@ -25,7 +35,7 @@ public sealed record Game : Event
 	[ReverseCompare(
 		OtherProperty = nameof(this.HomeTeamId),
 		ErrorMessage = "Home and opposing teams must be different.")]
-	public Guid OpposingTeamId { get; set; }
+	public Guid OpposingTeamId { get; init; }
 
 	/// <summary>
 	/// The games home team.

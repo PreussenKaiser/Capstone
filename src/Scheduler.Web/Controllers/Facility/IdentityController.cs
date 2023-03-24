@@ -57,7 +57,7 @@ public sealed class IdentityController : Controller
 		var result = await this.signInManager.PasswordSignInAsync(
 			viewModel.Email,
 			viewModel.Password,
-			viewModel.RememberMe,
+			viewModel.PersistUser,
 			lockoutOnFailure: false);
 
 		if (!result.Succeeded)
@@ -184,14 +184,12 @@ public sealed class IdentityController : Controller
 			return this.Problem();
 		}
 
-		ProfileViewModel viewModel = new()
-		{
-			UserId = user.Id,
-			FirstName = user.FirstName,
-			LastName = user.LastName,
-			Email = user.Email ?? string.Empty,
-			IsAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN)
-		};
+		ProfileViewModel viewModel = new(
+			user.Id,
+			user.FirstName,
+			user.LastName,
+			user.Email ?? string.Empty,
+			await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN));
 
 		return this.View(viewModel);
 	}

@@ -24,7 +24,7 @@ public static class Schedule
 
 			foreach (var occurrence in schedule)
 				if (e.Id != occurrence.Id &&
-					e.Fields.Any(occurrence.Fields.Contains) &&
+					e.Fields.Any(ef => occurrence.Fields.Any(of => ef.Id == of.Id)) &&
 					e.StartDate <= occurrence.EndDate &&
 					e.EndDate > occurrence.StartDate)
 				{
@@ -65,21 +65,6 @@ public static class Schedule
 				StartDate = start,
 				EndDate = end,
 			});
-
-			/*
-			schedule.Add(new()
-			{
-				Id = scheduledEvent.Id,
-				UserId = scheduledEvent.UserId,
-				FieldIds = scheduledEvent.FieldIds,
-				Name = scheduledEvent.Name,
-				StartDate = start,
-				EndDate = end,
-				IsRecurring = scheduledEvent.IsRecurring,
-				Recurrence = scheduledEvent.Recurrence,
-				Fields = scheduledEvent.Fields
-			});
-			*/
 		}
 
 		return schedule;

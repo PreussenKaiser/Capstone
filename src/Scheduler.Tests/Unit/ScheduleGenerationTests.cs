@@ -21,7 +21,7 @@ public sealed class ScheduleGenerationTests
 	{
 		Event scheduledEvent = new()
 		{
-			Recurrence = new()
+			Recurrence = new Recurrence
 			{
 				Occurrences = 3,
 				Type = type
