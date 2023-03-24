@@ -24,8 +24,9 @@ public static class Schedule
 
 			foreach (var occurrence in schedule)
 				if (e.Id != occurrence.Id &&
-					e.Fields is not null && occurrence.FieldIds is not null &&
-					e.Fields.Any(f => occurrence.FieldIds.Contains(f.Id)) &&
+					e.Fields is not null && (occurrence.FieldIds is not null || occurrence.isBlackout) &&
+					//If they are on the same field or one of them is a facility-wide event.
+					((e.isBlackout || occurrence.isBlackout) || e.Fields.Any(f => occurrence.FieldIds.Contains(f.Id))) &&
 					e.StartDate <= occurrence.EndDate &&
 					e.EndDate > occurrence.StartDate)
 				{

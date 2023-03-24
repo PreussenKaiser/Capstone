@@ -54,10 +54,15 @@
         </div>
     </div>
     <div class="col-sm-6">
+        <div class="form-check mb-3">
+            <input asp-for="isBlackout" type="checkbox" class="form-check-input">
+            <label asp-for="isBlackout" class="form-check-label">Blackout Facility?</label>
+        </div>
         <div class="mb-3">
             <label asp-for="FieldIds" class="form-label"></label>
             <select class="form-select"
                     multiple
+                    data-val="false"
                     size="6"
                     asp-for="FieldIds"
                     asp-items="this.FieldService
@@ -71,6 +76,7 @@
                                                this.Model.Fields is not null &&
                                                this.Model.Fields.Any(f => f.Id == field.Id)
                                 })"></select>
+            <span asp-validation-for="FieldIds" class="text-danger"></span>
         </div>
 
         <div id="eventInputs"></div>

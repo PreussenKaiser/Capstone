@@ -26,7 +26,7 @@ public class Event : IValidatableObject
 	/// </summary>
 	[NotMapped]
 	[Display(Name = nameof(this.Fields))]
-	[Required(ErrorMessage = "Event must be on at least one field.")]
+	[RequiredIfFalse("isBlackout", ErrorMessage = "Event must be on at least one field.")]
 	public Guid[]? FieldIds { get; set; }
 
 	/// <summary>
@@ -68,6 +68,11 @@ public class Event : IValidatableObject
 	/// Fields where the event is taking place.
 	/// </summary>
 	public ICollection<Field>? Fields { get; set; }
+
+	/// <summary>
+	/// Determines whether or not the event takes up the entire facility.
+	/// </summary>
+	public bool isBlackout { get; init; }
 
 	/// <summary>
 	/// Performs additional validation for the <see cref="Event"/>.

@@ -18,12 +18,16 @@
                 </p>
                 <p class="card-text">
                     <h5>Where</h5>
-                    @if (scheduledEvent.Fields is not null)
+                    @if (scheduledEvent.Fields is not null && scheduledEvent.isBlackout == false)
                         @foreach (var field in scheduledEvent.Fields)
                         {
                             @field.Name
                             <br />
                         }
+                    else if (scheduledEvent.isBlackout == true)
+                    {
+                        <p>Entire Facility</p>
+                    }
                 </p>
                 @{
                     string eventType = scheduledEvent.GetType().Name;
