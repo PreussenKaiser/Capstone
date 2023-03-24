@@ -2,10 +2,10 @@
 
 <div class="row mb-3">
     <div class="col-12">
-        <a asp-action="Create"
+        <a asp-action="Add"
            asp-controller="Field"
            class="btn btn-primary">
-            Add new
+            Add
         </a>
     </div>
 </div>
@@ -21,7 +21,7 @@
 
                     <div class="row">
                         <div class="col-6">
-                            <a asp-action="Update"
+                            <a asp-action="Details"
                                asp-controller="Field"
                                asp-route-id="@field.Id"
                                class="btn btn-sm btn-secondary">
@@ -29,7 +29,7 @@
                             </a>
                         </div>
                         <div class="col-6">
-                            <form asp-action="Delete"
+                            <form asp-action="Remove"
                                   asp-controller="Field"
                                   asp-route-id="@field.Id"
                                   method="post">

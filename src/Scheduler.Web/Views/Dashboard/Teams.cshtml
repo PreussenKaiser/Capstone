@@ -2,10 +2,10 @@
 
 <div class="row mb-3">
     <div class="col-12">
-        <a asp-action="Create"
+        <a asp-action="Add"
            asp-controller="Team"
            class="btn btn-primary">
-            Add new
+            Add
         </a>
     </div>
 </div>
@@ -26,7 +26,7 @@
                     <th scope="row">@team.Name</th>
                     <td>@(team.League is null ? string.Empty : team.League.Name)</td>
                     <td class="text-end">
-                        <a asp-action="Update"
+                        <a asp-action="Details"
                            asp-controller="Team"
                            asp-route-id="@team.Id"
                            class="btn btn-sm btn-secondary me-3">
@@ -34,7 +34,7 @@
                         </a>
                     </td>
                         <td class="text-start">
-                            <form asp-action="Delete"
+                            <form asp-action="Remove"
                                   asp-controller="Team"
                                   asp-route-id="@team.Id"
                                   method="post">

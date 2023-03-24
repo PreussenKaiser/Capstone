@@ -5,18 +5,76 @@ using Scheduler.Web.Persistence;
 
 namespace Scheduler.Web.Controllers.Facility;
 
-/// <summary>
-/// Renders the views which display <see cref="Team"/> models.
-/// </summary>
 [Authorize]
-public sealed class TeamController : GenericController<Team>
+public sealed class TeamController : Controller
 {
-	/// <summary>
-	/// Initializes the <see cref="TeamController"/> class.
-	/// </summary>
-	/// <param name="context">The database to manage teams with.</param>
+	private readonly SchedulerContext context;
+
 	public TeamController(SchedulerContext context)
-		: base(context)
 	{
+		this.context = context;
+	}
+
+	public IActionResult Add()
+	{
+		return this.View();
+	}
+
+	[HttpPost]
+	public async ValueTask<IActionResult> Add(Team team)
+	{
+		if (!this.ModelState.IsValid)
+		{
+			return this.View(team);
+		}
+
+		this.context.Teams.Add(team);
+
+		await this.context.SaveChangesAsync();
+
+		return this.RedirectToAction(
+			nameof(DashboardController.Teams),
+			"Dashboard");
+	}
+
+	public async Task<IActionResult> Details(Guid id)
+	{
+		return await this.context.Teams.FindAsync(id) is Team team
+			? this.View(team)
+			: this.BadRequest("Could not find specified team.");
+	}
+
+	[HttpPost]
+	public async ValueTask<IActionResult> Details(Team team)
+	{
+		if (!this.ModelState.IsValid)
+		{
+			return this.View(team);
+		}
+
+		this.context.Teams.Update(team);
+
+		await this.context.SaveChangesAsync();
+
+		return this.RedirectToAction(
+			nameof(DashboardController.Teams),
+			"Dashboard");
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> Remove(Guid id)
+	{
+		if (await this.context.Teams.FindAsync(id) is not Team team)
+		{
+			return this.BadRequest("Could not find specified field.");
+		}
+
+		this.context.Teams.Remove(team);
+
+		await this.context.SaveChangesAsync();
+
+		return this.RedirectToAction(
+			nameof(DashboardController.Teams),
+			"Dashboard");
 	}
 }
