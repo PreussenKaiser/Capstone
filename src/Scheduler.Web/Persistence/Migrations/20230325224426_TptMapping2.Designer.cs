@@ -12,15 +12,15 @@ using Scheduler.Web.Persistence;
 namespace Scheduler.Web.Persistence.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    [Migration("20230317143817_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230325224426_TptMapping2")]
+    partial class TptMapping2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.3")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -211,17 +211,17 @@ namespace Scheduler.Web.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2f7092c7-25aa-4d96-aca9-2e12649ddb36"),
+                            Id = new Guid("faacfd92-7b48-41e5-86e9-c77da2a54a42"),
                             Name = "Recreation"
                         },
                         new
                         {
-                            Id = new Guid("14c0805c-9601-4380-ae41-3f7e10349ca5"),
+                            Id = new Guid("f67bb085-44df-45e4-b666-748292b9daac"),
                             Name = "Classic"
                         },
                         new
                         {
-                            Id = new Guid("9e75f01f-19e7-4d80-b764-f87d3701fbd7"),
+                            Id = new Guid("9817a7d5-3a22-468d-8f8d-e22772cae71b"),
                             Name = "Select"
                         });
                 });
@@ -273,7 +273,7 @@ namespace Scheduler.Web.Persistence.Migrations
                         new
                         {
                             Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
-                            ConcurrencyStamp = "c4fe3c52-9820-45bc-9baa-5e36da9e199f",
+                            ConcurrencyStamp = "efbdbe20-46c3-4104-84c1-6e3757855b7f",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
@@ -380,16 +380,16 @@ namespace Scheduler.Web.Persistence.Migrations
                         {
                             Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2c439680-d019-4538-a3ba-f880ee9587e8",
+                            ConcurrencyStamp = "49eb8f6a-431e-4807-8621-d45e5de5b967",
                             Email = "teamnull@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Team",
                             LastName = "Null",
                             LockoutEnabled = false,
                             NormalizedUserName = "TEAMNULL@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEB2s9ALjq5E9z3GGuLW746mYvZrHgzh2N4olxMZAWK/TiMLlqGOFKxFUxeyQd5wuGg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECLdKEG0ANtUiB9rwzbLKW1zED4UPw/AbpbkWVSj6HABX6NcWa+VSsJ39sgnnzsHiQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7e49be21-b5bf-4141-975d-52acb54c90ab",
+                            SecurityStamp = "806d602c-de7c-4bb0-b63d-566f1f671493",
                             TwoFactorEnabled = false,
                             UserName = "teamnull@gmail.com"
                         });

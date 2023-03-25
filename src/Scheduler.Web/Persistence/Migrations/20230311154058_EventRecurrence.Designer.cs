@@ -3,21 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Scheduler.Web.Persistence;
 
 #nullable disable
 
 namespace Scheduler.Web.Persistence.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    partial class SchedulerContextModelSnapshot : ModelSnapshot
+    [Migration("20230311154058_EventRecurrence")]
+    partial class EventRecurrence
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -156,6 +158,9 @@ namespace Scheduler.Web.Persistence.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsRecurring")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
@@ -168,6 +173,8 @@ namespace Scheduler.Web.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Events");
 
@@ -204,23 +211,6 @@ namespace Scheduler.Web.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Leagues");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("faacfd92-7b48-41e5-86e9-c77da2a54a42"),
-                            Name = "Recreation"
-                        },
-                        new
-                        {
-                            Id = new Guid("f67bb085-44df-45e4-b666-748292b9daac"),
-                            Name = "Classic"
-                        },
-                        new
-                        {
-                            Id = new Guid("9817a7d5-3a22-468d-8f8d-e22772cae71b"),
-                            Name = "Select"
-                        });
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Recurrence", b =>
@@ -228,7 +218,7 @@ namespace Scheduler.Web.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte>("Occurrences")
+                    b.Property<byte>("Occurences")
                         .HasColumnType("tinyint");
 
                     b.Property<byte>("Type")
@@ -236,7 +226,7 @@ namespace Scheduler.Web.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recurrences");
+                    b.ToTable("Recurrence");
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Role", b =>
@@ -270,7 +260,7 @@ namespace Scheduler.Web.Persistence.Migrations
                         new
                         {
                             Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
-                            ConcurrencyStamp = "efbdbe20-46c3-4104-84c1-6e3757855b7f",
+                            ConcurrencyStamp = "f61183b3-f985-4499-9a6e-5f5e75a95e74",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
@@ -377,16 +367,16 @@ namespace Scheduler.Web.Persistence.Migrations
                         {
                             Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "49eb8f6a-431e-4807-8621-d45e5de5b967",
+                            ConcurrencyStamp = "de1c04d4-5f28-431b-b9d8-dff84f3cb228",
                             Email = "teamnull@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Team",
                             LastName = "Null",
                             LockoutEnabled = false,
                             NormalizedUserName = "TEAMNULL@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECLdKEG0ANtUiB9rwzbLKW1zED4UPw/AbpbkWVSj6HABX6NcWa+VSsJ39sgnnzsHiQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEwsOqseMp4odhtit3ok0WPpox0F+6wo6Ksi0xs/Ahrp5y6L/lzPu7upfMDvLtAM6A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "806d602c-de7c-4bb0-b63d-566f1f671493",
+                            SecurityStamp = "51208d2d-b87b-4e77-931d-4fbe5421536e",
                             TwoFactorEnabled = false,
                             UserName = "teamnull@gmail.com"
                         });
@@ -406,7 +396,7 @@ namespace Scheduler.Web.Persistence.Migrations
 
                     b.HasIndex("OpposingTeamId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Practice", b =>
@@ -418,7 +408,7 @@ namespace Scheduler.Web.Persistence.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Practices");
+                    b.ToTable("Practices", (string)null);
                 });
 
             modelBuilder.Entity("EventField", b =>
@@ -485,6 +475,17 @@ namespace Scheduler.Web.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Scheduler.Core.Models.Event", b =>
+                {
+                    b.HasOne("Scheduler.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Recurrence", b =>

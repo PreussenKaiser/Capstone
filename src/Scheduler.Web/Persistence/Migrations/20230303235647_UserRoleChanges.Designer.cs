@@ -3,21 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Scheduler.Web.Persistence;
 
 #nullable disable
 
 namespace Scheduler.Web.Persistence.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    partial class SchedulerContextModelSnapshot : ModelSnapshot
+    [Migration("20230303235647_UserRoleChanges")]
+    partial class UserRoleChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -156,6 +158,9 @@ namespace Scheduler.Web.Persistence.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsRecurring")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
@@ -168,6 +173,8 @@ namespace Scheduler.Web.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Events");
 
@@ -190,56 +197,7 @@ namespace Scheduler.Web.Persistence.Migrations
                     b.ToTable("Fields");
                 });
 
-            modelBuilder.Entity("Scheduler.Core.Models.League", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Leagues");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("faacfd92-7b48-41e5-86e9-c77da2a54a42"),
-                            Name = "Recreation"
-                        },
-                        new
-                        {
-                            Id = new Guid("f67bb085-44df-45e4-b666-748292b9daac"),
-                            Name = "Classic"
-                        },
-                        new
-                        {
-                            Id = new Guid("9817a7d5-3a22-468d-8f8d-e22772cae71b"),
-                            Name = "Select"
-                        });
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Recurrence", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<byte>("Occurrences")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("Type")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Recurrences");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Role", b =>
+            modelBuilder.Entity("Scheduler.Core.Models.Identity.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -270,34 +228,13 @@ namespace Scheduler.Web.Persistence.Migrations
                         new
                         {
                             Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
-                            ConcurrencyStamp = "efbdbe20-46c3-4104-84c1-6e3757855b7f",
+                            ConcurrencyStamp = "f2dea1c6-5646-4e9f-b4d0-18232668c6a7",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
                 });
 
-            modelBuilder.Entity("Scheduler.Core.Models.Team", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("LeagueId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LeagueId");
-
-                    b.ToTable("Teams");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.User", b =>
+            modelBuilder.Entity("Scheduler.Core.Models.Identity.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -377,19 +314,59 @@ namespace Scheduler.Web.Persistence.Migrations
                         {
                             Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "49eb8f6a-431e-4807-8621-d45e5de5b967",
+                            ConcurrencyStamp = "1a99a38a-88ff-408e-95b3-f7744eefa4c0",
                             Email = "teamnull@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Team",
                             LastName = "Null",
                             LockoutEnabled = false,
                             NormalizedUserName = "TEAMNULL@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECLdKEG0ANtUiB9rwzbLKW1zED4UPw/AbpbkWVSj6HABX6NcWa+VSsJ39sgnnzsHiQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPLI7Moxj2pm1dDKShsW16uHLi+5R3FgcVfC0mXxxwIoNBxVD+bOT2U1YYWsMijUDA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "806d602c-de7c-4bb0-b63d-566f1f671493",
+                            SecurityStamp = "c6ccc3ad-caf4-460d-8aeb-5ab571152e22",
                             TwoFactorEnabled = false,
                             UserName = "teamnull@gmail.com"
                         });
+                });
+
+            modelBuilder.Entity("Scheduler.Core.Models.League", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Leagues");
+                });
+
+            modelBuilder.Entity("Scheduler.Core.Models.Team", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LeagueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeagueId");
+
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Game", b =>
@@ -438,7 +415,7 @@ namespace Scheduler.Web.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Role", null)
+                    b.HasOne("Scheduler.Core.Models.Identity.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -447,7 +424,7 @@ namespace Scheduler.Web.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.User", null)
+                    b.HasOne("Scheduler.Core.Models.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -456,7 +433,7 @@ namespace Scheduler.Web.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.User", null)
+                    b.HasOne("Scheduler.Core.Models.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -465,13 +442,13 @@ namespace Scheduler.Web.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Role", null)
+                    b.HasOne("Scheduler.Core.Models.Identity.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Scheduler.Core.Models.User", null)
+                    b.HasOne("Scheduler.Core.Models.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -480,22 +457,22 @@ namespace Scheduler.Web.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.User", null)
+                    b.HasOne("Scheduler.Core.Models.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Scheduler.Core.Models.Recurrence", b =>
+            modelBuilder.Entity("Scheduler.Core.Models.Event", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Event", "Event")
-                        .WithOne("Recurrence")
-                        .HasForeignKey("Scheduler.Core.Models.Recurrence", "Id")
+                    b.HasOne("Scheduler.Core.Models.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Event");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Team", b =>
@@ -549,11 +526,6 @@ namespace Scheduler.Web.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Event", b =>
-                {
-                    b.Navigation("Recurrence");
                 });
 #pragma warning restore 612, 618
         }

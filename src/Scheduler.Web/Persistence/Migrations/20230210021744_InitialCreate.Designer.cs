@@ -3,38 +3,53 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Scheduler.Web.Persistence;
 
 #nullable disable
 
 namespace Scheduler.Web.Persistence.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    partial class SchedulerContextModelSnapshot : ModelSnapshot
+    [Migration("20230210021744_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EventField", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
-                    b.Property<Guid>("EventsId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("FieldsId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("EventsId", "FieldsId");
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.HasIndex("FieldsId");
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.ToTable("EventField");
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -88,10 +103,12 @@ namespace Scheduler.Web.Persistence.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -119,13 +136,6 @@ namespace Scheduler.Web.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
-                            RoleId = new Guid("cfd242d3-2107-4563-b2a4-15383e683964")
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -134,10 +144,12 @@ namespace Scheduler.Web.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -156,10 +168,15 @@ namespace Scheduler.Web.Persistence.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsRecurring")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -169,9 +186,11 @@ namespace Scheduler.Web.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Events");
+                    b.HasIndex("FieldId");
 
-                    b.UseTptMappingStrategy();
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Field", b =>
@@ -182,98 +201,31 @@ namespace Scheduler.Web.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Fields");
                 });
 
-            modelBuilder.Entity("Scheduler.Core.Models.League", b =>
+            modelBuilder.Entity("Scheduler.Core.Models.Game", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Leagues");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("faacfd92-7b48-41e5-86e9-c77da2a54a42"),
-                            Name = "Recreation"
-                        },
-                        new
-                        {
-                            Id = new Guid("f67bb085-44df-45e4-b666-748292b9daac"),
-                            Name = "Classic"
-                        },
-                        new
-                        {
-                            Id = new Guid("9817a7d5-3a22-468d-8f8d-e22772cae71b"),
-                            Name = "Select"
-                        });
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Recurrence", b =>
-                {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("HomeTeamId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte>("Occurrences")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("Type")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Recurrences");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("OpposingTeamId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasIndex("EventId");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                    b.HasIndex("HomeTeamId");
 
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                    b.HasIndex("OpposingTeamId");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
-                            ConcurrencyStamp = "efbdbe20-46c3-4104-84c1-6e3757855b7f",
-                            Name = "Admin",
-                            NormalizedName = "Admin"
-                        });
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Team", b =>
@@ -282,17 +234,11 @@ namespace Scheduler.Web.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("LeagueId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LeagueId");
 
                     b.ToTable("Teams");
                 });
@@ -316,16 +262,6 @@ namespace Scheduler.Web.Persistence.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -371,74 +307,11 @@ namespace Scheduler.Web.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "49eb8f6a-431e-4807-8621-d45e5de5b967",
-                            Email = "teamnull@gmail.com",
-                            EmailConfirmed = false,
-                            FirstName = "Team",
-                            LastName = "Null",
-                            LockoutEnabled = false,
-                            NormalizedUserName = "TEAMNULL@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECLdKEG0ANtUiB9rwzbLKW1zED4UPw/AbpbkWVSj6HABX6NcWa+VSsJ39sgnnzsHiQ==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "806d602c-de7c-4bb0-b63d-566f1f671493",
-                            TwoFactorEnabled = false,
-                            UserName = "teamnull@gmail.com"
-                        });
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Game", b =>
-                {
-                    b.HasBaseType("Scheduler.Core.Models.Event");
-
-                    b.Property<Guid>("HomeTeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OpposingTeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasIndex("HomeTeamId");
-
-                    b.HasIndex("OpposingTeamId");
-
-                    b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Practice", b =>
-                {
-                    b.HasBaseType("Scheduler.Core.Models.Event");
-
-                    b.Property<Guid>("TeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Practices");
-                });
-
-            modelBuilder.Entity("EventField", b =>
-                {
-                    b.HasOne("Scheduler.Core.Models.Event", null)
-                        .WithMany()
-                        .HasForeignKey("EventsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Scheduler.Core.Models.Field", null)
-                        .WithMany()
-                        .HasForeignKey("FieldsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Role", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -465,7 +338,7 @@ namespace Scheduler.Web.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Role", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -487,39 +360,36 @@ namespace Scheduler.Web.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Scheduler.Core.Models.Recurrence", b =>
+            modelBuilder.Entity("Scheduler.Core.Models.Event", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Event", "Event")
-                        .WithOne("Recurrence")
-                        .HasForeignKey("Scheduler.Core.Models.Recurrence", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Team", b =>
-                {
-                    b.HasOne("Scheduler.Core.Models.League", "League")
+                    b.HasOne("Scheduler.Core.Models.Field", "Field")
                         .WithMany()
-                        .HasForeignKey("LeagueId")
+                        .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("League");
+                    b.HasOne("Scheduler.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Field");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Scheduler.Core.Models.Game", b =>
                 {
-                    b.HasOne("Scheduler.Core.Models.Team", "HomeTeam")
+                    b.HasOne("Scheduler.Core.Models.Event", "Event")
                         .WithMany()
-                        .HasForeignKey("HomeTeamId")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Scheduler.Core.Models.Event", null)
-                        .WithOne()
-                        .HasForeignKey("Scheduler.Core.Models.Game", "Id")
+                    b.HasOne("Scheduler.Core.Models.Team", "HomeTeam")
+                        .WithMany()
+                        .HasForeignKey("HomeTeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -529,31 +399,11 @@ namespace Scheduler.Web.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Event");
+
                     b.Navigation("HomeTeam");
 
                     b.Navigation("OpposingTeam");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Practice", b =>
-                {
-                    b.HasOne("Scheduler.Core.Models.Event", null)
-                        .WithOne()
-                        .HasForeignKey("Scheduler.Core.Models.Practice", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Scheduler.Core.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("Scheduler.Core.Models.Event", b =>
-                {
-                    b.Navigation("Recurrence");
                 });
 #pragma warning restore 612, 618
         }
