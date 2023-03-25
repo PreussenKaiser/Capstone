@@ -45,7 +45,7 @@
                             DateTime endOfWeek = (DateTime)ViewData["Week" + i + "End"];
                             DateTime currentDay = (DateTime)ViewData["CurrentDay"];
                         }
-                        @if(endOfWeek > currentDay)
+                        @if(endOfWeek >= currentDay)
                         {
                             <button class="btn btn-sm btn-warning">Weekly List</button>
                         }
