@@ -1,12 +1,15 @@
 ﻿using Scheduler.Domain.Validation;
+using Scheduler.Infrastructure.Extensions;
+using Scheduler.Infrastructure.Persistence;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Scheduler.Domain.Models;
 
 /// <summary>
 /// Represents an event held at the facility.
 /// </summary>
-public record Event : Entity
+public record Event : Entity, IValidatableObject
 {
 	/// <summary>
 	/// Initializes the <see cref="Event"/> record.
@@ -14,11 +17,20 @@ public record Event : Entity
 	public Event() : base()
 	{
 		this.Name = string.Empty;
+		this.FieldIds = Array.Empty<Guid>();
 		this.Fields = new List<Field>();
 	}
 
 	/// <summary>
-	/// References the user who created the event.
+	/// Fields referenced by the <see cref="Event"/>.
+	/// </summary>
+	[NotMapped]
+	[Display(Name = "Fields")]
+	[RequiredIfFalse(nameof(IsBlackout), ErrorMessage = "Please select at least one field.")]
+	public Guid[] FieldIds { get; init; }
+
+	/// <summary>
+	/// References the user who created the <see cref="Event"/>.
 	/// </summary>
 	public Guid UserId { get; init; }
 
@@ -30,7 +42,7 @@ public record Event : Entity
 	public string Name { get; set; }
 
 	/// <summary>
-	/// When the event starts.
+	/// When the <see cref="Event"/> starts.
 	/// </summary>
 	[Display(Name = "Start date")]
 	[DisplayFormat(DataFormatString = "{0:M/dd/yyyy h:mm tt}")]
@@ -39,7 +51,7 @@ public record Event : Entity
 	public DateTime StartDate { get; set; }
 
 	/// <summary>
-	/// When the event ends.
+	/// When the <see cref="Event"/> ends.
 	/// </summary>
 	[Display(Name = "End date")]
 	[DisplayFormat(DataFormatString = "{0:M/dd/yyyy h:mm tt}")]
@@ -47,22 +59,23 @@ public record Event : Entity
 	public DateTime EndDate { get; set; }
 
 	/// <summary>
-	/// Whether the event takes up the entire facility or not.
+	/// Whether the <see cref="Event"/> takes up the entire facility or not.
 	/// </summary>
-	public bool IsBlackout { get; init; }
+	[Display(Name = "Blackout facility?")]
+	public bool IsBlackout { get; set; }
 
 	/// <summary>
-	/// Recurrence pattern for the event.
+	/// Recurrence pattern for the <see cref="Event"/>.
 	/// </summary>
 	public Recurrence? Recurrence { get; set; }
 
 	/// <summary>
-	/// Fields where the event happens.
+	/// Fields where the <see cref="Event"/> happens.
 	/// </summary>
 	public List<Field> Fields { get; init; }
 
 	/// <summary>
-	/// Reschedules the event.
+	/// Reschedules the <see cref="Event"/>.
 	/// </summary>
 	/// <param name="startDate">New start date.</param>
 	/// <param name="endDate">New end date.</param>
@@ -85,5 +98,37 @@ public record Event : Entity
 	{
 		this.Fields.Clear();
 		this.Fields.AddRange(fields);
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="validationContext"></param>
+	/// <returns></returns>
+	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+	{
+		var context = validationContext.GetRequiredService<SchedulerContext>();
+		ICollection<ValidationResult> results = new List<ValidationResult>();
+
+		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
+		{
+			results.Add(new("End time must be at least 30 minutes after start time."));
+		}
+
+		this.Relocate(context.Fields
+			.Where(f => this.FieldIds.Contains(f.Id))
+			.ToArray());
+
+		Event? conflict = this
+			?.FindConflict(context.Events
+			.WithScheduling()
+			.ToList());
+
+		if (conflict is not null)
+		{
+			results.Add(new("An event is already scheduled for that date"));
+		}
+
+		return results;
 	}
 }

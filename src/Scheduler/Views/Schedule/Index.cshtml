@@ -2,7 +2,7 @@
 @using Scheduler.Infrastructure.Persistence;
 
 @inject SchedulerContext SchedulerContext
-@model ScheduleViewModel
+@model Event
 
 @{
     this.ViewData["Title"] = "Schedule";
@@ -36,7 +36,7 @@
 
             <div class="row mb-3">
                 <div class="col-sm-6">
-                    <input hidden asp-for="Event.UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
+                    <input hidden asp-for="UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
 
                     <div class="list-group list-group-horizontal mb-3">
                         @if (this.User.IsInRole(Role.ADMIN))
@@ -63,9 +63,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Event.Name" class="form-label"></label>
-                        <input asp-for="Event.Name" class="form-control" />
-                        <span asp-validation-for="Event.Name" class="text-danger"></span>
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
 
                     <div id="eventInputs"></div>
@@ -78,29 +78,28 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label asp-for="Event.StartDate" class="form-label"></label>
-                            <input asp-for="Event.StartDate" min="@today" type="datetime-local" class="form-control" />
-                            <span asp-validation-for="Event.StartDate" class="text-danger"></span>
+                            <label asp-for="StartDate" class="form-label"></label>
+                            <input asp-for="StartDate" min="@today" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
                         </div>
                         <div class="col-6">
-                            <label asp-for="Event.EndDate" class="form-label"></label>
-                            <input asp-for="Event.EndDate" min="@today" type="datetime-local" class="form-control" />
-                            <span asp-validation-for="Event.EndDate" class="text-danger"></span>
+                            <label asp-for="EndDate" class="form-label"></label>
+                            <input asp-for="EndDate" min="@today" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="form-check mb-3">
-                            <input asp-for="Event.IsBlackout" type="checkbox" class="form-check-input">
-                            <label asp-for="Event.IsBlackout" class="form-check-label">Blackout Facility?</label>
+                            <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+                            <label asp-for="IsBlackout" class="form-check-label"></label>
                         </div>
                         <div class="form-check mb-3">
-                            <input type="checkbox" checked="@(this.Model is not null && this.Model.Event.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                            <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
                             <label class="form-check-label">Repeating?</label>
                         </div>
                         <div id="recurrenceInputs">
                             @if (this.Model is not null &&
-                                 this.Model.Event is not null &&
-                                 this.Model.Event.Recurrence is not null)
+                                 this.Model.Recurrence is not null)
                             {
                                 <partial name="Forms/_RecurrenceInputs" />
                             }

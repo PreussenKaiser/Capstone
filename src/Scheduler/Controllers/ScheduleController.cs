@@ -1,33 +1,56 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Scheduler.Web.ViewModels;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
 
+/// <summary>
+/// Renders views for scheduling events.
+/// </summary>
 [Authorize]
 public sealed class ScheduleController : Controller
 {
+	/// <summary>
+	/// The database to query.
+	/// </summary>
 	private readonly SchedulerContext context;
 
+	/// <summary>
+	/// Initializes the <see cref="ScheduleController"/> class.
+	/// </summary>
+	/// <param name="context">The database to query.</param>
 	public ScheduleController(SchedulerContext context)
 	{
 		this.context = context;
 	}
 
+	/// <summary>
+	/// Renders inputs for an <see cref="Event"/>.
+	/// </summary>
+	/// <param name="type">The type of inputs to render. Name aligns with object name.</param>
+	/// <returns>The rendered inputs.</returns>
 	public PartialViewResult RenderInputs(string type)
 	{
 		return this.PartialView($"Forms/_{type}Inputs");
 	}
 
+	/// <summary>
+	/// Displays the <see cref="Index"/> view.
+	/// </summary>
+	/// <returns>A form for scheduling an event.</returns>
 	public IActionResult Index()
 	{
 		return this.View();
 	}
 
+	/// <summary>
+	/// Displays the <see cref="Details(Guid)"/> view.
+	/// </summary>
+	/// <param name="id">References the event to detail.</param>
+	/// <returns></returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> Details(Guid id)
 	{
@@ -40,9 +63,7 @@ public sealed class ScheduleController : Controller
 			return this.NotFound($"No event with id {id} exists.");
 		}
 
-		ScheduleViewModel viewModel = new() { Event = scheduledEvent };
-
-		return this.View(viewModel);
+		return this.View(scheduledEvent);
 	}
 }
 
@@ -58,20 +79,18 @@ public abstract class ScheduleController<TEvent> : Controller
 	}
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Schedule(
-		ScheduleViewModel viewModel,
-		[FromForm(Name = "Event")] TEvent scheduledEvent)
+	public async ValueTask<IActionResult> Schedule(TEvent scheduledEvent)
 	{
 		if (!this.ModelState.IsValid)
 		{
 			this.ViewData["EventType"] = scheduledEvent.GetType().Name;
 
-			return this.View("~/Views/Schedule/Index.cshtml", viewModel);
+			return this.View("~/Views/Schedule/Index.cshtml", scheduledEvent);
 		}
 
 		scheduledEvent.Relocate(await this.context.Fields
 			.AsTracking()
-			.Where(f => viewModel.FieldIds.Contains(f.Id))
+			.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
 			.ToArrayAsync());
 
 		await this.context.Events.AddAsync(scheduledEvent);
@@ -85,7 +104,7 @@ public abstract class ScheduleController<TEvent> : Controller
 	public abstract Task<IActionResult> EditDetails(TEvent values);
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Reschedule(ScheduleViewModel values)
+	public async ValueTask<IActionResult> Reschedule(TEvent values)
 	{
 		if (!this.ModelState.IsValid)
 		{
@@ -95,7 +114,7 @@ public abstract class ScheduleController<TEvent> : Controller
 		Event? scheduledEvent = await this.context.Events
 			.AsTracking()
 			.Include(g => g.Recurrence)
-			.FirstOrDefaultAsync(g => g.Id == values.Event.Id);
+			.FirstOrDefaultAsync(g => g.Id == values.Id);
 
 		if (scheduledEvent is null)
 		{
@@ -103,17 +122,17 @@ public abstract class ScheduleController<TEvent> : Controller
 		}
 
 		scheduledEvent.Reschedule(
-			values.Event.StartDate,
-			values.Event.EndDate,
-			values.Event.Recurrence);
+			values.StartDate,
+			values.EndDate,
+			values.Recurrence);
 
 		await this.context.SaveChangesAsync();
 
-		return this.DetailsSuccess(values.Event.Id);
+		return this.DetailsSuccess(scheduledEvent.Id);
 	}
 
 	[HttpPost]
-	public async ValueTask<IActionResult> Relocate(ScheduleViewModel values)
+	public async ValueTask<IActionResult> Relocate(TEvent values)
 	{
 		if (!this.ModelState.IsValid)
 		{
@@ -123,7 +142,7 @@ public abstract class ScheduleController<TEvent> : Controller
 		Event? scheduledEvent = await this.context.Events
 			.AsTracking()
 			.Include(g => g.Fields)
-			.FirstOrDefaultAsync(e => e.Id == values.Event.Id);
+			.FirstOrDefaultAsync(e => e.Id == values.Id);
 
 		if (scheduledEvent is null)
 		{
@@ -137,12 +156,11 @@ public abstract class ScheduleController<TEvent> : Controller
 
 		await this.context.SaveChangesAsync();
 
-		return this.DetailsSuccess(values.Event.Id);
+		return this.DetailsSuccess(values.Id);
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> Cancel(
-		[FromForm(Name = "Event.Id")] Guid id)
+	public async Task<IActionResult> Cancel(Guid id)
 	{
 		Event? scheduledEvent = await this.context.Events.FindAsync(id);
 
@@ -161,9 +179,7 @@ public abstract class ScheduleController<TEvent> : Controller
 	}
 
 	protected IActionResult DetailsError(TEvent values)
-		=> this.View(
-			"~/Views/Schedule/Details.cshtml",
-			new ScheduleViewModel() { Event = values });
+		=> this.View("~/Views/Schedule/Details.cshtml", values);
 
 	protected IActionResult DetailsSuccess(Guid id)
 		=> this.RedirectToAction(

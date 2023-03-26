@@ -28,14 +28,11 @@ public sealed class EventController : ScheduleController<Event>
 	/// <param name="values">New <see cref="Event"/> values.</param>
 	/// <returns></returns>
 	[HttpPost]
-	public override async Task<IActionResult> EditDetails(
-		[FromForm(Name = "Event")] Event values)
+	public override async Task<IActionResult> EditDetails(Event values)
 	{
 		if (!this.ModelState.IsValid)
 		{
-			return this.View(
-				"~/Views/Schedule/Details.cshtml",
-				new ScheduleViewModel() { Event = values });
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
 		Event? scheduledEvent = await this.context.Events

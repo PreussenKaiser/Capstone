@@ -6,17 +6,28 @@ using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
 
+/// <summary>
+/// Handles POST requests for practices.
+/// </summary>
 [Authorize]
 public sealed class PracticeController : ScheduleController<Practice>
 {
+	/// <summary>
+	/// Initializes the <see cref="PracticeController"/> class.
+	/// </summary>
+	/// <param name="context">The database to query.</param>
 	public PracticeController(SchedulerContext context)
 		: base(context)
 	{
 	}
 
+	/// <summary>
+	/// Edits the details of a practice.
+	/// </summary>
+	/// <param name="values"><see cref="Practice"/> values.</param>
+	/// <returns></returns>
 	[HttpPost]
-	public override async Task<IActionResult> EditDetails(
-		[FromForm(Name = "Event")] Practice values)
+	public override async Task<IActionResult> EditDetails(Practice values)
 	{
 		if (!this.ModelState.IsValid)
 		{
@@ -38,7 +49,7 @@ public sealed class PracticeController : ScheduleController<Practice>
 
 		if (practicingTeam is not null)
 		{
-			practice.EditDetails(practicingTeam, practice.Name);
+			practice.EditDetails(practicingTeam, values.Name);
 
 			await this.context.SaveChangesAsync();
 		}

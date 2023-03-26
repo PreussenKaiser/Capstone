@@ -6,17 +6,28 @@ using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers.Scheduling;
 
+/// <summary>
+/// Handles POST requests for games.
+/// </summary>
 [Authorize]
 public sealed class GameController : ScheduleController<Game>
 {
+	/// <summary>
+	/// Initializes the <see cref="GameController"/> class.
+	/// </summary>
+	/// <param name="context">The database to query.</param>
 	public GameController(SchedulerContext context)
 		: base(context)
 	{
 	}
 
+	/// <summary>
+	/// Edits <see cref="Game"/> details.
+	/// </summary>
+	/// <param name="values"><see cref="Game"/> values.</param>
+	/// <returns></returns>
 	[HttpPost]
-	public override async Task<IActionResult> EditDetails(
-		[FromForm(Name = "Event")] Game values)
+	public override async Task<IActionResult> EditDetails(Game values)
 	{
 		if (!this.ModelState.IsValid)
 		{
