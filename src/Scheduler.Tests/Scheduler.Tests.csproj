@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Scheduler.Core\Scheduler.Core.csproj" />
+        <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
     </ItemGroup>
 
 </Project>

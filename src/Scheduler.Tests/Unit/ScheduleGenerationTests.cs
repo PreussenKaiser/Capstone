@@ -1,5 +1,5 @@
-﻿using Scheduler.Core.Models;
-using Scheduler.Core.Validation;
+﻿using Scheduler.Domain.Models;
+using Scheduler.Domain.Validation;
 using Xunit;
 
 namespace Scheduler.Tests.Unit;
