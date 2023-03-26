@@ -1,6 +1,16 @@
 ﻿@{
-    string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
-    string pageTitle = $"Schedule {eventType}";
+    string eventType = "";
+    string pageTitle = "";
+    if (User.IsInRole("Admin"))
+    {
+        eventType = this.ViewData["EventType"] as string ?? nameof(Event);
+        pageTitle = $"Schedule {eventType}";
+    }
+    else
+    {
+        eventType = this.ViewData["EventType"] as string ?? nameof(Game);
+        pageTitle = $"Schedule {eventType} or Practice";
+    }
 
     this.ViewData["Title"] = pageTitle;
 }
@@ -24,8 +34,7 @@
         </div>
 
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        @await this.Html.PartialAsync("Forms/_EventInputs")
+        @await this.Html.PartialAsync("Forms/_EventInputs");
     </form>
 </div>
 

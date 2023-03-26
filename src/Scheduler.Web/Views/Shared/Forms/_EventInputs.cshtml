@@ -6,7 +6,15 @@
 @model Event
 
 @{
-   string eventType = this.ViewData["EventType"] as string ?? nameof(Event);
+    string eventType = "";
+    if (User.IsInRole("Admin"))
+    {
+        eventType = this.ViewData["EventType"] as string ?? nameof(Event);
+    }
+    else
+    {
+        eventType = this.ViewData["EventType"] as string ?? nameof(Practice);
+    }
 
     ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 }
