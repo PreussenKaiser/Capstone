@@ -1,0 +1,135 @@
+﻿@using System.Security.Claims;
+@using Scheduler.Infrastructure.Persistence;
+
+@inject SchedulerContext SchedulerContext
+@model Event
+
+@{
+    this.ViewData["Title"] = "Schedule";
+
+    string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    string eventType = this.ViewData["EventType"] as string
+        ?? (this.User.IsInRole(Role.ADMIN)
+        ? nameof(Event)
+        : nameof(Practice));
+
+    IEnumerable<SelectListItem> fields = this.SchedulerContext.Fields
+        .Select(f => new SelectListItem
+        {
+            Text = f.Name,
+            Value = f.Id.ToString()
+        })
+        .ToList();
+}
+
+<div class="row">
+    <div class="col-12 px-sm-5">
+        <form id="eventForm" method="post">
+            <div class="row mb-3">
+                <h1 class="text-center">
+                    @this.ViewData["Title"] <span id="title"></span>
+                </h1>
+                <hr />
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row mb-3">
+                <div class="col-sm-6">
+                    <input hidden asp-for="UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
+
+                    <div class="list-group list-group-horizontal mb-3">
+                        @if (this.User.IsInRole(Role.ADMIN))
+                        {
+                            <button type="button"
+                                    id="Event"
+                                    onclick="navClick('Event')"
+                                    class="list-group-item list-group-item-action text-center">
+                                Event
+                            </button>
+                        }
+                        <button type="button"
+                                id="Practice"
+                                onclick="navClick('Practice')"
+                                class="list-group-item list-group-item-action text-center">
+                            Practice
+                        </button>
+                        <button type="button"
+                                id="Game"
+                                onclick="navClick('Game')"
+                                class="list-group-item list-group-item-action text-center">
+                            Game
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div id="eventInputs"></div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="mb-3">
+                        <label asp-for="FieldIds" class="form-label"></label>
+                        <select class="form-select" multiple size="6" asp-for="FieldIds" asp-items="fields"></select>
+                        <span asp-validation-for="FieldIds" class="text-danger"></span>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label asp-for="StartDate" class="form-label"></label>
+                            <input asp-for="StartDate" min="@today" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="EndDate" class="form-label"></label>
+                            <input asp-for="EndDate" min="@today" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="form-check mb-3">
+                            <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+                            <label asp-for="IsBlackout" class="form-check-label"></label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                            <label class="form-check-label">Repeating?</label>
+                        </div>
+                        <div id="recurrenceInputs">
+                            @if (this.Model is not null &&
+                                 this.Model.Recurrence is not null)
+                            {
+                                <partial name="Forms/_RecurrenceInputs" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <a asp-action="Events"
+                       asp-controller="Dashboard"
+                       class="btn btn-lg btn-danger w-100">
+                        Cancel
+                    </a>
+                </div>
+                <div class="col-6">
+                    <input type="submit" class="btn btn-lg btn-primary w-100" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/RecurrenceForm.js"></script>
+    <script src="~/js/EventForm.js"></script>
+    <script>
+        document.onload = navClick('@eventType')
+    </script>
+}
+

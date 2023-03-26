@@ -1,0 +1,49 @@
+﻿@using Scheduler.Infrastructure.Persistence;
+@using Scheduler.Infrastructure.Extensions;
+
+@inject SchedulerContext Scheduler
+@model Team
+
+@if (this.Model is not null)
+{
+    <input hidden asp-for="Id" />
+}
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-6">
+        <label asp-for="LeagueId" class="form-label"></label>
+        <select class="form-select"
+                asp-for="LeagueId"
+                asp-items="this.Scheduler.Leagues
+                    .ToList()
+                    .Select(league => new SelectListItem
+                    {
+                        Text = league.Name,
+                        Value = league.Id.ToString(),
+                        Selected = this.Model is not null &&
+                                   this.Model.League is not null
+                    })"></select>
+        <span asp-validation-for="LeagueId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-6">
+        <a asp-action="Teams"
+           asp-controller="Dashboard"
+           class="btn btn-lg btn-danger w-100">
+            Cancel
+        </a>
+    </div>
+    <div class="col-6">
+        <button type="submit" class="btn btn-lg btn-primary w-100">
+            Submit
+        </button>
+    </div>
+</div>
