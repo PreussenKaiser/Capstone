@@ -26,7 +26,7 @@ public record Event : Entity, IValidatableObject
 	/// </summary>
 	[NotMapped]
 	[Display(Name = "Fields")]
-	[RequiredIfFalse(nameof(IsBlackout), ErrorMessage = "Please select at least one field.")]
+	[RequiredIfFalse("IsBlackout", ErrorMessage = "Please select at least one field.")]
 	public Guid[] FieldIds { get; init; }
 
 	/// <summary>

@@ -67,12 +67,23 @@ public sealed class ScheduleController : Controller
 	}
 }
 
+/// <summary>
+/// Provides generic actions for scheduling.
+/// </summary>
+/// <typeparam name="TEvent">The type of event to schedule.</typeparam>
 [Authorize]
 public abstract class ScheduleController<TEvent> : Controller
 	where TEvent : Event
 {
+	/// <summary>
+	/// The database to query.
+	/// </summary>
 	protected readonly SchedulerContext context;
 
+	/// <summary>
+	/// Initializes the <see cref="ScheduleController{TEvent}"/> class.
+	/// </summary>
+	/// <param name="context">The database to query.</param>
 	protected ScheduleController(SchedulerContext context)
 	{
 		this.context = context;
