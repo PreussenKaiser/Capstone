@@ -54,7 +54,9 @@ public sealed class HomeController : Controller
 	[HttpPost]
 	public IActionResult Index(
 		string? eventSearch = null,
-		string? gameSearch = null)
+		string? gameSearch = null,
+		DateTime? gameStart = null,
+		DateTime? gameEnd = null)
 	{
 		IQueryable<Event> events = this.context.Events.WithScheduling();
 
@@ -73,7 +75,20 @@ public sealed class HomeController : Controller
 			games = games
 				.Include(g => g.HomeTeam)
 				.Include(g => g.OpposingTeam)
-				.Where(g => g.HomeTeam.Name.Contains(gameSearch) || g.OpposingTeam.Name.Contains(gameSearch));
+				.Where(g =>
+					g.HomeTeam!.Name.Contains(gameSearch) ||
+					g.OpposingTeam!.Name.Contains(gameSearch) ||
+					g.Name.Contains(gameSearch));
+		}
+
+		if (gameStart is not null || gameEnd is not null)
+		{
+			gameStart ??= DateTime.MinValue;
+			gameEnd ??= DateTime.MaxValue;
+
+			games = games.Where(g =>
+				g.StartDate >= gameStart &&
+				g.EndDate <= gameEnd);
 		}
 
 		return this.View(new IndexViewModel(
