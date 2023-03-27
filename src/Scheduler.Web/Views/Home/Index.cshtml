@@ -22,26 +22,30 @@
                 <h3>All Upcoming Events</h3>
             </div>
             <hr />
-            @using (Html.BeginForm("SearchEvent", "Home", FormMethod.Get, new { @class = "form-horizontal" }))
+            @using (Html.BeginForm("SearchGame", "Home", FormMethod.Get, new { @class = "form-horizontal" }))
             {
-                <input type="text" id="searchEvent" name="searchEvent" />
+                <input type="text" id="searchGame" name="searchGame" />
                 <button type="submit">Search</button>
             }
             <table class="table table-sm">
                 <thead>
                     <tr>
                         <th scope="col">Name</th>
+                        <th scope="col">Home Team</th>
+                        <th scope="col">Away Team</th>
                         <th scope="col">Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (this.Model != null)
                     {
-                        foreach (var events in this.Model)
+                        foreach (var game in this.Model.OfType<Game>())
                         {
                             <tr>
-                                <td>@events.Name</td>
-                                <td>@events.StartDate</td>
+                                <td>@game.Name</td>
+                                <td>@teamService.GetAsync(game.HomeTeamId).Result.Name</td>
+                                <td>@teamService.GetAsync(game.OpposingTeamId).Result.Name</td>
+                                <td>@game.StartDate</td>
                             </tr>
                         }
                     }

@@ -34,6 +34,11 @@ public sealed class HomeController : Controller
 	private readonly IScheduleService scheduleService;
 
 	/// <summary>
+	/// The service to query <see cref="Team"/> and it's children with.
+	/// </summary>
+	private readonly ITeamService teamService;
+
+	/// <summary>
 	/// Initializes the <see cref="HomeController"/> class.
 	/// </summary>
 	/// <param name="logger">Logs controller processes.</param>
@@ -41,6 +46,7 @@ public sealed class HomeController : Controller
 	{
 		this.logger = logger;
 		this.scheduleService = scheduleService;
+		this.teamService = teamService;
 	}
 
 	/// <summary>
@@ -59,13 +65,23 @@ public sealed class HomeController : Controller
 	/// </summary>
 	/// <returns>The events.</returns>
 	[HttpGet]
-	public async Task<IActionResult> SearchEvent(string searchEvent)
+	public async Task<IActionResult> SearchGame(string searchGame)
 	{
-		searchEvent = searchEvent.ToLower();
-		IEnumerable<Event> events = this.scheduleService.GetAllAsync().Result.Where(e => e.StartDate.ToString().Contains(searchEvent) ||
-																				e.EndDate.ToString().Contains(searchEvent) || e.Name.ToLower().Contains(searchEvent));
+		searchGame = searchGame.ToLower();
+		List<Game> gameList = new List<Game>();
+		IEnumerable<Game> games = this.scheduleService.GetAllAsync().Result.OfType<Game>();
 
-		return this.View("Index", events);
+		foreach (Game game in games)
+		{
+			if (game.Name.ToLower().Contains(searchGame) || game.StartDate.ToString().Contains(searchGame) || 
+				game.EndDate.ToString().Contains(searchGame) || teamService.GetAsync(game.HomeTeamId).Result.Name.ToLower().Contains(searchGame) ||
+				teamService.GetAsync(game.OpposingTeamId).Result.Name.ToLower().Contains(searchGame))
+			{
+				gameList.Add(game);
+			}
+		}
+
+		return this.View("Index", gameList);
 	}
 
 	/// <summary>
