@@ -42,6 +42,6 @@ public static class SchedulerContextExtensions
 			eventsWithRecurring.AddRange(e.GenerateSchedule());
 		}
 
-		return eventsWithRecurring;
+		return eventsWithRecurring.OrderBy(e => e.StartDate);
 	}
 }
