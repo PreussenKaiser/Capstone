@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Scheduler.Web": {
+    "Scheduler": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
