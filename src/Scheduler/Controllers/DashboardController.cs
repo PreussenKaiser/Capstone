@@ -36,7 +36,6 @@ public sealed class DashboardController : Controller
 	{
 		IEnumerable<Event> events = this.context.Events
 			.WithScheduling()
-			.OrderBy(e => e.StartDate)
 			.AsRecurring();
 
 		return this.View(events);
