@@ -49,7 +49,18 @@ public sealed class HomeController : Controller
 	/// <returns>The rendered view.</returns>
 	public async Task<IActionResult> Index()
 	{
+		DateTime date = DateTime.Now;
 		IEnumerable<Event> events = await this.scheduleService.GetAllAsync();
+
+		foreach (Event e in events)
+		{
+			if (e.EndDate < date)
+			{
+				await this.scheduleService.DeleteAsync(e.Id);
+			}
+		}
+		events = await this.scheduleService.GetAllAsync();
+		events = events.OrderBy(e => e.StartDate);
 
 		return this.View("Index", events);
 	}
