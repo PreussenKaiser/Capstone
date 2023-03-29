@@ -5,7 +5,6 @@
 
 @{
     int weeks = (int)ViewData["NumberOfWeeks"];
-    string controller = this.ViewContext.RouteData.Values["controller"].ToString();
     int previousYear = (int)ViewData["previousYear"];
     int previousMonth = (int)ViewData["previousMonth"];
     int nextYear = (int)ViewData["nextYear"];
@@ -108,7 +107,7 @@
 <script>
     function RefreshCalendar(year, month) {
         $.ajax({
-            url: '@Url.Action("refreshCalendar", @controller)',
+            url: '@Url.Action("refreshCalendar", "Home")',
             data: {
                 year: year,
                 month: month

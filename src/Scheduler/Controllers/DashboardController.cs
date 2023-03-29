@@ -120,12 +120,4 @@ public sealed class DashboardController : Controller
 
 		return this.View(fields);
 	}
-
-	public IActionResult refreshCalendar(int? year, int? month)
-	{
-		ViewData["Year"] = year;
-		ViewData["Month"] = month;
-
-		return ViewComponent("Calendar");
-	}
 }
