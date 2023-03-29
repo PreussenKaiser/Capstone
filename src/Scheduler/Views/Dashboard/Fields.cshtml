@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Field>
+
+<div class="row mb-3 mt-3">
+    <div class="col-12">
+        <a asp-action="Add"
+           asp-controller="Field"
+           class="btn btn-primary">
+            Add
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    @foreach (var field in this.Model)
+    {
+        <div class="col-sm-4">
+            <div class="card border border-3 border-success">
+                <img src="~/Images/field.png" class="card-img-top rounded-0">
+                <div class="card-body">
+                    <h5>@field.Name</h5>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <a asp-action="Details"
+                               asp-controller="Field"
+                               asp-route-id="@field.Id"
+                               class="btn btn-sm btn-secondary">
+                                Update
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <form asp-action="Remove"
+                                  asp-controller="Field"
+                                  asp-route-id="@field.Id"
+                                  method="post">
+                                <input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove @field.Name?')" class="btn btn-sm btn-danger" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

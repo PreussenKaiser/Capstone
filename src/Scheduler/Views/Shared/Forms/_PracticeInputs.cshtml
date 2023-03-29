@@ -1,0 +1,22 @@
+﻿@using Scheduler.Infrastructure.Persistence;
+
+@inject SchedulerContext Scheduler
+@model Practice
+
+@{
+    IEnumerable<SelectListItem> teamsSelect = this.Scheduler.Teams
+        .Select(t => new SelectListItem
+        {
+            Text = t.Name,
+            Value = t.Id.ToString()
+        })
+        .ToList();
+}
+
+<div class="row mb-3">
+    <div class="col-6">
+        <label asp-for="TeamId" class="form-label"></label>
+        <select asp-for="TeamId" asp-items="teamsSelect" class="form-select"></select>
+        <span asp-validation-for="TeamId" class="text-danger"></span>
+    </div>
+</div>

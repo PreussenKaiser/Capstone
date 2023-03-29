@@ -17,4 +17,4 @@ jobs:
         dotnet-version: 7.0.x
       
     - name: Deploy
-      run: dotnet publish src/Scheduler.Web /p:PublishProfile=WebDeploy /p:Password=${{ secrets.MWH_PASS }}
+      run: dotnet publish src/Scheduler /p:PublishProfile=WebDeploy /p:Password=${{ secrets.MWH_PASS }}
