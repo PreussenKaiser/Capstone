@@ -61,7 +61,7 @@
                     @for (int ii = 0; ii < 49; ii += 7)
                     {
 
-                        <td colspan="1" class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5]">
+                        <td colspan="1" class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center">
                             <span class="calendar-date text-center">@currentWeek[ii+1]</span>
                             @if (currentWeek[ii + 3] == "active")
                             {
@@ -70,28 +70,30 @@
                                     <br />
                                     @if (currentWeek[ii + 6] == "1")
                                     {
-                                        <span class="text-end">@currentWeek[ii+6] Event</span>
+                                        <span class="text-center">@currentWeek[ii+6] Event</span>
                                     }
                                     else
                                     {
-                                        <span class="text-end">@currentWeek[ii+6] Events</span>
+                                        <span class="text-center">@currentWeek[ii+6] Events</span>
                                     }
                                     <br />
                                     <br />
-                                    <div class="text-center">
-                                        <button class="btn btn-sm btn-secondary day-button">LIST</button>
-                                        @if (this.SignInManager.IsSignedIn(this.User))
-                                        {
-                                            <button class="btn btn-sm btn-dark day-button">GRID</button>
-                                        }
-                                    </div>
+                                    <button class="btn btn-sm btn-secondary day-button">LIST</button>
+                                    @if (this.SignInManager.IsSignedIn(this.User))
+                                    {
+                                        <button class="btn btn-sm btn-dark day-button">GRID</button>
+                                    }
                                 }
                                 else
                                 {
                                     <br />
-                                    <span>No Events</span>
+                                    <span class="text-center">No Events</span>
                                     <br />
                                     <br />
+                                    @if (this.SignInManager.IsSignedIn(this.User))
+                                    {
+                                        <button class="btn btn-sm btn-dark day-button">GRID</button>
+                                    }
                                 }
                             }
                         </td>
