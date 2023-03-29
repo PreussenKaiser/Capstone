@@ -1,0 +1,31 @@
+name: Jira Actions
+
+on:
+  push:
+    branches: [TN-94] // Change to 'dev' when finished.
+
+jobs:
+  finish-issue:
+    name: Finish Issue
+    runs-on: windows-latest
+    steps:
+    
+    - uses: actions/checkout@v3
+  
+    - name: Login
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+    - name: Find issue key
+      uses: ./
+      with:
+        from: commits
+
+    - name: Finish issue
+      uses: atlassian/gajira-transition@master
+      with:
+        issue: ${{ steps.create.outputs.issue }}
+        transition: "Done"
