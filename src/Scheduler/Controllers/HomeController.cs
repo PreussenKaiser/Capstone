@@ -53,8 +53,6 @@ public sealed class HomeController : Controller
 	/// <returns>The home page.</returns>
 	[HttpPost]
 	public IActionResult Index(
-		int? year,
-		int? month,
 		string? eventSearch = null,
 		string? gameSearch = null,
 		DateTime? gameStart = null,
@@ -92,17 +90,6 @@ public sealed class HomeController : Controller
 			games = games.Where(g =>
 				g.StartDate >= gameStart &&
 				g.EndDate <= gameEnd);
-		}
-
-		if (year.HasValue)
-		{
-			ViewData["Year"] = year;
-			ViewData["Month"] = month;
-		}
-		else
-		{
-			ViewData["Year"] = DateTime.Today.Year;
-			ViewData["Month"] = DateTime.Today.Month;
 		}
 
 		return this.View(new IndexViewModel(
