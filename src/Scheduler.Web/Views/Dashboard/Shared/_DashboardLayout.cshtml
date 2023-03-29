@@ -30,6 +30,11 @@
         @this.RenderBody()
     </div>
 </div>
+<div id="calendar">
+    @(
+        await Component.InvokeAsync("Calendar")
+        )
+</div>
 
 @section Scripts {
     @await this.RenderSectionAsync("Scripts", false)

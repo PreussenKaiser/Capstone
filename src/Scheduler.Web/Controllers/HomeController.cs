@@ -2,6 +2,7 @@
 using Scheduler.Core.Models;
 using Scheduler.Core.Services;
 using Scheduler.Web.ViewModels;
+using System;
 using System.Diagnostics;
 
 namespace Scheduler.Web.Controllers;
@@ -42,9 +43,20 @@ public sealed class HomeController : Controller
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
 	/// <returns>The rendered view.</returns>
-	public async Task<IActionResult> Index()
+	public async Task<IActionResult> Index(int? year, int? month)
 	{
 		IEnumerable<Event> games = await this.scheduleService.GetAllAsync();
+
+		if(year.HasValue)
+		{
+			ViewData["Year"] = year;
+			ViewData["Month"] = month;
+		}
+		else
+		{
+			ViewData["Year"] = DateTime.Today.Year;
+			ViewData["Month"] = DateTime.Today.Month;
+		}
 
 		return this.View(games);
 	}
@@ -64,5 +76,12 @@ public sealed class HomeController : Controller
 		{
 			RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
 		});
+	}
+	public IActionResult refreshCalendar(int? year, int? month)
+	{
+		ViewData["Year"] = year;
+		ViewData["Month"] = month;
+
+		return ViewComponent("Calendar");
 	}
 }

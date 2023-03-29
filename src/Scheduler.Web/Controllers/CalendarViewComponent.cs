@@ -31,7 +31,7 @@ public class CalendarViewComponent : ViewComponent
 		this.scheduleService = scheduleService;
 	}
 
-	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
+	public async Task<IViewComponentResult> InvokeAsync()
 	{
 		IEnumerable<Event> events = await this.scheduleService.GetAllAsync();
 
@@ -39,9 +39,18 @@ public class CalendarViewComponent : ViewComponent
 
 		int currentMonth;
 
-		//selectedMonth = 10;
+		if (ViewData["Year"] != null)
+		{
+			currentYear = (int)ViewData["Year"];
 
-		//selectedYear = 2023;
+			currentMonth = (int)ViewData["Month"];
+		}
+		else
+		{
+			currentYear = DateTime.Today.Year;
+
+			currentMonth = DateTime.Today.Month;
+		}
 
 		DateTime firstOfMonth;
 
@@ -53,26 +62,21 @@ public class CalendarViewComponent : ViewComponent
 
 		DateTime bottomOfCalendar;
 
-		if (!selectedMonth.HasValue)
-		{
-			currentYear = DateTime.Today.Year;
-			currentMonth = DateTime.Today.Month;
-		}
-		else
-		{
-			currentYear = selectedYear.Value;
-			currentMonth = selectedMonth.Value;
-		}
-
 		firstOfMonth = new DateTime(currentYear, currentMonth, 1);
 		lastOfMonth = firstOfMonth.AddMonths(1).AddDays(-1);
 		topOfCalendar = GetTopOfCalendar(firstOfMonth);
 		bottomOfCalendar = GetBottomOfCalendar(lastOfMonth);
 		currentDay = DateTime.Today;
 
-		ViewData["Year"] = currentYear;
 
-		if(currentMonth == DateTime.Today.Month)
+		ViewData["CurrentYear"] = currentYear;
+
+		if(currentMonth == DateTime.Today.Month && currentYear == DateTime.Today.Year)
+		{
+			ViewData["PreviousMonth"] = 0;
+			ViewData["PreviousYear"] = 0;			
+		}
+		else
 		{
 			if(currentMonth != 1)
 			{
@@ -86,11 +90,6 @@ public class CalendarViewComponent : ViewComponent
 
 				ViewData["PreviousYear"] = currentYear - 1;
 			}
-			
-		}
-		else
-		{
-			ViewData["PreviousMonth"] = 0;
 		}
 
 		if (currentMonth != 12)
@@ -106,8 +105,6 @@ public class CalendarViewComponent : ViewComponent
 			ViewData["NextYear"] = currentYear + 1;
 		}
 
-		ViewData["MonthInteger"] = currentMonth;
-
 		ViewData["MonthName"] = (Month)currentMonth - 1;
 
 		ViewData["MonthDateStart"] = firstOfMonth;
@@ -116,7 +113,7 @@ public class CalendarViewComponent : ViewComponent
 
 		ViewData["CurrentDay"] = currentDay;
 
-		buildCalendarDays(topOfCalendar, bottomOfCalendar, currentDay, firstOfMonth, lastOfMonth, events);
+		buildCalendarDays(topOfCalendar, bottomOfCalendar, currentDay, firstOfMonth, lastOfMonth, currentMonth, events);
 
 		return await Task.FromResult((IViewComponentResult)View("Calendar"));
 	}
@@ -159,7 +156,7 @@ public class CalendarViewComponent : ViewComponent
 		December
 	}
 
-	private void buildCalendarDays(DateTime topOfCalendar, DateTime bottomOfCalendar, DateTime currentDay, DateTime firstOfMonth, DateTime lastOfMonth, IEnumerable<Event> events)
+	private void buildCalendarDays(DateTime topOfCalendar, DateTime bottomOfCalendar, DateTime currentDay, DateTime firstOfMonth, DateTime lastOfMonth, int currentMonth, IEnumerable<Event> events)
 	{
 		List<string> weeklyList = new List<string>();
 

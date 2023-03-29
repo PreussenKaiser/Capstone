@@ -5,8 +5,11 @@
 
 @{
     int weeks = (int)ViewData["NumberOfWeeks"];
-    int thisMonth = DateTime.Today.Month;
-    int selectedMonth = (int)ViewData["MonthInteger"];
+    string controller = this.ViewContext.RouteData.Values["controller"].ToString();
+    int previousYear = (int)ViewData["previousYear"];
+    int previousMonth = (int)ViewData["previousMonth"];
+    int nextYear = (int)ViewData["nextYear"];
+    int nextMonth = (int)ViewData["nextMonth"];
 }
 
     <div class="calendar">
@@ -15,12 +18,16 @@
             <thead>
                 <tr>
                     <th colspan="8" class="text-center">
-                        @if(selectedMonth > thisMonth)
+                        @if((int)ViewData["PreviousMonth"] != 0)
                         {
-                            <a class="monthly-arrow">&#8592;</a>
-                        }                    
-                        <span class="calendar-title">@ViewData["MonthName"] @ViewData["Year"]</span>
-                        <a class="monthly-arrow">&#8594;</a>
+                        <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
+                    }
+                    else
+                    {
+                        <button class="monthly-arrow left-arrow arrow-disabled">&#8592;</button>
+                    }
+                    <span class="calendar-title text-center">@ViewData["MonthName"] @ViewData["CurrentYear"]</span>
+                    <button class="monthly-arrow right-arrow" onclick="RefreshCalendar(@nextYear, @nextMonth)">&#8594;</button>
                         </th>
                 </tr>
                 <tr class="text-center">
@@ -93,4 +100,19 @@
             </tbody>
         </table>
 
-    </div>
+</div>
+
+<script>
+    function RefreshCalendar(year, month) {
+        $.ajax({
+            url: '@Url.Action("refreshCalendar", @controller)',
+            data: {
+                year: year,
+                month: month
+            },
+            success: function (data) {
+                $("#calendar").html(data);
+            }
+        })
+    }
+</script>

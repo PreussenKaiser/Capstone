@@ -10,22 +10,40 @@
 }
 
 .calendar-title {
-    font-size: 30px;
+    font-size: 70px;
     text-shadow: 1px 1px 2px grey;
 }
 
 .monthly-arrow {
-    font-size: 30px;
+    font-size: 70px;
     color: black;
+    border: none;
+    background-color:white;
+}
+
+.monthly-arrow:hover {
+    cursor:pointer;
+    color: red;
+}
+
+.right-arrow {
+    display: block;
+    float:right;
+    margin-right: 50px;
+}
+
+.left-arrow {
+    display:block;
+    float:left;
+    margin-left: 50px;
+}
+
+.arrow-disabled {
+    color:darkgray !important;
 }
 
 .calendar a {
     text-decoration: none;    
-}
-
-.calendar a:hover {
-    cursor:pointer;
-    color: red;
 }
 
 #weekly-button {
@@ -49,7 +67,7 @@
 }
 
 .calendar .current {
-    background-color: lightskyblue;
+    background-color: lightskyblue !important;
 }
 
 .day-button {

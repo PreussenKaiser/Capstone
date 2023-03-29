@@ -6,6 +6,7 @@
 
 @{
     this.ViewData["Title"] = "Home Page";
+    string controller = this.ViewContext.RouteData.Values["controller"].ToString();
 }
 
 <div class="layoutContainer" style="padding-left:20px;padding-right:20px;border:2px solid gray;font-size:12px;">
@@ -66,5 +67,7 @@
     </div>
 </div>*@
 <div id="calendar">
-    @(await Component.InvokeAsync("Calendar"))
+    @(
+        await Component.InvokeAsync("Calendar")
+        )
 </div>
