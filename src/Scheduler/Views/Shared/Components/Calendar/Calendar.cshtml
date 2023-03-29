@@ -1,0 +1,119 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Scheduler.Web.Controllers;
+
+@inject SignInManager<User> SignInManager
+
+@{
+    int weeks = (int)ViewData["NumberOfWeeks"];
+    string controller = this.ViewContext.RouteData.Values["controller"].ToString();
+    int previousYear = (int)ViewData["previousYear"];
+    int previousMonth = (int)ViewData["previousMonth"];
+    int nextYear = (int)ViewData["nextYear"];
+    int nextMonth = (int)ViewData["nextMonth"];
+}
+
+<div class="calendar">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th colspan="8" class="text-center">
+                    @if ((int)ViewData["PreviousMonth"] != 0)
+                    {
+                        <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
+                    }
+                    else
+                    {
+                        <button class="monthly-arrow left-arrow arrow-disabled">&#8592;</button>
+                    }
+                    <span class="calendar-title text-center">@ViewData["MonthName"] @ViewData["CurrentYear"]</span>
+                    <button class="monthly-arrow right-arrow" onclick="RefreshCalendar(@nextYear, @nextMonth)">&#8594;</button>
+                </th>
+            </tr>
+            <tr class="text-center">
+                <th><button class="btn btn-sm btn-danger">Monthly List</button></th>
+                <th>Sunday</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 1; i < weeks + 1; i++)
+            {
+                List<string> currentWeek = (List<string>)ViewData["Week" + i + "List"];
+
+                <tr colspan="8">
+                    <td colspan="1" id="weekly-button" class="text-center">
+                        @{
+                            DateTime endOfWeek = (DateTime)ViewData["Week" + i + "End"];
+                            DateTime currentDay = (DateTime)ViewData["CurrentDay"];
+                        }
+                        @if (endOfWeek >= currentDay)
+                        {
+                            <button class="btn btn-sm btn-warning">Weekly List</button>
+                        }
+                    </td>
+
+                    @for (int ii = 0; ii < 49; ii += 7)
+                    {
+
+                        <td colspan="1" class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5]">
+                            <span class="calendar-date text-center">@currentWeek[ii+1]</span>
+                            @if (currentWeek[ii + 3] == "active")
+                            {
+                                @if (currentWeek[ii + 6] != "0")
+                                {
+                                    <br />
+                                    @if (currentWeek[ii + 6] == "1")
+                                    {
+                                        <span class="text-end">@currentWeek[ii+6] Event</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-end">@currentWeek[ii+6] Events</span>
+                                    }
+                                    <br />
+                                    <br />
+                                    <div class="text-center">
+                                        <button class="btn btn-sm btn-secondary day-button">LIST</button>
+                                        @if (this.SignInManager.IsSignedIn(this.User))
+                                        {
+                                            <button class="btn btn-sm btn-dark day-button">GRID</button>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <br />
+                                    <span>No Events</span>
+                                    <br />
+                                    <br />
+                                }
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    function RefreshCalendar(year, month) {
+        $.ajax({
+            url: '@Url.Action("refreshCalendar", @controller)',
+            data: {
+                year: year,
+                month: month
+            },
+            success: function (data) {
+                $("#calendar").html(data);
+            }
+        })
+    }
+</script>

@@ -11,7 +11,7 @@
     <p class="lead">To view scheduled events for the facility, please choose a date or date range. You can also view the schedule for individual fields by selecting from the list, or search for specific events by name.</p>
 </div>
 <br />
-<div class="container mb-2">
+@*<div class="container mb-2">
     <div class="row">
         <div class="col-6 border border-2 searchContainer">
             <div class="text-center text-danger">
@@ -92,6 +92,10 @@
                 </tbody>
             </table>
         </div>
->>>>>>> TN-93:src/Scheduler/Views/Home/Index.cshtml
     </div>
+</div>*@
+<div id="calendar">
+    @(
+            await Component.InvokeAsync("Calendar")
+            )
 </div>

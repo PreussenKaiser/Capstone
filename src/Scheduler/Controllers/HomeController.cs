@@ -53,10 +53,13 @@ public sealed class HomeController : Controller
 	/// <returns>The home page.</returns>
 	[HttpPost]
 	public IActionResult Index(
+		int? year,
+		int? month,
 		string? eventSearch = null,
 		string? gameSearch = null,
 		DateTime? gameStart = null,
-		DateTime? gameEnd = null)
+		DateTime? gameEnd = null
+		)
 	{
 		IQueryable<Event> events = this.context.Events.WithScheduling();
 
@@ -91,6 +94,17 @@ public sealed class HomeController : Controller
 				g.EndDate <= gameEnd);
 		}
 
+		if (year.HasValue)
+		{
+			ViewData["Year"] = year;
+			ViewData["Month"] = month;
+		}
+		else
+		{
+			ViewData["Year"] = DateTime.Today.Year;
+			ViewData["Month"] = DateTime.Today.Month;
+		}
+
 		return this.View(new IndexViewModel(
 			events.AsRecurring(),
 			games.AsRecurring()));
@@ -111,5 +125,13 @@ public sealed class HomeController : Controller
 		{
 			RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
 		});
+	}
+
+	public IActionResult refreshCalendar(int? year, int? month)
+	{
+		ViewData["Year"] = year;
+		ViewData["Month"] = month;
+
+		return ViewComponent("Calendar");
 	}
 }

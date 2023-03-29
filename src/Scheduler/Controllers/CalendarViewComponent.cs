@@ -1,47 +1,49 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Scheduler.Core.Models;
-using Scheduler.Core.Services;
-using System.Net;
+using Microsoft.EntityFrameworkCore;
+using Scheduler.Web.ViewModels;
+using System.Diagnostics;
+using Scheduler.Infrastructure.Extensions;
+using Scheduler.Domain.Models;
+using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
 
 public class CalendarViewComponent : ViewComponent
 {
 	/// <summary>
-	/// Logs controller processes.
+	/// The database to query.
 	/// </summary>
-	/// <remarks>
-	/// If we decide to log, I feel like logging to the console may be the best option.
-	/// May want to consult the client about this.
-	/// </remarks>
-	private readonly ILogger<CalendarViewComponent> logger;
-
-	/// <summary>
-	/// The service to query <see cref="Event"/> and it's children with.
-	/// </summary>
-	private readonly IScheduleService scheduleService;
+	private readonly SchedulerContext context;
 
 	/// <summary>
 	/// Initializes the <see cref="CalendarController"/> class.
 	/// </summary>
 	/// <param name="logger">Logs controller processes.</param>
-	public CalendarViewComponent(ILogger<CalendarViewComponent> logger, IScheduleService scheduleService)
+	public CalendarViewComponent(SchedulerContext context)
 	{
-		this.logger = logger;
-		this.scheduleService = scheduleService;
+		this.context = context;
 	}
 
 	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
 	{
-		IEnumerable<Event> events = await this.scheduleService.GetAllAsync();
+		IQueryable<Event> events = this.context.Events.WithScheduling();
 
 		int currentYear;
 
 		int currentMonth;
 
-		//selectedMonth = 10;
+		if (ViewData["Year"] != null)
+		{
+			currentYear = (int)ViewData["Year"];
 
-		//selectedYear = 2023;
+			currentMonth = (int)ViewData["Month"];
+		}
+		else
+		{
+			currentYear = DateTime.Today.Year;
+
+			currentMonth = DateTime.Today.Month;
+		}
 
 		DateTime firstOfMonth;
 
@@ -53,28 +55,23 @@ public class CalendarViewComponent : ViewComponent
 
 		DateTime bottomOfCalendar;
 
-		if (!selectedMonth.HasValue)
-		{
-			currentYear = DateTime.Today.Year;
-			currentMonth = DateTime.Today.Month;
-		}
-		else
-		{
-			currentYear = selectedYear.Value;
-			currentMonth = selectedMonth.Value;
-		}
-
 		firstOfMonth = new DateTime(currentYear, currentMonth, 1);
 		lastOfMonth = firstOfMonth.AddMonths(1).AddDays(-1);
 		topOfCalendar = GetTopOfCalendar(firstOfMonth);
 		bottomOfCalendar = GetBottomOfCalendar(lastOfMonth);
 		currentDay = DateTime.Today;
 
-		ViewData["Year"] = currentYear;
 
-		if(currentMonth == DateTime.Today.Month)
+		ViewData["CurrentYear"] = currentYear;
+
+		if (currentMonth == DateTime.Today.Month && currentYear == DateTime.Today.Year)
 		{
-			if(currentMonth != 1)
+			ViewData["PreviousMonth"] = 0;
+			ViewData["PreviousYear"] = 0;
+		}
+		else
+		{
+			if (currentMonth != 1)
 			{
 				ViewData["PreviousMonth"] = currentMonth - 1;
 
@@ -86,11 +83,6 @@ public class CalendarViewComponent : ViewComponent
 
 				ViewData["PreviousYear"] = currentYear - 1;
 			}
-			
-		}
-		else
-		{
-			ViewData["PreviousMonth"] = 0;
 		}
 
 		if (currentMonth != 12)
@@ -106,8 +98,6 @@ public class CalendarViewComponent : ViewComponent
 			ViewData["NextYear"] = currentYear + 1;
 		}
 
-		ViewData["MonthInteger"] = currentMonth;
-
 		ViewData["MonthName"] = (Month)currentMonth - 1;
 
 		ViewData["MonthDateStart"] = firstOfMonth;
@@ -116,7 +106,7 @@ public class CalendarViewComponent : ViewComponent
 
 		ViewData["CurrentDay"] = currentDay;
 
-		buildCalendarDays(topOfCalendar, bottomOfCalendar, currentDay, firstOfMonth, lastOfMonth, events);
+		buildCalendarDays(topOfCalendar, bottomOfCalendar, currentDay, firstOfMonth, lastOfMonth, currentMonth, events);
 
 		return await Task.FromResult((IViewComponentResult)View("Calendar"));
 	}
@@ -159,7 +149,7 @@ public class CalendarViewComponent : ViewComponent
 		December
 	}
 
-	private void buildCalendarDays(DateTime topOfCalendar, DateTime bottomOfCalendar, DateTime currentDay, DateTime firstOfMonth, DateTime lastOfMonth, IEnumerable<Event> events)
+	private void buildCalendarDays(DateTime topOfCalendar, DateTime bottomOfCalendar, DateTime currentDay, DateTime firstOfMonth, DateTime lastOfMonth, int currentMonth, IQueryable<Event> events)
 	{
 		List<string> weeklyList = new List<string>();
 
@@ -208,7 +198,7 @@ public class CalendarViewComponent : ViewComponent
 			}
 
 			// Previous/Next Month CSS Class
-			if(daypart < firstOfMonth || daypart > lastOfMonth)
+			if (daypart < firstOfMonth || daypart > lastOfMonth)
 			{
 				weeklyList.Add("brown");
 			}
