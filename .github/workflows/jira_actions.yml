@@ -1,8 +1,8 @@
-name: Jira_Actions
+name: Jira Actions
 
 on:
   push:
-    branches: [TN-94] // Change to 'dev' when finished.
+    branches: [TN-94]
 
 jobs:
   finish-issue:
