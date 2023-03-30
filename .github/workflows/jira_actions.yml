@@ -1,4 +1,4 @@
-name: Jira Actions
+name: Jira_Actions
 
 on:
   push:
