@@ -6,7 +6,6 @@ on:
 
 jobs:
   finish-issue:
-    name: Finish Issue
     runs-on: windows-latest
     steps:
     
