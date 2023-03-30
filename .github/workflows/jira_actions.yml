@@ -21,7 +21,7 @@ jobs:
     - name: Find issue key
       uses: atlassian/gajira-find-issue-key@v3
       with:
-        string: ${{ github.ref_name }}
+        from: branch
 
     - name: Finish issue
       uses: atlassian/gajira-transition@v3
