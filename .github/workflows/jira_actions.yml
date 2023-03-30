@@ -9,7 +9,7 @@ jobs:
     runs-on: windows-latest
     steps:
     
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@master
   
     - name: Login
       uses: atlassian/gajira-login@master
