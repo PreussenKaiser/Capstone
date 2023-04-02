@@ -129,6 +129,7 @@ public sealed class DashboardController : Controller
 		return ViewComponent("Calendar");
 	}
 
+	[AllowAnonymous]
 	public async Task<IActionResult> monthModal(int year, int month)
 	{
 		DateTime monthDate = new DateTime(year, month, 1);
@@ -138,6 +139,7 @@ public sealed class DashboardController : Controller
 		return ViewComponent("Modal");
 	}
 
+	[AllowAnonymous]
 	public async Task<IActionResult> weekModal(int year, int month, int weekStart) {
 		DateTime weekStartDate = new DateTime(year, month, weekStart);
 		DateTime weekEndDate = weekStartDate.AddDays(7);
@@ -147,6 +149,7 @@ public sealed class DashboardController : Controller
 		return ViewComponent("Modal");
 	}
 
+	[AllowAnonymous]
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
