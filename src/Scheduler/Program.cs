@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
@@ -22,11 +23,14 @@ builder.Services
 // Configure identity
 builder.Services
 	.AddIdentity<User, Role>()
-	.AddEntityFrameworkStores<SchedulerContext>();
+	.AddEntityFrameworkStores<SchedulerContext>()
+	.AddDefaultTokenProviders();
+builder.Services.AddScoped<User>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
 
 WebApplication app = builder.Build();
 

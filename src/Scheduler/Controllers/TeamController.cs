@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
@@ -9,10 +11,12 @@ namespace Scheduler.Web.Controllers;
 public sealed class TeamController : Controller
 {
 	private readonly SchedulerContext context;
+	private readonly UserManager<User> userManager;
 
-	public TeamController(SchedulerContext context)
+	public TeamController(SchedulerContext context, UserManager<User> userManager)
 	{
 		this.context = context;
+		this.userManager = userManager;
 	}
 
 	public IActionResult Add()
@@ -27,7 +31,19 @@ public sealed class TeamController : Controller
 		{
 			return this.View(team);
 		}
-
+		var userId = userManager.GetUserId(User);
+		if (userId != null)
+		{
+			foreach (User users in userManager.Users.ToList())
+			{
+				if (users.Id.Equals(Guid.Parse(userId)))
+				{
+					team.UserId = Guid.Parse(userId);
+					break;
+				}
+			}
+		}
+		
 		this.context.Teams.Add(team);
 
 		await this.context.SaveChangesAsync();

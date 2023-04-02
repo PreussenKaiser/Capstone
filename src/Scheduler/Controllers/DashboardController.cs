@@ -20,12 +20,18 @@ public sealed class DashboardController : Controller
 	private readonly SchedulerContext context;
 
 	/// <summary>
+	/// The variable to manage users.
+	/// </summary>
+	private readonly UserManager<User> userManager;
+
+	/// <summary>
 	/// Initializes the <see cref="DashboardController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	public DashboardController(SchedulerContext context)
+	public DashboardController(SchedulerContext context, UserManager<User> userManager)
 	{
 		this.context = context;
+		this.userManager = userManager;
 	}
 
 	/// <summary>
@@ -34,6 +40,7 @@ public sealed class DashboardController : Controller
 	/// <returns>A view containing scheduled events.</returns>
 	public IActionResult Events()
 	{
+		var userId = userManager.GetUserId(User);
 		IEnumerable<Event> events = this.context.Events
 			.WithScheduling()
 			.AsRecurring();
@@ -63,6 +70,7 @@ public sealed class DashboardController : Controller
 
 			_ => this.context.Events
 		};
+		
 
 		if (searchTerm is not null)
 		{
