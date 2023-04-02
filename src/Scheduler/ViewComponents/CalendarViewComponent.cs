@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Scheduler.Web.ViewModels;
-using System.Diagnostics;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
+using Scheduler.ViewModels;
 
-namespace Scheduler.Web.Controllers;
+namespace Scheduler.ViewComponents;
 
-public class CalendarViewComponent : ViewComponent
+public sealed class CalendarViewComponent : ViewComponent
 {
 	/// <summary>
 	/// The database to query.
@@ -26,7 +24,7 @@ public class CalendarViewComponent : ViewComponent
 
 	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
 	{
-		IQueryable<Event> events = this.context.Events.WithScheduling();
+		IEnumerable<Event> events = this.context.Events.WithScheduling();
 
 		int currentYear;
 
@@ -60,7 +58,6 @@ public class CalendarViewComponent : ViewComponent
 		topOfCalendar = GetTopOfCalendar(firstOfMonth);
 		bottomOfCalendar = GetBottomOfCalendar(lastOfMonth);
 		currentDay = DateTime.Today;
-
 
 		ViewData["CurrentYear"] = currentYear;
 
@@ -110,7 +107,7 @@ public class CalendarViewComponent : ViewComponent
 
 		ViewData["Year"] = currentYear;
 
-		buildCalendarDays(topOfCalendar, bottomOfCalendar, currentDay, firstOfMonth, lastOfMonth, currentMonth, events);
+		BuildCalendarDays(topOfCalendar, bottomOfCalendar, currentDay, firstOfMonth, lastOfMonth, currentMonth, events);
 
 		return await Task.FromResult((IViewComponentResult)View("Calendar"));
 	}
@@ -127,7 +124,7 @@ public class CalendarViewComponent : ViewComponent
 
 	private DateTime FirstDayOfWeek(DateTime dt)
 	{
-		var culture = System.Threading.Thread.CurrentThread.CurrentCulture;
+		var culture = Thread.CurrentThread.CurrentCulture;
 		var diff = dt.DayOfWeek - culture.DateTimeFormat.FirstDayOfWeek;
 
 		if (diff < 0)
@@ -137,25 +134,10 @@ public class CalendarViewComponent : ViewComponent
 
 		return dt.AddDays(-diff).Date;
 	}
-	private enum Month
-	{
-		January,
-		February,
-		March,
-		April,
-		May,
-		June,
-		July,
-		August,
-		September,
-		October,
-		November,
-		December
-	}
 
-	private void buildCalendarDays(DateTime topOfCalendar, DateTime bottomOfCalendar, DateTime currentDay, DateTime firstOfMonth, DateTime lastOfMonth, int currentMonth, IQueryable<Event> events)
+	private void BuildCalendarDays(DateTime topOfCalendar, DateTime bottomOfCalendar, DateTime currentDay, DateTime firstOfMonth, DateTime lastOfMonth, int currentMonth, IEnumerable<Event> events)
 	{
-		List<string> weeklyList = new List<string>();
+		var weeklyList = new List<string>();
 
 		DateTime daypart = topOfCalendar;
 
@@ -211,59 +193,18 @@ public class CalendarViewComponent : ViewComponent
 				weeklyList.Add("normal");
 			}
 
-			// Counting Events and Fields
+			// Counting Events
 			int eventCount = 0;
-
-			//int fieldCount = 0;
-
-			//List<string> fields = new List<string>();
 
 			foreach (Event e in events)
 			{
 				if (e.StartDate.Date == daypart.Date)
 				{
 					eventCount++;
-
-					//fieldCount++;
-
-					//string eventfields = e.Field.Name;
-
-					//if (fields != null)
-					//{
-					//	bool field = false;
-
-					//	foreach (var ef in eventfields)
-					//	{
-					//		foreach (var f in fields)
-					//		{
-					//			if (f == ef)
-					//			{
-					//				field = true;
-					//			}
-					//		}
-
-					//		if (field == false)
-					//		{
-					//			fields.Add(ef);
-					//			fieldCount++;
-					//		}
-					//	}
-					//}
-					//else
-					//{
-					//	foreach (Guid ef in eventfields)
-					//	{
-					//		fields.Add(ef);
-					//		fieldCount++;
-					//	}
-					//}
 				}
 			}
 
 			weeklyList.Add(eventCount.ToString());
-
-			//weeklyList.Add(fieldCount.ToString());
-
 
 			i++;
 
