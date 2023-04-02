@@ -106,6 +106,10 @@ public class CalendarViewComponent : ViewComponent
 
 		ViewData["CurrentDay"] = currentDay;
 
+		ViewData["Month"] = currentMonth;
+
+		ViewData["Year"] = currentYear;
+
 		buildCalendarDays(topOfCalendar, bottomOfCalendar, currentDay, firstOfMonth, lastOfMonth, currentMonth, events);
 
 		return await Task.FromResult((IViewComponentResult)View("Calendar"));

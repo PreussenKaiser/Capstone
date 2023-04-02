@@ -10,6 +10,8 @@
     int previousMonth = (int)ViewData["previousMonth"];
     int nextYear = (int)ViewData["nextYear"];
     int nextMonth = (int)ViewData["nextMonth"];
+    int currentMonth = (int)ViewData["Month"];
+    int currentYear = (int)ViewData["Year"];
 }
 
 <div class="calendar">
@@ -31,7 +33,7 @@
                 </th>
             </tr>
             <tr class="text-center">
-                <th><button class="btn btn-sm btn-danger">Monthly List</button></th>
+                <th><button class="btn btn-sm btn-danger" onclick="monthModal(@currentYear, @currentMonth)">Monthly List</button></th>
                 <th>Sunday</th>
                 <th>Monday</th>
                 <th>Tuesday</th>
@@ -50,11 +52,13 @@
                     <td colspan="1" id="weekly-button" class="text-center">
                         @{
                             DateTime endOfWeek = (DateTime)ViewData["Week" + i + "End"];
+                            DateTime startOfWeek = (DateTime)ViewData["Week" + i + "Start"];
                             DateTime currentDay = (DateTime)ViewData["CurrentDay"];
+
                         }
                         @if (endOfWeek >= currentDay)
                         {
-                            <button class="btn btn-sm btn-warning">Weekly List</button>
+                            <button class="btn btn-sm btn-warning" onclick="weekModal(@currentYear, @currentMonth, @startOfWeek.Day)">Weekly List</button>
                         }
                     </td>
 
@@ -79,7 +83,7 @@
                                     <br />
                                     <br />
                                     <div class="text-center">
-                                        <button class="btn btn-sm btn-secondary day-button">LIST</button>
+                                        <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@currentYear, @currentMonth, @currentWeek[ii + 1])">LIST</button>
                                         @if (this.SignInManager.IsSignedIn(this.User))
                                         {
                                             <button class="btn btn-sm btn-dark day-button">GRID</button>
@@ -103,6 +107,9 @@
 
 </div>
 
+<div id="listModal">
+</div>
+
 <script>
     function RefreshCalendar(year, month) {
         $.ajax({
@@ -115,5 +122,46 @@
                 $("#calendar").html(data);
             }
         })
+    }
+
+    function monthModal(year, month) {
+        $.ajax({
+            url: '@Url.Action("monthModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth()
+            },
+            success: function(data) {
+                $("#listModal").html(data);
+            }
+        });
+    }
+
+    function weekModal(year, month, start) {
+        $.ajax({
+            url: '@Url.Action("weekModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth(),
+                weekStart: start ?? new Date().getDate()
+            },
+            success: function(data) {
+                $("#listModal").html(data);
+            }
+        });
+    }
+
+    function dayModal(year, month, date) {
+        $.ajax({
+            url: '@Url.Action("dayModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth(),
+                date: date ?? new Date().getDate()
+            },
+            success: function (data) {
+                $("#listModal").html(data);
+            }
+        });
     }
 </script>
