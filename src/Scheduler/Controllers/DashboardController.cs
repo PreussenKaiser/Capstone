@@ -133,29 +133,29 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> monthModal(int year, int month)
 	{
 		DateTime monthDate = new DateTime(year, month, 1);
-		ViewData["Events"] = await this.context.Events.Where(e => e.StartDate.Month == month && e.StartDate.Year == year).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.StartDate.Month == month && e.StartDate.Year == year).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Title"] = $"Events in {monthDate.ToString("MMMM")}";
-		return ViewComponent("Modal");
+		return ViewComponent("ListModal");
 	}
 
 	[AllowAnonymous]
 	public async Task<IActionResult> weekModal(int year, int month, int weekStart) {
 		DateTime weekStartDate = new DateTime(year, month, weekStart);
 		DateTime weekEndDate = weekStartDate.AddDays(7);
-		ViewData["Events"] = await this.context.Events.Where(e => e.StartDate >= weekStartDate && e.StartDate < weekEndDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.StartDate >= weekStartDate && e.StartDate < weekEndDate).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Title"] = $"Events for the week of {weekStartDate.ToString("M")}";
-		return ViewComponent("Modal");
+		return ViewComponent("ListModal");
 	}
 
 	[AllowAnonymous]
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		ViewData["Events"] = await this.context.Events.Where(e => e.StartDate.Date == eventDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.StartDate.Date == eventDate).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
-		return ViewComponent("Modal");
+		return ViewComponent("ListModal");
 	}
 }

@@ -1,0 +1,80 @@
+﻿@{
+    IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
+    IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
+    string title = this.ViewData["Title"].ToString();
+}
+
+<div class="modal fade" id="modalPopup" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>@title</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (events != null && events.Count() > 0)
+                {
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Location</th>
+                                <th>Team 1</th>
+                                <th>Team 2</th>
+                            </tr>
+                        </thead>
+                        @{
+                            foreach (Event e in events)
+                            {
+                                <tr>
+                                    <td>@e.Name</td>
+                                    <td>@e.StartDate</td>
+                                    <td>@e.EndDate</td>
+                                    @if (e.IsBlackout) {
+                                        <td>Entire Facility</td>
+                                    }else
+                                    {
+                                        <td>@e.Fields.FirstOrDefault().Name</td>
+                                    }
+                                    @if (e is Game game)
+                                    {
+                                        Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
+                                        Team? awayTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+                                        <td>@homeTeam.Name</td>
+                                        <td>@awayTeam.Name</td>
+                                    }
+                                    else if (e is Practice practice)
+                                    {
+                                        Team? homeTeam = teams.FirstOrDefault(t => t.Id == practice.TeamId);
+                                        <td>@homeTeam.Name</td>
+                                        <td></td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                        <td></td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    </table>
+                }
+                else
+                {
+                    <p>No Events found.</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function (){
+        $("#modalPopup").modal("show");
+    })
+</script>
