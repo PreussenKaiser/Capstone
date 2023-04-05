@@ -49,12 +49,18 @@
 			{
 				<a asp-action="Details" asp-controller="Schedule" asp-route-id="@scheduledEvent.Id" class="list-group-item list-group-item-action border-3 border-secondary mb-3">
 					<div class="d-flex w-100 justify-content-between">
-						<h5>@scheduledEvent.Name</h5>
-						<small>
-							@this.Html.DisplayFor(x => scheduledEvent.StartDate)
-							to
-							@this.Html.DisplayFor(x => scheduledEvent.EndDate)
-						</small>
+						@if (scheduledEvent is Practice practice && practice?.Team?.UserId == Guid.Parse(UserManager.GetUserId(User)) ||
+							scheduledEvent is Game game && (game?.HomeTeam?.UserId == Guid.Parse(UserManager.GetUserId(User)) || 
+							game?.OpposingTeam?.UserId == Guid.Parse(UserManager.GetUserId(User))))
+						{
+							<h5>@scheduledEvent.Name</h5>
+								<small>
+									@this.Html.DisplayFor(x => scheduledEvent.StartDate)
+									to
+									@this.Html.DisplayFor(x => scheduledEvent.EndDate)
+							</small>
+						}
+						
 					</div>
 					<div class="row">
 						<div class="col-6">
@@ -85,7 +91,7 @@
 								Team? opposingTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
 
 								if (homeTeam is not null &&
-									opposingTeam is not null)
+								opposingTeam is not null)
 								{							
 									<h6>Teams</h6>
 									<small>@homeTeam.Name vs. @opposingTeam.Name</small>
