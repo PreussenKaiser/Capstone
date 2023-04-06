@@ -13,25 +13,39 @@
         ? nameof(Event)
         : nameof(Practice));
 
-    IEnumerable<SelectListItem> fields = this.SchedulerContext.Fields
-        .Select(f => new SelectListItem
-        {
-            Text = f.Name,
-            Value = f.Id.ToString()
-        })
-        .ToList();
 
-    string dateString = "";
-    Guid? selectedFieldID = null;
+    IEnumerable<SelectListItem> fields = this.SchedulerContext.Fields
+    .Select(f => new SelectListItem
+            {
+                Text = f.Name,
+                Value = f.Id.ToString()
+            })
+    .ToList();
+
+
+    string startDateString = "";
+    string endDateString = "";
+    string selectedField = (string)this.ViewData["field"];
 
     if (this.ViewData["enteredDate"] != null)
     {
         DateTime enteredDate = (DateTime)this.ViewData["enteredDate"];
-        dateString = enteredDate.ToString("yyyy-MM-ddThh:mm");
+        startDateString = enteredDate.ToString("yyyy-MM-ddThh:mm");
+        endDateString = enteredDate.AddMinutes(30).ToString("yyyy-MM-ddThh:mm");
     }
-    if (this.ViewData["field"] != null)
+
+    if (this.ViewData["field"] != "")
     {
+        fields = this.SchedulerContext.Fields.Where(ff => ff.Name == selectedField)
+        .Select(f => new SelectListItem
+                {
+                    Text = f.Name,
+                    Value = f.Id.ToString(),
+                    Selected = (f.Id == f.Id)
+    })
+        .ToList();
     }
+    
 }
 
 <div class="row">
@@ -93,32 +107,36 @@
                     <div class="row mb-3">
                         <div class="col-6">
                             <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate" min="@today" type="datetime-local" value="@dateString" class="form-control" />
+                            <input asp-for="StartDate" min="@today" type="datetime-local" value="@startDateString" class="form-control" />
                             <span asp-validation-for="StartDate" class="text-danger"></span>
                         </div>
                         <div class="col-6">
                             <label asp-for="EndDate" class="form-label"></label>
-                            <input asp-for="EndDate" min="@today" type="datetime-local" class="form-control" />
+                            <input asp-for="EndDate" min="@today" type="datetime-local" value="@endDateString" class="form-control" />
                             <span asp-validation-for="EndDate" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="form-check mb-3">
-                            <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                            <label asp-for="IsBlackout" class="form-check-label"></label>
+                    @if(ViewData["field"] == "")
+                    {
+                        <div class="row mb-3">
+                            <div class="form-check mb-3">
+                                <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+                                <label asp-for="IsBlackout" class="form-check-label"></label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                                <label class="form-check-label">Repeating?</label>
+                            </div>
+                            <div id="recurrenceInputs">
+                                @if (this.Model is not null &&
+                                        this.Model.Recurrence is not null)
+                                {
+                                    <partial name="Forms/_RecurrenceInputs" />
+                                }
+                            </div>
                         </div>
-                        <div class="form-check mb-3">
-                            <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                            <label class="form-check-label">Repeating?</label>
-                        </div>
-                        <div id="recurrenceInputs">
-                            @if (this.Model is not null &&
-                                 this.Model.Recurrence is not null)
-                            {
-                                <partial name="Forms/_RecurrenceInputs" />
-                            }
-                        </div>
-                    </div>
+                    }
+                    
                 </div>
             </div>
 
