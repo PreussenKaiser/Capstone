@@ -30,8 +30,8 @@
     if (this.ViewData["enteredDate"] != null)
     {
         DateTime enteredDate = (DateTime)this.ViewData["enteredDate"];
-        startDateString = enteredDate.ToString("yyyy-MM-ddThh:mm");
-        endDateString = enteredDate.AddMinutes(30).ToString("yyyy-MM-ddThh:mm");
+        startDateString = enteredDate.ToString("yyyy-MM-ddTHH:mm");
+        endDateString = enteredDate.AddMinutes(30).ToString("yyyy-MM-ddTHH:mm");
     }
 
     if (this.ViewData["field"] != "")
