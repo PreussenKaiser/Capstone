@@ -198,7 +198,7 @@ public sealed class CalendarViewComponent : ViewComponent
 
 			foreach (Event e in events)
 			{
-				if (e.StartDate.Date == daypart.Date)
+				if (e.StartDate.Date == daypart.Date || (e.StartDate.Date < daypart.Date && e.EndDate.Date >= daypart.Date))
 				{
 					eventCount++;
 				}

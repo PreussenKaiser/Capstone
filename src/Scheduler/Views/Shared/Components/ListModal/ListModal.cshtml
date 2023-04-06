@@ -4,17 +4,16 @@
     string title = this.ViewData["Title"].ToString();
 }
 
-<div class="modal fade" id="modalPopup" tabindex="-1" aria-hidden="false">
-    <div class="modal-dialog">
+<div class="modal fade" id="listModalPopup" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>@title</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header m-auto">
+                <h2 class="text-center">@title</h2>
             </div>
             <div class="modal-body">
                 @if (events != null && events.Count() > 0)
                 {
-                    <table>
+                    <table class="table-bordered m-auto text-center">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -30,8 +29,8 @@
                             {
                                 <tr>
                                     <td>@e.Name</td>
-                                    <td>@e.StartDate</td>
-                                    <td>@e.EndDate</td>
+                                    <td>@this.Html.DisplayFor(x => e.StartDate)</td>
+                                    <td>@this.Html.DisplayFor(x => e.EndDate)</td>
                                     @if (e.IsBlackout) {
                                         <td>Entire Facility</td>
                                     }else
@@ -49,12 +48,12 @@
                                     {
                                         Team? homeTeam = teams.FirstOrDefault(t => t.Id == practice.TeamId);
                                         <td>@homeTeam.Name</td>
-                                        <td></td>
+                                        <td class="bg-secondary"></td>
                                     }
                                     else
                                     {
-                                        <td></td>
-                                        <td></td>
+                                        <td class="bg-secondary"></td>
+                                        <td class="bg-secondary"></td>
                                     }
                                 </tr>
                             }
@@ -75,6 +74,6 @@
 
 <script>
     $(document).ready(function (){
-        $("#modalPopup").modal("show");
+        $("#listModalPopup").modal("show");
     })
 </script>

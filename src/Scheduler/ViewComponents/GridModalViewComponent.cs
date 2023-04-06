@@ -2,7 +2,7 @@
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.ViewComponents;
-public class ListModalViewComponent : ViewComponent
+public class GridModalViewComponent : ViewComponent
 {
 	/// <summary>
 	/// The database to query.
@@ -10,10 +10,9 @@ public class ListModalViewComponent : ViewComponent
 	private readonly SchedulerContext context;
 
 	/// <summary>
-	/// Initializes the <see cref="ModalViewComponent"/> class.
+	/// Initializes the <see cref="GridModalViewComponent"/> class.
 	/// </summary>
-	/// <param name="logger">Logs controller processes.</param>
-	public ListModalViewComponent(SchedulerContext context)
+	public GridModalViewComponent(SchedulerContext context)
 	{
 		this.context = context;
 	}
@@ -21,8 +20,8 @@ public class ListModalViewComponent : ViewComponent
 	public async Task<IViewComponentResult> InvokeAsync()
 	{
 		this.ViewData["Events"] = this.ViewData["Events"];
-		this.ViewData["Teams"] = this.ViewData["Teams"];
+		this.ViewData["Fields"] = this.ViewData["Fields"];
 		this.ViewData["Title"] = this.ViewData["Title"];
-		return await Task.FromResult((IViewComponentResult)View("ListModal"));
+		return await Task.FromResult((IViewComponentResult)View("GridModal"));
 	}
 }

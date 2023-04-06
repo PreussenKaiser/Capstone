@@ -57,7 +57,7 @@
                         }
                         @if (endOfWeek >= currentDay)
                         {
-                            <button class="btn btn-sm btn-warning" onclick="weekModal(@currentYear, @currentMonth, @startOfWeek.Day)">Weekly List</button>
+                            <button class="btn btn-sm btn-warning" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List</button>
                         }
                     </td>
 
@@ -68,6 +68,8 @@
                             <span class="calendar-date text-center">@currentWeek[ii+1]</span>
                             @if (currentWeek[ii + 3] == "active")
                             {
+                                DateTime buttonDate = DateTime.Parse(currentWeek[ii]);
+
                                 @if (currentWeek[ii + 6] != "0")
                                 {
                                     <br />
@@ -81,10 +83,10 @@
                                     }
                                     <br />
                                     <br />
-                                    <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@currentYear, @currentMonth, @currentWeek[ii + 1])">LIST</button>
+                                    <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">LIST</button>
                                     @if (this.SignInManager.IsSignedIn(this.User))
                                     {
-                                        <button class="btn btn-sm btn-dark day-button">GRID</button>
+                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID</button>
                                     }
                                 }
                                 else
@@ -95,7 +97,7 @@
                                     <br />
                                     @if (this.SignInManager.IsSignedIn(this.User))
                                     {
-                                        <button class="btn btn-sm btn-dark day-button">GRID</button>
+                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID</button>
                                     }
                                 }
                             }
@@ -108,7 +110,7 @@
 
 </div>
 
-<div id="listModal">
+<div id="modal">
 </div>
 
 <script>
@@ -133,7 +135,7 @@
                 month: month ?? new Date().getMonth()
             },
             success: function(data) {
-                $("#listModal").html(data);
+                $("#modal").html(data);
             }
         });
     }
@@ -147,7 +149,7 @@
                 weekStart: start ?? new Date().getDate()
             },
             success: function(data) {
-                $("#listModal").html(data);
+                $("#modal").html(data);
             }
         });
     }
@@ -161,7 +163,21 @@
                 date: date ?? new Date().getDate()
             },
             success: function (data) {
-                $("#listModal").html(data);
+                $("#modal").html(data);
+            }
+        });
+    }
+
+    function gridModal(year, month, date) {
+        $.ajax({
+            url: '@Url.Action("gridModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth(),
+                date: date ?? new Date().getDate()
+            },
+            success: function (data) {
+                $("#modal").html(data);
             }
         });
     }
