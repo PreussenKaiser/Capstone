@@ -41,8 +41,10 @@ public sealed class ScheduleController : Controller
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
 	/// <returns>A form for scheduling an event.</returns>
-	public IActionResult Index()
+	public IActionResult Index(DateTime? date = null, string field = "")
 	{
+		this.ViewData["enteredDate"] = date;
+		this.ViewData["field"] = field;
 		return this.View();
 	}
 

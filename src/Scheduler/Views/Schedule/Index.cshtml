@@ -20,6 +20,18 @@
             Value = f.Id.ToString()
         })
         .ToList();
+
+    string dateString = "";
+    Guid? selectedFieldID = null;
+
+    if (this.ViewData["enteredDate"] != null)
+    {
+        DateTime enteredDate = (DateTime)this.ViewData["enteredDate"];
+        dateString = enteredDate.ToString("yyyy-MM-ddThh:mm");
+    }
+    if (this.ViewData["field"] != null)
+    {
+    }
 }
 
 <div class="row">
@@ -73,13 +85,15 @@
                 <div class="col-sm-6">
                     <div class="mb-3">
                         <label asp-for="FieldIds" class="form-label"></label>
-                        <select data-val="false" class="form-select" multiple size="6" asp-for="FieldIds" asp-items="fields"></select>
+                        <select data-val="false" class="form-select" multiple size="6" asp-for="FieldIds" asp-items="fields">
+
+                        </select>
                         <span asp-validation-for="FieldIds" class="text-danger"></span>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
                             <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate" min="@today" type="datetime-local" class="form-control" />
+                            <input asp-for="StartDate" min="@today" type="datetime-local" value="@dateString" class="form-control" />
                             <span asp-validation-for="StartDate" class="text-danger"></span>
                         </div>
                         <div class="col-6">

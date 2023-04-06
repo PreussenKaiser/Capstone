@@ -170,7 +170,9 @@
                                         int squareMinutes = halfHour;
                                         string squareField = f.Name;
 
-                                        <td><a asp-controller="Schedule" asp-action="" asp-route-year="@squareYear" asp-route-month="@squareMonth" asp-route-day="@squareDay" asp-route-hour="@squareHour" asp-route-minutes="@squareMinutes" asp-route-field="@squareField">*</a></td>
+                                        DateTime squareDate = new DateTime(squareYear, squareMonth, squareDay, squareHour, squareMinutes, 0);
+
+                                        <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-field="@squareField">*</a></td>
                                     }
                                     else
                                     {
