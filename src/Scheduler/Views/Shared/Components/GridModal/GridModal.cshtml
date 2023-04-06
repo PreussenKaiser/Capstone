@@ -162,7 +162,15 @@
                                     }
                                     if(eventhit == 0)
                                     {
-                                        <td><a>*</a></td>
+                                        // Variables to send to the Event scheduling form
+                                        int squareYear = currentDate.Year;
+                                        int squareMonth = currentDate.Month;
+                                        int squareDay = currentDate.Day;
+                                        int squareHour = hour;
+                                        int squareMinutes = halfHour;
+                                        string squareField = f.Name;
+
+                                        <td><a asp-controller="Schedule" asp-action="" asp-route-year="@squareYear" asp-route-month="@squareMonth" asp-route-day="@squareDay" asp-route-hour="@squareHour" asp-route-minutes="@squareMinutes" asp-route-field="@squareField">*</a></td>
                                     }
                                     else
                                     {
