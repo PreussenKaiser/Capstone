@@ -128,4 +128,23 @@ public sealed class DashboardController : Controller
 
 		return this.View(fields);
 	}
+
+	/// <summary>
+	/// Checks if the user is associated with the team.
+	/// </summary>
+	/// <returns>games and practices the user is associated with.</returns>
+	bool IsTeamMember(Event scheduledEvent)
+	{
+		if (scheduledEvent is Practice practice)
+		{
+			return practice?.Team?.UserId == Guid.Parse(userManager.GetUserId(User));
+		}
+		else if (scheduledEvent is Game game)
+		{
+			return game?.HomeTeam?.UserId == Guid.Parse(userManager.GetUserId(User))
+				|| game?.OpposingTeam?.UserId == Guid.Parse(userManager.GetUserId(User));
+		}
+
+		return false;
+	}
 }

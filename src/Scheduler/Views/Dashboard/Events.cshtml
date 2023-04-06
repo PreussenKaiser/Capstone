@@ -10,6 +10,12 @@
 @{
 	IEnumerable<Field> fields = this.Scheduler.Fields.ToList();
 	IEnumerable<Team> teams = this.Scheduler.Teams.ToList();
+	bool load = false;
+	Practice? practice;
+	Game? game;
+	Team? team;
+	Team? opposingTeam;
+	Team? homeTeam;
 }
 
 <div class="row mb-3">
@@ -47,59 +53,80 @@
 		<div class="list-group">
 			@foreach (var scheduledEvent in this.Model)
 			{
-				<a asp-action="Details" asp-controller="Schedule" asp-route-id="@scheduledEvent.Id" class="list-group-item list-group-item-action border-3 border-secondary mb-3">
-					<div class="d-flex w-100 justify-content-between">
-						@if (scheduledEvent is Practice practice && practice?.Team?.UserId == Guid.Parse(UserManager.GetUserId(User)) ||
-							scheduledEvent is Game game && (game?.HomeTeam?.UserId == Guid.Parse(UserManager.GetUserId(User)) || 
-							game?.OpposingTeam?.UserId == Guid.Parse(UserManager.GetUserId(User))))
-						{
+				if (scheduledEvent is Practice)
+				{
+					practice = scheduledEvent as Practice;
+					team = teams.FirstOrDefault(t => t.Id == practice.TeamId);
+					if (team.UserId == Guid.Parse(UserManager.GetUserId(User)))
+					{
+						load = true;
+					}
+				}
+				else if (scheduledEvent is Game)
+				{
+					game = scheduledEvent as Game;
+					homeTeam = teams.FirstOrDefault(g => g.Id == game.HomeTeamId);
+					opposingTeam = teams.FirstOrDefault(g => g.Id == game.OpposingTeamId);
+					if (opposingTeam.UserId == Guid.Parse(UserManager.GetUserId(User)) ||
+							homeTeam.UserId == Guid.Parse(UserManager.GetUserId(User)))
+					{
+						load = true;
+					}
+				}
+				else if (User.IsInRole(Role.ADMIN))
+				{
+					load = true;
+				}
+				if (load)
+				{
+					<a asp-action="Details" asp-controller="Schedule" asp-route-id="@scheduledEvent.Id" class="list-group-item list-group-item-action border-3 border-secondary mb-3">
+						<div class="d-flex w-100 justify-content-between">
 							<h5>@scheduledEvent.Name</h5>
-								<small>
-									@this.Html.DisplayFor(x => scheduledEvent.StartDate)
-									to
-									@this.Html.DisplayFor(x => scheduledEvent.EndDate)
+							<small>
+								@this.Html.DisplayFor(x => scheduledEvent.StartDate)
+								to
+								@this.Html.DisplayFor(x => scheduledEvent.EndDate)
 							</small>
-						}
-						
-					</div>
-					<div class="row">
-						<div class="col-6">
-							<h6>Location</h6>
-							@if (scheduledEvent.IsBlackout == true)
-							{
-								<p>Entire Facility</p>
-							}
-							else
-							{							
-								<small>@string.Join(", ", scheduledEvent.Fields.Select(f => f.Name))</small>
-							}
 						</div>
-						<div class="col-6">
-							@if (scheduledEvent is Practice practice)
-							{
-								Team? team = teams.FirstOrDefault(t => t.Id == practice.TeamId);
-
-								if (team is not null)
-								{							
-									<h6>Practicing Team</h6>
-									<small>@team.Name</small>
+						<div class="row">
+							<div class="col-6">
+								<h6>Location</h6>
+								@if (scheduledEvent.IsBlackout == true)
+								{
+									<p>Entire Facility</p>
 								}
-							}
-							else if (scheduledEvent is Game game)
-							{
-								Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
-								Team? opposingTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
-
-								if (homeTeam is not null &&
-								opposingTeam is not null)
-								{							
-									<h6>Teams</h6>
-									<small>@homeTeam.Name vs. @opposingTeam.Name</small>
+								else
+								{
+									<small>@string.Join(", ", scheduledEvent.Fields.Select(f => f.Name))</small>
 								}
-							}
-						</div>
+							</div>
+							<div class="col-6">
+								@if (scheduledEvent is Practice eventPractice)
+								{
+									team = teams.FirstOrDefault(t => t.Id == eventPractice.TeamId);
+
+									if (team is not null)
+									{
+										<h6>Practicing Team</h6>
+										<small>@team.Name</small>
+									}
+								}
+								else if (scheduledEvent is Game eventGame)
+								{
+									homeTeam = teams.FirstOrDefault(t => t.Id == eventGame.HomeTeamId);
+									opposingTeam = teams.FirstOrDefault(t => t.Id == eventGame.OpposingTeamId);
+
+									if (homeTeam is not null &&
+									opposingTeam is not null)
+									{
+										<h6>Teams</h6>
+										<small>@homeTeam.Name vs. @opposingTeam.Name</small>
+									}
+								}
+							</div>
 					</div>
 				</a>
+				}
 			}
 		</div>
 	</div>

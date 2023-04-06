@@ -34,14 +34,7 @@ public sealed class TeamController : Controller
 		var userId = userManager.GetUserId(User);
 		if (userId != null)
 		{
-			foreach (User users in userManager.Users.ToList())
-			{
-				if (users.Id.Equals(Guid.Parse(userId)))
-				{
-					team.UserId = Guid.Parse(userId);
-					break;
-				}
-			}
+			team.UserId = Guid.Parse(userId);
 		}
 		
 		this.context.Teams.Add(team);
