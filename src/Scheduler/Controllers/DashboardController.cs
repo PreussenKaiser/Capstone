@@ -134,7 +134,7 @@ public sealed class DashboardController : Controller
 	{
 		DateTime monthDate = new DateTime(year, month, 1);
 		DateTime monthEndDate = monthDate.AddMonths(1);
-		ViewData["Events"] = await this.context.Events.Where(e => (e.StartDate.Date >= monthDate.Date && e.StartDate.Date < monthEndDate.Date) || (e.StartDate.Date < monthDate.Date && (e.EndDate.Date >= monthDate.Date && e.EndDate.Date < monthEndDate.Date))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && ((e.StartDate.Date >= monthDate.Date && e.StartDate.Date < monthEndDate.Date) || (e.StartDate.Date < monthDate.Date && (e.EndDate.Date >= monthDate.Date && e.EndDate.Date < monthEndDate.Date)))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Title"] = $"Events in {monthDate.ToString("MMMM")}";
 		return ViewComponent("ListModal");
@@ -144,7 +144,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> weekModal(int year, int month, int weekStart) {
 		DateTime weekStartDate = new DateTime(year, month, weekStart);
 		DateTime weekEndDate = weekStartDate.AddDays(7);
-		ViewData["Events"] = await this.context.Events.Where(e => (e.StartDate >= weekStartDate && e.StartDate < weekEndDate) || (e.StartDate.Date < weekStartDate && (e.EndDate.Date <= weekEndDate && e.EndDate.Date >= weekStartDate))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && ((e.StartDate >= weekStartDate && e.StartDate < weekEndDate) || (e.StartDate.Date < weekStartDate && (e.EndDate.Date <= weekEndDate && e.EndDate.Date >= weekStartDate)))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Title"] = $"Events for the week of {weekStartDate.ToString("M")}";
 		return ViewComponent("ListModal");
@@ -154,7 +154,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		ViewData["Events"] = await this.context.Events.Where(e => e.StartDate.Date == eventDate || (e.StartDate.Date < eventDate && e.EndDate.Date >= eventDate)).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date == eventDate || (e.StartDate.Date < eventDate && e.EndDate.Date >= eventDate))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
 		return ViewComponent("ListModal");
@@ -164,7 +164,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		ViewData["Events"] = await this.context.Events.Where(e => e.StartDate.Date == eventDate || (e.StartDate.Date < eventDate && e.EndDate.Date >= eventDate)).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date == eventDate || (e.StartDate.Date < eventDate && e.EndDate.Date >= eventDate))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Fields"] = await this.context.Fields.OrderBy(e => e.Name).ToListAsync();
 		ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
 		ViewData["CurrentDate"] = eventDate;
