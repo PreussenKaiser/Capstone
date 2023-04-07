@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Event>;
+
+@{
+    IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
+}
+
+@if (Model != null && Model.Count() > 0)
+{
+    <table class="table-bordered m-auto text-center">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Location</th>
+                <th>Team 1</th>
+                <th>Team 2</th>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <th>Details</th>
+                }
+            </tr>
+        </thead>
+        @{
+            foreach (Event e in Model)
+            {
+                <tr>
+                    <td>@e.Name</td>
+                    <td>@this.Html.DisplayFor(x => e.StartDate)</td>
+                    <td>@this.Html.DisplayFor(x => e.EndDate)</td>
+                    @if (e.IsBlackout)
+                    {
+                        <td>Entire Facility</td>
+                    }
+                    else
+                    {
+                        <td>@e.Fields.FirstOrDefault().Name</td>
+                    }
+                    @if (e is Game game)
+                    {
+                        Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
+                        Team? awayTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+                        <td>@homeTeam.Name</td>
+                        <td>@awayTeam.Name</td>
+                    }
+                    else if (e is Practice practice)
+                    {
+                        Team? homeTeam = teams.FirstOrDefault(t => t.Id == practice.TeamId);
+                        <td>@homeTeam.Name</td>
+                        <td class="bg-secondary"></td>
+                    }
+                    else
+                    {
+                        <td class="bg-secondary"></td>
+                        <td class="bg-secondary"></td>
+                    }
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <td>
+                            <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-primary">Details</a>
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </table>
+}
+else
+{
+    <p>No Events found.</p>
+}

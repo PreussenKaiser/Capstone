@@ -1,69 +1,47 @@
-﻿@{
+﻿@using System.Text.Json;
+
+@{
     IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
-    IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
     string title = this.ViewData["Title"].ToString();
+    DateTime startTime = (DateTime)this.ViewData["Start"];
+    DateTime endTime = (DateTime)this.ViewData["End"];
 }
 
-<div class="modal fade" id="listModalPopup" tabindex="-1" aria-hidden="false">
+<div class="modal fade" id="listModalPopup" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header m-auto">
                 <h2 class="text-center">@title</h2>
             </div>
             <div class="modal-body">
-                @if (events != null && events.Count() > 0)
-                {
-                    <table class="table-bordered m-auto text-center">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Location</th>
-                                <th>Team 1</th>
-                                <th>Team 2</th>
-                            </tr>
-                        </thead>
-                        @{
-                            foreach (Event e in events)
-                            {
-                                <tr>
-                                    <td>@e.Name</td>
-                                    <td>@this.Html.DisplayFor(x => e.StartDate)</td>
-                                    <td>@this.Html.DisplayFor(x => e.EndDate)</td>
-                                    @if (e.IsBlackout) {
-                                        <td>Entire Facility</td>
-                                    }else
-                                    {
-                                        <td>@e.Fields.FirstOrDefault().Name</td>
-                                    }
-                                    @if (e is Game game)
-                                    {
-                                        Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
-                                        Team? awayTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
-                                        <td>@homeTeam.Name</td>
-                                        <td>@awayTeam.Name</td>
-                                    }
-                                    else if (e is Practice practice)
-                                    {
-                                        Team? homeTeam = teams.FirstOrDefault(t => t.Id == practice.TeamId);
-                                        <td>@homeTeam.Name</td>
-                                        <td class="bg-secondary"></td>
-                                    }
-                                    else
-                                    {
-                                        <td class="bg-secondary"></td>
-                                        <td class="bg-secondary"></td>
-                                    }
-                                </tr>
-                            }
-                        }
-                    </table>
-                }
-                else
-                {
-                    <p>No Events found.</p>
-                }
+                <div class="col-12">
+                    <div class="btn-group mb-2">
+                        <form class="me-3" action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm">
+                            <div class="btn-group">
+                                <input type="submit" class="btn btn-secondary" value="Filter" />
+                                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                                <ul class="dropdown-menu w-100 p-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Type</label>
+                                        <select name="type" class="form-select">
+                                            <option value="Event">Events</option>
+                                            <option value="Practice">Practices</option>
+                                            <option value="Game">Games</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Name</label>
+                                        <input type="text" name="searchTerm" class="form-control" />
+                                    </div>
+                                </ul>
+                            </div>
+                        </form>
+                        <button class="btn btn-danger rounded" onclick="resetEvents()">Reset</button>
+                    </div>
+                </div>
+                <div id="modalTable">
+                    <partial name="_ListModalTable" model="events"/>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -75,5 +53,41 @@
 <script>
     $(document).ready(function (){
         $("#listModalPopup").modal("show");
-    })
+    });
+    
+    function searchEvents(e){
+        $.ajax({
+            url: '@Url.Action("SearchModalEvents", "Dashboard")',
+            data: {
+                searchTerm: e.searchTerm.value,
+                type: e.type.value,
+                start: '@startTime.ToString()',
+                end: '@endTime.ToString()'
+            },
+            success: function(data) {
+                $("#modalTable").html(data);
+            }
+        });
+    }
+
+        function resetEvents(e){
+        $.ajax({
+            url: '@Url.Action("SearchModalEvents", "Dashboard")',
+            data: {
+                searchTerm: '',
+                type: 'Event',
+                start: '@startTime.ToString()',
+                end: '@endTime.ToString()'
+            },
+            success: function(data) {
+                $("#modalTable").html(data);
+            }
+        });
+    }
 </script>
+
+<style media="print">
+    .noPrintIfModal {
+        display: none;
+    }
+</style>
