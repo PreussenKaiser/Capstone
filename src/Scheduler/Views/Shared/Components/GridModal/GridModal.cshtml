@@ -150,7 +150,7 @@
                                                             {
                                                                 eventhit = 1;
                                                             }
-                                                            if (halfHour == 30 && em >= 30 && eventhit != 1)
+                                                            if (halfHour == 30 && em > 30 && eventhit != 1)
                                                             {
                                                                 eventhit = 1;
                                                             }
@@ -160,24 +160,38 @@
                                             }
                                         }                                        
                                     }
+
+                                    // Variables to send to the Event scheduling form, and to check the current time
+                                    int squareYear = currentDate.Year;
+                                    int squareMonth = currentDate.Month;
+                                    int squareDay = currentDate.Day;
+                                    int squareHour = hour;
+                                    int squareMinutes = halfHour;
+                                    string squareField = f.Name;
+
+                                    DateTime squareDate = new DateTime(squareYear, squareMonth, squareDay, squareHour, squareMinutes, 0);
                                     if(eventhit == 0)
                                     {
-                                        // Variables to send to the Event scheduling form
-                                        int squareYear = currentDate.Year;
-                                        int squareMonth = currentDate.Month;
-                                        int squareDay = currentDate.Day;
-                                        int squareHour = hour;
-                                        int squareMinutes = halfHour;
-                                        string squareField = f.Name;
+                                        if(squareDate > DateTime.Now)
+                                        {
+                                            <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-field="@squareField">*</a></td>
+                                        }
+                                        else
+                                        {
+                                            <td class="bg-warning"></td>
+                                        }
 
-                                        DateTime squareDate = new DateTime(squareYear, squareMonth, squareDay, squareHour, squareMinutes, 0);
-
-                                        <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-field="@squareField">*</a></td>
                                     }
                                     else
                                     {
-                                        
-                                        <td class="bg-danger"></td>
+                                        if(squareDate > DateTime.Now)
+                                        {
+                                            <td class="bg-danger"></td>
+                                        }
+                                        else
+                                        {
+                                            <td class="bg-warning"></td>
+                                        }                                        
                                     }
                                 }
                             </tr>
