@@ -105,7 +105,7 @@
                         <span asp-validation-for="FieldIds" class="text-danger"></span>
                     </div>
                     <div class="col-6">
-                        <label asp-for="StartDate" class="form-label">Start Date</label>
+                        <label asp-for="StartDate" class="form-label">Event Time</label>
                         <input asp-for="StartDate" min="@today" type="text" id="StartDate" class="form-control" data-format="0:M/dd/yyyy h:mm tt" readonly />
                         <span asp-validation-for="StartDate" class="text-danger"></span>
                         
@@ -113,18 +113,6 @@
                     <div class="col-6">
                         <input asp-for="EndDate" min="@today" type="hidden" class="form-control" id="EndDate" data-format="0:M/dd/yyyy h:mm tt" />
                         <span asp-validation-for="EndDate" class="text-danger"></span>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate" min="@today" type="datetime-local" value="@startDateString" class="form-control" />
-                            <span asp-validation-for="StartDate" class="text-danger"></span>
-                        </div>
-                        <div class="col-6">
-                            <label asp-for="EndDate" class="form-label"></label>
-                            <input asp-for="EndDate" min="@today" type="datetime-local" value="@endDateString" class="form-control" />
-                            <span asp-validation-for="EndDate" class="text-danger"></span>
-                        </div>
-                    </div>
                     @if(ViewData["field"] == "")
                     {
                         <div class="row mb-3">
