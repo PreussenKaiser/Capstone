@@ -1,0 +1,227 @@
+﻿@{
+    IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
+    IEnumerable<Field> fields = (IEnumerable<Field>)this.ViewData["Fields"];
+    string title = this.ViewData["Title"].ToString();
+    DateTime currentDate = (DateTime)this.ViewData["CurrentDate"];
+    int tableWidth = 15 + (fields.Count() * 4);
+}
+
+<div class="modal fade" id="gridModalPopup" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header m-auto">
+                <h2 class="text-center">@title</h2>
+            </div>
+            <div class="modal-body fix-head">
+                <table id="grid-table" class="table table-sm table-bordered" style="width:@tableWidth%">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                @foreach (var f in fields)
+                {
+                    <th class="field-name">@f.Name</th>
+                }
+                </tr>
+                </thead>
+                    <tbody>
+                        @{
+                            int halfHour = 0;
+                            int hour = 0;
+                            int daypart = 0;
+                        }
+
+                        @for (var t = 0; t < 48; t++)
+                        {
+                            string timestring = "";
+
+                            if(hour == 0)
+                            {
+                                timestring += "12";
+                            }
+
+                            if(hour < 13 && hour != 0)
+                            {
+                                timestring += hour;
+                            }
+                            else
+                            {
+                                if(hour != 0)
+                                {
+                                    timestring += (hour - 12); 
+                                }
+                            }
+
+                            if (halfHour == 30)
+                            {
+                                timestring += ":30";
+                            }
+                            if (daypart == 0)
+                            {
+                                timestring += " AM";
+                            }
+                            else
+                            {
+                                timestring += " PM";
+                            }
+                            <tr>
+                                <td>@timestring</td>
+
+                                @foreach (var f in fields)
+                                {
+                                    int eventhit = 0;
+
+                                    foreach (var e in events)
+                                    {
+                                        IEnumerable<Field> fieldIteration;
+
+                                        if(e.IsBlackout == true)
+                                        {
+                                            fieldIteration = fields;
+                                        }
+                                        else
+                                        {
+                                            fieldIteration = e.Fields;
+                                        }
+
+                                        foreach(var ff in fieldIteration)
+                                        {
+                                            if(ff.Name == f.Name || e.IsBlackout == true)
+                                            {
+
+                                                DateTime cd = currentDate.Date;
+                                                DateTime sd = e.StartDate.Date;
+                                                DateTime ed = e.EndDate.Date;
+                                                int sh = e.StartDate.Hour;
+                                                int sm = e.StartDate.Minute;
+                                                int eh = e.EndDate.Hour;
+                                                int em = e.EndDate.Minute;
+                                                int hourRange = 0;
+
+                                                if (sd == cd || (sd < cd && ed >= cd))
+                                                {
+                                                    // Event starts and ends on same day
+                                                    if (sd == ed)
+                                                    {
+                                                        hourRange = eh - sh;
+                                                    }
+
+                                                    // Event starts on an earlier date than it ends
+                                                    if(sd == cd && ed > cd)
+                                                    {
+                                                        eh = 23;
+                                                        em = 59;
+                                                        hourRange = eh - sh;
+                                                    }
+                                                    
+                                                    // Event ends on a later date than it starts
+                                                    if(ed == cd && sd != ed)
+                                                    {
+                                                        hourRange = eh;
+                                                        sh = -1;                                                            
+                                                    } 
+
+                                                    // Full days between start and end
+                                                    if (sd < cd && ed > cd)
+                                                    {
+                                                        hourRange = 47;
+                                                        sh = 0;
+                                                        sm = 0;
+                                                        eh = 23;
+                                                        em = 59;
+                                                    }                                                 
+
+                                                    if (sh == hour)
+                                                    {
+                                                        if (halfHour == 0 && sm < 30)
+                                                        {
+                                                            eventhit = 1;
+                                                        }
+                                                        if (halfHour == 30 && eh != hour)
+                                                        {
+                                                            eventhit = 1;
+                                                        }
+                                                    }
+
+                                                    for (var d = 0; d <= hourRange; d++)
+                                                    {
+                                                        if (eh == hour + d)
+                                                        {
+                                                            if (halfHour == 0 && sh != hour && em != 0)
+                                                            {
+                                                                eventhit = 1;
+                                                            }
+                                                            if (halfHour == 30 && em > 30 && eventhit != 1)
+                                                            {
+                                                                eventhit = 1;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }                                        
+                                    }
+
+                                    // Variables to send to the Event scheduling form, and to check the current time
+                                    int squareYear = currentDate.Year;
+                                    int squareMonth = currentDate.Month;
+                                    int squareDay = currentDate.Day;
+                                    int squareHour = hour;
+                                    int squareMinutes = halfHour;
+                                    string squareField = f.Name;
+
+                                    DateTime squareDate = new DateTime(squareYear, squareMonth, squareDay, squareHour, squareMinutes, 0);
+                                    if(eventhit == 0)
+                                    {
+                                        if(squareDate > DateTime.Now)
+                                        {
+                                            <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-field="@squareField">*</a></td>
+                                        }
+                                        else
+                                        {
+                                            <td class="bg-warning"></td>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        if(squareDate > DateTime.Now)
+                                        {
+                                            <td class="bg-danger"></td>
+                                        }
+                                        else
+                                        {
+                                            <td class="bg-warning"></td>
+                                        }                                        
+                                    }
+                                }
+                            </tr>
+                            if(halfHour == 0)
+                            {
+                                halfHour = 30;
+                            }
+                            else
+                            {
+                                halfHour = 0;
+                                hour++;
+                            }
+
+                            if(hour > 11)
+                            {
+                                daypart = 1;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function (){
+        $("#gridModalPopup").modal("show");
+    })
+</script>
