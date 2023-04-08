@@ -2,9 +2,13 @@
 
 @{
     this.Layout = "Shared/_AccountLayout.cshtml";
+    string message = Model.NeedsNewPassword ? "You must reset your password before using the app." : "";
 }
 
+<NavigationLock />
+
 <form asp-action="Security">
+    <div class="text-danger">@message</div>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <input hidden asp-for="UserId" value="@this.Model.UserId" />

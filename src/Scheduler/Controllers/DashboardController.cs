@@ -7,6 +7,7 @@ using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 using System.Linq;
 using System.Text.Json;
+using Scheduler.Filters;
 
 namespace Scheduler.Web.Controllers;
 
@@ -34,6 +35,7 @@ public sealed class DashboardController : Controller
 	/// Displays the <see cref="Events"/> view.
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Events()
 	{
 		IEnumerable<Event> events = this.context.Events
@@ -50,6 +52,7 @@ public sealed class DashboardController : Controller
 	/// <param name="searchTerm"></param>
 	/// <returns></returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Events(
 		string? type = null,
 		string? searchTerm = null)
@@ -81,6 +84,7 @@ public sealed class DashboardController : Controller
 	/// Displays the <see cref="Teams"/> view.
 	/// </summary>
 	/// <returns>A table containing all teams.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Teams()
 	{
 		IEnumerable<Team> teams = await this.context.Teams
@@ -102,6 +106,7 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Fields()
 	{
 		IEnumerable<Field> fields = await this.context.Fields.ToListAsync();
@@ -115,6 +120,7 @@ public sealed class DashboardController : Controller
 	/// <param name="userManager">The service to get users with.</param>
 	/// <returns>A table containing all users.</returns>
 	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Users(
 		[FromServices] UserManager<User> userManager)
 	{

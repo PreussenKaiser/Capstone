@@ -5,18 +5,23 @@ using System.Diagnostics;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
+using Scheduler.Filters;
 
 namespace Scheduler.Web.Controllers;
 
 /// <summary>
 /// Displays views for the home page.
 /// </summary>
+[Authorize]
 public sealed class HomeController : Controller
 {
 	/// <summary>
 	/// The database to query.
 	/// </summary>
 	private readonly SchedulerContext context;
+
+	private User currentUser;
 
 	/// <summary>
 	/// Initializes the <see cref="HomeController"/> class.
@@ -31,6 +36,8 @@ public sealed class HomeController : Controller
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
 	/// <returns>The home page.</returns>
+	[AllowAnonymous]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Index()
 	{
 		IQueryable<Event> events = this.context.Events.WithScheduling();
@@ -52,6 +59,8 @@ public sealed class HomeController : Controller
 	/// <param name="gameSearch">Constraint for <see cref="IndexViewModel.Games"/>.</param>
 	/// <returns>The home page.</returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	[AllowAnonymous]
 	public IActionResult Index(
 		string? eventSearch = null,
 		string? gameSearch = null,
@@ -106,6 +115,7 @@ public sealed class HomeController : Controller
 		Duration = 0,
 		Location = ResponseCacheLocation.None,
 		NoStore = true)]
+	[AllowAnonymous]
 	public IActionResult Error()
 	{
 		return this.View(new ErrorViewModel
@@ -120,6 +130,7 @@ public sealed class HomeController : Controller
 	/// <param name="year">The year sent by the arrow function.</param>
 	/// <param name="month">The month sent by the arrow function.</param>
 	/// <returns>The refreshed Razor Calendar view component.</returns>
+	[AllowAnonymous]
 	public IActionResult refreshCalendar(int? year, int? month)
 	{
 		ViewData["Year"] = year;

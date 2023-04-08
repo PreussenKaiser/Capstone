@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
+using Scheduler.Filters;
 
 namespace Scheduler.Web.Controllers;
 
@@ -32,6 +33,7 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="type">The type of inputs to render. Name aligns with object name.</param>
 	/// <returns>The rendered inputs.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public PartialViewResult RenderInputs(string type)
 	{
 		return this.PartialView($"Forms/_{type}Inputs");
@@ -41,6 +43,7 @@ public sealed class ScheduleController : Controller
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
 	/// <returns>A form for scheduling an event.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Index(DateTime? date = null, string field = "")
 	{
 		this.ViewData["enteredDate"] = date;
@@ -54,6 +57,7 @@ public sealed class ScheduleController : Controller
 	/// <param name="id">References the event to detail.</param>
 	/// <returns></returns>
 	[AllowAnonymous]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		Event? scheduledEvent = await this.context.Events
@@ -92,6 +96,7 @@ public abstract class ScheduleController<TEvent> : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Schedule(TEvent scheduledEvent)
 	{
 		if (!this.ModelState.IsValid)
@@ -114,9 +119,11 @@ public abstract class ScheduleController<TEvent> : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public abstract Task<IActionResult> EditDetails(TEvent values);
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Reschedule(TEvent values)
 	{
 		if (!this.ModelState.IsValid)
@@ -145,6 +152,7 @@ public abstract class ScheduleController<TEvent> : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Relocate(TEvent values)
 	{
 		if (!this.ModelState.IsValid)
@@ -173,6 +181,7 @@ public abstract class ScheduleController<TEvent> : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Cancel(Guid id)
 	{
 		Event? scheduledEvent = await this.context.Events.FindAsync(id);

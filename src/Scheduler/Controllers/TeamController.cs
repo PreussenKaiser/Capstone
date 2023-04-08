@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
+using Scheduler.Filters;
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
@@ -15,12 +16,14 @@ public sealed class TeamController : Controller
 		this.context = context;
 	}
 
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Add()
 	{
 		return this.View();
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Add(Team team)
 	{
 		if (!this.ModelState.IsValid)
@@ -37,6 +40,7 @@ public sealed class TeamController : Controller
 			"Dashboard");
 	}
 
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		return await this.context.Teams.FindAsync(id) is Team team
@@ -45,6 +49,7 @@ public sealed class TeamController : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Details(Team team)
 	{
 		if (!this.ModelState.IsValid)
@@ -62,6 +67,7 @@ public sealed class TeamController : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id)
 	{
 		if (await this.context.Teams.FindAsync(id) is not Team team)
