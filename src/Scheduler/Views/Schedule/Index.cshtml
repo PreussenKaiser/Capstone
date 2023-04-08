@@ -104,11 +104,11 @@
                         </select>
                         <span asp-validation-for="FieldIds" class="text-danger"></span>
                     </div>
-                    <div class="col-6">
+                    <div class="col-lg">
                         <label asp-for="StartDate" class="form-label">Event Time</label>
                         <input asp-for="StartDate" min="@today" type="text" id="StartDate" class="form-control" data-format="0:M/dd/yyyy h:mm tt" readonly />
                         <span asp-validation-for="StartDate" class="text-danger"></span>
-                        
+                        <br />
                     </div>
                     <div class="col-6">
                         <input asp-for="EndDate" min="@today" type="hidden" class="form-control" id="EndDate" data-format="0:M/dd/yyyy h:mm tt" />
@@ -166,6 +166,43 @@
     <script src="~/js/EventForm.js"></script>
     <script>
         document.onload = navClick('@eventType');
+    </script>
+    <script>
+        var startDateString = "@startDateString"; // Replace with your actual startDateString from MVC
+        var startDate;
+        if (startDateString) {
+            startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the date string and specify the format
+        } else {
+            startDate = moment(); // Use current time as default
+        }
+        var startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the date as desired
+
+        var endDateString = "@endDateString"; // Replace with your actual endDateString from MVC
+        var endDate;
+        if (endDateString) {
+            endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the date string and specify the format
+        } else {
+            endDate = moment(); // Use current time as default
+        }
+        var endDateFormatted = endDate.format('M/DD/YYYY hh:mm A');
+
+        $(function () {
+            $('#StartDate').daterangepicker({
+                timePicker: true,
+                startDate: startDateFormatted,
+                endDate: endDateFormatted,
+                timePickerIncrement: 30,
+                locale: {
+                    format: 'M/DD hh:mm A'
+                }
+            }).on('apply.daterangepicker', function (ev, picker) {
+                startDate = picker.startDate.format('M/DD/YYYY hh:mm A');
+                endDate = picker.endDate.format('M/DD/YYYY hh:mm A');
+
+                $('#StartDate').val(startDate);
+                $('#EndDate').val(endDate);
+            });
+        });
     </script>
 }
 
