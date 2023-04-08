@@ -104,18 +104,15 @@
                         </select>
                         <span asp-validation-for="FieldIds" class="text-danger"></span>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate" min="@today" type="datetime-local" value="@startDateString" class="form-control" />
-                            <span asp-validation-for="StartDate" class="text-danger"></span>
-                        </div>
-                        <div class="col-6">
-                            <label asp-for="EndDate" class="form-label"></label>
-                            <input asp-for="EndDate" min="@today" type="datetime-local" value="@endDateString" class="form-control" />
-                            <span asp-validation-for="EndDate" class="text-danger"></span>
-                        </div>
+                    <div class="col-6">
+                        <label asp-for="StartDate" class="form-label">Event Time</label>
+                        <input asp-for="StartDate" min="@today" type="text" id="StartDate" class="form-control" data-format="0:M/dd/yyyy h:mm tt" readonly />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                        
                     </div>
+                    <div class="col-6">
+                        <input asp-for="EndDate" min="@today" type="hidden" class="form-control" id="EndDate" data-format="0:M/dd/yyyy h:mm tt" />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
                     @if(ViewData["field"] == "")
                     {
                         <div class="row mb-3">
@@ -157,11 +154,18 @@
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <!-- Include custom JavaScript file -->
+    <script src="~/js/custom-minutes-dropdown.js"></script>
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/RecurrenceForm.js"></script>
     <script src="~/js/EventForm.js"></script>
     <script>
-        document.onload = navClick('@eventType')
+        document.onload = navClick('@eventType');
     </script>
 }
 
