@@ -56,7 +56,8 @@ public sealed class HomeController : Controller
 		string? eventSearch = null,
 		string? gameSearch = null,
 		DateTime? gameStart = null,
-		DateTime? gameEnd = null)
+		DateTime? gameEnd = null
+		)
 	{
 		IQueryable<Event> events = this.context.Events.WithScheduling();
 
@@ -111,5 +112,19 @@ public sealed class HomeController : Controller
 		{
 			RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
 		});
+	}
+
+	/// <summary>
+	/// Refreshes the Calendar View Component when the arrow buttons are pressed in the view.
+	/// </summary>
+	/// <param name="year">The year sent by the arrow function.</param>
+	/// <param name="month">The month sent by the arrow function.</param>
+	/// <returns>The refreshed Razor Calendar view component.</returns>
+	public IActionResult refreshCalendar(int? year, int? month)
+	{
+		ViewData["Year"] = year;
+		ViewData["Month"] = month;
+
+		return ViewComponent("Calendar");
 	}
 }

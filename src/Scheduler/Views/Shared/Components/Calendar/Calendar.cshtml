@@ -1,0 +1,184 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Scheduler.Web.Controllers;
+
+@inject SignInManager<User> SignInManager
+
+@{
+    int weeks = (int)ViewData["NumberOfWeeks"];
+    int previousYear = (int)ViewData["previousYear"];
+    int previousMonth = (int)ViewData["previousMonth"];
+    int nextYear = (int)ViewData["nextYear"];
+    int nextMonth = (int)ViewData["nextMonth"];
+    int currentMonth = (int)ViewData["Month"];
+    int currentYear = (int)ViewData["Year"];
+}
+
+<div class="calendar noPrintIfModal">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th colspan="8" class="text-center">
+                    @if ((int)ViewData["PreviousMonth"] != 0)
+                    {
+                        <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
+                    }
+                    else
+                    {
+                        <button class="monthly-arrow left-arrow arrow-disabled">&#8592;</button>
+                    }
+                    <span class="calendar-title text-center">@ViewData["MonthName"] @ViewData["CurrentYear"]</span>
+                    <button class="monthly-arrow right-arrow" onclick="RefreshCalendar(@nextYear, @nextMonth)">&#8594;</button>
+                </th>
+            </tr>
+            <tr class="text-center">
+                <th><button class="btn btn-sm btn-danger" onclick="monthModal(@currentYear, @currentMonth)">Monthly List</button></th>
+                <th>Sunday</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 1; i < weeks + 1; i++)
+            {
+                List<string> currentWeek = (List<string>)ViewData["Week" + i + "List"];
+
+                <tr colspan="8">
+                    <td colspan="1" id="weekly-button" class="text-center">
+                        @{
+                            DateTime endOfWeek = (DateTime)ViewData["Week" + i + "End"];
+                            DateTime startOfWeek = (DateTime)ViewData["Week" + i + "Start"];
+                            DateTime currentDay = (DateTime)ViewData["CurrentDay"];
+
+                        }
+                        @if (endOfWeek >= currentDay)
+                        {
+                            <button class="btn btn-sm btn-warning" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List</button>
+                        }
+                    </td>
+
+                    @for (int ii = 0; ii < 49; ii += 7)
+                    {
+
+                        <td colspan="1" class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center">
+                            <span class="calendar-date text-center">@currentWeek[ii+1]</span>
+                            @if (currentWeek[ii + 3] == "active")
+                            {
+                                DateTime buttonDate = DateTime.Parse(currentWeek[ii]);
+
+                                @if (currentWeek[ii + 6] != "0")
+                                {
+                                    <br />
+                                    @if (currentWeek[ii + 6] == "1")
+                                    {
+                                        <span class="text-center">@currentWeek[ii+6] Event</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-center">@currentWeek[ii+6] Events</span>
+                                    }
+                                    <br />
+                                    <br />
+                                    <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">LIST</button>
+                                    @if (this.SignInManager.IsSignedIn(this.User))
+                                    {
+                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID</button>
+                                    }
+                                }
+                                else
+                                {
+                                    <br />
+                                    <span class="text-center">No Events</span>
+                                    <br />
+                                    <br />
+                                    @if (this.SignInManager.IsSignedIn(this.User))
+                                    {
+                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID</button>
+                                    }
+                                }
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<div id="modal">
+</div>
+
+<script>
+    function RefreshCalendar(year, month) {
+        $.ajax({
+            url: '@Url.Action("refreshCalendar", "Home")',
+            data: {
+                year: year,
+                month: month
+            },
+            success: function (data) {
+                $("#calendar").html(data);
+            }
+        })
+    }
+
+    function monthModal(year, month) {
+        $.ajax({
+            url: '@Url.Action("monthModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth()
+            },
+            success: function(data) {
+                $("#modal").html(data);
+            }
+        });
+    }
+
+    function weekModal(year, month, start) {
+        $.ajax({
+            url: '@Url.Action("weekModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth(),
+                weekStart: start ?? new Date().getDate()
+            },
+            success: function(data) {
+                $("#modal").html(data);
+            }
+        });
+    }
+
+    function dayModal(year, month, date) {
+        $.ajax({
+            url: '@Url.Action("dayModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth(),
+                date: date ?? new Date().getDate()
+            },
+            success: function (data) {
+                $("#modal").html(data);
+            }
+        });
+    }
+
+    function gridModal(year, month, date) {
+        $.ajax({
+            url: '@Url.Action("gridModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth(),
+                date: date ?? new Date().getDate()
+            },
+            success: function (data) {
+                $("#modal").html(data);
+            }
+        });
+    }
+</script>

@@ -45,7 +45,7 @@ public record Event : Entity, IValidatableObject
 	/// When the <see cref="Event"/> starts.
 	/// </summary>
 	[Display(Name = "Start date")]
-	[DisplayFormat(DataFormatString = "{0:M/dd/yyyy h:mm tt}")]
+	[DisplayFormat(DataFormatString = "{0:M/dd/yy h:mm tt}")]
 	[Required(ErrorMessage = "Please enter when the event begins.")]
 	[RequireFuture(ErrorMessage = "Date must not be in the past.")]
 	public DateTime StartDate { get; set; }
@@ -54,7 +54,7 @@ public record Event : Entity, IValidatableObject
 	/// When the <see cref="Event"/> ends.
 	/// </summary>
 	[Display(Name = "End date")]
-	[DisplayFormat(DataFormatString = "{0:M/dd/yyyy h:mm tt}")]
+	[DisplayFormat(DataFormatString = "{0:M/dd/yy h:mm tt}")]
 	[Required(ErrorMessage = "Please enter when the event ends.")]
 	public DateTime EndDate { get; set; }
 
