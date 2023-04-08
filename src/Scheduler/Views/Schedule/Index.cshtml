@@ -168,23 +168,36 @@
         document.onload = navClick('@eventType');
     </script>
     <script>
-        var startDateString = "@startDateString"; // Replace with your actual startDateString from MVC
+        var startDateString = "@startDateString";
         var startDate;
+        var startDateFormatted;
         if (startDateString) {
             startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the date string and specify the format
+            startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the date as desired
+            startDateFormatted = startDate.clone().add(1, 'hour').format('M/DD/YYYY hh:mm A');
+            $('#StartDate').val(startDateFormatted);
         } else {
             startDate = moment(); // Use current time as default
+            startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the date as desired
+            startDateFormatted = startDate.clone().add(1, 'hour').format('M/DD/YYYY hh:mm A');
+            $('#StartDate').val(startDateFormatted);
         }
-        var startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the date as desired
+         
 
-        var endDateString = "@endDateString"; // Replace with your actual endDateString from MVC
+        var endDateString = "@endDateString";
         var endDate;
+        var endDateFormatted;
         if (endDateString) {
             endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the date string and specify the format
+            endDateFormatted = endDate.format('M/DD/YYYY hh:mm A');
+            endDateFormatted = endDate.clone().add(1, 'hour').format('M/DD/YYYY hh:mm A');
+            $('#EndDate').val(endDateFormatted);
         } else {
             endDate = moment(); // Use current time as default
+            endDateFormatted = endDate.format('M/DD/YYYY hh:mm A');
+            endDateFormatted = endDate.clone().add(1, 'hour').format('M/DD/YYYY hh:mm A');
+            $('#EndDate').val(endDateFormatted);
         }
-        var endDateFormatted = endDate.format('M/DD/YYYY hh:mm A');
 
         $(function () {
             $('#StartDate').daterangepicker({
