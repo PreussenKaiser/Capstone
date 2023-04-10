@@ -58,7 +58,7 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <td>
-                            <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-primary">Details</a>
+                            <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
                         </td>
                     }
                 </tr>
@@ -68,5 +68,5 @@
 }
 else
 {
-    <p>No Events found.</p>
+    <h4 class="text-center">No Events found</h4>
 }

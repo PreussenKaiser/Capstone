@@ -8,18 +8,18 @@
 }
 
 <div class="modal fade" id="listModalPopup" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header m-auto">
                 <h2 class="text-center">@title</h2>
             </div>
             <div class="modal-body">
-                <div class="col-12">
-                    <div class="btn-group mb-2">
+                <div class="text-center">
+                    <div class="btn-group mb-2 noPrintIfModal">
                         <form class="me-3" action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm">
                             <div class="btn-group">
-                                <input type="submit" class="btn btn-secondary" value="Filter" />
-                                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                                <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
+                                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
                                 <ul class="dropdown-menu w-100 p-3">
                                     <div class="mb-3">
                                         <label class="form-label">Type</label>
@@ -36,15 +36,16 @@
                                 </ul>
                             </div>
                         </form>
-                        <button class="btn btn-danger rounded" onclick="resetEvents()">Reset</button>
+                        <button class="btn btn-sm btn-danger rounded" onclick="resetEvents()">Reset</button>
                     </div>
                 </div>
                 <div id="modalTable">
                     <partial name="_ListModalTable" model="events"/>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            <div class="modal-footer noPrintIfModal">
+                <button class="btn btn-sm btn-secondary" onclick="window.print()">Print These Results</button>
+                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -89,5 +90,10 @@
 <style media="print">
     .noPrintIfModal {
         display: none;
+    }
+
+    html, body {
+        height: 100%;
+        overflow: hidden;
     }
 </style>

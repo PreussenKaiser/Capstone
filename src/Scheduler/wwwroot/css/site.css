@@ -65,6 +65,32 @@ body {
     box-shadow:none;
 }
 
+/* CSS style for custom minutes dropdown */
+.custom-minutes-dropdown {
+    position: absolute;
+    z-index: 1000;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 50px;
+    display: none;
+}
+
+    .custom-minutes-dropdown ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .custom-minutes-dropdown ul li {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+            .custom-minutes-dropdown ul li:hover {
+                background-color: #f8f9fa;
+            }
+
 @media (max-width: 999px) {
     .site-banner-wrapper {
         min-height: 25.0vw;

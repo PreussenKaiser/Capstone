@@ -12,89 +12,15 @@
 	IEnumerable<Team> teams = this.Scheduler.Teams.ToList();
 }
 
-<div class="row mb-3">
-	<div class="col-12">
-		<div class="btn-group">
-			<a asp-controller="Schedule" asp-action="" class="btn btn-primary rounded me-3">
-				Schedule
-			</a>
-			<form class="me-3" method="post">
-				<div class="btn-group">
-					<input type="submit" class="btn btn-secondary" value="Filter" />
-					<button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
-					<ul class="dropdown-menu w-100 p-3">
-						<div class="mb-3">
-							<label class="form-label">Type</label>
-							<select name="type" class="form-select">
-								<option value="Event">Events</option>
-								<option value="Practice">Practices</option>
-								<option value="Game">Games</option>
-							</select>
-						</div>
-						<div class="mb-3">
-							<label class="form-label">Name</label>
-							<input type="text" name="searchTerm" class="form-control" />
-						</div>
-					</ul>
-				</div>
-			</form>
-			<a asp-action="Events" class="btn btn-danger rounded">Reset</a>
-		</div>
-	</div>
+
+<div class="text-center mb-3 mt-3">
+	<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded me-3">
+		Schedule New Event
+	</a>			
 </div>
-<div class="row">
-	<div class="col-12">
-		<div class="list-group">
-			@foreach (var scheduledEvent in this.Model)
-			{
-				<a asp-action="Details" asp-controller="Schedule" asp-route-id="@scheduledEvent.Id" class="list-group-item list-group-item-action border-3 border-secondary mb-3">
-					<div class="d-flex w-100 justify-content-between">
-						<h5>@scheduledEvent.Name</h5>
-						<small>
-							@this.Html.DisplayFor(x => scheduledEvent.StartDate)
-							to
-							@this.Html.DisplayFor(x => scheduledEvent.EndDate)
-						</small>
-					</div>
-					<div class="row">
-						<div class="col-6">
-							<h6>Location</h6>
-							@if (scheduledEvent.IsBlackout == true)
-							{
-								<p>Entire Facility</p>
-							}
-							else
-							{							
-								<small>@string.Join(", ", scheduledEvent.Fields.Select(f => f.Name))</small>
-							}
-						</div>
-						<div class="col-6">
-							@if (scheduledEvent is Practice practice)
-							{
-								Team? team = teams.FirstOrDefault(t => t.Id == practice.TeamId);
 
-								if (team is not null)
-								{							
-									<h6>Practicing Team</h6>
-									<small>@team.Name</small>
-								}
-							}
-							else if (scheduledEvent is Game game)
-							{
-								Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
-								Team? opposingTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
-
-								if (homeTeam is not null &&
-									opposingTeam is not null)
-								{							
-									<h6>Teams</h6>
-									<small>@homeTeam.Name vs. @opposingTeam.Name</small>
-								}
-							}
-						</div>
-					</div>
-				</a>
-			}
-		</div>
-	</div>
+<div id="calendar">
+	@(
+		await Component.InvokeAsync("Calendar")
+		)
 </div>
