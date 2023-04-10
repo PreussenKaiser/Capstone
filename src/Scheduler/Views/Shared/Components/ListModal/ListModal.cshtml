@@ -15,7 +15,7 @@
             </div>
             <div class="modal-body">
                 <div class="text-center">
-                    <div class="btn-group mb-2">
+                    <div class="btn-group mb-2 noPrintIfModal">
                         <form class="me-3" action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm">
                             <div class="btn-group">
                                 <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
@@ -43,8 +43,9 @@
                     <partial name="_ListModalTable" model="events"/>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            <div class="modal-footer noPrintIfModal">
+                <button class="btn btn-sm btn-secondary" onclick="window.print()">Print These Results</button>
+                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -89,5 +90,10 @@
 <style media="print">
     .noPrintIfModal {
         display: none;
+    }
+
+    html, body {
+        height: 100%;
+        overflow: hidden;
     }
 </style>

@@ -180,7 +180,7 @@ public sealed class DashboardController : Controller
 	}
 
 	[AllowAnonymous]
-	public async Task<IActionResult> searchModalEvents(string type, DateTime start, DateTime end, string? searchTerm = null)
+	public async Task<IActionResult> searchModalEvents(string type, DateTime start, DateTime end, string? searchTerm = null, string? teamName = null)
 	{
 		IQueryable<Event> events = type switch
 		{
@@ -193,7 +193,7 @@ public sealed class DashboardController : Controller
 			_ => this.context.Events.Include("Fields")
 		};
 
-		events = events.Where(e => e.StartDate.Date >= start.Date && e.StartDate.Date <= end);
+		events = events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)).OrderBy(e => e.StartDate);
 
 		if (searchTerm is not null)
 		{
