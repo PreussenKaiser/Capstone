@@ -24,7 +24,7 @@ public class ChangePasswordFilter: AuthorizeAttribute, IAuthorizationFilter
 			var user = this.context.Users.FirstOrDefault(u => u.UserName == filterContext.HttpContext.User.Identity.Name);
 			if (user.NeedsNewPassword)
 			{
-				filterContext.Result = new RedirectToActionResult(nameof(IdentityController.Security), "Identity", null);
+				filterContext.Result = new RedirectToActionResult(nameof(IdentityController.ForceReset), "Identity", null);
 			}
 		}
 	}

@@ -6,8 +6,6 @@ public sealed record SecurityViewModel
 {
 	public required Guid UserId { get; init; }
 
-	public bool NeedsNewPassword { get; init; }
-
 	[Display(Name = "Old password")]
 	[DataType(DataType.Password)]
 	[Required(ErrorMessage = "Please the old password.")]

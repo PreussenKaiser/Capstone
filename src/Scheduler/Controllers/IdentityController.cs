@@ -72,7 +72,7 @@ public sealed class IdentityController : Controller
 
 		if (user.NeedsNewPassword)
 		{
-			return this.RedirectToAction(nameof(IdentityController.Security), "Identity");
+			return this.RedirectToAction(nameof(IdentityController.ForceReset), "Identity");
 		}
 		else
 		{
@@ -269,6 +269,7 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <param name="id">The identifier of the user to adjust security settings for.</param>
 	/// <returns>A form which POSTs to <see cref="Security"/>.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Security(Guid? id = null)
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
@@ -276,7 +277,7 @@ public sealed class IdentityController : Controller
 			return this.Problem();
 		}
 
-		SecurityViewModel viewModel = new() { UserId = user.Id, NeedsNewPassword = user.NeedsNewPassword };
+		SecurityViewModel viewModel = new() { UserId = user.Id };
 
 		return this.View(viewModel);
 	}
@@ -287,6 +288,7 @@ public sealed class IdentityController : Controller
 	/// <param name="viewModel">Form values.</param>
 	/// <returns>Redirected to <see cref="Security"/>.</returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Security(SecurityViewModel viewModel)
 	{
 		if (this.ModelState.IsValid)
@@ -314,6 +316,60 @@ public sealed class IdentityController : Controller
 		}
 
 		return this.View(viewModel);
+	}
+
+	public IActionResult ForceReset(Guid? id = null)
+	{
+		if (!this.IsUser(out User? user, id) || user is null)
+		{
+			return this.Problem();
+		}
+
+		if (user.NeedsNewPassword == false)
+		{
+			return RedirectToAction(nameof(IdentityController.Security), "Identity");
+		}
+
+		SecurityViewModel viewModel = new() { UserId = user.Id };
+
+		return this.View(viewModel);
+	}
+
+	/// <summary>
+	/// Handles POST from <see cref="ForceReset(Guid?)"/>.
+	/// </summary>
+	/// <param name="viewModel">Form values.</param>
+	/// <returns>Redirected to <see cref="HomeController.Index"/>.</returns>
+	[HttpPost]
+	public async ValueTask<IActionResult> ForceReset(SecurityViewModel viewModel)
+	{
+		if (this.ModelState.IsValid)
+		{
+			if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
+			{
+				return this.Problem();
+			}
+
+			var result = await this.signInManager.UserManager.ChangePasswordAsync(
+				user,
+				viewModel.OldPassword,
+				viewModel.NewPassword);
+
+			if (!result.Succeeded)
+			{
+				foreach (var error in result.Errors)
+				{
+					this.ModelState.AddModelError(string.Empty, error.Description);
+				}
+				return this.View(viewModel);
+			}
+			else
+			{
+				user.NeedsNewPassword = false;
+				await this.signInManager.UserManager.UpdateAsync(user);
+			}
+		}
+		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
 
 	/// <summary>
