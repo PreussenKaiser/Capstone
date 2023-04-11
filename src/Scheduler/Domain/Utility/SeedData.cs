@@ -23,6 +23,17 @@ public static class SeedData
 			Email = "teamnull@gmail.com",
 			PasswordHash = new PasswordHasher<User>().HashPassword(null!, "T3am-Null-Rul3z"),
 			SecurityStamp = Guid.NewGuid().ToString("D")
+		},
+		new()
+		{
+			Id = new Guid("9e55284c-a2ba-425f-be26-a18e384668a7"),
+			UserName = "johncoach@gmail.com",
+			NormalizedUserName = "JOHNCOACH@GMAIL.COM",
+			FirstName = "John",
+			LastName = "Coach",
+			Email = "johncoach@gmail.com",
+			PasswordHash = new PasswordHasher<User>().HashPassword(null!, "SecurePassword1!"),
+			SecurityStamp = Guid.NewGuid().ToString("D")
 		}
 	};
 
@@ -37,6 +48,13 @@ public static class SeedData
 			Name = Role.ADMIN,
 			NormalizedName = Role.ADMIN,
 			ConcurrencyStamp = Guid.NewGuid().ToString()
+		},
+		new()
+		{
+			Id = Guid.NewGuid(),
+			Name = Role.COACH,
+			NormalizedName = Role.COACH,
+			ConcurrencyStamp = Guid.NewGuid().ToString()
 		}
 	};
 
@@ -49,6 +67,11 @@ public static class SeedData
 		{
 			RoleId = Roles.First().Id,
 			UserId = Users.First().Id
+		},
+		new()
+		{
+			RoleId = Roles.Last().Id,
+			UserId = Users.Last().Id
 		}
 	};
 
