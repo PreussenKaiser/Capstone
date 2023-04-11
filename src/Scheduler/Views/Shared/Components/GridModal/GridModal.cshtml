@@ -129,36 +129,43 @@
                                                         // Event ends after current day
                                                         if (ed > cd)
                                                         {
+                                                            // Event starts in the current hour
                                                             if (sh == hour)
                                                             {
+                                                                // Event starts the top or bottom of the current hour
                                                                 if (sm == halfHour)
                                                                 {
                                                                     eventhit = 1;
                                                                 }
 
+                                                                // Event starts at the top of the current hour and ends
+                                                                // later than the current hour
                                                                 if (sm == 0 && halfHour == 30)
                                                                 {
                                                                     eventhit = 1;
                                                                 }
                                                             }
 
+                                                            // Event starts earlier than the current hour
                                                             if (sh < hour)
                                                             {
                                                                 eventhit = 1;
                                                             }
                                                         }
 
-                                                        // Event ends on current day
+                                                        // Event ends on the current day
                                                         if (ed == cd)
                                                         {
+                                                            // Event starts earlier than the current hour
                                                             if (sh < hour)
                                                             {
+                                                                // Event ends later than the current hour
                                                                 if (eh > hour)
                                                                 {
                                                                     eventhit = 1;
                                                                 }
 
-                                                                // Event ends at half-hour of current hour
+                                                                // Event ends at the half-hour of the current hour
                                                                 if (eh == hour && em == 30 && halfHour == 0)
                                                                 {
                                                                     eventhit = 1;
@@ -187,12 +194,14 @@
                                                                 // In the bottom of the hour
                                                                 if (halfHour == 30)
                                                                 {
-                                                                    // Event starts at top of hour and ends after the current hour
+                                                                    // Event starts at top of hour and ends after the
+                                                                    // current hour
                                                                     if (sm == 0 && eh > hour)
                                                                     {
                                                                         eventhit = 1;
                                                                     }
 
+                                                                    // Event starts at the bottom of the current hour
                                                                     if (sm == 30)
                                                                     {
                                                                         eventhit = 1;
