@@ -1,15 +1,21 @@
 ﻿@using Microsoft.AspNetCore.Identity;
+@using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Specifications;
 @using Scheduler.Infrastructure.Persistence;
 @using System.Text;
 
 @inject UserManager<User> UserManager
-@inject SchedulerContext Scheduler
+@inject IFieldRepository FieldRepository
+@inject ITeamRepository TeamRepositoey
 
 @model IEnumerable<Event>
 
 @{
-	IEnumerable<Field> fields = this.Scheduler.Fields.ToList();
-	IEnumerable<Team> teams = this.Scheduler.Teams.ToList();
+	AllSpecification<Field> allFieldSpec = new();
+	IEnumerable<Field> fields = await this.FieldRepository.SearchAsync(allFieldSpec);
+
+	AllSpecification<Team> allTeamSpec = new();
+	IEnumerable<Team> teams = await this.TeamRepositoey.SearchAsync(allTeamSpec);
 }
 
 
@@ -20,7 +26,5 @@
 </div>
 
 <div id="calendar">
-	@(
-		await Component.InvokeAsync("Calendar")
-		)
+	@await Component.InvokeAsync("Calendar")
 </div>

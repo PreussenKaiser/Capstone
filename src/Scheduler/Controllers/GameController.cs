@@ -4,6 +4,7 @@ using Scheduler.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
+using Scheduler.Domain.Repositories;
 
 namespace Scheduler.Web.Controllers.Scheduling;
 
@@ -17,8 +18,9 @@ public sealed class GameController : ScheduleController<Game>
 	/// Initializes the <see cref="GameController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	public GameController(SchedulerContext context)
-		: base(context)
+	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
+	public GameController(IScheduleRepository scheduleRepository)
+		: base(scheduleRepository)
 	{
 	}
 
@@ -36,34 +38,8 @@ public sealed class GameController : ScheduleController<Game>
 			return this.DetailsError(values);
 		}
 
-		Game? game = await this.context.Games
-			.AsTracking()
-			.FirstOrDefaultAsync(g => g.Id == values.Id);
+		await this.scheduleRepository.EditGameDetails(values);
 
-		if (game is null)
-		{
-			return this.BadRequest();
-		}
-
-		Team? homeTeam = await this.context.Teams
-			.AsTracking()
-			.FirstOrDefaultAsync(t => t.Id == values.HomeTeamId);
-
-		Team? opposingTeam = await this.context.Teams
-			.AsTracking()
-			.FirstOrDefaultAsync(t => t.Id == values.OpposingTeamId);
-
-		if (homeTeam is not null &&
-			opposingTeam is not null)
-		{
-			game.EditDetails(
-				homeTeam,
-				opposingTeam,
-				values.Name);
-
-			await this.context.SaveChangesAsync();
-		}
-
-		return this.RedirectToAction("Details", "Schedule", new { game.Id });
+		return this.RedirectToAction("Details", "Schedule", new { values.Id });
 	}
 }

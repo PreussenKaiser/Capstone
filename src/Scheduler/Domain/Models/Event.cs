@@ -94,7 +94,7 @@ public record Event : Entity, IValidatableObject
 	/// Relocates the event to different fields.
 	/// </summary>
 	/// <param name="fields">New fields.</param>
-	public virtual void Relocate(params Field[] fields)
+	public void Relocate(params Field[] fields)
 	{
 		this.Fields.Clear();
 		this.Fields.AddRange(fields);

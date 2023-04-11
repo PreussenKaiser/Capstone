@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Repositories;
 using Scheduler.Filters;
-using Scheduler.Infrastructure.Persistence;
-using Scheduler.Web.ViewModels;
 
 namespace Scheduler.Web.Controllers;
 
@@ -18,8 +16,9 @@ public sealed class EventController : ScheduleController<Event>
 	/// Initializes the <see cref="EventController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	public EventController(SchedulerContext context)
-		: base(context)
+	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
+	public EventController(IScheduleRepository scheduleRepository)
+			: base(scheduleRepository)
 	{
 	}
 
@@ -37,18 +36,7 @@ public sealed class EventController : ScheduleController<Event>
 			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		Event? scheduledEvent = await this.context.Events
-			.AsTracking()
-			.FirstOrDefaultAsync(g => g.Id == values.Id);
-
-		if (scheduledEvent is null)
-		{
-			return this.BadRequest();
-		}
-
-		scheduledEvent.Name = values.Name;
-
-		await this.context.SaveChangesAsync();
+		await this.scheduleRepository.EditEventDetails(values);
 
 		return this.RedirectToAction("Details", "Schedule", new { values.Id });
 	}

@@ -39,12 +39,6 @@ public sealed class ScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public Task RescheduleAsync(Event scheduledEvent)
-	{
-		throw new NotImplementedException();
-	}
-
-	/// <inheritdoc/>
 	public async Task<IEnumerable<Event>> SearchAsync(Specification<Event> searchSpec)
 	{
 		IEnumerable<Event> events = await this.context.Events
@@ -60,8 +54,145 @@ public sealed class ScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public Task CancelAsync(Specification<Event> cancelSpec)
+	public async Task EditEventDetails(Event scheduledEvent)
 	{
-		throw new NotImplementedException();
+		Event? eventToEdit = await this.context.Events
+			.AsTracking()
+			.FirstOrDefaultAsync(g => g.Id == scheduledEvent.Id);
+
+		if (eventToEdit is null)
+		{
+			// Throw for logging.
+
+			return;
+		}
+
+		eventToEdit.Name = scheduledEvent.Name;
+
+		await this.context.SaveChangesAsync();
+	}
+
+	/// <inheritdoc/>
+	public async Task EditPracticeDetails(Practice practice)
+	{
+		Practice? practiceToEdit = await this.context.Practices
+			.AsTracking()
+			.FirstOrDefaultAsync(g => g.Id == practice.Id);
+
+		if (practiceToEdit is null)
+		{
+			// Throw for logging.
+
+			return;
+		}
+
+		Team? practicingTeam = await this.context.Teams
+			.AsTracking()
+			.FirstOrDefaultAsync(t => t.Id == practice.TeamId);
+
+		if (practicingTeam is not null)
+		{
+			practiceToEdit.EditDetails(
+				practicingTeam,
+				practice.Name);
+
+			await this.context.SaveChangesAsync();
+		}
+	}
+
+	/// <inheritdoc/>
+	public async Task EditGameDetails(Game game)
+	{
+		Game? gameToEdit = await this.context.Games
+			.AsTracking()
+			.FirstOrDefaultAsync(g => g.Id == game.Id);
+
+		if (gameToEdit is null)
+		{
+			// Throw for logging.
+
+			return;
+		}
+
+		Team? homeTeam = await this.context.Teams
+			.AsTracking()
+			.FirstOrDefaultAsync(t => t.Id == game.HomeTeamId);
+
+		Team? opposingTeam = await this.context.Teams
+			.AsTracking()
+			.FirstOrDefaultAsync(t => t.Id == game.OpposingTeamId);
+
+		if (homeTeam is not null &&
+			opposingTeam is not null)
+		{
+			gameToEdit.EditDetails(
+				homeTeam,
+				opposingTeam,
+				game.Name);
+
+			await this.context.SaveChangesAsync();
+		}
+	}
+
+	/// <inheritdoc/>
+	public async Task RescheduleAsync(Event scheduledEvent)
+	{
+		Event? eventToReschedule = await this.context.Events
+			.AsTracking()
+			.Include(g => g.Recurrence)
+			.FirstOrDefaultAsync(g => g.Id == scheduledEvent.Id);
+
+		if (eventToReschedule is null)
+		{
+			// Throw for logging.
+
+			return;
+		}
+
+		eventToReschedule.Reschedule(
+			scheduledEvent.StartDate,
+			scheduledEvent.EndDate,
+			scheduledEvent.Recurrence);
+
+		await this.context.SaveChangesAsync();
+	}
+
+	/// <inheritdoc/>
+	public async Task RelocateAsync(Event scheduledEvent)
+	{
+		Event? eventToRelocate = await this.context.Events
+			.AsTracking()
+			.Include(g => g.Fields)
+			.FirstOrDefaultAsync(e => e.Id == scheduledEvent.Id);
+
+		if (eventToRelocate is null)
+		{
+			// Throw for logging.
+
+			return;
+		}
+
+		eventToRelocate.Relocate(await this.context.Fields
+			.AsTracking()
+			.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
+			.ToArrayAsync());
+
+		await this.context.SaveChangesAsync();
+	}
+
+	/// <inheritdoc/>
+	/// <remarks>ExecuteDelete is not supported in TPT mapping, therefore a mass delete needs to be performed in an enumeration.</remarks>
+	public async Task CancelAsync(Specification<Event> cancelSpec)
+	{
+		IEnumerable<Event> eventsToDelete = await this.context.Events
+			.Where(cancelSpec.ToExpression())
+			.ToListAsync();
+
+		foreach (var scheduledEvent in eventsToDelete)
+		{
+			this.context.Events.Remove(scheduledEvent);
+		}
+
+		await this.context.SaveChangesAsync();
 	}
 }
