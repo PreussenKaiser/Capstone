@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Filters;
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
@@ -27,6 +28,7 @@ public sealed class PracticeController : ScheduleController<Practice>
 	/// <param name="values"><see cref="Practice"/> values.</param>
 	/// <returns></returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public override async Task<IActionResult> EditDetails(Practice values)
 	{
 		if (!this.ModelState.IsValid)

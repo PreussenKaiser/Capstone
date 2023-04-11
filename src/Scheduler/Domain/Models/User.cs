@@ -24,4 +24,9 @@ public sealed class User : IdentityUser<Guid>
 	[Required]
 	[MaxLength(32)]
 	public required string LastName { get; set; }
+
+	/// <summary>
+	/// Determines whether the user needs to reset their password.
+	/// </summary>
+	public bool NeedsNewPassword { get; set; }
 }

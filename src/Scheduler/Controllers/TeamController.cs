@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
+using Scheduler.Filters;
 
 namespace Scheduler.Web.Controllers;
 
@@ -30,6 +31,7 @@ public sealed class TeamController : Controller
 	/// Displays the <see cref="Add"/> view.
 	/// </summary>
 	/// <returns>Contains a form for adding a <see cref="Team"/>.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Add()
 	{
 		return this.View();
@@ -44,6 +46,7 @@ public sealed class TeamController : Controller
 	/// Redirected to <see cref="Add"/> if invalid.
 	/// </returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Add(Team team)
 	{
 		if (!this.ModelState.IsValid)
@@ -63,6 +66,7 @@ public sealed class TeamController : Controller
 	/// </summary>
 	/// <param name="id">References the <see cref="Team"/> to detail.</param>
 	/// <returns>Contains a form for updating the referenced <see cref="Team"/>.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		ByIdSpecification<Team> searchSpec = new(id);
@@ -85,6 +89,7 @@ public sealed class TeamController : Controller
 	/// Redirected to <see cref="Details(Guid)"/> if invalid.
 	/// </returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Details(Team team)
 	{
 		if (!this.ModelState.IsValid)
@@ -105,6 +110,7 @@ public sealed class TeamController : Controller
 	/// <param name="id"></param>
 	/// <returns></returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id)
 	{
 		await this.teamRepository.RemoveAsync(id);

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
+using Scheduler.Filters;
 
 namespace Scheduler.Web.Controllers;
 
@@ -30,6 +31,7 @@ public sealed class FieldController : Controller
 	/// Displays a view for creating a <see cref="Field"/>.
 	/// </summary>
 	/// <returns></returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Add()
 	{
 		return this.View();
@@ -41,6 +43,7 @@ public sealed class FieldController : Controller
 	/// <param name="field"></param>
 	/// <returns></returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Add(Field field)
 	{
 		if (!this.ModelState.IsValid)
@@ -61,6 +64,7 @@ public sealed class FieldController : Controller
 	/// <param name="id">The <see cref="Field"/> to detail.</param>
 	/// <returns>A form for updating a field.</returns>
 	[AllowAnonymous]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		ByIdSpecification<Field> searchSpec = new(id);
@@ -83,6 +87,7 @@ public sealed class FieldController : Controller
 	/// Redirected to <see cref="Details(Guid)"/> if invalid.
 	/// </returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Details(Field field)
 	{
 		if (!this.ModelState.IsValid)
@@ -103,10 +108,10 @@ public sealed class FieldController : Controller
 	/// <param name="id">References the <see cref="Field"/> to remove.</param>
 	/// <returns>Redirected to <see cref="DashboardController.Fields"/>.</returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id)
 	{
 		await this.fieldRepository.RemoveAsync(id);
-
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Fields),

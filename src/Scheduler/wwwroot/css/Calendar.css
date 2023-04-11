@@ -83,3 +83,46 @@
     cursor: pointer;
     box-shadow: 1px 1px 12px red;
 }
+
+.field-name {
+    writing-mode: vertical-rl;
+    white-space: nowrap;
+    transform: scale(1);
+}
+
+#grid-table {
+    margin:auto;
+    border-collapse:collapse;
+    margin-top: -17px;
+}
+
+.fix-head {
+    overflow-y: auto;
+    height: 650px;
+}
+
+#grid-table thead th {
+    position: sticky;
+    top: -17px;
+    background: darkgray;
+    color: black;
+}
+
+#grid-table th:not(:first-child), #grid-table td:not(:first-child) {
+    width: 4% !important;
+}
+
+#grid-table th:first-child, #grid-table td:first-child {
+    width: 25% !important;
+}
+ #grid-table td a {
+     display: block;
+     position:relative;
+     cursor: pointer;
+     opacity:0;
+ }
+
+#grid-table td:hover {
+    background:lightblue;
+}
+

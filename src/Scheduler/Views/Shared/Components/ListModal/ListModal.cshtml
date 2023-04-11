@@ -1,0 +1,93 @@
+﻿@using System.Text.Json;
+
+@{
+    IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
+    string title = this.ViewData["Title"].ToString();
+    DateTime startTime = (DateTime)this.ViewData["Start"];
+    DateTime endTime = (DateTime)this.ViewData["End"];
+}
+
+<div class="modal fade" id="listModalPopup" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header m-auto">
+                <h2 class="text-center">@title</h2>
+            </div>
+            <div class="modal-body">
+                <div class="col-12">
+                    <div class="btn-group mb-2">
+                        <form class="me-3" action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm">
+                            <div class="btn-group">
+                                <input type="submit" class="btn btn-secondary" value="Filter" />
+                                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                                <ul class="dropdown-menu w-100 p-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Type</label>
+                                        <select name="type" class="form-select">
+                                            <option value="Event">Events</option>
+                                            <option value="Practice">Practices</option>
+                                            <option value="Game">Games</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Name</label>
+                                        <input type="text" name="searchTerm" class="form-control" />
+                                    </div>
+                                </ul>
+                            </div>
+                        </form>
+                        <button class="btn btn-danger rounded" onclick="resetEvents()">Reset</button>
+                    </div>
+                </div>
+                <div id="modalTable">
+                    <partial name="_ListModalTable" model="events"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function (){
+        $("#listModalPopup").modal("show");
+    });
+    
+    function searchEvents(e){
+        $.ajax({
+            url: '@Url.Action("SearchModalEvents", "Dashboard")',
+            data: {
+                searchTerm: e.searchTerm.value,
+                type: e.type.value,
+                start: '@startTime.ToString()',
+                end: '@endTime.ToString()'
+            },
+            success: function(data) {
+                $("#modalTable").html(data);
+            }
+        });
+    }
+
+        function resetEvents(e){
+        $.ajax({
+            url: '@Url.Action("SearchModalEvents", "Dashboard")',
+            data: {
+                searchTerm: '',
+                type: 'Event',
+                start: '@startTime.ToString()',
+                end: '@endTime.ToString()'
+            },
+            success: function(data) {
+                $("#modalTable").html(data);
+            }
+        });
+    }
+</script>
+
+<style media="print">
+    .noPrintIfModal {
+        display: none;
+    }
+</style>

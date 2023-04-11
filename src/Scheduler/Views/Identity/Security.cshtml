@@ -9,23 +9,7 @@
 
     <input hidden asp-for="UserId" value="@this.Model.UserId" />
 
-    <div class="mb-3">
-        <label asp-for="OldPassword" class="form-label"></label>
-        <input asp-for="OldPassword" class="form-control" />
-        <span asp-validation-for="OldPassword" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="NewPassword" class="form-label"></label>
-        <input asp-for="NewPassword" class="form-control" />
-        <span asp-validation-for="NewPassword" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="ConfirmNewPassword" class="form-label"></label>
-        <input asp-for="ConfirmNewPassword" class="form-control" />
-        <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
-    </div>
+    @await this.Html.PartialAsync("Forms/_ResetPasswordInputs", this.Model)
 
     <button class="btn btn-lg btn-primary w-100">
         Save
