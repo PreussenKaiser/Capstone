@@ -10,7 +10,10 @@
 
 @{
     this.ViewData["Title"] = "Reschedule Event";
-    this.ViewBag.Today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    string startDateString = Model.StartDate.ToString("yyyy-MM-ddTHH:mm");
+    string endDateString = Model.EndDate.ToString("yyyy-MM-ddTHH:mm");
+
 
     string eventType = this.Model.GetType().Name;
     bool canEdit = this.User.IsInRole(Role.ADMIN) ||
@@ -54,7 +57,6 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">@this.Model.Name Details</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="mb-3">
@@ -69,8 +71,8 @@
                                             }
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                            <input asp-action="EditDetails" asp-controller="@eventType" type="submit" value="Submit" class="btn btn-primary" />
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                                            <input asp-action="EditDetails" asp-controller="@eventType" type="submit" value="Submit" class="btn btn-sm btn-primary" />
                                         </div>
                                     </div>
                                 </div>
@@ -126,25 +128,25 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Reschedule Event</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <div class="row mb-3">
-                                                    <div class="col-6">
-                                                        <label asp-for="StartDate" class="form-label"></label>
-                                                        <input asp-for="StartDate" min=@this.ViewBag.Today type="datetime-local" class="form-control" />
-                                                        <span asp-validation-for="StartDate" class="text-danger"></span>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <label asp-for="EndDate" class="form-label"></label>
-                                                        <input asp-for="EndDate" min=@this.ViewBag.Today type="datetime-local" class="form-control" />
-                                                        <span asp-validation-for="EndDate" class="text-danger"></span>
-                                                    </div>
+                                                <div class="col-lg">
+                                                    <label class="form-label">Event Time</label>
+                                                    <input type="text" name="daterange" class="text-center form-control" />
+                                                </div>
+                                                <div>
+                                                    <input asp-for="StartDate" type="hidden" id="StartDate" />
+                                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                                    <br />
+                                                </div>
+                                                <div>
+                                                    <input asp-for="EndDate" type="hidden" id="EndDate" />
+                                                    <span asp-validation-for="EndDate" class="text-danger"></span>
                                                 </div>
                                                 <div class="mb-3">
                                                     <div class="form-check mb-3">
-                                                        <input checked="@(this.Model.Recurrence is not null)" type="checkbox" class="form-check-input" id="recurrenceCheck">
-                                                        <label class="form-check-label">Repeating?</label>
+                                                        @*<input checked="@(this.Model.Recurrence is not null)" type="checkbox" class="form-check-input" id="recurrenceCheck">
+                                                        <label class="form-check-label">Repeating?</label>*@
                                                     </div>
                                                     <div id="recurrenceInputs">
                                                         @if (this.Model.Recurrence is not null)
@@ -155,29 +157,28 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Back</button>
-                                                <input asp-action="Reschedule" asp-controller="@eventType" type="submit" value="Reschedule" class="btn btn-primary" />
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Back</button>
+                                                <input asp-action="Reschedule" asp-controller="@eventType" type="submit" value="Reschedule" class="btn btn-sm btn-primary" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                                    Cancel
+                                    Cancel Event
                                 </button>
                                 <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Cancel @eventType</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 Are you sure you want to cancel <b>@this.Model.Name</b>?
                                                 It and all recurrences will be permanently removed.
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Back</button>
-                                                <input asp-action="Cancel" asp-controller="@eventType" type="submit" value="Cancel" class="btn btn-danger" />
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">No, Go Back</button>
+                                                <input asp-action="Cancel" asp-controller="@eventType" type="submit" value="Yes, Cancel It" class="btn btn-sm btn-danger" />
                                             </div>
                                         </div>
                                     </div>
@@ -212,7 +213,6 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Relocate Event</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-check mb-3">
@@ -226,8 +226,8 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                            <input asp-action="Relocate" asp-controller="@eventType" type="submit" value="Relocate" class="btn btn-primary" />
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                                            <input asp-action="Relocate" asp-controller="@eventType" type="submit" value="Relocate" class="btn btn-sm btn-primary" />
                                         </div>
                                     </div>
                                 </div>
@@ -246,4 +246,48 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/RecurrenceForm.js"></script>
 }
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script>
+     var startDateString = "@startDateString";
+     var endDateString = "@endDateString";
+     var minDateString = "@today";
+     var startDate;
+     var startDateFormatted;
+     var endDate;
+     var endDateFormatted;
+     var minDate;
+     var minDateFormatted;
+     startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the start date string and specify the format
+     startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the start date as desired
+     endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the end date string and specify the format
+     endDateFormatted = endDate.format('M/DD/YYYY hh:mm A'); // Format the end date as desired
+     minDate = moment(minDateString, "YYYY-MM-DDTHH:mm"); // Parse the min date string and specify the format
+     minDateFormatted = minDate.format('M/DD/YYYY hh:mm A'); // Format the min date as desired
+     $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+     $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+
+
+     $(function () {
+         $('input[name="daterange"]').daterangepicker({
+             timePicker: true,
+             startDate: startDateFormatted,
+             endDate: endDateFormatted,
+             minDate: minDateFormatted,
+             timePickerIncrement: 30,
+             locale: {
+                 format: 'M/DD hh:mm A'
+             }
+         }).on('apply.daterangepicker', function (ev, picker) {
+             startDateFormatted = picker.startDate.format('M/DD/YYYY hh:mm A');
+             endDateFormatted = picker.endDate.format('M/DD/YYYY hh:mm A');
+             $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
+             $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
+         });
+     });
+</script>
 

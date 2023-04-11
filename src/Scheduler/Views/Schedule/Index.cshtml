@@ -23,10 +23,23 @@
             Value = f.Id.ToString()
         });
 
+    DateTime currentTime = DateTime.Now.AddHours(1);
+    DateTime timeStamp = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, currentTime.Hour, 0, 0);
 
-    string startDateString = "";
-    string endDateString = "";
-    string selectedField = (string)this.ViewData["field"];
+    string startDateString = timeStamp.ToString("yyyy-MM-ddTHH:mm");
+    string endDateString = timeStamp.AddMinutes(30).ToString("yyyy-MM-ddTHH:mm");
+
+    string selectedField;
+
+    if (this.ViewData["field"] != "")
+    {
+        selectedField = (string)this.ViewData["field"];
+    }
+    else
+    {
+        selectedField = null;
+    }
+
 
     if (this.ViewData["enteredDate"] != null)
     {
@@ -35,7 +48,7 @@
         endDateString = enteredDate.AddMinutes(30).ToString("yyyy-MM-ddTHH:mm");
     }
 
-    if (this.ViewData["field"] != "")
+    if (selectedField != null)
     {
         FieldByNameSpecification byName = new(selectedField);
         fields = (await this.FieldRepository.SearchAsync(byName))
@@ -46,7 +59,7 @@
                         Selected = (f.Id == f.Id)
             });
     }
-    
+
 }
 
 <div class="row">
@@ -105,17 +118,18 @@
                         </select>
                         <span asp-validation-for="FieldIds" class="text-danger"></span>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate" min="@today" type="datetime-local" value="@startDateString" class="form-control" />
-                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                    <div class="col-lg">
+                        <label class="form-label">Event Time</label>
+                        <input type="text" name="daterange" class="text-center form-control" />
                         </div>
-                        <div class="col-6">
-                            <label asp-for="EndDate" class="form-label"></label>
-                            <input asp-for="EndDate" min="@today" type="datetime-local" value="@endDateString" class="form-control" />
-                            <span asp-validation-for="EndDate" class="text-danger"></span>
-                        </div>
+                    <div>
+                        <input asp-for="StartDate" type="hidden" id="StartDate" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                        <br />
+                    </div>
+                    <div>
+                        <input asp-for="EndDate" type="hidden" id="EndDate" />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
                     </div>
                     @if(ViewData["field"] == "")
                     {
@@ -125,8 +139,8 @@
                                 <label asp-for="IsBlackout" class="form-check-label"></label>
                             </div>
                             <div class="form-check mb-3">
-                                <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                                <label class="form-check-label">Repeating?</label>
+                                @*<input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                                <label class="form-check-label">Repeating?</label>*@
                             </div>
                             <div id="recurrenceInputs">
                                 @if (this.Model is not null &&
@@ -157,12 +171,51 @@
     </div>
 </div>
 
-@section Scripts {
+@section Scripts {    
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/RecurrenceForm.js"></script>
     <script src="~/js/EventForm.js"></script>
     <script>
-        document.onload = navClick('@eventType')
+        document.onload = navClick('@eventType');
+    </script>
+    <script>
+        var startDateString = "@startDateString";
+        var endDateString = "@endDateString";
+        var minDateString = "@today";
+        var startDate;
+        var startDateFormatted;
+        var endDate;
+        var endDateFormatted;
+        var minDate;
+        var minDateFormatted;
+        startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the start date string and specify the format
+        startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the start date as desired
+        endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the end date string and specify the format
+        endDateFormatted = endDate.format('M/DD/YYYY hh:mm A'); // Format the end date as desired
+        minDate = moment(minDateString, "YYYY-MM-DDTHH:mm"); // Parse the min date string and specify the format
+        minDateFormatted = minDate.format('M/DD/YYYY hh:mm A'); // Format the min date as desired
+        $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+        $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+        
+
+        $(function () {
+            $('input[name="daterange"]').daterangepicker({
+                timePicker: true,
+                startDate: startDateFormatted,
+                endDate: endDateFormatted,
+                minDate: minDateFormatted,
+                timePickerIncrement: 30,
+                drops: "up",
+                locale: {
+                    format: 'M/DD hh:mm A'
+                }
+            }).on('apply.daterangepicker', function (ev, picker) {
+                startDateFormatted = picker.startDate.format('M/DD/YYYY hh:mm A');
+                endDateFormatted = picker.endDate.format('M/DD/YYYY hh:mm A');
+                $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
+                $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
+            });
+        });
     </script>
 }
 
