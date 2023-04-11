@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 
@@ -15,53 +17,27 @@ namespace Scheduler.Web.Controllers;
 public sealed class DashboardController : Controller
 {
 	/// <summary>
-	/// The database to query.
+	/// Displays the <see cref="Events(SchedulerContext, string?, string?)"/> view.
+	/// Can also be POSTed to in order to provide filtering.
 	/// </summary>
-	private readonly SchedulerContext context;
-
-	/// <summary>
-	/// Initializes the <see cref="DashboardController"/> class.
-	/// </summary>
-	/// <param name="context">The database to query.</param>
-	public DashboardController(SchedulerContext context)
-	{
-		this.context = context;
-	}
-
-	/// <summary>
-	/// Displays the <see cref="Events"/> view.
-	/// </summary>
-	/// <returns>A view containing scheduled events.</returns>
-	public IActionResult Events()
-	{
-		IEnumerable<Event> events = this.context.Events
-			.WithScheduling()
-			.AsRecurring();
-
-		return this.View(events);
-	}
-
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="type"></param>
-	/// <param name="searchTerm"></param>
-	/// <returns></returns>
-	[HttpPost]
+	/// <param name="type">The type of event to filter by.</param>
+	/// <param name="searchTerm">The event name to search for.</param>
+	/// <returns>A list of events.</returns>
 	public IActionResult Events(
+		[FromServices] SchedulerContext context,
 		string? type = null,
 		string? searchTerm = null)
 	{
 		IQueryable<Event> events = type switch
 		{
-			nameof(Practice) => this.context.Practices
+			nameof(Practice) => context.Practices
 				.Include(p => p.Team),
 
-			nameof(Game) => this.context.Games
+			nameof(Game) => context.Games
 				.Include(g => g.HomeTeam)
 				.Include(g => g.OpposingTeam),
 
-			_ => this.context.Events
+			_ => context.Events
 		};
 
 		if (searchTerm is not null)
@@ -79,17 +55,11 @@ public sealed class DashboardController : Controller
 	/// Displays the <see cref="Teams"/> view.
 	/// </summary>
 	/// <returns>A table containing all teams.</returns>
-	public async Task<IActionResult> Teams()
+	public async Task<IActionResult> Teams(
+		[FromServices] ITeamRepository teamRepository)
 	{
-		IEnumerable<Team> teams = await this.context.Teams
-			.Include(t => t.League)
-			.Select(t => new Team()
-			{
-				Id = t.Id,
-				Name = t.Name,
-				League = new() { Name = t.League!.Name }
-			})
-			.ToListAsync();
+		AllSpecification<Team> searchSpec = new();
+		IEnumerable<Team> teams = await teamRepository.SearchAsync(searchSpec);
 
 		return this.View(teams);
 	}
@@ -100,9 +70,11 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
-	public async Task<IActionResult> Fields()
+	public async Task<IActionResult> Fields(
+		[FromServices] IFieldRepository fieldRepository)
 	{
-		IEnumerable<Field> fields = await this.context.Fields.ToListAsync();
+		AllSpecification<Field> searchSpec = new();
+		IEnumerable<Field> fields = await fieldRepository.SearchAsync(searchSpec);
 
 		return this.View(fields);
 	}
