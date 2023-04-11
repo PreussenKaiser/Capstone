@@ -122,12 +122,12 @@
                         <input type="text" name="daterange" class="text-center form-control" />
                         </div>
                     <div>
-                        <input asp-for="StartDate" min="@today" type="hidden" id="StartDate" class="form-control" data-format="0:M/dd/yyyy h:mm tt"/>
+                        <input asp-for="StartDate" type="hidden" id="StartDate" />
                         <span asp-validation-for="StartDate" class="text-danger"></span>
                         <br />
                     </div>
                     <div>
-                        <input asp-for="EndDate" min="@today" type="hidden" id="EndDate" class="form-control" data-format="0:M/dd/yyyy h:mm tt" />
+                        <input asp-for="EndDate" type="hidden" id="EndDate" />
                         <span asp-validation-for="EndDate" class="text-danger"></span>
                     </div>
                     @if(ViewData["field"] == "")
@@ -138,8 +138,8 @@
                                 <label asp-for="IsBlackout" class="form-check-label"></label>
                             </div>
                             <div class="form-check mb-3">
-                                <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                                <label class="form-check-label">Repeating?</label>
+                                @*<input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                                <label class="form-check-label">Repeating?</label>*@
                             </div>
                             <div id="recurrenceInputs">
                                 @if (this.Model is not null &&

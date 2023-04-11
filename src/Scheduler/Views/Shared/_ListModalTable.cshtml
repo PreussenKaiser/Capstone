@@ -34,7 +34,15 @@
                     }
                     else
                     {
-                        <td>@e.Fields.FirstOrDefault().Name</td>
+                        @if(e.Fields.Count != 0)
+                        {
+                            <td>@e.Fields.FirstOrDefault().Name</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        
                     }
                     @if (e is Game game)
                     {
