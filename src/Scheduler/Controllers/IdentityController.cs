@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Utility;
 using Scheduler.Web.ViewModels;
+using Scheduler.Filters;
 
 namespace Scheduler.Web.Controllers;
 
@@ -67,7 +68,16 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 
-		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
+		var user = signInManager.UserManager.Users.FirstOrDefault(u => u.Email == viewModel.Email);
+
+		if (user.NeedsNewPassword)
+		{
+			return this.RedirectToAction(nameof(IdentityController.ForceReset), "Identity");
+		}
+		else
+		{
+			return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
+		}
 	}
 
 	/// <summary>
@@ -87,6 +97,7 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <returns>The <see cref="Register"/> view.</returns>
 	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Register()
 	{
 		return this.View();
@@ -102,6 +113,7 @@ public sealed class IdentityController : Controller
 	/// </returns>
 	[HttpPost]
 	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Register(RegisterViewModel viewModel)
 	{
 		if (!this.ModelState.IsValid)
@@ -114,7 +126,8 @@ public sealed class IdentityController : Controller
 			UserName = viewModel.Email,
 			Email = viewModel.Email,
 			FirstName = viewModel.FirstName,
-			LastName = viewModel.LastName
+			LastName = viewModel.LastName,
+			NeedsNewPassword = true
 		};
 
 		string randomPassword = Password.Random();
@@ -147,6 +160,7 @@ public sealed class IdentityController : Controller
 	/// <returns>A redirect to the <see cref="ManageUsers"/> view.</returns>
 	[HttpPost]
 	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Delete(Guid id)
 	{
 		User? user = await this.signInManager.UserManager.FindByIdAsync(id.ToString());
@@ -165,6 +179,7 @@ public sealed class IdentityController : Controller
 	/// <returns>Confirmation page with user data.</returns>
 	[HttpGet]
 	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult ConfirmAdminChange()
 	{
 		return this.TempData["TempPassword"] is null || this.TempData["ConfirmStatement"] is null
@@ -177,6 +192,7 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <param name="id">The user to view the profile of.</param>
 	/// <returns>A form which posts to <see cref="Profile(ProfileViewModel)"/>.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Profile(Guid? id = null)
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
@@ -203,6 +219,7 @@ public sealed class IdentityController : Controller
 	/// <param name="viewModel">Values from the form.</param>
 	/// <returns>Redirected to <see cref="Profile"/>.</returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Profile(ProfileViewModel viewModel)
 	{
 		if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
@@ -252,6 +269,7 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <param name="id">The identifier of the user to adjust security settings for.</param>
 	/// <returns>A form which POSTs to <see cref="Security"/>.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Security(Guid? id = null)
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
@@ -270,6 +288,7 @@ public sealed class IdentityController : Controller
 	/// <param name="viewModel">Form values.</param>
 	/// <returns>Redirected to <see cref="Security"/>.</returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Security(SecurityViewModel viewModel)
 	{
 		if (this.ModelState.IsValid)
@@ -290,10 +309,67 @@ public sealed class IdentityController : Controller
 				{
 					this.ModelState.AddModelError(string.Empty, error.Description);
 				}
+			}else
+			{
+				user.NeedsNewPassword = false;
 			}
 		}
 
 		return this.View(viewModel);
+	}
+
+	public IActionResult ForceReset(Guid? id = null)
+	{
+		if (!this.IsUser(out User? user, id) || user is null)
+		{
+			return this.Problem();
+		}
+
+		if (user.NeedsNewPassword == false)
+		{
+			return RedirectToAction(nameof(IdentityController.Security), "Identity");
+		}
+
+		SecurityViewModel viewModel = new() { UserId = user.Id };
+
+		return this.View(viewModel);
+	}
+
+	/// <summary>
+	/// Handles POST from <see cref="ForceReset(Guid?)"/>.
+	/// </summary>
+	/// <param name="viewModel">Form values.</param>
+	/// <returns>Redirected to <see cref="HomeController.Index"/>.</returns>
+	[HttpPost]
+	public async ValueTask<IActionResult> ForceReset(SecurityViewModel viewModel)
+	{
+		if (this.ModelState.IsValid)
+		{
+			if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
+			{
+				return this.Problem();
+			}
+
+			var result = await this.signInManager.UserManager.ChangePasswordAsync(
+				user,
+				viewModel.OldPassword,
+				viewModel.NewPassword);
+
+			if (!result.Succeeded)
+			{
+				foreach (var error in result.Errors)
+				{
+					this.ModelState.AddModelError(string.Empty, error.Description);
+				}
+				return this.View(viewModel);
+			}
+			else
+			{
+				user.NeedsNewPassword = false;
+				await this.signInManager.UserManager.UpdateAsync(user);
+			}
+		}
+		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
 
 	/// <summary>
@@ -301,6 +377,8 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <param name="id">Identifier for the user.</param>
 	/// <returns>A redirect to <see cref="ConfirmAdminChange"/> if successful. Redirect to <see cref="ManageUsers"/> if the password change fails.</returns>
+	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> AdminResetPassword(Guid id)
 	{
 		string newPassword = Password.Random();
@@ -314,6 +392,8 @@ public sealed class IdentityController : Controller
 			if (removeResult.Succeeded)
 			{
 				await this.signInManager.UserManager.AddPasswordAsync(user, newPassword);
+
+				user.NeedsNewPassword = true;
 
 				this.TempData["ConfirmStatement"] = $"Password for {user.FirstName} {user.LastName} successfully changed!";
 				this.TempData["TempPassword"] = newPassword;

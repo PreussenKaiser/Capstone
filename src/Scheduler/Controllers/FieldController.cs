@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
+using Scheduler.Filters;
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
@@ -29,6 +30,7 @@ public sealed class FieldController : Controller
 	/// Displays a view for creating a <see cref="Field"/>.
 	/// </summary>
 	/// <returns></returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Add()
 	{
 		return this.View();
@@ -40,6 +42,7 @@ public sealed class FieldController : Controller
 	/// <param name="field"></param>
 	/// <returns></returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Add(Field field)
 	{
 		if (!this.ModelState.IsValid)
@@ -57,6 +60,7 @@ public sealed class FieldController : Controller
 	}
 
 	[AllowAnonymous]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		return await this.context.Fields.FindAsync(id) is Field team
@@ -65,6 +69,7 @@ public sealed class FieldController : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Details(Field field)
 	{
 		if (!this.ModelState.IsValid)
@@ -82,6 +87,7 @@ public sealed class FieldController : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Delete(Guid id)
 	{
 		if (await this.context.Fields.FindAsync(id) is not Field field)
@@ -99,6 +105,7 @@ public sealed class FieldController : Controller
 	}
 
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id)
 	{
 		if (await this.context.Fields.FindAsync(id) is not Field field)

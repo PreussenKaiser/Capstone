@@ -2,17 +2,13 @@
 
 @model IEnumerable<Team>
 
-<div class="row mb-3 mt-3">
-    <div class="col-12">
-        <a asp-action="Add"
-           asp-controller="Team"
-           class="btn btn-primary">
-            Add
-        </a>
-    </div>
+<div class="text-center mb-3 mt-3">
+    <a asp-action="Add" asp-controller="Team" class="btn btn-sm btn-primary">
+        Add New Team
+    </a>
 </div>
 
-<div class="row">
+<div class="table-responsive w-75 m-auto">
     <table class="table table-sm">
         <thead>
             <tr>

@@ -7,6 +7,7 @@ using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 using System.Linq;
 using System.Text.Json;
+using Scheduler.Filters;
 
 namespace Scheduler.Web.Controllers;
 
@@ -40,6 +41,7 @@ public sealed class DashboardController : Controller
 	/// Displays the <see cref="Events"/> view.
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Events()
 	{
 		var userId = userManager.GetUserId(User);
@@ -57,6 +59,7 @@ public sealed class DashboardController : Controller
 	/// <param name="searchTerm"></param>
 	/// <returns></returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Events(
 		string? type = null,
 		string? searchTerm = null)
@@ -89,6 +92,7 @@ public sealed class DashboardController : Controller
 	/// Displays the <see cref="Teams"/> view.
 	/// </summary>
 	/// <returns>A table containing all teams.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Teams()
 	{
 		IEnumerable<Team> teams = await this.context.Teams
@@ -110,6 +114,7 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Fields()
 	{
 		IEnumerable<Field> fields = await this.context.Fields.ToListAsync();
@@ -123,6 +128,7 @@ public sealed class DashboardController : Controller
 	/// <param name="userManager">The service to get users with.</param>
 	/// <returns>A table containing all users.</returns>
 	[Authorize(Roles = Role.ADMIN)]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Users(
 		[FromServices] UserManager<User> userManager)
 	{
@@ -161,7 +167,7 @@ public sealed class DashboardController : Controller
 	{
 		DateTime monthDate = new DateTime(year, month, 1);
 		DateTime monthEndDate = monthDate.AddMonths(1);
-		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && ((e.StartDate.Date >= monthDate.Date && e.StartDate.Date < monthEndDate.Date) || (e.StartDate.Date < monthDate.Date && (e.EndDate.Date >= monthDate.Date && e.EndDate.Date < monthEndDate.Date)))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date < monthEndDate.Date && e.EndDate.Date >= monthDate.Date)).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Start"] = monthDate;
 		ViewData["End"] = monthEndDate;
@@ -173,7 +179,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> weekModal(int year, int month, int weekStart) {
 		DateTime weekStartDate = new DateTime(year, month, weekStart);
 		DateTime weekEndDate = weekStartDate.AddDays(7);
-		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && ((e.StartDate >= weekStartDate && e.StartDate < weekEndDate) || (e.StartDate.Date < weekStartDate && (e.EndDate.Date <= weekEndDate && e.EndDate.Date >= weekStartDate)))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date < weekEndDate.Date && e.EndDate.Date.Date >= weekStartDate.Date)).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Start"] = weekStartDate;
 		ViewData["End"] = weekEndDate;
@@ -185,7 +191,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date == eventDate || (e.StartDate.Date < eventDate && e.EndDate.Date >= eventDate))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date <= eventDate.Date && e.EndDate.Date >= eventDate.Date)).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		ViewData["Start"] = eventDate; //12:00 AM on the selected day.
 		ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
@@ -197,7 +203,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date == eventDate || (e.StartDate.Date < eventDate && e.EndDate.Date >= eventDate))).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
+		ViewData["Events"] = await this.context.Events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date <= eventDate.Date && e.EndDate.Date >= eventDate.Date)).Include("Fields").OrderBy(e => e.StartDate).ToListAsync();
 		ViewData["Fields"] = await this.context.Fields.OrderBy(e => e.Name).ToListAsync();
 		ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
 		ViewData["CurrentDate"] = eventDate;
@@ -205,7 +211,7 @@ public sealed class DashboardController : Controller
 	}
 
 	[AllowAnonymous]
-	public async Task<IActionResult> searchModalEvents(string type, DateTime start, DateTime end, string? searchTerm = null)
+	public async Task<IActionResult> searchModalEvents(string type, DateTime start, DateTime end, string? searchTerm = null, string? teamName = null)
 	{
 		IQueryable<Event> events = type switch
 		{
@@ -218,7 +224,7 @@ public sealed class DashboardController : Controller
 			_ => this.context.Events.Include("Fields")
 		};
 
-		events = events.Where(e => e.StartDate.Date >= start.Date && e.StartDate.Date <= end);
+		events = events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)).OrderBy(e => e.StartDate);
 
 		if (searchTerm is not null)
 		{

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Filters;
 using Scheduler.Infrastructure.Persistence;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();

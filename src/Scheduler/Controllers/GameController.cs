@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Scheduler.Infrastructure.Persistence;
+using Scheduler.Filters;
 
 namespace Scheduler.Web.Controllers.Scheduling;
 
@@ -27,6 +28,7 @@ public sealed class GameController : ScheduleController<Game>
 	/// <param name="values"><see cref="Game"/> values.</param>
 	/// <returns></returns>
 	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
 	public override async Task<IActionResult> EditDetails(Game values)
 	{
 		if (!this.ModelState.IsValid)

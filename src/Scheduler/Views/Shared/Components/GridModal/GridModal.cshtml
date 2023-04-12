@@ -63,138 +63,193 @@
                             {
                                 timestring += " PM";
                             }
-                            <tr>
-                                <td>@timestring</td>
+                            if (hour > 7 && hour < 23)
+                            {
+                                <tr>
+                                    <td>@timestring</td>
 
-                                @foreach (var f in fields)
-                                {
-                                    int eventhit = 0;
-
-                                    foreach (var e in events)
+                                    @foreach (var f in fields)
                                     {
-                                        IEnumerable<Field> fieldIteration;
+                                        int eventhit = 0;
 
-                                        if(e.IsBlackout == true)
+                                        foreach (var e in events)
                                         {
-                                            fieldIteration = fields;
-                                        }
-                                        else
-                                        {
-                                            fieldIteration = e.Fields;
-                                        }
+                                            IEnumerable<Field> fieldIteration;
 
-                                        foreach(var ff in fieldIteration)
-                                        {
-                                            if(ff.Name == f.Name || e.IsBlackout == true)
+                                            if (e.IsBlackout == true)
                                             {
+                                                fieldIteration = fields;
+                                            }
+                                            else
+                                            {
+                                                fieldIteration = e.Fields;
+                                            }
 
-                                                DateTime cd = currentDate.Date;
-                                                DateTime sd = e.StartDate.Date;
-                                                DateTime ed = e.EndDate.Date;
-                                                int sh = e.StartDate.Hour;
-                                                int sm = e.StartDate.Minute;
-                                                int eh = e.EndDate.Hour;
-                                                int em = e.EndDate.Minute;
-                                                int hourRange = 0;
-
-                                                if (sd == cd || (sd < cd && ed >= cd))
+                                            foreach (var ff in fieldIteration)
+                                            {
+                                                if (ff.Name == f.Name || e.IsBlackout == true)
                                                 {
-                                                    // Event starts and ends on same day
-                                                    if (sd == ed)
-                                                    {
-                                                        hourRange = eh - sh;
-                                                    }
+                                                    DateTime cd = currentDate.Date;
+                                                    DateTime sd = e.StartDate.Date;
+                                                    DateTime ed = e.EndDate.Date;
+                                                    int sh = e.StartDate.Hour;
+                                                    int sm = e.StartDate.Minute;
+                                                    int eh = e.EndDate.Hour;
+                                                    int em = e.EndDate.Minute;
 
-                                                    // Event starts on an earlier date than it ends
-                                                    if(sd == cd && ed > cd)
+                                                    // Event starts before current day
+                                                    if (sd < cd)
                                                     {
-                                                        eh = 23;
-                                                        em = 59;
-                                                        hourRange = eh - sh;
-                                                    }
-                                                    
-                                                    // Event ends on a later date than it starts
-                                                    if(ed == cd && sd != ed)
-                                                    {
-                                                        hourRange = eh;
-                                                        sh = -1;                                                            
-                                                    } 
-
-                                                    // Full days between start and end
-                                                    if (sd < cd && ed > cd)
-                                                    {
-                                                        hourRange = 47;
-                                                        sh = 0;
-                                                        sm = 0;
-                                                        eh = 23;
-                                                        em = 59;
-                                                    }                                                 
-
-                                                    if (sh == hour)
-                                                    {
-                                                        if (halfHour == 0 && sm < 30)
+                                                        // Event ends after current day
+                                                        if (ed > cd)
                                                         {
                                                             eventhit = 1;
                                                         }
-                                                        if (halfHour == 30 && eh != hour)
-                                                        {
-                                                            eventhit = 1;
-                                                        }
-                                                    }
 
-                                                    for (var d = 0; d <= hourRange; d++)
-                                                    {
-                                                        if (eh == hour + d)
+                                                        // Event ends on current day
+                                                        if (ed == cd)
                                                         {
-                                                            if (halfHour == 0 && sh != hour && em != 0)
+                                                            // Event ends after current hour
+                                                            if (eh > hour)
                                                             {
                                                                 eventhit = 1;
                                                             }
-                                                            if (halfHour == 30 && em > 30 && eventhit != 1)
+
+                                                            // Event ends at half-hour of current hour
+                                                            if (eh == hour && halfHour == 0 && em == 30)
                                                             {
                                                                 eventhit = 1;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    // Event starts on current day
+                                                    if (sd == cd)
+                                                    {
+                                                        // Event ends after current day
+                                                        if (ed > cd)
+                                                        {
+                                                            // Event starts in the current hour
+                                                            if (sh == hour)
+                                                            {
+                                                                // Event starts the top or bottom of the current hour
+                                                                if (sm == halfHour)
+                                                                {
+                                                                    eventhit = 1;
+                                                                }
+
+                                                                // Event starts at the top of the current hour and ends
+                                                                // later than the current hour
+                                                                if (sm == 0 && halfHour == 30)
+                                                                {
+                                                                    eventhit = 1;
+                                                                }
+                                                            }
+
+                                                            // Event starts earlier than the current hour
+                                                            if (sh < hour)
+                                                            {
+                                                                eventhit = 1;
+                                                            }
+                                                        }
+
+                                                        // Event ends on the current day
+                                                        if (ed == cd)
+                                                        {
+                                                            // Event starts earlier than the current hour
+                                                            if (sh < hour)
+                                                            {
+                                                                // Event ends later than the current hour
+                                                                if (eh > hour)
+                                                                {
+                                                                    eventhit = 1;
+                                                                }
+
+                                                                // Event ends at the half-hour of the current hour
+                                                                if (eh == hour && em == 30 && halfHour == 0)
+                                                                {
+                                                                    eventhit = 1;
+                                                                }
+                                                            }
+
+                                                            // Event starts on current hour
+                                                            if (sh == hour)
+                                                            {
+                                                                // In the top of the hour
+                                                                if (halfHour == 0)
+                                                                {
+                                                                    // Event ends at 30 minutes
+                                                                    if (eh == hour && em == 30)
+                                                                    {
+                                                                        eventhit = 1;
+                                                                    }
+
+                                                                    // Event starts at top of hour
+                                                                    if (sm == 0)
+                                                                    {
+                                                                        eventhit = 1;
+                                                                    }
+                                                                }
+
+                                                                // In the bottom of the hour
+                                                                if (halfHour == 30)
+                                                                {
+                                                                    // Event starts at top of hour and ends after the
+                                                                    // current hour
+                                                                    if (sm == 0 && eh > hour)
+                                                                    {
+                                                                        eventhit = 1;
+                                                                    }
+
+                                                                    // Event starts at the bottom of the current hour
+                                                                    if (sm == 30)
+                                                                    {
+                                                                        eventhit = 1;
+                                                                    }
+                                                                }
                                                             }
                                                         }
                                                     }
                                                 }
                                             }
-                                        }                                        
-                                    }
+                                        }
 
-                                    // Variables to send to the Event scheduling form, and to check the current time
-                                    int squareYear = currentDate.Year;
-                                    int squareMonth = currentDate.Month;
-                                    int squareDay = currentDate.Day;
-                                    int squareHour = hour;
-                                    int squareMinutes = halfHour;
-                                    string squareField = f.Name;
+                                        // Variables to send to the Event scheduling form, and to check the current time
+                                        int squareYear = currentDate.Year;
+                                        int squareMonth = currentDate.Month;
+                                        int squareDay = currentDate.Day;
+                                        int squareHour = hour;
+                                        int squareMinutes = halfHour;
+                                        string squareField = f.Name;
 
-                                    DateTime squareDate = new DateTime(squareYear, squareMonth, squareDay, squareHour, squareMinutes, 0);
-                                    if(eventhit == 0)
-                                    {
-                                        if(squareDate > DateTime.Now)
+                                        DateTime squareDate = new DateTime(squareYear, squareMonth, squareDay, squareHour, squareMinutes, 0);
+                                        if (eventhit == 0)
                                         {
-                                            <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-field="@squareField">*</a></td>
+                                            if (squareDate > DateTime.Now)
+                                            {
+                                                <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-field="@squareField">*</a></td>
+                                            }
+                                            else
+                                            {
+                                                <td class="bg-warning"></td>
+                                            }
+
                                         }
                                         else
                                         {
-                                            <td class="bg-warning"></td>
+                                            if (squareDate > DateTime.Now)
+                                            {
+                                                <td class="bg-danger"></td>
+                                            }
+                                            else
+                                            {
+                                                <td class="bg-warning"></td>
+                                            }
                                         }
-
                                     }
-                                    else
-                                    {
-                                        if(squareDate > DateTime.Now)
-                                        {
-                                            <td class="bg-danger"></td>
-                                        }
-                                        else
-                                        {
-                                            <td class="bg-warning"></td>
-                                        }                                        
-                                    }
-                                }
-                            </tr>
+                                </tr>
+                            }
+                            
                             if(halfHour == 0)
                             {
                                 halfHour = 30;
