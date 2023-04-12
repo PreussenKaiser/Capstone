@@ -19,6 +19,21 @@
     </div>
 
     <div class="col-sm-6">
+        <label asp-for="UserId" class="form-label">User</label>
+        <select class="form-select"
+                asp-for="UserId"
+                asp-items="this.Scheduler.Users
+                    .ToList()
+                    .Select(user => new SelectListItem
+                    {
+                        Text = string.Join(' ', user.FirstName, user.LastName),
+                        Value = user.Id.ToString(),
+                        Selected = this.Model is not null
+                    })"></select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+
+    <div class="col-sm-6">
         <label asp-for="LeagueId" class="form-label"></label>
         <select class="form-select"
                 asp-for="LeagueId"

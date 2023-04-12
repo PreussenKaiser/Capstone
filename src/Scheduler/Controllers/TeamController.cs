@@ -34,11 +34,6 @@ public sealed class TeamController : Controller
 		{
 			return this.View(team);
 		}
-		var userId = userManager.GetUserId(User);
-		if (userId != null)
-		{
-			team.UserId = Guid.Parse(userId);
-		}
 		
 		this.context.Teams.Add(team);
 

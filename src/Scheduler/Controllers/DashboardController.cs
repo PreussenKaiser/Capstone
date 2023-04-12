@@ -154,6 +154,8 @@ public sealed class DashboardController : Controller
 		}
 
 		return false;
+	}
+
 	public IActionResult refreshCalendar(int? year, int? month)
 	{
 		ViewData["Year"] = year;
