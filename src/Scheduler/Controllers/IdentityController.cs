@@ -147,6 +147,10 @@ public sealed class IdentityController : Controller
 			await this.signInManager.UserManager.AddToRoleAsync(user, "Admin");
 		}
 
+		string message = $"<p>Welcome to the PCYS Scheduler app! <br /> Your username is {user.UserName} and your password is <span style=\"color: red\">{randomPassword}</span></p>";
+
+		Email.sendEmail(user.Email, user.FirstName, "Welcome to the PCYS Scheduler App!", message);
+
 		this.TempData["TempPassword"] = randomPassword;
 		this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added!";
 
