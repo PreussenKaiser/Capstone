@@ -1,6 +1,9 @@
 ﻿<div class="text-center">
     <p class="lead">@this.TempData["ConfirmStatement"]</p>
-    <p class="lead">Password: <span class="text-danger fw-bold">@this.TempData["TempPassword"]</span></p>
+    @if (this.TempData["TempPassword"].ToString().Length > 0)
+    {
+        <p class="lead">Password: <span class="text-danger fw-bold">@this.TempData["TempPassword"]</span></p>
+    }
 
     <a asp-action="Users"
        asp-controller="Dashboard"
