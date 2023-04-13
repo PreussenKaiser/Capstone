@@ -155,13 +155,13 @@ public sealed class IdentityController : Controller
 		try {
 			Email.sendEmail(user.Email, user.FirstName, "Welcome to the PCYS Scheduler App!", message);
 			this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added!";
-			this.TempData["TempPassword"] = string.Empty;
 		}
 		catch
 		{
-			this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added, <br /> <span style=\"color: red\">However, the confirmation email was unable to send. Please give them their temporary password.</span>";
-			this.TempData["TempPassword"] = randomPassword;
+			this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added. However, the confirmation email was unable to send. Please give them their temporary password manually.";
 		}
+
+		this.TempData["TempPassword"] = randomPassword;
 
 		return this.RedirectToAction(nameof(IdentityController.ConfirmAdminChange), "Identity");
 	}
