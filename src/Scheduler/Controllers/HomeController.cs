@@ -40,6 +40,7 @@ public sealed class HomeController : Controller
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Index()
 	{
+		this.DeleteExpiredGamesOrPracticeTypes();
 		IQueryable<Event> events = this.context.Events.WithScheduling();
 
 		IQueryable<Game> games = this.context.Games
@@ -138,4 +139,63 @@ public sealed class HomeController : Controller
 
 		return ViewComponent("Calendar");
 	}
+
+	/// <summary>
+	/// Delete expired games.
+	/// </summary>
+	/// <returns>Redirect to the home page.</returns>
+	[HttpPost]
+	public IActionResult DeleteExpiredGamesOrPracticeTypes()
+	{
+		var currentDate = DateTime.Now;
+		var games = this.context.Games;
+		var practices = this.context.Practices;
+
+		Guid userId = Guid.Parse("def8f5cd-c5e5-4cbb-2aba-08db3c466f6b");
+
+		// Delete expired games
+		var gamesToDelete = this.context.Games
+			.Where(g => g.EndDate < currentDate)
+			.ToList();
+
+		foreach (var game in gamesToDelete)
+		{
+			var homeTeam = this.context.Teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
+			var opposingTeam = this.context.Teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+			// Delete teams associated with the game that match the user ID
+			if (homeTeam is not null && homeTeam.UserId == userId)
+			{
+				this.context.Teams.Remove(homeTeam);
+			}
+			else if (opposingTeam is not null &&  opposingTeam.UserId == userId)
+			{
+				this.context.Teams.Remove(opposingTeam);
+			}
+		}
+
+		this.context.Games.RemoveRange(gamesToDelete);
+
+		// Delete expired practices
+		var practicesToDelete = this.context.Practices
+			.Where(p => p.EndDate < currentDate)
+			.ToList();
+
+		foreach (var practice in practicesToDelete)
+		{
+			// Delete teams associated with the practice that match the user ID
+			if (practice.Team is not null && practice.Team.UserId == userId)
+			{
+				this.context.Teams.Remove(practice.Team);
+			}
+		}
+
+		this.context.Practices.RemoveRange(practicesToDelete);
+
+		// Save changes to the database
+		this.context.SaveChanges();
+
+		// Redirect to the appropriate view or action
+		return RedirectToAction("Index", "Home");
+	}
+
 }
