@@ -5,7 +5,7 @@ using System.Net.Mail;
 public static class Email
 {
 	private const string FROMADDRESS = "noahwoyak.wi@gmail.com";
-	private const string FROMNAME = "Noah Woyak Test";
+	private const string FROMNAME = "PCYS Scheduler";
 	private const string FROMPASSWORD = "gcueywlzgffymnae";
 
 	public static void sendEmail(string toEmail, string toName, string subject, string body)
