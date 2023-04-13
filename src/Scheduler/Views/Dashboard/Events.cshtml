@@ -11,10 +11,10 @@
 @model IEnumerable<Event>
 
 @{
-	AllSpecification<Field> allFieldSpec = new();
+	GetAllSpecification<Field> allFieldSpec = new();
 	IEnumerable<Field> fields = await this.FieldRepository.SearchAsync(allFieldSpec);
 
-	AllSpecification<Team> allTeamSpec = new();
+	GetAllSpecification<Team> allTeamSpec = new();
 	IEnumerable<Team> teams = await this.TeamRepositoey.SearchAsync(allTeamSpec);
 }
 

@@ -16,7 +16,13 @@ public interface ITeamRepository
 	Task AddAsync(Team team);
 
 	/// <summary>
-	/// Searches for a <see cref="Team"/> via a specification.
+	/// Searches for <see cref="Team"/>(s) via a specification.
+	/// <example>
+	/// Usage
+	/// 
+	/// For finding single elements you can use
+	/// <code>(await this.fieldRepository.SearchAsync[spec]).FirstOrDefault();</code>
+	/// </example>
 	/// </summary>
 	/// <param name="searchSpec">The specification to use for searching.</param>
 	/// <returns>A list of teams which satisfy the specification.</returns>

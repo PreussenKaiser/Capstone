@@ -74,7 +74,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> Teams(
 		[FromServices] ITeamRepository teamRepository)
 	{
-		AllSpecification<Team> searchSpec = new();
+		GetAllSpecification<Team> searchSpec = new();
 		IEnumerable<Team> teams = await teamRepository.SearchAsync(searchSpec);
 
 		return this.View(teams);
@@ -90,7 +90,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> Fields(
 		[FromServices] IFieldRepository fieldRepository)
 	{
-		AllSpecification<Field> searchSpec = new();
+		GetAllSpecification<Field> searchSpec = new();
 		IEnumerable<Field> fields = await fieldRepository.SearchAsync(searchSpec);
 
 		return this.View(fields);

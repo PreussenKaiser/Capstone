@@ -17,6 +17,12 @@ public interface IScheduleRepository
 
 	/// <summary>
 	/// Searches for scheduled events.
+	/// <example>
+	/// Usage
+	/// 
+	/// For finding single elements you can use
+	/// <code>(await this.fieldRepository.SearchAsync[spec]).FirstOrDefault();</code>
+	/// </example>
 	/// </summary>
 	/// <param name="searchSpec">The specification to search events by.</param>
 	/// <returns>Events which meet the specification.</returns>

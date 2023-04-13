@@ -26,7 +26,7 @@ public sealed class CalendarViewComponent : ViewComponent
 
 	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
 	{
-		AllSpecification<Event> searchSpec = new();
+		GetAllSpecification<Event> searchSpec = new();
 		IEnumerable<Event> events = await this.scheduleRepository.SearchAsync(searchSpec);
 
 		int currentYear;

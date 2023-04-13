@@ -15,7 +15,7 @@
         ? nameof(Event)
         : nameof(Practice));
 
-    AllSpecification<Field> searchSpec = new();
+    GetAllSpecification<Field> searchSpec = new();
     IEnumerable<SelectListItem> fields = (await this.FieldRepository.SearchAsync(searchSpec))
         .Select(f => new SelectListItem
         {

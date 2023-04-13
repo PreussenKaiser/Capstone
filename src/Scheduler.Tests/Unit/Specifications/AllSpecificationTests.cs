@@ -5,7 +5,7 @@ using Xunit;
 namespace Scheduler.Tests.Unit.Specifications;
 
 /// <summary>
-/// Tests for <see cref="AllSpecification{TEntity}"/>.
+/// Tests for <see cref="GetAllSpecification{TEntity}"/>.
 /// </summary>
 public class AllSpecificationTests
 {
@@ -21,7 +21,7 @@ public class AllSpecificationTests
 	public void Pass()
 	{
 		ExampleEntity entity = new();
-		AllSpecification<ExampleEntity> spec = new();
+		GetAllSpecification<ExampleEntity> spec = new();
 
 		bool result = spec.IsSatisifiedBy(entity);
 

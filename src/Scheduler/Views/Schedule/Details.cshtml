@@ -22,7 +22,7 @@
     bool canEdit = this.User.IsInRole(Role.ADMIN) ||
                    this.UserManager.GetUserId(this.User) == this.Model.UserId.ToString();
 
-    IEnumerable<SelectListItem> fieldList = (await this.FieldRepository.SearchAsync(new AllSpecification<Field>()))
+    IEnumerable<SelectListItem> fieldList = (await this.FieldRepository.SearchAsync(new GetAllSpecification<Field>()))
         .Select(f => new SelectListItem
         {
             Text = f.Name,

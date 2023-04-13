@@ -16,7 +16,13 @@ public interface ILeagueRepository
 	Task AddAsync(League league);
 
 	/// <summary>
-	/// Searches for a <see cref="League"/> via a specificiation.
+	/// Searches for <see cref="League"/>(s) via a specificiation.
+	/// <example>
+	/// Usage
+	/// 
+	/// For finding single elements you can use
+	/// <code>(await this.leagueRepository.SearchAsync[spec]).FirstOrDefault();</code>
+	/// </example>
 	/// </summary>
 	/// <param name="searchSpec">The search specification to use.</param>
 	/// <returns>A list of leagues which fulfill the specification.</returns>

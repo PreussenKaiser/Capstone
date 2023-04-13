@@ -16,7 +16,15 @@ public interface IFieldRepository
 	Task AddAsync(Field field);
 
 	/// <summary>
-	/// Searches for a <see cref="Field"/>.
+	/// Searches for <see cref="Field"/>(s).
+	/// <para>
+	/// <example>
+	/// <b>Usage</b><br></br>
+	/// 
+	/// For finding single elements you can use
+	/// <code>(await this.fieldRepository.SearchAsync([spec]).FirstOrDefault();</code>
+	/// </example>
+	/// </para>
 	/// </summary>
 	/// <param name="searchSpec">The specification to search them by.</param>
 	/// <returns>Fields which met the specification.</returns>

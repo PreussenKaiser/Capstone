@@ -5,7 +5,7 @@
 @model Game
 
 @{
-    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository.SearchAsync(new AllSpecification<Team>()))
+    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository.SearchAsync(new GetAllSpecification<Team>()))
         .Select(t => new SelectListItem
         {
             Text = t.Name,

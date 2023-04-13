@@ -20,7 +20,7 @@
         <label asp-for="LeagueId" class="form-label"></label>
         <select class="form-select"
                 asp-for="LeagueId"
-                asp-items="(await this.LeagueRepository.SearchAsync(new AllSpecification<League>()))
+                asp-items="(await this.LeagueRepository.SearchAsync(new GetAllSpecification<League>()))
                     .Select(league => new SelectListItem
                     {
                         Text = league.Name,

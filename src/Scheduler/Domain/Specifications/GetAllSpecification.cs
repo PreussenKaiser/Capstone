@@ -8,7 +8,7 @@ namespace Scheduler.Domain.Specifications;
 /// Usage intended for default conditions for specification parameters.
 /// </summary>
 /// <typeparam name="TEntity">The type of entity the specification targets.</typeparam>
-public sealed class AllSpecification<TEntity> : Specification<TEntity>
+public sealed class GetAllSpecification<TEntity> : Specification<TEntity>
 	where TEntity : Entity
 {
 	/// <inheritdoc/>
