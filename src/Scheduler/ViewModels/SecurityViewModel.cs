@@ -8,7 +8,7 @@ public sealed record SecurityViewModel
 
 	[Display(Name = "Old password")]
 	[DataType(DataType.Password)]
-	[Required(ErrorMessage = "Please the old password.")]
+	[Required(ErrorMessage = "Please enter the old password.")]
 	[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
 	public string OldPassword { get; init; } = string.Empty;
 

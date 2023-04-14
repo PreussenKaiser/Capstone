@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
@@ -28,7 +29,11 @@ builder.Services
 // Configure identity
 builder.Services
 	.AddIdentity<User, Role>()
-	.AddEntityFrameworkStores<SchedulerContext>();
+	.AddEntityFrameworkStores<SchedulerContext>()
+	.AddDefaultTokenProviders();
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+	options.TokenLifespan = TimeSpan.FromHours(2));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllersWithViews();

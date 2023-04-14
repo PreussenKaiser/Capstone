@@ -5,6 +5,8 @@ using Scheduler.Domain.Models;
 using Scheduler.Domain.Utility;
 using Scheduler.Web.ViewModels;
 using Scheduler.Filters;
+using Scheduler.ViewModels;
+using System.Net.Mail;
 
 namespace Scheduler.Web.Controllers;
 
@@ -370,6 +372,42 @@ public sealed class IdentityController : Controller
 			}
 		}
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
+	}
+
+	[HttpGet]
+	public IActionResult ForgotPassword()
+	{
+		return this.View();
+	}
+
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModal viewModel)
+	{
+		if (!ModelState.IsValid)
+		{
+			return this.View(viewModel);
+		}
+
+		var user = await signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+		if (user == null)
+		{
+			return this.View(viewModel);	
+		}
+
+		var token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
+		var callback = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.Email }, Request.Scheme);
+
+		var message = $"<p>A request has been made to reset your password.</p>" +
+			$"<p><a herf\"callback\">Click this link</a> to reset your password.";
+
+		return this.View();
+	}
+
+	[HttpGet]
+	public IActionResult ResetPassword()
+	{
+		return this.View();
 	}
 
 	/// <summary>
