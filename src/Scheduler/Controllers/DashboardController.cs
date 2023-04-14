@@ -8,6 +8,9 @@ using Scheduler.Domain.Specifications;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
+using System.Net;
+using System.Net.Mail;
+using Scheduler.Domain.Utility;
 
 namespace Scheduler.Web.Controllers;
 
