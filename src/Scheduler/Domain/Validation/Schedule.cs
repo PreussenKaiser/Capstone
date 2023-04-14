@@ -8,6 +8,34 @@ namespace Scheduler.Domain.Validation;
 public static class Schedule
 {
 	/// <summary>
+	/// Attempts to find a conflicting <see cref="Event"/> from a list of events.
+	/// </summary>
+	/// <param name="scheduledEvent">The <see cref="Event"/> to find conflicts for.</param>
+	/// <param name="events"><see cref="Event"/> pool to search in.</param>
+	/// <returns>
+	/// The found <see cref="Event"/>.
+	/// <see langword="null"/> if there was no conflicting <see cref="Event"/>.
+	/// </returns>
+	public static Event? FindConflict(this Event scheduledEvent, IEnumerable<Event> events)
+	{
+		foreach (var e in events)
+		{
+			IEnumerable<Event> schedule = scheduledEvent.GenerateSchedule();
+
+			foreach (var occurrence in schedule)
+				if (e.Id != occurrence.Id &&
+					(e.IsBlackout || e.Fields.Any(ef => occurrence.Fields.Any(of => ef.Id == of.Id))) &&
+					e.StartDate <= occurrence.EndDate &&
+					e.EndDate > occurrence.StartDate)
+				{
+					return e;
+				}
+		}
+
+		return null;
+	}
+
+	/// <summary>
 	/// Generates a schedule from a recurring <see cref="Event"/>.
 	/// </summary>
 	/// <param name="scheduledEvent">The <see cref="Event"/> to build a schedule from.</param>
