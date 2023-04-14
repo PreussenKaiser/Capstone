@@ -14,10 +14,12 @@ public static class Password
 	/// <returns>The generated password.</returns>
 	public static string Random()
 	{
+		//Some characters that are easily confused for one another are left out.
+		//Examples: 0 and O, l and I.
 		const int PASSWORD_LENGTH = 8;
-		const string LOWER = "qwertyuiopasdfghjklzxcvbnm";
-		const string UPPER = "QWERTYUIOPASDFGHJKLZXCVBNM";
-		const string NUMBERS = "0123456789";
+		const string LOWER = "qwertyuiopasdfghjkzxcvbnm";
+		const string UPPER = "QWERTYUPASDFGHJKLZXCVBNM";
+		const string NUMBERS = "123456789";
 		const string SPECIAL = "!@#$%^&*_";
 
 		StringBuilder builder = new StringBuilder()
