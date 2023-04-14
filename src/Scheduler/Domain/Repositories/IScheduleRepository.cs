@@ -11,9 +11,11 @@ public interface IScheduleRepository
 	/// <summary>
 	/// Schedules an <see cref="Event"/>.
 	/// </summary>
+	/// <typeparam name="TEvent">The type of <see cref="Event"/> to schedule.</typeparam>
 	/// <param name="scheduledEvent">The <see cref="Event"/> to schedule.</param>
 	/// <returns>Whether the task was completed or not.</returns>
-	Task ScheduleAsync(Event scheduledEvent);
+	Task ScheduleAsync<TEvent>(TEvent scheduledEvent)
+		where TEvent : Event;
 
 	/// <summary>
 	/// Searches for scheduled events.

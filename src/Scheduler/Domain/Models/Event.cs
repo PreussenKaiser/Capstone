@@ -3,6 +3,7 @@ using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace Scheduler.Domain.Models;
 
@@ -28,6 +29,11 @@ public record Event : Entity, IValidatableObject
 	[Display(Name = "Fields")]
 	[RequiredIfFalse("IsBlackout", ErrorMessage = "Please select at least one field.")]
 	public Guid[] FieldIds { get; init; }
+
+	/// <summary>
+	/// The recurrence pattern for this <see cref="Event"/>.
+	/// </summary>
+	public Guid RecurrenceId { get; init; }
 
 	/// <summary>
 	/// References the user who created the <see cref="Event"/>.
@@ -73,6 +79,44 @@ public record Event : Entity, IValidatableObject
 	/// Fields where the <see cref="Event"/> happens.
 	/// </summary>
 	public List<Field> Fields { get; init; }
+
+	public IEnumerable<TEvent> GenerateSchedule<TEvent>()
+		where TEvent : Event
+	{
+		ICollection<TEvent> schedule = new List<TEvent> { (TEvent)this };
+
+		if (this.Recurrence is null)
+		{
+			return schedule;
+		}
+
+		(DateTime StartDate, DateTime EndDate) = (this.StartDate, this.EndDate);
+		var count = 1;
+
+		do
+		{
+			(StartDate, EndDate) = this.Recurrence.Type switch
+			{
+				RecurrenceType.Daily => (StartDate.AddDays(1), EndDate.AddDays(1)),
+				RecurrenceType.Weekly => (StartDate.AddDays(7), EndDate.AddDays(7)),
+				RecurrenceType.Monthly => (StartDate.AddMonths(1), EndDate.AddMonths(1)),
+				_ => throw new UnreachableException("How did we get here?")
+			};
+
+			TEvent clone = (TEvent)this.MemberwiseClone();
+
+			clone.Id = Guid.NewGuid();
+			clone.StartDate = StartDate;
+			clone.EndDate = EndDate;
+
+			schedule.Add(clone);
+
+			count++;
+		}
+		while (count < this.Recurrence?.Occurrences);
+
+		return schedule;
+	}
 
 	/// <summary>
 	/// Reschedules the <see cref="Event"/>.

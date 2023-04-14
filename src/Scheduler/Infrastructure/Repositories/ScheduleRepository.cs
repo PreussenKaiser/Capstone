@@ -26,12 +26,14 @@ public sealed class ScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public async Task ScheduleAsync(Event scheduledEvent)
+	public async Task ScheduleAsync<TEvent>(TEvent scheduledEvent)
+		where TEvent : Event
 	{
 		scheduledEvent.Relocate(await this.context.Fields
 			.AsTracking()
 			.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
 			.ToArrayAsync());
+
 
 		await this.context.Events.AddAsync(scheduledEvent);
 

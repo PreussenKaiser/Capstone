@@ -63,16 +63,6 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 	{
 		builder.Entity<Event>().UseTptMappingStrategy();
 
-		builder.Entity<Recurrence>(builder =>
-		{
-			builder.HasKey(e => e.Id);
-
-			builder
-				.HasOne(r => r.Event)
-				.WithOne(e => e.Recurrence)
-				.HasForeignKey<Recurrence>(r => r.Id);
-		});
-
 		builder.Entity<User>().HasData(SeedData.Users);
 		builder.Entity<Role>().HasData(SeedData.Roles);
 		builder.Entity<IdentityUserRole<Guid>>().HasData(SeedData.UserRoles);

@@ -16,7 +16,8 @@
         : nameof(Practice));
 
     GetAllSpecification<Field> searchSpec = new();
-    IEnumerable<SelectListItem> fields = (await this.FieldRepository.SearchAsync(searchSpec))
+    IEnumerable<SelectListItem> fields = (await this.FieldRepository
+        .SearchAsync(searchSpec))
         .Select(f => new SelectListItem
         {
             Text = f.Name,
@@ -139,8 +140,8 @@
                                 <label asp-for="IsBlackout" class="form-check-label"></label>
                             </div>
                             <div class="form-check mb-3">
-                                @*<input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                                <label class="form-check-label">Repeating?</label>*@
+                                <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                                <label class="form-check-label">Repeating?</label>
                             </div>
                             <div id="recurrenceInputs">
                                 @if (this.Model is not null &&

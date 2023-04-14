@@ -3,7 +3,7 @@ using Scheduler.Domain.Utility;
 using Scheduler.Domain.Validation;
 using Xunit;
 
-namespace Scheduler.Tests.Unit;
+namespace Scheduler.Tests.Unit.Scheduling;
 
 /// <summary>
 /// Tests collision detection for scheduled events.
@@ -24,7 +24,7 @@ public sealed class ScheduleConflictTests
 		};
 
 		Event? conflictingEvent = newEvent.FindConflict(SeedData.Events);
-		
+
 		Assert.NotNull(conflictingEvent);
 	}
 
