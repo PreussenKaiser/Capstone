@@ -3,16 +3,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
-using System.Linq;
-using System.Text.Json;
 using Scheduler.Filters;
+using System.Net;
+using System.Net.Mail;
+using Scheduler.Domain.Utility;
 
 namespace Scheduler.Web.Controllers;
 
 /// <summary>
-/// Renders Scheduler management views.
+/// Renders scheduler management views.
 /// </summary>
 [Authorize]
 public sealed class DashboardController : Controller
@@ -38,7 +41,8 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Events"/> view.
+	/// Displays the <see cref="Events(SchedulerContext, string?, string?)"/> view.
+	/// Can also be POSTed to in order to provide filtering.
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
@@ -59,6 +63,9 @@ public sealed class DashboardController : Controller
 	/// <param name="searchTerm"></param>
 	/// <returns></returns>
 	[HttpPost]
+	/// <param name="type">The type of event to filter by.</param>
+	/// <param name="searchTerm">The event name to search for.</param>
+	/// <returns>A list of events.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Events(
 		string? type = null,
@@ -93,17 +100,11 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A table containing all teams.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Teams()
+	public async Task<IActionResult> Teams(
+		[FromServices] ITeamRepository teamRepository)
 	{
-		IEnumerable<Team> teams = await this.context.Teams
-			.Include(t => t.League)
-			.Select(t => new Team()
-			{
-				Id = t.Id,
-				Name = t.Name,
-				League = new() { Name = t.League!.Name }
-			})
-			.ToListAsync();
+		GetAllSpecification<Team> searchSpec = new();
+		IEnumerable<Team> teams = await teamRepository.SearchAsync(searchSpec);
 
 		return this.View(teams);
 	}
@@ -115,9 +116,11 @@ public sealed class DashboardController : Controller
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Fields()
+	public async Task<IActionResult> Fields(
+		[FromServices] IFieldRepository fieldRepository)
 	{
-		IEnumerable<Field> fields = await this.context.Fields.ToListAsync();
+		GetAllSpecification<Field> searchSpec = new();
+		IEnumerable<Field> fields = await fieldRepository.SearchAsync(searchSpec);
 
 		return this.View(fields);
 	}

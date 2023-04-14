@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Repositories;
 using Scheduler.Filters;
-using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
 
@@ -17,8 +16,9 @@ public sealed class PracticeController : ScheduleController<Practice>
 	/// Initializes the <see cref="PracticeController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	public PracticeController(SchedulerContext context)
-		: base(context)
+	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
+	public PracticeController(IScheduleRepository scheduleRepository)
+		: base(scheduleRepository)
 	{
 	}
 
@@ -35,27 +35,9 @@ public sealed class PracticeController : ScheduleController<Practice>
 		{
 			return this.DetailsError(values);
 		}
+		
+		await this.scheduleRepository.EditPracticeDetails(values);
 
-		Practice? practice = await this.context.Practices
-			.AsTracking()
-			.FirstOrDefaultAsync(g => g.Id == values.Id);
-
-		if (practice is null)
-		{
-			return this.BadRequest();
-		}
-
-		Team? practicingTeam = await this.context.Teams
-			.AsTracking()
-			.FirstOrDefaultAsync(t => t.Id == values.TeamId);
-
-		if (practicingTeam is not null)
-		{
-			practice.EditDetails(practicingTeam, values.Name);
-
-			await this.context.SaveChangesAsync();
-		}
-
-		return this.RedirectToAction("Details", "Schedule", new { practice.Id });
+		return this.RedirectToAction("Details", "Schedule", new { values.Id });
 	}
 }

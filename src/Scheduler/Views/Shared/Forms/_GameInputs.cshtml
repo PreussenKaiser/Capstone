@@ -1,16 +1,16 @@
-﻿@using Scheduler.Infrastructure.Persistence;
+﻿@using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Specifications;
 
-@inject SchedulerContext Scheduler
+@inject ITeamRepository TeamRepository
 @model Game
 
 @{
-    IEnumerable<SelectListItem> teamsSelect = this.Scheduler.Teams
+    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository.SearchAsync(new GetAllSpecification<Team>()))
         .Select(t => new SelectListItem
         {
             Text = t.Name,
             Value = t.Id.ToString()
-        })
-        .ToList();
+        });
 }
 
 <div class="row mb-3">

@@ -21,8 +21,6 @@ public sealed class HomeController : Controller
 	/// </summary>
 	private readonly SchedulerContext context;
 
-	private User currentUser;
-
 	/// <summary>
 	/// Initializes the <see cref="HomeController"/> class.
 	/// </summary>
@@ -66,8 +64,7 @@ public sealed class HomeController : Controller
 		string? eventSearch = null,
 		string? gameSearch = null,
 		DateTime? gameStart = null,
-		DateTime? gameEnd = null
-		)
+		DateTime? gameEnd = null)
 	{
 		IQueryable<Event> events = this.context.Events.WithScheduling();
 
@@ -134,8 +131,8 @@ public sealed class HomeController : Controller
 	[AllowAnonymous]
 	public IActionResult refreshCalendar(int? year, int? month)
 	{
-		ViewData["Year"] = year;
-		ViewData["Month"] = month;
+		this.ViewData["Year"] = year;
+		this.ViewData["Month"] = month;
 
 		return ViewComponent("Calendar");
 	}

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
 using Scheduler.Filters;
-using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
 
@@ -13,17 +14,17 @@ namespace Scheduler.Web.Controllers;
 public sealed class FieldController : Controller
 {
 	/// <summary>
-	/// The database to query.
+	/// The repository to execute queries and commands against.
 	/// </summary>
-	private readonly SchedulerContext context;
+	private readonly IFieldRepository fieldRepository;
 
 	/// <summary>
 	/// Initializes the <see cref="FieldController"/> class.
 	/// </summary>
-	/// <param name="context">The database to query.</param>
-	public FieldController(SchedulerContext context)
+	/// <param name="fieldRepository">The repository to execute queries and commands against.</param>
+	public FieldController(IFieldRepository fieldRepository)
 	{
-		this.context = context;
+		this.fieldRepository = fieldRepository;
 	}
 
 	/// <summary>
@@ -50,24 +51,41 @@ public sealed class FieldController : Controller
 			return this.View(field);
 		}
 
-		this.context.Fields.Add(field);
-
-		await this.context.SaveChangesAsync();
+		await this.fieldRepository.AddAsync(field);
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Fields),
 			"Dashboard");
 	}
 
+	/// <summary>
+	/// Displays the <see cref="Details(Guid)"/> view.
+	/// </summary>
+	/// <param name="id">The <see cref="Field"/> to detail.</param>
+	/// <returns>A form for updating a field.</returns>
 	[AllowAnonymous]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
-		return await this.context.Fields.FindAsync(id) is Field team
-			? this.View(team)
+		ByIdSpecification<Field> searchSpec = new(id);
+
+		Field? field = (await this.fieldRepository
+			.SearchAsync(searchSpec))
+			.FirstOrDefault();
+
+		return field is not null
+			? this.View(field)
 			: this.BadRequest("Could not find selected field.");
 	}
 
+	/// <summary>
+	/// Handles POST request from <see cref="Details(Guid)"/>.
+	/// </summary>
+	/// <param name="field">The <see cref="Field"/> to update.</param>
+	/// <returns>
+	/// Redirected to <see cref="DashboardController.Fields"/> if valid.
+	/// Redirected to <see cref="Details(Guid)"/> if invalid.
+	/// </returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Details(Field field)
@@ -77,45 +95,23 @@ public sealed class FieldController : Controller
 			return this.View(field);
 		}
 
-		this.context.Fields.Update(field);
-
-		await this.context.SaveChangesAsync();
+		await this.fieldRepository.UpdateAsync(field);
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Fields),
 			"Dashboard");
 	}
 
-	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Delete(Guid id)
-	{
-		if (await this.context.Fields.FindAsync(id) is not Field field)
-		{
-			return this.BadRequest();
-		}
-
-		this.context.Fields.Remove(field);
-
-		await this.context.SaveChangesAsync();
-
-		return this.RedirectToAction(
-			nameof(DashboardController.Fields),
-			"Dashboard");
-	}
-
+	/// <summary>
+	/// POST request for removing a <see cref="Field"/>.
+	/// </summary>
+	/// <param name="id">References the <see cref="Field"/> to remove.</param>
+	/// <returns>Redirected to <see cref="DashboardController.Fields"/>.</returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id)
 	{
-		if (await this.context.Fields.FindAsync(id) is not Field field)
-		{
-			return this.BadRequest("Could not find specified field.");
-		}
-
-		this.context.Fields.Remove(field);
-
-		await this.context.SaveChangesAsync();
+		await this.fieldRepository.RemoveAsync(id);
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Fields),

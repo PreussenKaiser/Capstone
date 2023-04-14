@@ -3,28 +3,31 @@ using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.ViewModels;
+using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
 
 namespace Scheduler.ViewComponents;
 
 public sealed class CalendarViewComponent : ViewComponent
 {
 	/// <summary>
-	/// The database to query.
+	/// The repository to query events with.
 	/// </summary>
-	private readonly SchedulerContext context;
+	private readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
-	/// Initializes the <see cref="CalendarController"/> class.
+	/// Initalizes the <see cref="CalendarViewComponent"/> class.
 	/// </summary>
-	/// <param name="logger">Logs controller processes.</param>
-	public CalendarViewComponent(SchedulerContext context)
+	/// <param name="scheduleRepository">The repository to qiery events with.</param>
+	public CalendarViewComponent(IScheduleRepository scheduleRepository)
 	{
-		this.context = context;
+		this.scheduleRepository = scheduleRepository;
 	}
 
 	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
 	{
-		IEnumerable<Event> events = this.context.Events.WithScheduling();
+		GetAllSpecification<Event> searchSpec = new();
+		IEnumerable<Event> events = await this.scheduleRepository.SearchAsync(searchSpec);
 
 		int currentYear;
 

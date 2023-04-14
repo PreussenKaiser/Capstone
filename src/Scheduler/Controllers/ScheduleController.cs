@@ -5,6 +5,8 @@ using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
+using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
 
 namespace Scheduler.Web.Controllers;
 
@@ -15,17 +17,17 @@ namespace Scheduler.Web.Controllers;
 public sealed class ScheduleController : Controller
 {
 	/// <summary>
-	/// The database to query.
+	/// The repository to execute queries and commands against.
 	/// </summary>
-	private readonly SchedulerContext context;
+	private readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
 	/// Initializes the <see cref="ScheduleController"/> class.
 	/// </summary>
-	/// <param name="context">The database to query.</param>
-	public ScheduleController(SchedulerContext context)
+	/// <param name="scheduleRepository">The repository to execute queries and commands against.</param>
+	public ScheduleController(IScheduleRepository scheduleRepository)
 	{
-		this.context = context;
+		this.scheduleRepository = scheduleRepository;
 	}
 
 	/// <summary>
@@ -48,6 +50,7 @@ public sealed class ScheduleController : Controller
 	{
 		this.ViewData["enteredDate"] = date;
 		this.ViewData["field"] = field;
+
 		return this.View();
 	}
 
@@ -60,9 +63,11 @@ public sealed class ScheduleController : Controller
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
-		Event? scheduledEvent = await this.context.Events
-			.WithScheduling()
-			.FirstOrDefaultAsync(e => e.Id == id);
+		ByIdSpecification<Event> byIdSpec = new(id);
+
+		Event? scheduledEvent = (await this.scheduleRepository
+			.SearchAsync(byIdSpec))
+			.FirstOrDefault();
 
 		if (scheduledEvent is null)
 		{
@@ -82,19 +87,28 @@ public abstract class ScheduleController<TEvent> : Controller
 	where TEvent : Event
 {
 	/// <summary>
-	/// The database to query.
+	/// The repository to execute queries and commands against.
 	/// </summary>
-	protected readonly SchedulerContext context;
+	protected readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
 	/// Initializes the <see cref="ScheduleController{TEvent}"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	protected ScheduleController(SchedulerContext context)
+	/// <param name="scheduleRepository">The repository to execute queries and commands against.</param>
+	protected ScheduleController(IScheduleRepository scheduleRepository)
 	{
-		this.context = context;
+		this.scheduleRepository = scheduleRepository;
 	}
 
+	/// <summary>
+	/// POST request for scheduling an event.
+	/// </summary>
+	/// <param name="scheduledEvent"><see cref="Event"/> values.</param>
+	/// <returns>
+	/// Redirected to <see cref="ScheduleController.Details(Guid)"/> if valid.
+	/// Redirected to <see cref="ScheduleController{TEvent}.Schedule(TEvent)"/> if invalid.
+	/// </returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Schedule(TEvent scheduledEvent)
@@ -106,23 +120,28 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.View("~/Views/Schedule/Index.cshtml", scheduledEvent);
 		}
 
-		scheduledEvent.Relocate(await this.context.Fields
-			.AsTracking()
-			.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
-			.ToArrayAsync());
-
-		await this.context.Events.AddAsync(scheduledEvent);
-
-		await this.context.SaveChangesAsync();
+		await this.scheduleRepository.ScheduleAsync(scheduledEvent);
 
 		return this.DetailsSuccess(scheduledEvent.Id);
 	}
 
+	/// <summary>
+	/// POST request for editing the details of a scheduled <see cref="Event"/>.
+	/// </summary>
+	/// <param name="values"><see cref="Event"/> values as well as the <see cref="Event"/> to edit.</param>
+	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public abstract Task<IActionResult> EditDetails(TEvent values);
 
-	[HttpPost]
+	/// <summary>
+	/// Reschedules a scheduled <see cref="Event"/>.
+	/// </summary>
+	/// <param name="values"><see cref="Event"/> values as well as the <see cref="Event"/> to reschedule.</param>
+	/// <returns>
+	/// Redirected to <see cref="ScheduleController.Details(Guid)"/> if valid.
+	/// Redirected to <see cref="ScheduleController{TEvent}.Schedule(TEvent)"/> if invalid.
+	/// </returns>	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Reschedule(TEvent values)
 	{
@@ -131,26 +150,16 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		Event? scheduledEvent = await this.context.Events
-			.AsTracking()
-			.Include(g => g.Recurrence)
-			.FirstOrDefaultAsync(g => g.Id == values.Id);
+		await this.scheduleRepository.RescheduleAsync(values);
 
-		if (scheduledEvent is null)
-		{
-			return this.BadRequest();
-		}
-
-		scheduledEvent.Reschedule(
-			values.StartDate,
-			values.EndDate,
-			values.Recurrence);
-
-		await this.context.SaveChangesAsync();
-
-		return this.DetailsSuccess(scheduledEvent.Id);
+		return this.DetailsSuccess(values.Id);
 	}
 
+	/// <summary>
+	/// POST request for relocating a scheduled <see cref="Event"/>.
+	/// </summary>
+	/// <param name="values"></param>
+	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Relocate(TEvent values)
@@ -160,40 +169,22 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		Event? scheduledEvent = await this.context.Events
-			.AsTracking()
-			.Include(g => g.Fields)
-			.FirstOrDefaultAsync(e => e.Id == values.Id);
-
-		if (scheduledEvent is null)
-		{
-			return this.BadRequest();
-		}
-
-		scheduledEvent.Relocate(await this.context.Fields
-			.AsTracking()
-			.Where(f => values.FieldIds.Contains(f.Id))
-			.ToArrayAsync());
-
-		await this.context.SaveChangesAsync();
+		await this.scheduleRepository.RelocateAsync(values);
 
 		return this.DetailsSuccess(values.Id);
 	}
 
+	/// <summary>
+	/// POST request for canceling a scheduled <see cref="Event"/>.
+	/// </summary>
+	/// <param name="id">References the <see cref="Event"/> to cancel.</param>
+	/// <returns>Redirected to <see cref="DashboardController.Events(string?, string?)"/>.</returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Cancel(Guid id)
 	{
-		Event? scheduledEvent = await this.context.Events.FindAsync(id);
-
-		if (scheduledEvent is null)
-		{
-			return this.BadRequest();
-		}
-
-		this.context.Events.Remove(scheduledEvent);
-
-		await this.context.SaveChangesAsync();
+		ByIdSpecification<Event> byIdSpec = new(id);
+		await this.scheduleRepository.CancelAsync(byIdSpec);
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Events),

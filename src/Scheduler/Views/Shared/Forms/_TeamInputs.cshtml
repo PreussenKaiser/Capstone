@@ -1,9 +1,11 @@
-﻿@using Scheduler.Infrastructure.Persistence;
+@using Scheduler.Infrastructure.Persistence;
 @using Scheduler.Infrastructure.Extensions;
 @using Microsoft.AspNetCore.Identity;
 @using System.Security.Claims;
+@using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Specifications;
 
-@inject SchedulerContext Scheduler
+@inject ILeagueRepository LeagueRepository
 @model Team
 
 @if (this.Model is not null)
@@ -37,8 +39,7 @@
         <label asp-for="LeagueId" class="form-label"></label>
         <select class="form-select"
                 asp-for="LeagueId"
-                asp-items="this.Scheduler.Leagues
-                    .ToList()
+                asp-items="(await this.LeagueRepository.SearchAsync(new GetAllSpecification<League>()))
                     .Select(league => new SelectListItem
                     {
                         Text = league.Name,

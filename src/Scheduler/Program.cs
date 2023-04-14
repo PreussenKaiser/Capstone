@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
-using Scheduler.Filters;
+using Scheduler.Domain.Repositories;
 using Scheduler.Infrastructure.Persistence;
+using Scheduler.Infrastructure.Repositories;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -19,7 +20,11 @@ string connectionString = builder.Configuration.GetConnectionString(CONN)
 builder.Services
 	.AddDbContext<SchedulerContext>(o => o
 		.UseSqlServer(connectionString)
-		.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+		.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking))
+	.AddScoped<IScheduleRepository, ScheduleRepository>()
+	.AddScoped<IFieldRepository, FieldRepository>()
+	.AddScoped<ILeagueRepository, LeagueRepository>()
+	.AddScoped<ITeamRepository, TeamRepository>();
 
 // Configure identity
 builder.Services

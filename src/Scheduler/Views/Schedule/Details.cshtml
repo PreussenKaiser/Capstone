@@ -1,11 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using Microsoft.EntityFrameworkCore;
-@using Scheduler.Infrastructure.Persistence;
+@using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Specifications;
 @using System.Security.Claims;
 @using System.Text;
 
 @inject UserManager<User> UserManager
-@inject SchedulerContext Scheduler
+@inject ITeamRepository TeamRepository
+@inject IFieldRepository FieldRepository
+
 @model Event
 
 @{
@@ -19,13 +22,12 @@
     bool canEdit = this.User.IsInRole(Role.ADMIN) ||
                    this.UserManager.GetUserId(this.User) == this.Model.UserId.ToString();
 
-    IEnumerable<SelectListItem> fieldList = this.Scheduler.Fields
+    IEnumerable<SelectListItem> fieldList = (await this.FieldRepository.SearchAsync(new GetAllSpecification<Field>()))
         .Select(f => new SelectListItem
         {
             Text = f.Name,
             Value = f.Id.ToString()
-        })
-        .ToList();
+        });
 }
 
 <div class="row">
@@ -87,8 +89,12 @@
                         <div class="col-6">
                             @if (this.Model is Practice practice)
                             {
-                                Team? team = await this.Scheduler.Teams.FindAsync(practice.TeamId);
-                                
+                                ByIdSpecification<Team> byIdSpec = new(practice.TeamId);
+
+                                Team? team = (await this.TeamRepository
+                                    .SearchAsync(byIdSpec))
+                                    .FirstOrDefault();
+
                                 if (team is not null)
                                 {                                
                                     <h6>Team</h6>
@@ -97,8 +103,16 @@
                             }
                             else if (this.Model is Game game)
                             {
-                                Team? homeTeam = await this.Scheduler.Teams.FindAsync(game.HomeTeamId);
-                                Team? opposingTeam = await this.Scheduler.Teams.FindAsync(game.OpposingTeamId);
+                                ByIdSpecification<Team> byHomeIdSpec = new(game.HomeTeamId);
+                                ByIdSpecification<Team> byOpposingIdSpec = new(game.OpposingTeamId);
+
+                                Team? homeTeam = (await this.TeamRepository
+                                    .SearchAsync(byHomeIdSpec))
+                                    .FirstOrDefault();
+
+                                Team? opposingTeam = (await this.TeamRepository
+                                    .SearchAsync(byOpposingIdSpec))
+                                    .FirstOrDefault();
 
                                 if (homeTeam is not null &&
                                     opposingTeam is not null)
