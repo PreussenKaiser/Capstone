@@ -6,6 +6,7 @@ using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
 using Scheduler.Filters;
+using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
 
@@ -22,6 +23,8 @@ public sealed class TeamController : Controller
 	{
 		this.context = context;
 		this.userManager = userManager;
+	}
+
 	/// <summary>
 	/// The repository to query and execute commands with.
 	/// </summary>
