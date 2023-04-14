@@ -8,6 +8,7 @@ using Scheduler.Domain.Specifications;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
+using System.Linq;
 
 namespace Scheduler.Web.Controllers;
 
@@ -186,6 +187,20 @@ public sealed class DashboardController : Controller
 		if (searchTerm is not null)
 		{
 			events = events.Where(e => e.Name.Contains(searchTerm));
+		}
+
+		if (teamName is not null)
+		{
+			IEnumerable<Team> teamList = this.context.Teams;
+
+			Team selectedTeam = teamList.FirstOrDefault(t => t.Name.Contains(teamName));
+
+			if (selectedTeam != null)
+			{
+				IEnumerable<Event> matchingGames = events.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
+				IEnumerable<Event> matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
+				events = (IQueryable<Event>)Enumerable.Concat(matchingGames.AsEnumerable(), matchingPractices.AsEnumerable()).Distinct();
+			}			
 		}
 
 		ViewData["Teams"] = await this.context.Teams.ToListAsync();

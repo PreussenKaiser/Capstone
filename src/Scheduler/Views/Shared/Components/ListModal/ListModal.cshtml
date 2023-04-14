@@ -30,8 +30,12 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Name</label>
+                                        <label class="form-label">Event Name</label>
                                         <input type="text" name="searchTerm" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Team Name</label>
+                                        <input type="text" name="teamName" class="form-control" />
                                     </div>
                                 </ul>
                             </div>
@@ -63,7 +67,8 @@
                 searchTerm: e.searchTerm.value,
                 type: e.type.value,
                 start: '@startTime.ToString()',
-                end: '@endTime.ToString()'
+                end: '@endTime.ToString()',
+                teamName: e.teamName.value
             },
             success: function(data) {
                 $("#modalTable").html(data);
@@ -78,7 +83,8 @@
                 searchTerm: '',
                 type: 'Event',
                 start: '@startTime.ToString()',
-                end: '@endTime.ToString()'
+                end: '@endTime.ToString()',
+                teamName: ''
             },
             success: function(data) {
                 $("#modalTable").html(data);

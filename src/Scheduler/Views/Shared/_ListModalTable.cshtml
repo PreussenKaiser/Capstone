@@ -2,6 +2,7 @@
 
 @{
     IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
+    string teamName = (string)ViewData["teamName"];
 }
 
 @if (Model != null && Model.Count() > 0)
