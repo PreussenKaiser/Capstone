@@ -12,7 +12,7 @@ public class AllSpecificationTests
 	/// <summary>
 	/// <see cref="Entity"/> subclass for testing purposes.
 	/// </summary>
-	private sealed record ExampleEntity : Entity;
+	private sealed class ExampleEntity : Entity { }
 
 	/// <summary>
 	/// Asserts that the specification passes (as it always should).

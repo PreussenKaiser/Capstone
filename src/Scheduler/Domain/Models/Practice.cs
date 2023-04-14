@@ -5,7 +5,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents a practice game.
 /// </summary>
-public sealed record Practice : Event
+public sealed class Practice : Event
 {
 	/// <summary>
 	/// Initializes the <see cref="Practice"/> record.

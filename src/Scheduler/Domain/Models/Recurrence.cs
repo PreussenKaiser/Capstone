@@ -5,7 +5,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents a pattern of recurrence.
 /// </summary>
-public sealed record Recurrence : Entity
+public sealed class Recurrence : Entity
 {
 	/// <summary>
 	/// Initializes the <see cref="Recurrence"/> record.

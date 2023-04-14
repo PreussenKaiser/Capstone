@@ -9,7 +9,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents an event held at the facility.
 /// </summary>
-public record Event : Entity, IValidatableObject
+public class Event : Entity, IValidatableObject
 {
 	/// <summary>
 	/// Initializes the <see cref="Event"/> record.
@@ -118,20 +118,6 @@ public record Event : Entity, IValidatableObject
 		if (this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 22)
 		{
 			results.Add(new("Event Times must be between 8 am and 11 pm."));
-		}
-
-		this.Relocate(context.Fields
-			.Where(f => this.FieldIds.Contains(f.Id))
-			.ToArray());
-
-		Event? conflict = this
-			?.FindConflict(context.Events
-			.WithScheduling()
-			.ToList());
-
-		if (conflict is not null)
-		{
-			results.Add(new("An event is already scheduled for that date"));
 		}
 
 		return results;

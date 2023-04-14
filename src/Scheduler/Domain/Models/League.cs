@@ -5,7 +5,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents a PCYS league.
 /// </summary>
-public sealed record League : Entity
+public sealed class League : Entity
 {
 	/// <summary>
 	/// Initializes the <see cref="League"/> record.

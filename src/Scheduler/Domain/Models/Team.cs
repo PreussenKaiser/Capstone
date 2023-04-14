@@ -5,7 +5,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents a team playing in the facility.
 /// </summary>
-public sealed record Team : Entity
+public sealed class Team : Entity
 {
 	/// <summary>
 	/// References <see cref="League.Id"/>.
