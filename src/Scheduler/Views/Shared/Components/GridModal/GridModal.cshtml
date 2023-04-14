@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity;
+@inject UserManager<User> UserManager;
+@{    
     IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
     IEnumerable<Field> fields = (IEnumerable<Field>)this.ViewData["Fields"];
     string title = this.ViewData["Title"].ToString();
@@ -65,6 +67,9 @@
                             }
                             if (hour > 7 && hour < 23)
                             {
+                                Guid eventId = Guid.NewGuid();
+                                Guid userId = Guid.NewGuid();
+
                                 <tr>
                                     <td>@timestring</td>
 
@@ -104,6 +109,8 @@
                                                         if (ed > cd)
                                                         {
                                                             eventhit = 1;
+                                                            eventId = e.Id;
+                                                            userId = e.UserId;
                                                         }
 
                                                         // Event ends on current day
@@ -113,12 +120,16 @@
                                                             if (eh > hour)
                                                             {
                                                                 eventhit = 1;
+                                                                eventId = e.Id;
+                                                                userId = e.UserId;
                                                             }
 
                                                             // Event ends at half-hour of current hour
                                                             if (eh == hour && halfHour == 0 && em == 30)
                                                             {
                                                                 eventhit = 1;
+                                                                eventId = e.Id;
+                                                                userId = e.UserId;
                                                             }
                                                         }
                                                     }
@@ -136,6 +147,8 @@
                                                                 if (sm == halfHour)
                                                                 {
                                                                     eventhit = 1;
+                                                                    eventId = e.Id;
+                                                                    userId = e.UserId;
                                                                 }
 
                                                                 // Event starts at the top of the current hour and ends
@@ -143,6 +156,8 @@
                                                                 if (sm == 0 && halfHour == 30)
                                                                 {
                                                                     eventhit = 1;
+                                                                    eventId = e.Id;
+                                                                    userId = e.UserId;
                                                                 }
                                                             }
 
@@ -150,6 +165,8 @@
                                                             if (sh < hour)
                                                             {
                                                                 eventhit = 1;
+                                                                eventId = e.Id;
+                                                                userId = e.UserId;
                                                             }
                                                         }
 
@@ -163,12 +180,16 @@
                                                                 if (eh > hour)
                                                                 {
                                                                     eventhit = 1;
+                                                                    eventId = e.Id;
+                                                                    userId = e.UserId;
                                                                 }
 
                                                                 // Event ends at the half-hour of the current hour
                                                                 if (eh == hour && em == 30 && halfHour == 0)
                                                                 {
                                                                     eventhit = 1;
+                                                                    eventId = e.Id;
+                                                                    userId = e.UserId;
                                                                 }
                                                             }
 
@@ -182,12 +203,16 @@
                                                                     if (eh == hour && em == 30)
                                                                     {
                                                                         eventhit = 1;
+                                                                        eventId = e.Id;
+                                                                        userId = e.UserId;
                                                                     }
 
                                                                     // Event starts at top of hour
                                                                     if (sm == 0)
                                                                     {
                                                                         eventhit = 1;
+                                                                        eventId = e.Id;
+                                                                        userId = e.UserId;
                                                                     }
                                                                 }
 
@@ -199,12 +224,16 @@
                                                                     if (sm == 0 && eh > hour)
                                                                     {
                                                                         eventhit = 1;
+                                                                        eventId = e.Id;
+                                                                        userId = e.UserId;
                                                                     }
 
                                                                     // Event starts at the bottom of the current hour
                                                                     if (sm == 30)
                                                                     {
                                                                         eventhit = 1;
+                                                                        eventId = e.Id;
+                                                                        userId = e.UserId;
                                                                     }
                                                                 }
                                                             }
@@ -239,7 +268,18 @@
                                         {
                                             if (squareDate > DateTime.Now)
                                             {
-                                                <td class="bg-danger"></td>
+                                                @if (this.User.IsInRole(Role.ADMIN))
+                                                {
+                                                    <td class="bg-danger"><a asp-action="Details" asp-controller="Schedule" asp-route-id="@eventId">*</a></td>
+                                                }
+                                                else if (this.UserManager.GetUserAsync(this.User).Result?.Id == userId)
+                                                {
+                                                    <td style="background-color:darkred"><a asp-action="Details" asp-controller="Schedule" asp-route-id="@eventId">*</a></td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="bg-danger"></td>
+                                                }
                                             }
                                             else
                                             {
