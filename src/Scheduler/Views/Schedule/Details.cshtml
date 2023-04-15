@@ -158,14 +158,20 @@
                                                     <span asp-validation-for="EndDate" class="text-danger"></span>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <div class="form-check mb-3">
-                                                        @*<input checked="@(this.Model.Recurrence is not null)" type="checkbox" class="form-check-input" id="recurrenceCheck">
-                                                        <label class="form-check-label">Repeating?</label>*@
-                                                    </div>
                                                     <div id="recurrenceInputs">
                                                         @if (this.Model.Recurrence is not null)
                                                         {
-                                                            <partial name="Forms/_RecurrenceInputs" />
+                                                            <div class="row mb-3">
+                                                                <div class="col-6">
+                                                                    <label asp-for="Recurrence!.Type" class="form-label"></label>
+                                                                    <select asp-for="Recurrence!.Type" asp-items="@this.Html.GetEnumSelectList<RecurrenceType>()" class="form-control" disabled></select>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <label asp-for="Recurrence.Occurrences" class="form-label"></label>
+                                                                    <input type="number" asp-for="Recurrence!.Occurrences" class="form-control" readonly />
+                                                                    <span asp-validation-for="Recurrence.Occurrences" class="text-danger"></span>
+                                                                </div>
+                                                            </div>
                                                         }
                                                     </div>
                                                 </div>

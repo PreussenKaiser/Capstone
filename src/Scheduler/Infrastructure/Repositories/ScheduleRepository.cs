@@ -34,8 +34,9 @@ public sealed class ScheduleRepository : IScheduleRepository
 			.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
 			.ToArrayAsync());
 
+		IEnumerable<TEvent> schedule = scheduledEvent.GenerateSchedule<TEvent>();
 
-		await this.context.Events.AddAsync(scheduledEvent);
+		await this.context.Events.AddRangeAsync(schedule);
 
 		await this.context.SaveChangesAsync();
 	}
