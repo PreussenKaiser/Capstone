@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications.Events;
+using Scheduler.Domain.Specifications;
 using Scheduler.Filters;
-using Scheduler.Infrastructure.Persistence;
+using Scheduler.ViewModels;
+using Scheduler.Extensions;
 
 namespace Scheduler.Web.Controllers;
 
@@ -17,8 +20,9 @@ public sealed class PracticeController : ScheduleController<Practice>
 	/// Initializes the <see cref="PracticeController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	public PracticeController(SchedulerContext context)
-		: base(context)
+	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
+	public PracticeController(IScheduleRepository scheduleRepository)
+		: base(scheduleRepository)
 	{
 	}
 
@@ -29,33 +33,22 @@ public sealed class PracticeController : ScheduleController<Practice>
 	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public override async Task<IActionResult> EditDetails(Practice values)
+	public override async Task<IActionResult> EditDetails(
+		Practice values, UpdateType updateType)
 	{
 		if (!this.ModelState.IsValid)
 		{
-			return this.DetailsError(values);
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		Practice? practice = await this.context.Practices
-			.AsTracking()
-			.FirstOrDefaultAsync(g => g.Id == values.Id);
+		Specification<Event> updateSpec = updateType.ToSpecification(values);
 
-		if (practice is null)
-		{
-			return this.BadRequest();
-		}
+		await this.scheduleRepository.EditPracticeDetails(
+			values, updateSpec);
 
-		Team? practicingTeam = await this.context.Teams
-			.AsTracking()
-			.FirstOrDefaultAsync(t => t.Id == values.TeamId);
-
-		if (practicingTeam is not null)
-		{
-			practice.EditDetails(practicingTeam, values.Name);
-
-			await this.context.SaveChangesAsync();
-		}
-
-		return this.RedirectToAction("Details", "Schedule", new { practice.Id });
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 }

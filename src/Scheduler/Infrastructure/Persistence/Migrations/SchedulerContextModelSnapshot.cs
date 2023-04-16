@@ -22,21 +22,6 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EventField", b =>
-                {
-                    b.Property<Guid>("EventsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FieldsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("EventsId", "FieldsId");
-
-                    b.HasIndex("FieldsId");
-
-                    b.ToTable("EventField");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
@@ -129,7 +114,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         new
                         {
                             UserId = new Guid("9e55284c-a2ba-425f-be26-a18e384668a7"),
-                            RoleId = new Guid("1d01aab9-71cb-48b4-a9eb-6158654c93d8")
+                            RoleId = new Guid("29a00391-5b39-48dd-acb7-47b94bcded24")
                         });
                 });
 
@@ -161,13 +146,21 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsBlackout")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
+
+                    b.Property<Guid>("RecurrenceId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -176,6 +169,10 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasIndex("RecurrenceId");
 
                     b.ToTable("Events");
 
@@ -216,17 +213,17 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1d7617a9-e21e-4424-aa3a-92758efa6200"),
+                            Id = new Guid("76a4418f-f96e-41c3-9505-6792fd4754dd"),
                             Name = "Recreation"
                         },
                         new
                         {
-                            Id = new Guid("8b633d7c-e605-4cc0-ba94-e933f4e288a6"),
+                            Id = new Guid("4f0c0db6-bcd1-4991-b2f5-62d2429da807"),
                             Name = "Classic"
                         },
                         new
                         {
-                            Id = new Guid("ad38d50e-3670-416d-a5be-d9a84cea55ad"),
+                            Id = new Guid("afb0de0a-30b9-4312-93ce-624f939fbe74"),
                             Name = "Select"
                         });
                 });
@@ -234,6 +231,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Scheduler.Domain.Models.Recurrence", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte>("Occurrences")
@@ -278,14 +276,14 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
-                            ConcurrencyStamp = "059420df-9f33-407b-a8c6-1aa60c544098",
+                            ConcurrencyStamp = "61ad4ade-bd55-4c71-8c15-145a97ae2e36",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("1d01aab9-71cb-48b4-a9eb-6158654c93d8"),
-                            ConcurrencyStamp = "b17a6f46-8bfd-46bc-ad1c-2fdd6792fde1",
+                            Id = new Guid("29a00391-5b39-48dd-acb7-47b94bcded24"),
+                            ConcurrencyStamp = "a2d79844-6c19-441b-84b4-a7e4a3232a53",
                             Name = "Coach",
                             NormalizedName = "Coach"
                         });
@@ -395,7 +393,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1a2519a6-9554-4ced-9afc-fbac67ec8cd3",
+                            ConcurrencyStamp = "2e7a6a03-4ad9-4d02-b4ce-ca39456a81fd",
                             Email = "teamnull@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Team",
@@ -403,9 +401,9 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NeedsNewPassword = false,
                             NormalizedUserName = "TEAMNULL@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHwKbHWuNMvq3uPogouRdlXg7lj7ax/m2eVsDyg7umWR4PGg773fMhv3bEyWeX/Vnw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHAOmhim5q3JKKqK9OO7Gqs706fsrzSfEfgYWKpTctZhZc1x20jNZV5rRaws4iVk5w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5c0e4d2a-3916-4722-a2c5-8c3df59f741c",
+                            SecurityStamp = "a2580011-ced7-47f3-a197-3606cc8ee6bb",
                             TwoFactorEnabled = false,
                             UserName = "teamnull@gmail.com"
                         },
@@ -413,7 +411,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("9e55284c-a2ba-425f-be26-a18e384668a7"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c678b59e-091c-421d-8452-f786ba8b4fbb",
+                            ConcurrencyStamp = "ddbb9b77-50bd-4731-808b-4c9adff4e93d",
                             Email = "johncoach@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "John",
@@ -421,9 +419,9 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NeedsNewPassword = false,
                             NormalizedUserName = "JOHNCOACH@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHops0eMXDCD7zfw24vLLDyOlxs832KtEPgxOLFH+PkpWwHpjF0WmpapdbtIlHUNiw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHq1H7PPmS5PzJC4Mf0KIR/JYPJ+uDXUMI3hK2R7pbx5xwgq3OqasqBKAN4QkEQBLA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "201e46f5-1de4-4ed2-811d-8b3bab2a25a3",
+                            SecurityStamp = "c67888df-0494-45c0-a165-97f34949db9e",
                             TwoFactorEnabled = false,
                             UserName = "johncoach@gmail.com"
                         });
@@ -456,21 +454,6 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("Practices");
-                });
-
-            modelBuilder.Entity("EventField", b =>
-                {
-                    b.HasOne("Scheduler.Domain.Models.Event", null)
-                        .WithMany()
-                        .HasForeignKey("EventsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Scheduler.Domain.Models.Field", null)
-                        .WithMany()
-                        .HasForeignKey("FieldsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -524,15 +507,21 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Scheduler.Domain.Models.Recurrence", b =>
+            modelBuilder.Entity("Scheduler.Domain.Models.Event", b =>
                 {
-                    b.HasOne("Scheduler.Domain.Models.Event", "Event")
-                        .WithOne("Recurrence")
-                        .HasForeignKey("Scheduler.Domain.Models.Recurrence", "Id")
+                    b.HasOne("Scheduler.Domain.Models.Field", "Field")
+                        .WithMany("Events")
+                        .HasForeignKey("FieldId");
+
+                    b.HasOne("Scheduler.Domain.Models.Recurrence", "Recurrence")
+                        .WithMany("Events")
+                        .HasForeignKey("RecurrenceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Event");
+                    b.Navigation("Field");
+
+                    b.Navigation("Recurrence");
                 });
 
             modelBuilder.Entity("Scheduler.Domain.Models.Team", b =>
@@ -588,9 +577,14 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("Scheduler.Domain.Models.Event", b =>
+            modelBuilder.Entity("Scheduler.Domain.Models.Field", b =>
                 {
-                    b.Navigation("Recurrence");
+                    b.Navigation("Events");
+                });
+
+            modelBuilder.Entity("Scheduler.Domain.Models.Recurrence", b =>
+                {
+                    b.Navigation("Events");
                 });
 #pragma warning restore 612, 618
         }

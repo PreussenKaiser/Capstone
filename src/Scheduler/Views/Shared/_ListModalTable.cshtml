@@ -28,26 +28,21 @@
                     <td>@e.Name</td>
                     <td>@this.Html.DisplayFor(x => e.StartDate)</td>
                     <td>@this.Html.DisplayFor(x => e.EndDate)</td>
+
                     @if (e.IsBlackout)
                     {
                         <td>Entire Facility</td>
                     }
                     else
                     {
-                        @if(e.Fields.Count != 0)
-                        {
-                            <td>@e.Fields.FirstOrDefault().Name</td>
-                        }
-                        else
-                        {
-                            <td></td>
-                        }
+                        <td>@e.Field?.Name</td>
                         
                     }
                     @if (e is Game game)
                     {
                         Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
                         Team? awayTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+
                         <td>@homeTeam.Name</td>
                         <td>@awayTeam.Name</td>
                     }

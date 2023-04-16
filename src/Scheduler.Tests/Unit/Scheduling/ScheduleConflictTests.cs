@@ -3,7 +3,7 @@ using Scheduler.Domain.Utility;
 using Scheduler.Domain.Validation;
 using Xunit;
 
-namespace Scheduler.Tests.Unit;
+namespace Scheduler.Tests.Unit.Scheduling;
 
 /// <summary>
 /// Tests collision detection for scheduled events.
@@ -18,13 +18,13 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Fields = SeedData.Fields.Take(2).ToList(),
+			Field = SeedData.Fields.Skip(1).First(),
 			StartDate = new(2023, 03, 24, 13, 0, 0),
 			EndDate = new(2023, 03, 24, 14, 0, 0)
 		};
 
 		Event? conflictingEvent = newEvent.FindConflict(SeedData.Events);
-		
+
 		Assert.NotNull(conflictingEvent);
 	}
 
@@ -36,7 +36,7 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Fields = SeedData.Fields.Take(2).ToList(),
+			Field = SeedData.Fields.Skip(1).First(),
 			StartDate = new(2023, 03, 24, 11, 0, 0),
 			EndDate = new(2023, 03, 24, 13, 0, 0)
 		};
@@ -54,7 +54,7 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Fields = SeedData.Fields.Take(2).ToList(),
+			Field = SeedData.Fields.Skip(1).First(),
 			StartDate = new(2023, 03, 24, 10, 0, 0),
 			EndDate = new(2023, 03, 24, 11, 0, 0)
 		};
@@ -72,7 +72,8 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Fields = SeedData.Fields.Take(1).ToList(),
+			FieldId = SeedData.Fields.Skip(3).First().Id,
+			Field = SeedData.Fields.Skip(3).Last(),
 			StartDate = new(2023, 03, 15, 18, 0, 0),
 			EndDate = new(2023, 03, 15, 19, 0, 0)
 		};
@@ -90,7 +91,7 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Fields = SeedData.Fields.TakeLast(2).ToList(),
+			Field = SeedData.Fields.Last(),
 			StartDate = new(2023, 3, 15, 20, 0, 0),
 			EndDate = new(2023, 3, 15, 20, 30, 0)
 		};

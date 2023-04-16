@@ -1,8 +1,6 @@
 ﻿using Scheduler.Domain.Validation;
-using Scheduler.Infrastructure.Extensions;
-using Scheduler.Infrastructure.Persistence;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace Scheduler.Domain.Models;
 
@@ -17,17 +15,19 @@ public record Event : Entity, IValidatableObject
 	public Event() : base()
 	{
 		this.Name = string.Empty;
-		this.FieldIds = Array.Empty<Guid>();
-		this.Fields = new List<Field>();
 	}
 
 	/// <summary>
 	/// Fields referenced by the <see cref="Event"/>.
 	/// </summary>
-	[NotMapped]
-	[Display(Name = "Fields")]
+	[Display(Name = "Field")]
 	[RequiredIfFalse("IsBlackout", ErrorMessage = "Please select at least one field.")]
-	public Guid[] FieldIds { get; init; }
+	public Guid? FieldId { get; set; }
+
+	/// <summary>
+	/// The recurrence pattern for this <see cref="Event"/>.
+	/// </summary>
+	public Guid RecurrenceId { get; init; }
 
 	/// <summary>
 	/// References the user who created the <see cref="Event"/>.
@@ -72,7 +72,54 @@ public record Event : Entity, IValidatableObject
 	/// <summary>
 	/// Fields where the <see cref="Event"/> happens.
 	/// </summary>
-	public List<Field> Fields { get; init; }
+	public Field? Field { get; set; }
+
+	/// <summary>
+	/// Generates a schedule from this instance using it's recurrence pattern.
+	/// </summary>
+	/// <typeparam name="TEvent">The type of event to schedule.</typeparam>
+	/// <returns>
+	/// The generated scheduled.
+	/// If this instance has no recurrence pattern, a list with this instance is returned.
+	/// </returns>
+	/// <exception cref="UnreachableException"></exception>
+	public IEnumerable<TEvent> GenerateSchedule<TEvent>()
+		where TEvent : Event
+	{
+		ICollection<TEvent> schedule = new List<TEvent> { (TEvent)this };
+
+		if (this.Recurrence is null)
+		{
+			return schedule;
+		}
+
+		(DateTime StartDate, DateTime EndDate) = (this.StartDate, this.EndDate);
+		var count = 1;
+
+		do
+		{
+			(StartDate, EndDate) = this.Recurrence.Type switch
+			{
+				RecurrenceType.Daily => (StartDate.AddDays(1), EndDate.AddDays(1)),
+				RecurrenceType.Weekly => (StartDate.AddDays(7), EndDate.AddDays(7)),
+				RecurrenceType.Monthly => (StartDate.AddMonths(1), EndDate.AddMonths(1)),
+				_ => throw new UnreachableException("How did we get here?")
+			};
+
+			TEvent clone = (TEvent)this.MemberwiseClone();
+
+			clone.Id = Guid.NewGuid();
+			clone.StartDate = StartDate;
+			clone.EndDate = EndDate;
+
+			schedule.Add(clone);
+
+			count++;
+		}
+		while (count < this.Recurrence?.Occurrences);
+
+		return schedule;
+	}
 
 	/// <summary>
 	/// Reschedules the <see cref="Event"/>.
@@ -82,22 +129,10 @@ public record Event : Entity, IValidatableObject
 	/// <param name="recurrence">New recurrence pattern.</param>
 	public void Reschedule(
 		DateTime startDate,
-		DateTime endDate,
-		Recurrence? recurrence = null)
+		DateTime endDate)
 	{
 		this.StartDate = startDate;
 		this.EndDate = endDate;
-		this.Recurrence = recurrence;
-	}
-
-	/// <summary>
-	/// Relocates the event to different fields.
-	/// </summary>
-	/// <param name="fields">New fields.</param>
-	public virtual void Relocate(params Field[] fields)
-	{
-		this.Fields.Clear();
-		this.Fields.AddRange(fields);
 	}
 
 	/// <summary>
@@ -107,7 +142,6 @@ public record Event : Entity, IValidatableObject
 	/// <returns></returns>
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
-		var context = validationContext.GetRequiredService<SchedulerContext>();
 		ICollection<ValidationResult> results = new List<ValidationResult>();
 
 		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
@@ -118,20 +152,6 @@ public record Event : Entity, IValidatableObject
 		if (this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 22)
 		{
 			results.Add(new("Event Times must be between 8 am and 11 pm."));
-		}
-
-		this.Relocate(context.Fields
-			.Where(f => this.FieldIds.Contains(f.Id))
-			.ToArray());
-
-		Event? conflict = this
-			?.FindConflict(context.Events
-			.WithScheduling()
-			.ToList());
-
-		if (conflict is not null)
-		{
-			results.Add(new("An event is already scheduled for that date"));
 		}
 
 		return results;

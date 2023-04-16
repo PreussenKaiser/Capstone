@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
+using Scheduler.Domain.Specifications.Events;
+using Scheduler.Extensions;
 using Scheduler.Filters;
-using Scheduler.Infrastructure.Persistence;
-using Scheduler.Web.ViewModels;
+using Scheduler.ViewModels;
 
 namespace Scheduler.Web.Controllers;
 
@@ -18,8 +20,9 @@ public sealed class EventController : ScheduleController<Event>
 	/// Initializes the <see cref="EventController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	public EventController(SchedulerContext context)
-		: base(context)
+	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
+	public EventController(IScheduleRepository scheduleRepository)
+			: base(scheduleRepository)
 	{
 	}
 
@@ -30,26 +33,23 @@ public sealed class EventController : ScheduleController<Event>
 	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public override async Task<IActionResult> EditDetails(Event values)
+	public override async Task<IActionResult> EditDetails(
+		Event values, UpdateType updateType)
 	{
 		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		Event? scheduledEvent = await this.context.Events
-			.AsTracking()
-			.FirstOrDefaultAsync(g => g.Id == values.Id);
+		Specification<Event> updateSpec = updateType.ToSpecification(values);
 
-		if (scheduledEvent is null)
-		{
-			return this.BadRequest();
-		}
+		await this.scheduleRepository.EditEventDetails(
+			values, updateSpec);
 
-		scheduledEvent.Name = values.Name;
 
-		await this.context.SaveChangesAsync();
-
-		return this.RedirectToAction("Details", "Schedule", new { values.Id });
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 }
