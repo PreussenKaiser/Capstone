@@ -27,7 +27,7 @@ public record Event : Entity, IValidatableObject
 	/// <summary>
 	/// The recurrence pattern for this <see cref="Event"/>.
 	/// </summary>
-	public Guid RecurrenceId { get; init; }
+	public Guid? RecurrenceId { get; init; }
 
 	/// <summary>
 	/// References the user who created the <see cref="Event"/>.

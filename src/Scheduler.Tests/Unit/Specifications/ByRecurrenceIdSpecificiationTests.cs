@@ -17,7 +17,7 @@ public sealed class ByRecurrenceIdSpecificiationTests
 	public void Recurrence_Satisfied()
 	{
 		Event scheduledEvent = SeedData.Events.First();
-		Guid recurrenceId = scheduledEvent.RecurrenceId;
+		Guid recurrenceId = (Guid)scheduledEvent.RecurrenceId;
 		ByRecurrenceIdSpecification byRecurrenceIdSpec = new(recurrenceId);
 
 		bool result = byRecurrenceIdSpec.IsSatisifiedBy(scheduledEvent);
