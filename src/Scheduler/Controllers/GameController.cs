@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
-using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
 using Scheduler.Domain.Repositories;
 using Scheduler.ViewModels;
-using Scheduler.Domain.Specifications.Events;
 using Scheduler.Domain.Specifications;
 using Scheduler.Extensions;
 
@@ -38,14 +35,19 @@ public sealed class GameController : ScheduleController<Game>
 	public override async Task<IActionResult> EditDetails(
 		Game values, UpdateType updateType)
 	{
-		if (this.ModelState.IsValid)
+		if (!this.ModelState.IsValid)
 		{
-			Specification<Event> updateSpec = updateType.ToSpecification(values);
-
-			await this.scheduleRepository.EditGameDetails(
-				values, updateSpec);
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		return this.View("~/Views/Schedule/Details.cshtml", values);
+		Specification<Event> updateSpec = updateType.ToSpecification(values);
+
+		await this.scheduleRepository.EditGameDetails(
+			values, updateSpec);
+
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 }

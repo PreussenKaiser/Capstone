@@ -36,14 +36,20 @@ public sealed class EventController : ScheduleController<Event>
 	public override async Task<IActionResult> EditDetails(
 		Event values, UpdateType updateType)
 	{
-		if (this.ModelState.IsValid)
+		if (!this.ModelState.IsValid)
 		{
-			Specification<Event> updateSpec = updateType.ToSpecification(values);
-
-			await this.scheduleRepository.EditEventDetails(
-				values, updateSpec);
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		return this.View("~/Views/Schedule/Details.cshtml", values);
+		Specification<Event> updateSpec = updateType.ToSpecification(values);
+
+		await this.scheduleRepository.EditEventDetails(
+			values, updateSpec);
+
+
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 }

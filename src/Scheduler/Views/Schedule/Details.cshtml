@@ -267,9 +267,9 @@
                                                         <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label asp-for="FieldIds" class="form-label"></label>
-                                                        <select data-val="false" asp-for="FieldIds" asp-items="fieldList" class="form-select" multiple size="6"></select>
-                                                        <span asp-validation-for="FieldIds" class="text-danger"></span>
+                                                        <label asp-for="FieldId" class="form-label"></label>
+                                                        <select data-val="false" asp-for="FieldId" asp-items="fieldList" class="form-select"></select>
+                                                        <span asp-validation-for="FieldId" class="text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
@@ -287,7 +287,7 @@
                         }
                     </div>
                     <h6>Field(s)</h6>
-                    @string.Join(", ", this.Model.Fields.Select(f => f.Name))
+                    @this.Model.Field?.Name
                 </li>
             </ul>
         </form>

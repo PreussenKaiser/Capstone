@@ -34,18 +34,18 @@
                         {
                             string timestring = "";
 
-                            if(hour == 0)
+                            if (hour == 0)
                             {
                                 timestring += "12";
                             }
 
-                            if(hour < 13 && hour != 0)
+                            if (hour < 13 && hour != 0)
                             {
                                 timestring += hour;
                             }
                             else
                             {
-                                if(hour != 0)
+                                if (hour != 0)
                                 {
                                     timestring += (hour - 12); 
                                 }
@@ -74,16 +74,9 @@
 
                                         foreach (var e in events)
                                         {
-                                            IEnumerable<Field> fieldIteration;
-
-                                            if (e.IsBlackout == true)
-                                            {
-                                                fieldIteration = fields;
-                                            }
-                                            else
-                                            {
-                                                fieldIteration = e.Fields;
-                                            }
+                                            IEnumerable<Field>  fieldIteration = e.IsBlackout
+                                                ? fields
+                                                : new List<Field> { e.Field };
 
                                             foreach (var ff in fieldIteration)
                                             {

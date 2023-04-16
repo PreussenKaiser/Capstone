@@ -113,11 +113,11 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="mb-3">
-                        <label asp-for="FieldIds" class="form-label"></label>
-                        <select data-val="false" class="form-select" multiple size="6" asp-for="FieldIds" asp-items="fields">
+                        <label asp-for="FieldId" class="form-label"></label>
+                        <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields">
 
                         </select>
-                        <span asp-validation-for="FieldIds" class="text-danger"></span>
+                        <span asp-validation-for="FieldId" class="text-danger"></span>
                     </div>
                     <div class="col-lg">
                         <label class="form-label">Event Time</label>

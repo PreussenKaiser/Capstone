@@ -1,8 +1,5 @@
 ﻿using Scheduler.Domain.Validation;
-using Scheduler.Infrastructure.Extensions;
-using Scheduler.Infrastructure.Persistence;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
 namespace Scheduler.Domain.Models;
@@ -18,17 +15,14 @@ public record Event : Entity, IValidatableObject
 	public Event() : base()
 	{
 		this.Name = string.Empty;
-		this.FieldIds = Array.Empty<Guid>();
-		this.Fields = new List<Field>();
 	}
 
 	/// <summary>
 	/// Fields referenced by the <see cref="Event"/>.
 	/// </summary>
-	[NotMapped]
-	[Display(Name = "Fields")]
+	[Display(Name = "Field")]
 	[RequiredIfFalse("IsBlackout", ErrorMessage = "Please select at least one field.")]
-	public Guid[] FieldIds { get; init; }
+	public Guid? FieldId { get; set; }
 
 	/// <summary>
 	/// The recurrence pattern for this <see cref="Event"/>.
@@ -78,8 +72,17 @@ public record Event : Entity, IValidatableObject
 	/// <summary>
 	/// Fields where the <see cref="Event"/> happens.
 	/// </summary>
-	public List<Field> Fields { get; init; }
+	public Field? Field { get; set; }
 
+	/// <summary>
+	/// Generates a schedule from this instance using it's recurrence pattern.
+	/// </summary>
+	/// <typeparam name="TEvent">The type of event to schedule.</typeparam>
+	/// <returns>
+	/// The generated scheduled.
+	/// If this instance has no recurrence pattern, a list with this instance is returned.
+	/// </returns>
+	/// <exception cref="UnreachableException"></exception>
 	public IEnumerable<TEvent> GenerateSchedule<TEvent>()
 		where TEvent : Event
 	{
@@ -133,23 +136,12 @@ public record Event : Entity, IValidatableObject
 	}
 
 	/// <summary>
-	/// Relocates the event to different fields.
-	/// </summary>
-	/// <param name="fields">New fields.</param>
-	public void Relocate(params Field[] fields)
-	{
-		this.Fields.Clear();
-		this.Fields.AddRange(fields);
-	}
-
-	/// <summary>
 	/// 
 	/// </summary>
 	/// <param name="validationContext"></param>
 	/// <returns></returns>
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
-		var context = validationContext.GetRequiredService<SchedulerContext>();
 		ICollection<ValidationResult> results = new List<ValidationResult>();
 
 		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))

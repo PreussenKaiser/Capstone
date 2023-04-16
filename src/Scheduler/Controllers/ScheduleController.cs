@@ -151,12 +151,17 @@ public abstract class ScheduleController<TEvent> : Controller
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Reschedule(TEvent values)
 	{
-		if (this.ModelState.IsValid)
+		if (!this.ModelState.IsValid)
 		{
-			await this.scheduleRepository.RescheduleAsync(values);
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		return this.View("~/Views/Schedule/Details.cshtml", values);
+		await this.scheduleRepository.RescheduleAsync(values);
+
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 
 	/// <summary>
@@ -169,16 +174,21 @@ public abstract class ScheduleController<TEvent> : Controller
 	public async ValueTask<IActionResult> Relocate(
 		TEvent values, UpdateType updateType)
 	{
-		if (this.ModelState.IsValid)
+		if (!this.ModelState.IsValid)
 		{
-			Specification<Event> relocateSpec = updateType.ToSpecification(values);
-
-			await this.scheduleRepository.RelocateAsync(
-				values, relocateSpec);
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
+		Specification<Event> relocateSpec = updateType.ToSpecification(values);
 
-		return this.View("~/Views/Schedule/Details.cshtml", values);
+		await this.scheduleRepository.RelocateAsync(
+			values, relocateSpec);
+
+
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 
 	/// <summary>
@@ -188,10 +198,18 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <returns>Redirected to <see cref="DashboardController.Events(string?, string?)"/>.</returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Cancel(Guid id)
+	public async Task<IActionResult> Cancel(
+		Guid id, UpdateType updateType)
 	{
+		// TODO: Refactor this, pointless SELECT
 		ByIdSpecification<Event> byIdSpec = new(id);
-		await this.scheduleRepository.CancelAsync(byIdSpec);
+		Event? scheduledEvent = (await this.scheduleRepository
+			.SearchAsync(byIdSpec))
+			.FirstOrDefault();
+
+		Specification<Event> cancelSpec = updateType.ToSpecification(scheduledEvent);
+
+		await this.scheduleRepository.CancelAsync(cancelSpec);
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Events),

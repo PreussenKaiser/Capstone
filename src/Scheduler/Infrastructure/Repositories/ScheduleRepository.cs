@@ -29,11 +29,6 @@ public sealed class ScheduleRepository : IScheduleRepository
 	public async Task ScheduleAsync<TEvent>(TEvent scheduledEvent)
 		where TEvent : Event
 	{
-		scheduledEvent.Relocate(await this.context.Fields
-			.AsTracking()
-			.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
-			.ToArrayAsync());
-
 		IEnumerable<TEvent> schedule = scheduledEvent.GenerateSchedule<TEvent>();
 
 		await this.context.Events.AddRangeAsync(schedule);
@@ -46,7 +41,7 @@ public sealed class ScheduleRepository : IScheduleRepository
 	{
 		IEnumerable<Event> events = await this.context.Events
 			.AsNoTracking()
-			.Include(e => e.Fields)
+			.Include(e => e.Field)
 			.Include(e => e.Recurrence)
 			.Where(searchSpec.ToExpression())
 			.Where(e => e.EndDate > DateTime.Now)
@@ -141,11 +136,7 @@ public sealed class ScheduleRepository : IScheduleRepository
 			.AsTracking()
 			.Where(updateSpec.ToExpression())
 			.ToListAsync())
-			.ForEach(async e => e
-				.Relocate(await this.context.Fields
-					.AsTracking()
-					.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
-					.ToArrayAsync()));
+			.ForEach(e => e.FieldId = scheduledEvent.FieldId);
 
 		await this.context.SaveChangesAsync();
 	}

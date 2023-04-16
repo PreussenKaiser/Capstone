@@ -61,7 +61,7 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 	/// <param name="builder">The API to configure with.</param>
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
-		builder.Entity<Event>().UseTptMappingStrategy();
+		builder.ApplyConfigurationsFromAssembly(typeof(SchedulerContext).Assembly);
 
 		builder.Entity<User>().HasData(SeedData.Users);
 		builder.Entity<Role>().HasData(SeedData.Roles);
