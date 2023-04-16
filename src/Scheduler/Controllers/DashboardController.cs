@@ -199,7 +199,7 @@ public sealed class DashboardController : Controller
 			{
 				IEnumerable<Event> matchingGames = events.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
 				IEnumerable<Event> matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
-				events = (IQueryable<Event>)Enumerable.Concat(matchingGames.AsEnumerable(), matchingPractices.AsEnumerable()).Distinct();
+				events = (IQueryable<Event>)matchingGames.Concat(matchingPractices);
 			}			
 		}
 
