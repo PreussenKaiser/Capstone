@@ -182,7 +182,7 @@ public sealed class DashboardController : Controller
         this.ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
         this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
         this.ViewData["Start"] = eventDate; //12:00 AM on the selected day.
-        this.this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
+        this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
 		ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
 		return this.ViewComponent("ListModal");
 	}
