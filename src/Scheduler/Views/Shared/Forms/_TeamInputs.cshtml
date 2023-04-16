@@ -6,6 +6,7 @@
 @using Scheduler.Domain.Specifications;
 
 @inject ILeagueRepository LeagueRepository
+@inject UserManager<User> userManager;
 @model Team
 
 @if (this.Model is not null)
@@ -24,7 +25,7 @@
         <label asp-for="UserId" class="form-label">User</label>
         <select class="form-select"
                 asp-for="UserId"
-                asp-items="this.Scheduler.Users
+                asp-items="userManager.Users
                     .ToList()
                     .Select(user => new SelectListItem
                     {
