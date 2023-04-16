@@ -24,7 +24,7 @@ public static class Schedule
 
 			foreach (var occurrence in schedule)
 				if (e.Id != occurrence.Id &&
-					(e.IsBlackout || e.Fields.Any(ef => occurrence.Fields.Any(of => ef.Id == of.Id))) &&
+				   (e.IsBlackout || e.FieldId == occurrence.FieldId) &&
 					e.StartDate <= occurrence.EndDate &&
 					e.EndDate > occurrence.StartDate)
 				{

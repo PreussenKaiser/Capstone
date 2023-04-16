@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scheduler.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Scheduler.Infrastructure.Persistence;
 namespace Scheduler.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    partial class SchedulerContextModelSnapshot : ModelSnapshot
+    [Migration("20230416211538_NullableRecurrence")]
+    partial class NullableRecurrence
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,19 +216,16 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d649fb8b-22bf-47e7-b79f-725a7d64ec86"),
                             Id = new Guid("911af1f1-77c3-4d25-87a8-3b8c8b3fba51"),
                             Name = "Recreation"
                         },
                         new
                         {
-                            Id = new Guid("023395d9-43a9-4d0a-be18-04daad6e699e"),
                             Id = new Guid("b91b5d90-24c0-4ea0-a380-02b85a026f24"),
                             Name = "Classic"
                         },
                         new
                         {
-                            Id = new Guid("03afd02b-1b17-49bf-aa13-8af5e9ad707d"),
                             Id = new Guid("b3ddb645-6c43-4747-aaab-d5828ab261b1"),
                             Name = "Select"
                         });
@@ -279,7 +279,6 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
-                            ConcurrencyStamp = "e6cb0c09-a42c-4cc9-ae51-6f42ec7d8ff8",
                             ConcurrencyStamp = "a5f34cc9-40d1-4e95-953d-1c5f7422c55e",
                             Name = "Admin",
                             NormalizedName = "Admin"
@@ -306,9 +305,6 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
-
-                    b.Property<Guid>("TeamUserId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -400,23 +396,19 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8155e7a2-7dae-4577-a378-e38f6c3a860c",
                             ConcurrencyStamp = "4afdadfa-95ce-4af4-a62d-e52acbb65daa",
                             Email = "teamnull@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Team",
                             LastName = "Null",
                             LockoutEnabled = false,
+                            NeedsNewPassword = false,
                             NormalizedUserName = "TEAMNULL@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEO/lf8ng+ZQdWZCYYwYmW0qRhR6+SD6TQv+heU6Y6PX6YZE4eiDxmqLySmJBl54wNQ==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "b4f33499-ae4f-42f0-bd07-0af82ce3780b",
                             PasswordHash = "AQAAAAIAAYagAAAAENPELOiYmmf38T3Hw8G59Vtd34RlAMa5OYaJur16zRZuoyy1DvLg7g5pudE1u+bMrA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "b5fd1ec7-27a3-429a-b6f3-5c5fbae48796",
                             TwoFactorEnabled = false,
-                            UserName = "teamnull@gmail.com",
-                            NeedsNewPassword = false
+                            UserName = "teamnull@gmail.com"
                         },
                         new
                         {

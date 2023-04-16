@@ -156,7 +156,7 @@
 
     function dayModal(year, month, date) {
         $.ajax({
-            url: '@Url.Action("dayModal", "Dashboard")',
+            url: '@this.Url.Action("dayModal", "Dashboard")',
             data: {
                 year: year ?? new Date().getFullYear(),
                 month: month ?? new Date().getMonth(),

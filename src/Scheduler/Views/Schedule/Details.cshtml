@@ -19,6 +19,7 @@
 
 
     string eventType = this.Model.GetType().Name;
+    bool recurringEvent = this.Model.Recurrence is not null;
     bool canEdit = this.User.IsInRole(Role.ADMIN) ||
                    this.UserManager.GetUserId(this.User) == this.Model.UserId.ToString();
 
@@ -43,6 +44,7 @@
 
             <input hidden asp-for="Id" value="@this.Model.Id" />
             <input hidden asp-for="UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
+            <input hidden asp-for="RecurrenceId" value="@this.Model.RecurrenceId" />
 
             <ul class="list-group">
                 <li class="list-group-item">
@@ -61,16 +63,23 @@
                                             <h5 class="modal-title">@this.Model.Name Details</h5>
                                         </div>
                                         <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label asp-for="Name" class="form-label h6"></label>
-                                                <input asp-for="Name" class="form-control" />
-                                                <span asp-validation-for="Name" class="text-danger"></span>
-                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="mb-3">
+                                                        <label asp-for="Name" class="form-label h6"></label>
+                                                        <input asp-for="Name" class="form-control" />
+                                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                                    </div>
 
-                                            @if (eventType != nameof(Event))
-                                            {
-                                                <partial name="Forms/_@(eventType)Inputs" />
-                                            }
+                                                    @if (eventType != nameof(Event))
+                                                    {
+                                                        <partial name="Forms/_@(eventType)Inputs" />
+                                                    }
+                                                </div>
+                                                <div class="col-6">
+                                                    <partial name="Forms/_UpdateTypeInput" />
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
@@ -144,29 +153,42 @@
                                                 <h5 class="modal-title">Reschedule Event</h5>
                                             </div>
                                             <div class="modal-body">
-                                                <div class="col-lg">
-                                                    <label class="form-label">Event Time</label>
-                                                    <input type="text" name="daterange" class="text-center form-control" />
-                                                </div>
-                                                <div>
-                                                    <input asp-for="StartDate" type="hidden" id="StartDate" />
-                                                    <span asp-validation-for="StartDate" class="text-danger"></span>
-                                                    <br />
-                                                </div>
-                                                <div>
-                                                    <input asp-for="EndDate" type="hidden" id="EndDate" />
-                                                    <span asp-validation-for="EndDate" class="text-danger"></span>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <div class="form-check mb-3">
-                                                        @*<input checked="@(this.Model.Recurrence is not null)" type="checkbox" class="form-check-input" id="recurrenceCheck">
-                                                        <label class="form-check-label">Repeating?</label>*@
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="col-lg">
+                                                            <label class="form-label">Event Time</label>
+                                                            <input type="text" name="daterange" class="text-center form-control" />
+                                                        </div>
+                                                        <div>
+                                                            <input asp-for="StartDate" type="hidden" id="StartDate" />
+                                                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                                                            <br />
+                                                        </div>
+                                                        <div>
+                                                            <input asp-for="EndDate" type="hidden" id="EndDate" />
+                                                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <div id="recurrenceInputs">
+                                                                @if (this.Model.Recurrence is not null)
+                                                                {
+                                                                    <div class="row mb-3">
+                                                                        <div class="col-6">
+                                                                            <label asp-for="Recurrence.Type" class="form-label"></label>
+                                                                            <select asp-for="Recurrence.Type" asp-items="@this.Html.GetEnumSelectList<RecurrenceType>()" class="form-control" disabled></select>
+                                                                        </div>
+                                                                        <div class="col-6">
+                                                                            <label asp-for="Recurrence.Occurrences" class="form-label"></label>
+                                                                            <input type="number" asp-for="Recurrence!.Occurrences" class="form-control" readonly />
+                                                                            <span asp-validation-for="Recurrence.Occurrences" class="text-danger"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div id="recurrenceInputs">
-                                                        @if (this.Model.Recurrence is not null)
-                                                        {
-                                                            <partial name="Forms/_RecurrenceInputs" />
-                                                        }
+                                                    <div class="col-6">
+                                                        <partial name="Forms/_UpdateTypeInput" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -187,8 +209,17 @@
                                                 <h5 class="modal-title">Cancel @eventType</h5>
                                             </div>
                                             <div class="modal-body">
-                                                Are you sure you want to cancel <b>@this.Model.Name</b>?
-                                                It and all recurrences will be permanently removed.
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <p>
+                                                            Are you sure you want to cancel <b>@this.Model.Name</b>?
+                                                            It and all recurrences will be permanently removed.
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">No, Go Back</button>
@@ -229,14 +260,21 @@
                                             <h5 class="modal-title">Relocate Event</h5>
                                         </div>
                                         <div class="modal-body">
-                                            <div class="form-check mb-3">
-                                                <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                                                <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label asp-for="FieldIds" class="form-label"></label>
-                                                <select data-val="false" asp-for="FieldIds" asp-items="fieldList" class="form-select" multiple size="6"></select>
-                                                <span asp-validation-for="FieldIds" class="text-danger"></span>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-check mb-3">
+                                                        <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+                                                        <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label asp-for="FieldId" class="form-label"></label>
+                                                        <select data-val="false" asp-for="FieldId" asp-items="fieldList" class="form-select"></select>
+                                                        <span asp-validation-for="FieldId" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <partial name="Forms/_UpdateTypeInput" />
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -249,7 +287,7 @@
                         }
                     </div>
                     <h6>Field(s)</h6>
-                    @string.Join(", ", this.Model.Fields.Select(f => f.Name))
+                    @this.Model.Field?.Name
                 </li>
             </ul>
         </form>

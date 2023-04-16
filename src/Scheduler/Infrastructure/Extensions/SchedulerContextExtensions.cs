@@ -23,7 +23,7 @@ public static class SchedulerContextExtensions
 			.Where(e => e.EndDate > DateTime.Now)
 			.OrderBy(e => e.StartDate)
 			.Include(e => e.Recurrence)
-			.Include(e => e.Fields);
+			.Include(e => e.Field);
 	}
 
 	/// <summary>

@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
+using Scheduler.Domain.Specifications.Events;
+using Scheduler.Extensions;
 using Scheduler.Filters;
+using Scheduler.ViewModels;
 
 namespace Scheduler.Web.Controllers;
 
@@ -30,15 +34,23 @@ public sealed class EventController : ScheduleController<Event>
 	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public override async Task<IActionResult> EditDetails(Event values)
+	public override async Task<IActionResult> EditDetails(
+		Event values, UpdateType updateType)
 	{
 		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		await this.scheduleRepository.EditEventDetails(values);
+		Specification<Event> updateSpec = updateType.ToSpecification(values);
 
-		return this.RedirectToAction("Details", "Schedule", new { values.Id });
+		await this.scheduleRepository.EditEventDetails(
+			values, updateSpec);
+
+
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 }
