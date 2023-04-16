@@ -20,9 +20,14 @@ public static class UpdateTypeExtensions
 		this UpdateType updateType,
 		Event scheduledEvent)
 	{
+		if (scheduledEvent.RecurrenceId is null)
+		{
+			throw new ArgumentException("This event has no recurrence pattern.");
+		}
+
 		return updateType switch
 		{
-			UpdateType.All => new ByRecurrenceIdSpecification(scheduledEvent.RecurrenceId),
+			UpdateType.All => new ByRecurrenceIdSpecification((Guid)scheduledEvent.RecurrenceId),
 			_ => new ByIdSpecification<Event>(scheduledEvent.Id)
 		};
 	}

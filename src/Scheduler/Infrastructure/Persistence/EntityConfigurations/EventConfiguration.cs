@@ -21,6 +21,10 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
 			.IsRequired(false);
 
 		builder
+			.Property(e => e.RecurrenceId)
+			.IsRequired(false);
+
+		builder
 			.Property(e => e.Name)
 			.IsRequired()
 			.HasMaxLength(32);
