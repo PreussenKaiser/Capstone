@@ -72,7 +72,8 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Field = SeedData.Fields.First(),
+			FieldId = SeedData.Fields.Skip(3).First().Id,
+			Field = SeedData.Fields.Skip(3).Last(),
 			StartDate = new(2023, 03, 15, 18, 0, 0),
 			EndDate = new(2023, 03, 15, 19, 0, 0)
 		};
