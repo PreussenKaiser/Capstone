@@ -57,84 +57,59 @@ public sealed class ScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public async Task EditEventDetails(Event scheduledEvent)
+	public async Task EditEventDetails(
+		Event scheduledEvent, Specification<Event> updateSpec)
 	{
-		Event? eventToEdit = await this.context.Events
+		IEnumerable<Event> events = await this.context.Events
 			.AsTracking()
-			.FirstOrDefaultAsync(g => g.Id == scheduledEvent.Id);
+			.Where(updateSpec.ToExpression())
+			.ToListAsync();
 
-		if (eventToEdit is null)
+		foreach (var e in events)
 		{
-			// Throw for logging.
-
-			return;
+			e.Name = scheduledEvent.Name;
 		}
-
-		eventToEdit.Name = scheduledEvent.Name;
 
 		await this.context.SaveChangesAsync();
 	}
 
 	/// <inheritdoc/>
-	public async Task EditPracticeDetails(Practice practice)
+	public async Task EditPracticeDetails(
+		Practice practice, Specification<Event> updateSpec)
 	{
-		Practice? practiceToEdit = await this.context.Practices
+		IEnumerable<Practice> practices = (await this.context.Practices
 			.AsTracking()
-			.FirstOrDefaultAsync(g => g.Id == practice.Id);
+			.Where(updateSpec.ToExpression())
+			.ToListAsync())
+			.Cast<Practice>();
 
-		if (practiceToEdit is null)
+		foreach (var p in practices)
 		{
-			// Throw for logging.
-
-			return;
+			p.EditDetails(practice.TeamId, practice.Name);
 		}
 
-		Team? practicingTeam = await this.context.Teams
-			.AsTracking()
-			.FirstOrDefaultAsync(t => t.Id == practice.TeamId);
-
-		if (practicingTeam is not null)
-		{
-			practiceToEdit.EditDetails(
-				practicingTeam,
-				practice.Name);
-
-			await this.context.SaveChangesAsync();
-		}
+		await this.context.SaveChangesAsync();
 	}
 
 	/// <inheritdoc/>
-	public async Task EditGameDetails(Game game)
+	public async Task EditGameDetails(
+		Game game, Specification<Event> updateType)
 	{
-		Game? gameToEdit = await this.context.Games
+		IEnumerable<Game> games = (await this.context.Games
 			.AsTracking()
-			.FirstOrDefaultAsync(g => g.Id == game.Id);
+			.Where(updateType.ToExpression())
+			.ToListAsync())
+			.Cast<Game>();
 
-		if (gameToEdit is null)
+		foreach (var g in games)
 		{
-			// Throw for logging.
-
-			return;
-		}
-
-		Team? homeTeam = await this.context.Teams
-			.AsTracking()
-			.FirstOrDefaultAsync(t => t.Id == game.HomeTeamId);
-
-		Team? opposingTeam = await this.context.Teams
-			.AsTracking()
-			.FirstOrDefaultAsync(t => t.Id == game.OpposingTeamId);
-
-		if (homeTeam is not null &&
-			opposingTeam is not null)
-		{
-			gameToEdit.EditDetails(
-				homeTeam,
-				opposingTeam,
+			g.EditDetails(
+				game.HomeTeamId,
+				game.OpposingTeamId,
 				game.Name);
-
-			await this.context.SaveChangesAsync();
 		}
+
+		await this.context.SaveChangesAsync();
 	}
 
 	/// <inheritdoc/>
@@ -142,8 +117,7 @@ public sealed class ScheduleRepository : IScheduleRepository
 	{
 		Event? eventToReschedule = await this.context.Events
 			.AsTracking()
-			.Include(g => g.Recurrence)
-			.FirstOrDefaultAsync(g => g.Id == scheduledEvent.Id);
+			.FirstOrDefaultAsync(e => e.Id == scheduledEvent.Id);
 
 		if (eventToReschedule is null)
 		{
@@ -154,31 +128,24 @@ public sealed class ScheduleRepository : IScheduleRepository
 
 		eventToReschedule.Reschedule(
 			scheduledEvent.StartDate,
-			scheduledEvent.EndDate,
-			scheduledEvent.Recurrence);
+			scheduledEvent.EndDate);
 
 		await this.context.SaveChangesAsync();
 	}
 
 	/// <inheritdoc/>
-	public async Task RelocateAsync(Event scheduledEvent)
+	public async Task RelocateAsync(
+		Event scheduledEvent, Specification<Event> updateSpec)
 	{
-		Event? eventToRelocate = await this.context.Events
+		(await this.context.Events
 			.AsTracking()
-			.Include(g => g.Fields)
-			.FirstOrDefaultAsync(e => e.Id == scheduledEvent.Id);
-
-		if (eventToRelocate is null)
-		{
-			// Throw for logging.
-
-			return;
-		}
-
-		eventToRelocate.Relocate(await this.context.Fields
-			.AsTracking()
-			.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
-			.ToArrayAsync());
+			.Where(updateSpec.ToExpression())
+			.ToListAsync())
+			.ForEach(async e => e
+				.Relocate(await this.context.Fields
+					.AsTracking()
+					.Where(f => scheduledEvent.FieldIds.Contains(f.Id))
+					.ToArrayAsync()));
 
 		await this.context.SaveChangesAsync();
 	}

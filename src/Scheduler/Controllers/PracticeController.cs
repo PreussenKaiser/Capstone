@@ -2,7 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications.Events;
+using Scheduler.Domain.Specifications;
 using Scheduler.Filters;
+using Scheduler.ViewModels;
+using Scheduler.Extensions;
 
 namespace Scheduler.Web.Controllers;
 
@@ -29,15 +33,17 @@ public sealed class PracticeController : ScheduleController<Practice>
 	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public override async Task<IActionResult> EditDetails(Practice values)
+	public override async Task<IActionResult> EditDetails(
+		Practice values, UpdateType updateType)
 	{
-		if (!this.ModelState.IsValid)
+		if (this.ModelState.IsValid)
 		{
-			return this.DetailsError(values);
-		}
-		
-		await this.scheduleRepository.EditPracticeDetails(values);
+			Specification<Event> updateSpec = updateType.ToSpecification(values);
 
-		return this.RedirectToAction("Details", "Schedule", new { values.Id });
+			await this.scheduleRepository.EditPracticeDetails(
+				values, updateSpec);
+		}
+
+		return this.View("~/Views/Schedule/Details.cshtml", values);
 	}
 }

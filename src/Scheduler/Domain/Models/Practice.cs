@@ -20,7 +20,7 @@ public sealed record Practice : Event
 	/// </summary>
 	[Display(Name = "Practicing Team")]
 	[Required(ErrorMessage = "Please select the practicing team.")]
-	public Guid TeamId { get; init; }
+	public Guid TeamId { get; set; }
 
 	/// <summary>
 	/// The team practicing.
@@ -30,11 +30,11 @@ public sealed record Practice : Event
 	/// <summary>
 	/// Edits details for this practice.
 	/// </summary>
-	/// <param name="team">The new practicing team.</param>
+	/// <param name="teamId">The new practicing team.</param>
 	/// <param name="name">The practices new name.</param>
-	public void EditDetails(Team team, string name)
+	public void EditDetails(Guid teamId, string name)
 	{
-		this.Team = team;
+		this.TeamId = teamId;
 		this.Name = name;
 	}
 }

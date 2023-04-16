@@ -122,6 +122,7 @@ public static class SeedData
 		{
 			Id = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 			UserId = Users.First().Id,
+			RecurrenceId = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 			Name = "Event",
 			StartDate = new DateTime(2023, 3, 24, 12, 0, 0),
 			EndDate = new DateTime(2023, 3, 24, 15, 0, 0),

@@ -126,12 +126,10 @@ public record Event : Entity, IValidatableObject
 	/// <param name="recurrence">New recurrence pattern.</param>
 	public void Reschedule(
 		DateTime startDate,
-		DateTime endDate,
-		Recurrence? recurrence = null)
+		DateTime endDate)
 	{
 		this.StartDate = startDate;
 		this.EndDate = endDate;
-		this.Recurrence = recurrence;
 	}
 
 	/// <summary>
@@ -162,20 +160,6 @@ public record Event : Entity, IValidatableObject
 		if (this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 22)
 		{
 			results.Add(new("Event Times must be between 8 am and 11 pm."));
-		}
-
-		this.Relocate(context.Fields
-			.Where(f => this.FieldIds.Contains(f.Id))
-			.ToArray());
-
-		Event? conflict = this
-			?.FindConflict(context.Events
-			.WithScheduling()
-			.ToList());
-
-		if (conflict is not null)
-		{
-			results.Add(new("An event is already scheduled for that date"));
 		}
 
 		return results;
