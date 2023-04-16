@@ -11,8 +11,6 @@
 @model IEnumerable<Event>
 
 @{
-	IEnumerable<Field> fields = this.Scheduler.Fields.ToList();
-	IEnumerable<Team> teams = this.Scheduler.Teams.ToList();
 	bool load = false;
 	Practice? practice;
 	Game? game;
@@ -81,7 +79,7 @@
 								}
 								else
 								{
-									<small>@string.Join(", ", scheduledEvent.Fields.Select(f => f.Name))</small>
+									<small>@scheduledEvent.Field.Name</small>
 								}
 							</div>
 							<div class="col-6">

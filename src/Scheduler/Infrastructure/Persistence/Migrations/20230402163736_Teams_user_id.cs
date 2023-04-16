@@ -27,11 +27,6 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                 keyColumn: "Id",
                 keyValue: new Guid("ccb0c5aa-6047-4a83-a7f7-dd496cd30134"));
 
-            migrationBuilder.RenameColumn(
-                name: "UserId",
-                table: "Teams",
-                newName: "TeamUserId");
-
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
@@ -74,11 +69,6 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                 table: "Leagues",
                 keyColumn: "Id",
                 keyValue: new Guid("d649fb8b-22bf-47e7-b79f-725a7d64ec86"));
-
-            migrationBuilder.RenameColumn(
-                name: "TeamUserId",
-                table: "Teams",
-                newName: "UserId");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",

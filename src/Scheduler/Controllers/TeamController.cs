@@ -19,23 +19,15 @@ public sealed class TeamController : Controller
 	private readonly SchedulerContext context;
 	private readonly UserManager<User> userManager;
 
-	public TeamController(SchedulerContext context, UserManager<User> userManager)
-	{
-		this.context = context;
-		this.userManager = userManager;
-	}
-
 	/// <summary>
 	/// The repository to query and execute commands with.
 	/// </summary>
 	private readonly ITeamRepository teamRepository;
 
-	/// <summary>
-	/// Initializes the <see cref="TeamController"/> class.
-	/// </summary>
-	/// <param name="teamRepository">The repository to query and execute commands with.</param>
-	public TeamController(ITeamRepository teamRepository)
+	public TeamController(SchedulerContext context, UserManager<User> userManager, ITeamRepository teamRepository)
 	{
+		this.context = context;
+		this.userManager = userManager;
 		this.teamRepository = teamRepository;
 	}
 
@@ -66,10 +58,6 @@ public sealed class TeamController : Controller
 			return this.View(team);
 		}
 		
-		this.context.Teams.Add(team);
-
-		await this.context.SaveChangesAsync();
-
 		await this.teamRepository.AddAsync(team);
 
 		return this.RedirectToAction(
