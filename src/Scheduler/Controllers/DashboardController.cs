@@ -220,12 +220,13 @@ public sealed class DashboardController : Controller
 		IQueryable<Event> events = type switch
 		{
 			nameof(Practice) => this.context.Practices
-				.Include("Fields"),
+				.Include(p => p.Team),
 
 			nameof(Game) => this.context.Games
-				.Include("Fields"),
+				.Include(g => g.HomeTeam)
+				.Include(g => g.OpposingTeam),
 
-			_ => this.context.Events.Include("Fields")
+			_ => this.context.Events
 		};
 
 		ViewData["TypeFilterMessage"] = "Showing all " + type + "s";
@@ -257,7 +258,7 @@ public sealed class DashboardController : Controller
 	{
 		if (events == null)
 		{
-			events = this.context.Events.Include("Fields");
+			events = this.context.Events.Include(e => e.Field);
 		}
 
 		return events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)).Include(e => e.Field).OrderBy(e => e.StartDate);
@@ -274,7 +275,7 @@ public sealed class DashboardController : Controller
 	{
 		if (events == null)
 		{
-			events = this.context.Events.Include("Fields");
+			events = this.context.Events;
 		}
 
 		IEnumerable<Team> teamList = this.context.Teams;
@@ -325,7 +326,12 @@ public sealed class DashboardController : Controller
 			}
 		}
 
-		if (matchingGames == null && matchingPractices.Any())
+		if(matchingGames == null && matchingPractices == null)
+		{
+			ViewData["TeamFilterMessage"] = "There are no scheduled " + type + "s for Team " + selectedTeam.Name + "\nduring the selected dates";
+			return null;
+		}
+		else if (matchingGames == null && matchingPractices.Any())
 		{
 			events = (IQueryable<Event>)matchingPractices;
 		}
@@ -335,7 +341,7 @@ public sealed class DashboardController : Controller
 		}
 		else if (matchingGames.Any() && matchingPractices.Any())
 		{
-			events = (IQueryable<Event>)matchingPractices.Concat((IQueryable<Event>)matchingGames).AsQueryable();
+			events = matchingPractices.Concat((IQueryable<Event>)matchingGames).AsQueryable();
 		}
 
 		ViewData["TeamFilterMessage"] = "for Team " + selectedTeam.Name;
@@ -354,7 +360,7 @@ public sealed class DashboardController : Controller
 	{
 		if(events == null)
 		{
-			events = this.context.Events.Include("Fields");
+			events = this.context.Events;
 		}
 		events = events.Where(e => e.Name.ToLower().Contains(searchTerm.ToLower()));
 
