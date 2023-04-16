@@ -5,6 +5,17 @@
     string title = this.ViewData["Title"].ToString();
     DateTime startTime = (DateTime)this.ViewData["Start"];
     DateTime endTime = (DateTime)this.ViewData["End"];
+    IEnumerable<SelectListItem> teamList = null;
+
+    if(ViewData["FilteredTeamList"] is not null)
+    {
+        teamList = ((IEnumerable<string>)ViewData["TeamList"])
+        .Select(f => new SelectListItem
+                {
+                    Text = f,
+                    Value = f
+                });
+    }
 }
 
 <div class="modal fade" id="listModalPopup" tabindex="-1">
@@ -16,10 +27,9 @@
             <div class="modal-body">
                 <div class="text-center">
                     <div class="btn-group mb-2 noPrintIfModal">
-                        <form class="me-3" action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm">
-                            <div class="btn-group">
-                                <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
-                                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                        <form class="me-3" action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
+                            <div>                                
+                                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" onclick="showDropdown()" data-bs-toggle="dropdown" aria-expanded="false">Filter Results </button>
                                 <ul class="dropdown-menu w-100 p-3">
                                     <div class="mb-3">
                                         <label class="form-label">Type</label>
@@ -36,11 +46,13 @@
                                     <div class="mb-3">
                                         <label class="form-label">Team Name</label>
                                         <input type="text" name="teamName" class="form-control" />
+                                        
                                     </div>
+                                    <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
                                 </ul>
                             </div>
                         </form>
-                        <button class="btn btn-sm btn-danger rounded" onclick="resetEvents()">Reset</button>
+                        <button class="btn btn-sm btn-danger rounded" onclick="resetEvents()">Reset Filter</button>
                     </div>
                 </div>
                 <div id="modalTable">
@@ -72,6 +84,7 @@
             },
             success: function(data) {
                 $("#modalTable").html(data);
+                $('.dropdown-menu').removeClass('show');
             }
         });
     }
@@ -90,6 +103,10 @@
                 $("#modalTable").html(data);
             }
         });
+    }
+
+    function showDropdown() {
+        $('.dropdown-menu').addClass('show');
     }
 </script>
 

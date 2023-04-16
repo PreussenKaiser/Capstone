@@ -2,11 +2,27 @@
 
 @{
     IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
-    string teamName = (string)ViewData["teamName"];
+    string typeFilterMessage = (string)ViewData["TypeFilterMessage"];
+    string nameFilterMessage = (string)ViewData["NameFilterMessage"];
+    string teamFilterMessage = (string)ViewData["TeamFilterMessage"];
+    
 }
 
 @if (Model != null && Model.Count() > 0)
 {
+    if(typeFilterMessage != "")
+    {
+        <h5 class="text-center lead text-danger">@typeFilterMessage</h5>
+    }
+    if(nameFilterMessage != "")
+    {
+        <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
+    }
+    if(teamFilterMessage != "")
+    {
+        <h5 class="text-center lead text-danger">@teamFilterMessage</h5>
+    }
+    <br />
     <table class="table-bordered m-auto text-center">
         <thead>
             <tr>
@@ -75,7 +91,12 @@
         }
     </table>
 }
+else if (teamFilterMessage != "" || nameFilterMessage != "")
+{
+    <h5 class="text-center lead text-danger" style="white-space: pre-wrap">@teamFilterMessage</h5>
+    <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
+}
 else
 {
-    <h4 class="text-center">No Events found</h4>
+    <h5 class="text-center lead text-danger">No Events found</h5>
 }
