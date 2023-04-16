@@ -197,9 +197,39 @@ public sealed class DashboardController : Controller
 
 			if (selectedTeam != null)
 			{
-				IEnumerable<Event> matchingGames = events.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
-				IEnumerable<Event> matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
-				events = (IQueryable<Event>)matchingGames.Concat(matchingPractices);
+				IEnumerable<Event> matchingGames = null;
+				IEnumerable<Event> matchingPractices = null;
+
+				if (type == "Event" || type == "Game")
+				{
+					matchingGames = events.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
+					if (!matchingGames.Any())
+					{
+						matchingGames = null;
+					}
+				}
+				
+				if (type == "Event" || type == "Practice")
+				{
+					matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
+					if (!matchingPractices.Any())
+					{
+						matchingPractices = null;
+					}
+				}				
+				
+				if (matchingGames == null && matchingPractices.Any())
+				{
+					events = (IQueryable<Event>)matchingPractices;
+				}
+				else if (matchingPractices == null && matchingGames.Any())
+				{
+					events = (IQueryable<Event>)matchingGames;
+				}
+				else if (matchingGames.Any() && matchingPractices.Any())
+				{
+					events = (IQueryable<Event>)matchingPractices.Concat((IQueryable<Event>)matchingGames).AsQueryable();
+				}				
 			}			
 		}
 
