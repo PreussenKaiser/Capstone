@@ -122,6 +122,7 @@ public static class SeedData
 		{
 			Id = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 			UserId = Users.First().Id,
+			RecurrenceId = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 			Name = "Event",
 			StartDate = new DateTime(2023, 3, 24, 12, 0, 0),
 			EndDate = new DateTime(2023, 3, 24, 15, 0, 0),
@@ -131,7 +132,8 @@ public static class SeedData
 				Occurrences = 3,
 				Type = RecurrenceType.Weekly
 			},
-			Fields = Fields.ToList()
+			IsBlackout = true,
+			Field = Fields.First()
 		},
 		new Practice
 		{
@@ -141,7 +143,7 @@ public static class SeedData
 			Name = "Practice",
 			StartDate = new DateTime(2023, 3, 14, 17, 0, 0),
 			EndDate = new DateTime(2023, 3, 14, 19, 0, 0),
-			Fields = Fields.Take(1).ToList()
+			Field = Fields.First()
 		},
 		new Game
 		{
@@ -152,7 +154,7 @@ public static class SeedData
 			Name = "Game",
 			StartDate = new DateTime(2023, 3, 15, 17, 0, 0),
 			EndDate = new DateTime(2023, 3, 15, 20, 0, 0),
-			Fields = Fields.TakeLast(2).ToList()
+			Field = Fields.Skip(1).First()
 		}
 	};
 }

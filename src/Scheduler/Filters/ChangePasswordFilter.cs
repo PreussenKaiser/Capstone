@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Web.Controllers;
 
 namespace Scheduler.Filters;
 
-public class ChangePasswordFilter: AuthorizeAttribute, IAuthorizationFilter
+public sealed class ChangePasswordFilter: AuthorizeAttribute, IAuthorizationFilter
 {
 	private SchedulerContext context;
 

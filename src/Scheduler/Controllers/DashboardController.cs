@@ -123,10 +123,10 @@ public sealed class DashboardController : Controller
 	/// <returns>The Calendar ViewComponent</returns>
 	public IActionResult refreshCalendar(int? year, int? month)
 	{
-		ViewData["Year"] = year;
-		ViewData["Month"] = month;
+		this.ViewData["Year"] = year;
+		this.ViewData["Month"] = month;
 
-		return ViewComponent("Calendar");
+		return this.ViewComponent("Calendar");
 	}
 
 	/// <summary>
@@ -140,12 +140,12 @@ public sealed class DashboardController : Controller
 	{
 		DateTime monthDate = new DateTime(year, month, 1);
 		DateTime monthEndDate = monthDate.AddMonths(1);
-		ViewData["Events"] = await this.dateSearch(monthDate, monthEndDate).ToListAsync();
-		ViewData["Teams"] = await this.context.Teams.ToListAsync();
-		ViewData["Start"] = monthDate;
-		ViewData["End"] = monthEndDate;
-		ViewData["Title"] = $"Events in {monthDate.ToString("MMMM")}";
-		return ViewComponent("ListModal");
+		this.ViewData["Events"] = await this.dateSearch(monthDate, monthEndDate).ToListAsync();
+		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
+		this.ViewData["Start"] = monthDate;
+		this.ViewData["End"] = monthEndDate;
+		this.ViewData["Title"] = $"Events in {monthDate.ToString("MMMM")}";
+		return this.ViewComponent("ListModal");
 	}
 
 	/// <summary>
@@ -156,15 +156,16 @@ public sealed class DashboardController : Controller
 	/// <param name="weekStart">The start of the currently selected week</param>
 	/// <returns>The List Modal ViewComponent</returns>
 	[AllowAnonymous]
-	public async Task<IActionResult> weekModal(int year, int month, int weekStart) {
+	public async Task<IActionResult> weekModal(int year, int month, int weekStart)
+	{
 		DateTime weekStartDate = new DateTime(year, month, weekStart);
 		DateTime weekEndDate = weekStartDate.AddDays(7);
-		ViewData["Events"] = await this.dateSearch(weekStartDate, weekEndDate).ToListAsync();
-		ViewData["Teams"] = await this.context.Teams.ToListAsync();
-		ViewData["Start"] = weekStartDate;
-		ViewData["End"] = weekEndDate;
-		ViewData["Title"] = $"Events for the week of {weekStartDate.ToString("M")}";
-		return ViewComponent("ListModal");
+		this.ViewData["Events"] = await this.dateSearch(weekStartDate, weekEndDate).ToListAsync();
+        this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
+        this.ViewData["Start"] = weekStartDate;
+        this.ViewData["End"] = weekEndDate;
+        this.ViewData["Title"] = $"Events for the week of {weekStartDate.ToString("M")}";
+		return this.ViewComponent("ListModal");
 	}
 
 	/// <summary>
@@ -178,12 +179,12 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
-		ViewData["Teams"] = await this.context.Teams.ToListAsync();
-		ViewData["Start"] = eventDate; //12:00 AM on the selected day.
-		ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
+        this.ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
+        this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
+        this.ViewData["Start"] = eventDate; //12:00 AM on the selected day.
+        this.this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
 		ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
-		return ViewComponent("ListModal");
+		return this.ViewComponent("ListModal");
 	}
 
 	/// <summary>
@@ -197,11 +198,11 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
-		ViewData["Fields"] = await this.context.Fields.OrderBy(e => e.Name).ToListAsync();
-		ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
-		ViewData["CurrentDate"] = eventDate;
-		return ViewComponent("GridModal");
+        this.ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
+        this.ViewData["Fields"] = await this.context.Fields.OrderBy(e => e.Name).ToListAsync();
+        this.ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
+        this.ViewData["CurrentDate"] = eventDate;
+		return this.ViewComponent("GridModal");
 	}
 
 	/// <summary>
@@ -241,7 +242,7 @@ public sealed class DashboardController : Controller
 			events = this.teamSearch(teamName, type, events);
 		}
 
-		ViewData["Teams"] = await this.context.Teams.ToListAsync();
+        this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		return PartialView("_ListModalTable", events);
 	}
 
@@ -259,7 +260,7 @@ public sealed class DashboardController : Controller
 			events = this.context.Events.Include("Fields");
 		}
 
-		return events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)).Include("Fields").OrderBy(e => e.StartDate);
+		return events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)).Include(e => e.Field).OrderBy(e => e.StartDate);
 	}
 
 	/// <summary>

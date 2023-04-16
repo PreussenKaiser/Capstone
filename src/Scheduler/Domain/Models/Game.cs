@@ -21,7 +21,7 @@ public sealed record Game : Event
 	/// </summary>
 	[Display(Name = "Home Team")]
 	[Required(ErrorMessage = "Select a home team.")]
-	public Guid HomeTeamId { get; init; }
+	public Guid HomeTeamId { get; set; }
 
 	/// <summary>
 	/// The games opposing team.
@@ -32,7 +32,7 @@ public sealed record Game : Event
 	[ReverseCompare(
 		OtherProperty = nameof(this.HomeTeamId),
 		ErrorMessage = "Home and opposing teams must be different.")]
-	public Guid OpposingTeamId { get; init; }
+	public Guid OpposingTeamId { get; set; }
 
 	/// <summary>
 	/// The games home team.
@@ -47,16 +47,16 @@ public sealed record Game : Event
 	/// <summary>
 	/// Edits details about the <see cref="Game"/>.
 	/// </summary>
-	/// <param name="homeTeam">The games new home team.</param>
-	/// <param name="opposingTeam">The games new opposing team.</param>
+	/// <param name="homeTeamId">The games new home team.</param>
+	/// <param name="opposingTeamId">The games new opposing team.</param>
 	/// <param name="name">The games new name.</param>
 	public void EditDetails(
-		Team homeTeam,
-		Team opposingTeam,
+		Guid homeTeamId,
+		Guid opposingTeamId,
 		string name)
 	{
-		this.HomeTeam = homeTeam;
-		this.OpposingTeam = opposingTeam;
+		this.HomeTeamId = homeTeamId;
+		this.OpposingTeamId = opposingTeamId;
 		this.Name = name;
 	}
 }
