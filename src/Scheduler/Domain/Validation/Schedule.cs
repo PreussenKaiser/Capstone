@@ -16,21 +16,18 @@ public static class Schedule
 	/// The found <see cref="Event"/>.
 	/// <see langword="null"/> if there was no conflicting <see cref="Event"/>.
 	/// </returns>
-	public static Event? FindConflict(this Event scheduledEvent, IEnumerable<Event> events)
+	public static Event? FindConflict(
+		this Event scheduledEvent,
+		IEnumerable<Event> events)
 	{
 		foreach (var e in events)
-		{
-			IEnumerable<Event> schedule = scheduledEvent.GenerateSchedule();
-
-			foreach (var occurrence in schedule)
-				if (e.Id != occurrence.Id &&
-				   (e.IsBlackout || e.FieldId == occurrence.FieldId) &&
-					e.StartDate <= occurrence.EndDate &&
-					e.EndDate > occurrence.StartDate)
-				{
-					return e;
-				}
-		}
+			if (scheduledEvent.Id != e.Id &&
+			   (scheduledEvent.IsBlackout || scheduledEvent.FieldId == e.FieldId) &&
+				scheduledEvent.StartDate <= e.EndDate &&
+				scheduledEvent.EndDate > e.StartDate)
+			{
+				return e;
+			}
 
 		return null;
 	}
@@ -46,7 +43,9 @@ public static class Schedule
 		ICollection<TEvent> schedule = new List<TEvent> { scheduledEvent };
 
 		if (scheduledEvent.Recurrence is null)
+		{
 			return schedule;
+		}
 
 		(DateTime start, DateTime end) = (scheduledEvent.StartDate, scheduledEvent.EndDate);
 

@@ -39,7 +39,7 @@ public sealed class DashboardController : Controller
 	/// <param name="searchTerm">The event name to search for.</param>
 	/// <returns>A list of events.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public IActionResult Events(
+	public async Task<IActionResult> Events(
 		string? type = null,
 		string? searchTerm = null)
 	{
@@ -60,10 +60,10 @@ public sealed class DashboardController : Controller
 			events = events.Where(e => e.Name.Contains(searchTerm));
 		}
 
-		return this.View(events
+		return this.View(await events
 			.WithScheduling()
 			.OrderBy(e => e.StartDate)
-			.AsRecurring());
+			.ToListAsync());
 	}
 
 	/// <summary>

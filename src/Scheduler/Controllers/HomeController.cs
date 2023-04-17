@@ -36,18 +36,20 @@ public sealed class HomeController : Controller
 	/// <returns>The home page.</returns>
 	[AllowAnonymous]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public IActionResult Index()
+	public async Task<IActionResult> Index()
 	{
-		IQueryable<Event> events = this.context.Events.WithScheduling();
+		IEnumerable<Event> events = await this.context.Events
+			.WithScheduling()
+			.ToListAsync();
 
-		IQueryable<Game> games = this.context.Games
+		IEnumerable<Game> games = await this.context.Games
 			.WithScheduling()
 			.Include(g => g.HomeTeam)
-			.Include(g => g.OpposingTeam);
+			.Include(g => g.OpposingTeam)
+			.ToListAsync();
 
 		return this.View(new IndexViewModel(
-			events.AsRecurring(),
-			games.AsRecurring()));
+			events, games));
 	}
 
 	/// <summary>
@@ -59,7 +61,7 @@ public sealed class HomeController : Controller
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	[AllowAnonymous]
-	public IActionResult Index(
+	public async Task<IActionResult> Index(
 		string? eventSearch = null,
 		string? gameSearch = null,
 		DateTime? gameStart = null,
@@ -99,8 +101,8 @@ public sealed class HomeController : Controller
 		}
 
 		return this.View(new IndexViewModel(
-			events.AsRecurring(),
-			games.AsRecurring()));
+			await events.ToListAsync(),
+			await games.ToListAsync()));
 	}
 
 	/// <summary>
