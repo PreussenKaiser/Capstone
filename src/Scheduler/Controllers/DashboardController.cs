@@ -116,11 +116,11 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Refreshes the Calendar View Component
+	/// Refreshes the Calendar View Component.
 	/// </summary>
-	/// <param name="year">The currently selected year</param>
-	/// <param name="month">The currently selecte month</param>
-	/// <returns>The Calendar ViewComponent</returns>
+	/// <param name="year">The currently selected year.</param>
+	/// <param name="month">The currently selecte month.</param>
+	/// <returns>The Calendar ViewComponent.</returns>
 	public IActionResult refreshCalendar(int? year, int? month)
 	{
 		this.ViewData["Year"] = year;
@@ -129,6 +129,15 @@ public sealed class DashboardController : Controller
 		return this.ViewComponent("Calendar");
 	}
 
+	/// <summary>
+	/// Functionality for searching the database for Events.
+	/// </summary>
+	/// <param name="start">The currently selected start date.</param>
+	/// <param name="end">The currently selected end date.</param>
+	/// <param name="type">The currently selected type of Event.</param>
+	/// <param name="searchTerm">The inputted search term - defaults to null.</param>
+	/// <param name="teamName">The inputted team name - defaults to null.</param>
+	/// <returns>A list of Events.</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> searchModal(DateTime start, DateTime end, string type, string? searchTerm = null, string? teamName = null)
 	{
@@ -183,10 +192,10 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Builds data for the Monthly List Modal
+	/// Builds data for the Monthly List Modal.
 	/// </summary>
-	/// <param name="year">The currently selected year</param>
-	/// <param name="month">The currently selected month</param>
+	/// <param name="year">The currently selected year.</param>
+	/// <param name="month">The currently selected month.</param>
 	/// <returns>The List Modal ViewComponent</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> monthModal(int year, int month)
@@ -203,12 +212,12 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Builds data for the Weekly List Modal
+	/// Builds data for the Weekly List Modal.
 	/// </summary>
-	/// <param name="year">The currently selected year</param>
-	/// <param name="month">The currently selected month</param>
-	/// <param name="weekStart">The start of the currently selected week</param>
-	/// <returns>The List Modal ViewComponent</returns>
+	/// <param name="year">The currently selected year.</param>
+	/// <param name="month">The currently selected month.</param>
+	/// <param name="weekStart">The start of the currently selected week.</param>
+	/// <returns>The List Modal ViewComponent.</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> weekModal(int year, int month, int weekStart)
 	{
@@ -224,12 +233,12 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Builds data for the Day List Modal
+	/// Builds data for the Day List Modal.
 	/// </summary>
-	/// <param name="year">The currently selected year</param>
-	/// <param name="month">The currently selected month</param>
-	/// <param name="date">The currently selected date</param>
-	/// <returns>The List Modal ViewComponent</returns>
+	/// <param name="year">The currently selected year.</param>
+	/// <param name="month">The currently selected month.</param>
+	/// <param name="date">The currently selected date.</param>
+	/// <returns>The List Modal ViewComponent.</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
@@ -244,12 +253,12 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Builds data for the Grid Modal
+	/// Builds data for the Grid Modal.
 	/// </summary>
-	/// <param name="year">The currently selected year</param>
-	/// <param name="month">The currently selected month</param>
-	/// <param name="date">The currently selected date</param>
-	/// <returns>The Grid Modal ViewComponent</returns>
+	/// <param name="year">The currently selected year.</param>
+	/// <param name="month">The currently selected month.</param>
+	/// <param name="date">The currently selected date.</param>
+	/// <returns>The Grid Modal ViewComponent.</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
@@ -262,14 +271,14 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Functionality for filtering the List Modal
+	/// Functionality for filtering the List Modal.
 	/// </summary>
-	/// <param name="type">The currently selected type of Event - defaults to "Event"</param>
-	/// <param name="start">The currently selected start date</param>
-	/// <param name="end">The currently selected end date</param>
-	/// <param name="searchTerm">The inputted search term - defaults to null</param>
-	/// <param name="teamName">The inputted team name - defaults to null</param>
-	/// <returns>The List Modal partial view</returns>
+	/// <param name="type">The currently selected type of Event.</param>
+	/// <param name="start">The currently selected start date.</param>
+	/// <param name="end">The currently selected end date.</param>
+	/// <param name="searchTerm">The inputted search term - defaults to null.</param>
+	/// <param name="teamName">The inputted team name - defaults to null.</param>
+	/// <returns>The List Modal partial view.</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> filterModalEvents(string type, DateTime start, DateTime end, string? searchTerm = null, string? teamName = null)
 	{
@@ -304,12 +313,12 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Builds a list of Events using date parameters
+	/// Builds a list of Events using date parameters.
 	/// </summary>
-	/// <param name="start">The currently selected start date</param>
-	/// <param name="end">The currently selected end date</param>
-	/// <param name="events">A list of Events - defaults to null</param>
-	/// <returns>A filtered list of Events</returns>
+	/// <param name="start">The currently selected start date.</param>
+	/// <param name="end">The currently selected end date.</param>
+	/// <param name="events">A list of Events - defaults to null.</param>
+	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event> dateSearch(DateTime start, DateTime end, IQueryable<Event>? events = null)
 	{
 		if (events == null)
@@ -321,12 +330,12 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Builds a list of Events using a Team name
+	/// Builds a list of Events using a Team name.
 	/// </summary>
-	/// <param name="teamName">The inputted Team name</param>
-	/// <param name="type">The currently selected type of Event</param>
-	/// <param name="events">A list of Events - defaults to null</param>
-	/// <returns>A filtered list of Events</returns>
+	/// <param name="teamName">The inputted Team name.</param>
+	/// <param name="type">The currently selected type of Event.</param>
+	/// <param name="events">A list of Events - defaults to null.</param>
+	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event> teamSearch(string teamName, string type, IQueryable<Event>? events = null)
 	{
 		if (events == null)
@@ -406,12 +415,12 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Builds a list of Events using a search term
+	/// Builds a list of Events using a search term.
 	/// </summary>
-	/// <param name="searchTerm">The inputted search term</param>
-	/// <param name="type">The currently selected Event type - defaults to Event</param>
-	/// <param name="events">A list of Events - defaults to null</param>
-	/// <returns>A filtered list of Events</returns>
+	/// <param name="searchTerm">The inputted search term.</param>
+	/// <param name="type">The currently selected Event type - defaults to Event.</param>
+	/// <param name="events">A list of Events - defaults to null.</param>
+	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event> nameSearch(string searchTerm, string? type = "Event", IQueryable<Event>? events = null)
 	{
 		if(events == null)
