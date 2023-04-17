@@ -129,6 +129,59 @@ public sealed class DashboardController : Controller
 		return this.ViewComponent("Calendar");
 	}
 
+	[AllowAnonymous]
+	public async Task<IActionResult> searchModal(DateTime start, DateTime end, string type, string? searchTerm = null, string? teamName = null)
+	{
+		IQueryable<Event> events = type switch
+		{
+			nameof(Practice) => this.context.Practices
+				.Include(p => p.Team),
+
+			nameof(Game) => this.context.Games
+				.Include(g => g.HomeTeam)
+				.Include(g => g.OpposingTeam),
+
+			_ => this.context.Events
+		};
+		
+		events = this.dateSearch(start, end, events);
+
+		if(searchTerm != null)
+		{
+			events = this.nameSearch(searchTerm, type, events);
+		}
+
+		if(teamName != null)
+		{
+			events = this.teamSearch(teamName, type, events);
+		}
+
+		if(events is null)
+		{
+			this.ViewData["Events"] = null;
+		}
+		else
+		{
+			this.ViewData["Events"] = events.ToList();
+		}
+		
+		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
+		this.ViewData["Start"] = start;
+		this.ViewData["End"] = end;
+		if (end > start.AddYears(1))
+		{
+			this.ViewData["Title"] = $"All {type}s";
+		}
+		else
+		{
+			this.ViewData["Title"] = $"All {type}s from {start.ToString("M/dd/y")} to {end.ToString("M/dd/y")}";
+		}
+
+		this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
+
+		return this.ViewComponent("SearchListModal");
+	}
+
 	/// <summary>
 	/// Builds data for the Monthly List Modal
 	/// </summary>
@@ -145,6 +198,7 @@ public sealed class DashboardController : Controller
 		this.ViewData["Start"] = monthDate;
 		this.ViewData["End"] = monthEndDate;
 		this.ViewData["Title"] = $"Events in {monthDate.ToString("MMMM")}";
+		this.ViewData["TypeFilterMessage"] = "Showing all Events";
 		return this.ViewComponent("ListModal");
 	}
 
@@ -165,6 +219,7 @@ public sealed class DashboardController : Controller
         this.ViewData["Start"] = weekStartDate;
         this.ViewData["End"] = weekEndDate;
         this.ViewData["Title"] = $"Events for the week of {weekStartDate.ToString("M")}";
+		this.ViewData["TypeFilterMessage"] = "Showing all Events";
 		return this.ViewComponent("ListModal");
 	}
 
@@ -183,7 +238,8 @@ public sealed class DashboardController : Controller
         this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
         this.ViewData["Start"] = eventDate; //12:00 AM on the selected day.
         this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
-		ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
+		this.ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
+		this.ViewData["TypeFilterMessage"] = "Showing all Events";
 		return this.ViewComponent("ListModal");
 	}
 
@@ -206,7 +262,7 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Functionality for filtering and searching the List Modal
+	/// Functionality for filtering the List Modal
 	/// </summary>
 	/// <param name="type">The currently selected type of Event - defaults to "Event"</param>
 	/// <param name="start">The currently selected start date</param>
@@ -215,7 +271,7 @@ public sealed class DashboardController : Controller
 	/// <param name="teamName">The inputted team name - defaults to null</param>
 	/// <returns>The List Modal partial view</returns>
 	[AllowAnonymous]
-	public async Task<IActionResult> searchModalEvents(string type, DateTime start, DateTime end, string? searchTerm = null, string? teamName = null)
+	public async Task<IActionResult> filterModalEvents(string type, DateTime start, DateTime end, string? searchTerm = null, string? teamName = null)
 	{
 		IQueryable<Event> events = type switch
 		{
@@ -243,7 +299,7 @@ public sealed class DashboardController : Controller
 			events = this.teamSearch(teamName, type, events);
 		}
 
-        this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
+		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		return PartialView("_ListModalTable", events);
 	}
 
