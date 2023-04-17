@@ -8,7 +8,8 @@ namespace Scheduler.Benchmarks.Scheduling;
 /// <summary>
 /// Contains benchmarks for conflict detection.
 /// </summary>
-public sealed class CollisionDetectionBenchmarks
+[MemoryDiagnoser]
+public class CollisionDetectionBenchmarks
 {
 	/// <summary>
 	/// The list of events to detect collisions against.

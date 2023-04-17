@@ -74,6 +74,21 @@ public record Event : Entity, IValidatableObject
 	/// </summary>
 	public Field? Field { get; set; }
 
+	public Event? FindConflict(IEnumerable<Event> events)
+	{
+		foreach (var scheduledEvent in events)
+		{
+			if (this.Id == scheduledEvent.Id)
+			{
+				break;
+			}
+
+
+		}
+
+		return null;
+	}
+
 	/// <summary>
 	/// Generates a schedule from this instance using it's recurrence pattern.
 	/// </summary>
