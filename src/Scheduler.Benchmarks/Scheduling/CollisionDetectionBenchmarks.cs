@@ -8,13 +8,12 @@ namespace Scheduler.Benchmarks.Scheduling;
 /// <summary>
 /// Contains benchmarks for conflict detection.
 /// </summary>
-[MemoryDiagnoser]
 public class CollisionDetectionBenchmarks
 {
 	/// <summary>
 	/// The list of events to detect collisions against.
 	/// </summary>
-	private readonly IEnumerable<Event> events;
+	private readonly List<Event> events;
 
 	/// <summary>
 	/// The conflicting event.
@@ -26,21 +25,23 @@ public class CollisionDetectionBenchmarks
 	/// </summary>
 	public CollisionDetectionBenchmarks()
 	{
-		this.events = SeedData.Events;
-		this.scheduledEvent = new()
-		{
-			StartDate = new DateTime(2023, 3, 15, 17, 0, 0),
-			EndDate = new DateTime(2023, 3, 15, 20, 0, 0)
-		};
+		this.events = SeedData.Events
+			.OrderBy(e => e.StartDate)
+			.ToList();
+
+		this.scheduledEvent = this.events.Last();
 	}
 
 	/// <summary>
 	/// Previous implementation of collision detection.
 	/// </summary>
 	[Benchmark]
-	public Event? Old()
+	public void Old()
 	{
-		return this.scheduledEvent.FindConflict(this.events);
+		// Type or member is obsolete, used here for benchmarking.
+#pragma warning disable CS0618
+		this.scheduledEvent.FindConflictOld(this.events);
+#pragma warning restore CS0618
 	}
 
 	/// <summary>
@@ -49,5 +50,6 @@ public class CollisionDetectionBenchmarks
 	[Benchmark]
 	public void New()
 	{
+		this.scheduledEvent.FindConflict(this.events);
 	}
 }

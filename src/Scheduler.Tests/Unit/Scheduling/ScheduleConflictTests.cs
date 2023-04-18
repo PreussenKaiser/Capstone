@@ -1,6 +1,5 @@
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Utility;
-using Scheduler.Domain.Validation;
 using Xunit;
 
 namespace Scheduler.Tests.Unit.Scheduling;
@@ -10,6 +9,21 @@ namespace Scheduler.Tests.Unit.Scheduling;
 /// </summary>
 public sealed class ScheduleConflictTests
 {
+	/// <summary>
+	/// Events to find a conflict in.
+	/// </summary>
+	private readonly List<Event> events;
+
+	/// <summary>
+	/// Initializes the <see cref="ScheduleConflictTests"/> class.
+	/// </summary>
+	public ScheduleConflictTests()
+	{
+		this.events = SeedData.Events
+			.OrderBy(e => e.StartDate)
+			.ToList();
+	}
+
 	/// <summary>
 	/// Asserts that a complete overlap fails.
 	/// </summary>
@@ -23,7 +37,7 @@ public sealed class ScheduleConflictTests
 			EndDate = new(2023, 03, 24, 14, 0, 0)
 		};
 
-		Event? conflictingEvent = newEvent.FindConflict(SeedData.Events);
+		Event? conflictingEvent = newEvent.FindConflict(this.events);
 
 		Assert.NotNull(conflictingEvent);
 	}
@@ -41,7 +55,7 @@ public sealed class ScheduleConflictTests
 			EndDate = new(2023, 03, 24, 13, 0, 0)
 		};
 
-		Event? conflictingEvent = newEvent.FindConflict(SeedData.Events);
+		Event? conflictingEvent = newEvent.FindConflict(this.events);
 
 		Assert.NotNull(conflictingEvent);
 	}
@@ -59,7 +73,7 @@ public sealed class ScheduleConflictTests
 			EndDate = new(2023, 03, 24, 11, 0, 0)
 		};
 
-		Event? conflict = newEvent.FindConflict(SeedData.Events);
+		Event? conflict = newEvent.FindConflict(this.events);
 
 		Assert.Null(conflict);
 	}
@@ -78,7 +92,7 @@ public sealed class ScheduleConflictTests
 			EndDate = new(2023, 03, 15, 19, 0, 0)
 		};
 
-		Event? conflict = newEvent.FindConflict(SeedData.Events);
+		Event? conflict = newEvent.FindConflict(this.events);
 
 		Assert.Null(conflict);
 	}
@@ -96,7 +110,7 @@ public sealed class ScheduleConflictTests
 			EndDate = new(2023, 3, 15, 20, 30, 0)
 		};
 
-		Event? conflict = newEvent.FindConflict(SeedData.Events);
+		Event? conflict = newEvent.FindConflict(this.events);
 
 		Assert.Null(conflict);
 	}

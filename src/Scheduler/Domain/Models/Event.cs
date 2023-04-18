@@ -1,4 +1,6 @@
-﻿using Scheduler.Domain.Validation;
+﻿using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
+using Scheduler.Domain.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
@@ -21,7 +23,7 @@ public record Event : Entity, IValidatableObject
 	/// Fields referenced by the <see cref="Event"/>.
 	/// </summary>
 	[Display(Name = "Field")]
-	[RequiredIfFalse("IsBlackout", ErrorMessage = "Please select at least one field.")]
+	[RequiredIfFalse(nameof(IsBlackout), ErrorMessage = "Please select at least one field.")]
 	public Guid? FieldId { get; set; }
 
 	/// <summary>
@@ -74,16 +76,38 @@ public record Event : Entity, IValidatableObject
 	/// </summary>
 	public Field? Field { get; set; }
 
-	public Event? FindConflict(IEnumerable<Event> events)
+	/// <summary>
+	/// Attempts to find a conflict
+	/// </summary>
+	/// <param name="events"></param>
+	/// <returns></returns>
+	public Event? FindConflict(List<Event> events)
 	{
-		foreach (var scheduledEvent in events)
+		int left = 0;
+		int right = events.Count - 1;
+
+		while (left <= right)
 		{
-			if (this.Id == scheduledEvent.Id)
+			int mid = left + (right - left) / 2;
+			Event scheduledEvent = events[mid];
+
+			if (this.Id != scheduledEvent.Id &&
+				this.StartDate < scheduledEvent.EndDate &&
+				this.EndDate > scheduledEvent.StartDate &&
+				(this.IsBlackout || this.FieldId == scheduledEvent.FieldId))
 			{
-				break;
+				return scheduledEvent;
 			}
 
-
+			if (scheduledEvent.EndDate < this.StartDate ||
+				scheduledEvent.StartDate >= this.EndDate)
+			{
+				left = mid + 1;
+			}
+			else
+			{
+				right = mid - 1;
+			}
 		}
 
 		return null;
@@ -151,13 +175,22 @@ public record Event : Entity, IValidatableObject
 	}
 
 	/// <summary>
-	/// 
+	/// Validation rules for <see cref="Event"/>.
+	/// <para>
+	/// <b>Checks done:</b>
+	/// <br></br>
+	/// <list type="bullet">
+	/// <item><see cref="EndDate"/> is at least 30 minutes away from <see cref="StartDate"/>.</item>
+	/// <item><see cref="StartDate"/> and <see cref="EndDate"/> are between 8am and 11pm.</item>
+	/// <item>No conflicts were detected with other events.</item>
+	/// </list>
+	/// </para>
 	/// </summary>
-	/// <param name="validationContext"></param>
-	/// <returns></returns>
+	/// <param name="validationContext">The current context.</param>
+	/// <returns>Errors resulting from validation.</returns>
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
-		ICollection<ValidationResult> results = new List<ValidationResult>();
+		ICollection<ValidationResult> results = new List<ValidationResult>(3);
 
 		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
 		{
@@ -167,6 +200,17 @@ public record Event : Entity, IValidatableObject
 		if (this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 22)
 		{
 			results.Add(new("Event Times must be between 8 am and 11 pm."));
+		}
+
+		IScheduleRepository scheduleRepository = validationContext.GetRequiredService<IScheduleRepository>();
+		Event? conflict = this.FindConflict(scheduleRepository
+			.SearchAsync(new GetAllSpecification<Event>())
+			.Result
+			.ToList());
+
+		if (conflict is not null)
+		{
+			results.Add(new("An event is already scheduled for that date and location."));
 		}
 
 		return results;
