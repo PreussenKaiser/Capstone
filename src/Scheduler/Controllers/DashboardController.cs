@@ -12,6 +12,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using System.Web;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Scheduler.Web.Controllers;
 
@@ -173,7 +174,7 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["Events"] = events.ToList();
 		}
-		
+
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = start;
 		this.ViewData["End"] = end;
@@ -349,25 +350,8 @@ public sealed class DashboardController : Controller
 
 		if (selectedTeam == null)
 		{
-			IEnumerable<Team> filteredTeamList = teamList.Where(t => t.Name.ToLower().Contains(teamName.ToLower()));
-
-			if(filteredTeamList.Any())
-			{				
-				ViewData["TeamFilterMessage"] = "Your search was narrowed down to the following Team(s):\n";
-				foreach(Team team in filteredTeamList)
-				{
-					ViewData["TeamFilterMessage"] += "\n\t\u2022 " + team.Name;
-				}
-
-				ViewData["TeamFilterMessage"] += "\n\nPlease re-enter the desired name exactly in the search bar";
-
-				return null;
-			}
-			else
-			{
-				ViewData["TeamFilterMessage"] = "Team " + teamName + " does not exist\nand no Team names contain this term";
-				return null;
-			}			
+			ViewData["TeamFilterMessage"] = "Team " + teamName + " does not exist";
+			return null;			
 		}
 
 		IEnumerable<Event> matchingGames = null;

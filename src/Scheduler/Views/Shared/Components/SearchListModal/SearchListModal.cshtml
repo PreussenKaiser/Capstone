@@ -49,7 +49,13 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Team Name</label>
-                                        <input type="text" name="teamName" class="form-control" />
+                                        <select id="teamNameSearchFilter" name="teamName" class="form-select">
+                                            <option value=""></option>
+                                            @foreach (Team t in (IEnumerable<Team>)ViewData["Teams"])
+                                            {
+                                                <option value=@t.Name>@t.Name</option>
+                                            }
+                                        </select>
                                     </div>
                                     <div class="text-center">
                                         <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
@@ -63,7 +69,7 @@
                     </div>
                 </div>
                 <div id="searchModalTable">
-                    <partial name="_SearchListModalTable" model="events"/>
+                    <partial name="_ListModalTable" model="events"/>
                 </div>
             </div>
             <div class="modal-footer noPrintIfModal">
@@ -87,6 +93,17 @@
     function closeDropdown() {
         $('#searchListModalDropdown').removeClass('show');
     }
+
+    $(document).ready(function () {
+
+        $("#teamNameSearchFilter").chosen({
+            no_results_text: "Sorry, I can't find that Team!",
+            placeholder_text_single: "Start typing to select a Team...",
+            width: "100%",
+            search_contains: true
+        });
+
+    });
 
     var startDateString = "@startDateString";
     var endDateString = "@endDateString";

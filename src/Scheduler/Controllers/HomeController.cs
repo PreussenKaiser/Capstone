@@ -7,6 +7,7 @@ using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Scheduler.Filters;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Scheduler.Web.Controllers;
 
@@ -44,6 +45,8 @@ public sealed class HomeController : Controller
 			.WithScheduling()
 			.Include(g => g.HomeTeam)
 			.Include(g => g.OpposingTeam);
+
+		this.ViewData["Teams"] = this.context.Teams;
 
 		return this.View(new IndexViewModel(
 			events.AsRecurring(),

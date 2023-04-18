@@ -19,7 +19,7 @@
                         <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="filterForm" autocomplete="off">
                             <div>                                
                                 <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" onclick="showModalDropdown()" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">Filter Results </button>
-                                <ul class="dropdown-menu w-100 p-3" id="listModalDropdown">
+                                <ul class="dropdown-menu p-3" style="width:120%" id="listModalDropdown">
                                     <h5 class="lead text-danger text-center">Filter Criteria</h5>
                                     <div class="mb-3">
                                         <label class="form-label">Type</label>
@@ -35,7 +35,13 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Team Name</label>
-                                        <input type="text" name="teamName" class="form-control" />
+                                        <select id="teamNameFilter" name="teamName" class="form-select">
+                                            <option value=""></option>
+                                            @foreach (Team t in (IEnumerable<Team>)ViewData["Teams"])
+                                            {
+                                                <option value=@t.Name>@t.Name</option>
+                                            }
+                                        </select>
                                     </div>
                                     <div class="text-center">
                                         <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
@@ -71,6 +77,17 @@
     function closeDropdown() {
         $('#listModalDropdown').removeClass('show');
     }
+
+    $(document).ready(function () {
+
+        $("#teamNameFilter").chosen({
+            no_results_text: "Sorry, I can't find that Team!",
+            placeholder_text_single: "Start typing to select a Team...",
+            width: "100%",
+            search_contains: true
+        });
+
+    });
     
     function filterEvents(e){
         $.ajax({
