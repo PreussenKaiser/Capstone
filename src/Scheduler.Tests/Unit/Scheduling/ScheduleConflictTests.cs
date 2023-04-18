@@ -12,7 +12,7 @@ public sealed class ScheduleConflictTests
 	/// <summary>
 	/// Events to find a conflict in.
 	/// </summary>
-	private readonly List<Event> events;
+	private readonly Event[] events;
 
 	/// <summary>
 	/// Initializes the <see cref="ScheduleConflictTests"/> class.
@@ -21,7 +21,20 @@ public sealed class ScheduleConflictTests
 	{
 		this.events = SeedData.Events
 			.OrderBy(e => e.StartDate)
-			.ToList();
+			.ToArray();
+	}
+
+	/// <summary>
+	/// Asserts that despite having a conflict, the conflicting event is the same as the scheduled one and therefore should be ignored.
+	/// </summary>
+	[Fact]
+	public void Date_Overlap_SameEvent()
+	{
+		Event newEvent = SeedData.Events.Last();
+
+		Event? conflict = newEvent.FindConflict(this.events);
+
+		Assert.Null(conflict);
 	}
 
 	/// <summary>

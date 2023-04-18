@@ -13,7 +13,7 @@ public class CollisionDetectionBenchmarks
 	/// <summary>
 	/// The list of events to detect collisions against.
 	/// </summary>
-	private readonly List<Event> events;
+	private readonly Event[] events;
 
 	/// <summary>
 	/// The conflicting event.
@@ -27,7 +27,7 @@ public class CollisionDetectionBenchmarks
 	{
 		this.events = SeedData.Events
 			.OrderBy(e => e.StartDate)
-			.ToList();
+			.ToArray();
 
 		this.scheduledEvent = this.events.Last();
 	}

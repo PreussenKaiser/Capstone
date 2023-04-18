@@ -77,14 +77,17 @@ public record Event : Entity, IValidatableObject
 	public Field? Field { get; set; }
 
 	/// <summary>
-	/// Attempts to find a conflict
+	/// Uses a binary search to find an event who's <see cref="StartDate"/> and <see cref="EndDate"/> overlap with the current instance.
 	/// </summary>
-	/// <param name="events"></param>
-	/// <returns></returns>
-	public Event? FindConflict(List<Event> events)
+	/// <remarks>
+	/// Supplied <paramref name="events"/> must be ordered by date.
+	/// </remarks>
+	/// <param name="events">The list of events to find a conflict from.</param>
+	/// <returns>The conflicting <see cref="Event"/>, <see langword="null"/> if none were found.</returns>
+	public Event? FindConflict(Event[] events)
 	{
 		int left = 0;
-		int right = events.Count - 1;
+		int right = events.Length - 1; // Culd overflow if value is above int.MaxValue
 
 		while (left <= right)
 		{
@@ -206,7 +209,7 @@ public record Event : Entity, IValidatableObject
 		Event? conflict = this.FindConflict(scheduleRepository
 			.SearchAsync(new GetAllSpecification<Event>())
 			.Result
-			.ToList());
+			.ToArray());
 
 		if (conflict is not null)
 		{
