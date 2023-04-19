@@ -177,8 +177,9 @@ public sealed class HomeController : Controller
 
 		foreach (var practice in practicesToDelete)
 		{
+			var team = this.context.Teams.FirstOrDefault(t => t.Id == practice.TeamId);
 			// Delete teams associated with the practice that match the user ID
-			if (practice.Team is not null && practice.Team.UserId == null && practicesToDelete.Count == 1)
+			if (team is not null && team.UserId == null && practicesToDelete.Count == 1)
 			{
 				this.context.Teams.Remove(practice.Team);
 			}
