@@ -3,6 +3,7 @@ using Scheduler.Domain.Specifications;
 using Scheduler.Domain.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Scheduler.Domain.Models;
 
@@ -84,34 +85,46 @@ public record Event : Entity, IValidatableObject
 	/// </remarks>
 	/// <param name="events">The list of events to find a conflict from.</param>
 	/// <returns>The conflicting <see cref="Event"/>, <see langword="null"/> if none were found.</returns>
+	/// <exception cref="ArgumentNullException"></exception>
+	/// <exception cref="ArgumentException"></exception>
 	public Event? FindConflict(Event[] events)
 	{
-		int left = 0;
-		int right = events.Length - 1; // Culd overflow if value is above int.MaxValue
+		ArgumentNullException.ThrowIfNull(events);
 
-		while (left <= right)
+		if (events.Length - 1 > int.MaxValue)
 		{
-			int mid = left + (right - left) / 2;
-			Event scheduledEvent = events[mid];
-
-			if (this.Id != scheduledEvent.Id &&
-				this.StartDate < scheduledEvent.EndDate &&
-				this.EndDate > scheduledEvent.StartDate &&
-				(this.IsBlackout || this.FieldId == scheduledEvent.FieldId))
-			{
-				return scheduledEvent;
-			}
-
-			if (scheduledEvent.EndDate < this.StartDate ||
-				scheduledEvent.StartDate >= this.EndDate)
-			{
-				left = mid + 1;
-			}
-			else
-			{
-				right = mid - 1;
-			}
+			throw new ArgumentException("Array size out of bounds.");
 		}
+
+		int left = 0;
+		int right = events.Length - 1; // Could overflow if value is above int.MaxValue
+
+		IEnumerable<Event> schedule = this.GenerateSchedule<Event>();
+
+		foreach (var occurrence in schedule)
+			while (left <= right)
+			{
+				int mid = left + (right - left) / 2;
+				Event scheduledEvent = events[mid];
+
+				if (occurrence.Id != scheduledEvent.Id &&
+					occurrence.StartDate < scheduledEvent.EndDate &&
+					occurrence.EndDate > scheduledEvent.StartDate &&
+					(occurrence.IsBlackout || occurrence.FieldId == scheduledEvent.FieldId))
+				{
+					return scheduledEvent;
+				}
+
+				if (scheduledEvent.EndDate < occurrence.StartDate ||
+					scheduledEvent.StartDate >= occurrence.EndDate)
+				{
+					left = mid + 1;
+				}
+				else
+				{
+					right = mid - 1;
+				}
+			}
 
 		return null;
 	}

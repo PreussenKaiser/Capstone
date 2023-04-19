@@ -45,9 +45,9 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Field = SeedData.Fields.Skip(1).First(),
-			StartDate = new(2023, 03, 24, 13, 0, 0),
-			EndDate = new(2023, 03, 24, 14, 0, 0)
+			FieldId = SeedData.Fields.First().Id,
+			StartDate = new DateTime(2023, 03, 24, 11, 0, 0),
+			EndDate = new DateTime(2023, 03, 24, 16, 0, 0)
 		};
 
 		Event? conflictingEvent = newEvent.FindConflict(this.events);
@@ -63,9 +63,9 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Field = SeedData.Fields.Skip(1).First(),
-			StartDate = new(2023, 03, 24, 11, 0, 0),
-			EndDate = new(2023, 03, 24, 13, 0, 0)
+			FieldId = SeedData.Fields.Skip(1).First().Id,
+			StartDate = new DateTime(2023, 3, 15, 18, 0, 0),
+			EndDate = new DateTime(2023, 3, 15, 19, 0, 0),
 		};
 
 		Event? conflictingEvent = newEvent.FindConflict(this.events);
@@ -81,9 +81,9 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Field = SeedData.Fields.Skip(1).First(),
-			StartDate = new(2023, 03, 24, 10, 0, 0),
-			EndDate = new(2023, 03, 24, 11, 0, 0)
+			FieldId = SeedData.Fields.Skip(1).First().Id,
+			StartDate = new DateTime(2023, 03, 24, 10, 0, 0),
+			EndDate = new DateTime(2023, 03, 24, 11, 0, 0)
 		};
 
 		Event? conflict = newEvent.FindConflict(this.events);
@@ -101,8 +101,8 @@ public sealed class ScheduleConflictTests
 		{
 			FieldId = SeedData.Fields.Skip(3).First().Id,
 			Field = SeedData.Fields.Skip(3).Last(),
-			StartDate = new(2023, 03, 15, 18, 0, 0),
-			EndDate = new(2023, 03, 15, 19, 0, 0)
+			StartDate = new DateTime(2023, 03, 15, 18, 0, 0),
+			EndDate = new DateTime(2023, 03, 15, 19, 0, 0)
 		};
 
 		Event? conflict = newEvent.FindConflict(this.events);
@@ -118,9 +118,9 @@ public sealed class ScheduleConflictTests
 	{
 		Event newEvent = new()
 		{
-			Field = SeedData.Fields.Last(),
-			StartDate = new(2023, 3, 15, 20, 0, 0),
-			EndDate = new(2023, 3, 15, 20, 30, 0)
+			FieldId = SeedData.Fields.Last().Id,
+			StartDate = new DateTime(2023, 3, 15, 20, 0, 0),
+			EndDate = new DateTime(2023, 3, 15, 20, 30, 0)
 		};
 
 		Event? conflict = newEvent.FindConflict(this.events);

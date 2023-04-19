@@ -21,14 +21,17 @@ public static class Schedule
 		this Event scheduledEvent,
 		IEnumerable<Event> events)
 	{
-		foreach (var e in events)
-			if (scheduledEvent.Id != e.Id &&
-			   (scheduledEvent.IsBlackout || scheduledEvent.FieldId == e.FieldId) &&
-				scheduledEvent.StartDate < e.EndDate &&
-				scheduledEvent.EndDate > e.StartDate)
-			{
-				return e;
-			}
+		IEnumerable<Event> schedule = scheduledEvent.GenerateSchedule<Event>();
+
+		foreach (var occurrence in schedule)
+			foreach (var e in events)
+				if (occurrence.Id != e.Id &&
+				   (occurrence.IsBlackout || occurrence.FieldId == e.FieldId) &&
+					occurrence.StartDate < e.EndDate &&
+					occurrence.EndDate > e.StartDate)
+				{
+					return e;
+				}
 
 		return null;
 	}
