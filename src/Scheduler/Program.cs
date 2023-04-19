@@ -3,6 +3,7 @@ using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Repositories;
+using Scheduler.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -17,6 +18,7 @@ string connectionString = builder.Configuration.GetConnectionString(CONN)
 	?? throw new ArgumentException("Could not retrieve connection string.");
 
 builder.Services
+	.AddHostedService<ScheduleCullingService>()
 	.AddDbContext<SchedulerContext>(o => o
 		.UseSqlServer(connectionString)
 		.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking))
