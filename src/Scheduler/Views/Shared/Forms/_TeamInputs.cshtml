@@ -7,15 +7,16 @@
 @using Scheduler.Domain.Specifications;
 
 @inject ILeagueRepository LeagueRepository
-@inject UserManager<User> userManager;
+@inject UserManager<User> UserManager;
 @model Team
 
 @if (this.Model is not null)
 {
     <input hidden asp-for="Id" />
 }
+
 @{
-    var userList = userManager.Users
+    var UserList = UserManager.Users
         .Select(user => new SelectListItem
                 {
                     Text = string.Join(" ", user.FirstName, user.LastName),
@@ -23,7 +24,7 @@
                     Selected = Model != null && Model.UserId == user.Id
                 })
         .ToList();
-    userList.Add(new SelectListItem { Text = "Visiting Coach", Value = null, Selected = false });
+    UserList.Add(new SelectListItem { Text = "Visiting Coach", Value = null, Selected = false });
 }
 
 <div class="row mb-3">
@@ -32,18 +33,20 @@
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span> 
     </div>
-
+</div>
+<div class="row mb-3">
     <div class="col-sm-6">
         <label asp-for="UserId" class="form-label">Coach</label>
         <select asp-for="UserId" class="form-select">
-            @foreach (var user in userList)
+            @foreach (var user in UserList)
             {
                 <option value=@user.Value>@user.Text</option>
             }
         </select>
         <span asp-validation-for="UserId" class="text-danger"></span>
     </div>
-
+</div>
+<div class="row mb-3">
     <div class="col-sm-6">
         <label asp-for="LeagueId" class="form-label"></label>
         <select class="form-select"

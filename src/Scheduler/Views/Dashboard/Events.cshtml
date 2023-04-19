@@ -39,7 +39,8 @@
 				{
 					practice = scheduledEvent as Practice;
 					team = teams.FirstOrDefault(t => t.Id == practice.TeamId);
-					if (team.UserId == Guid.Parse(UserManager.GetUserId(User)))
+
+					if (team.UserId == Guid.Parse(this.UserManager.GetUserId(this.User)))
 					{
 						load = true;
 					}
@@ -49,8 +50,9 @@
 					game = scheduledEvent as Game;
 					homeTeam = teams.FirstOrDefault(g => g.Id == game.HomeTeamId);
 					opposingTeam = teams.FirstOrDefault(g => g.Id == game.OpposingTeamId);
-					if (opposingTeam.UserId == Guid.Parse(UserManager.GetUserId(User)) ||
-							homeTeam.UserId == Guid.Parse(UserManager.GetUserId(User)))
+
+					if (opposingTeam.UserId == Guid.Parse(this.UserManager.GetUserId(this.User)) ||
+					homeTeam.UserId == Guid.Parse(this.UserManager.GetUserId(this.User)))
 					{
 						load = true;
 					}
@@ -59,6 +61,7 @@
 				{
 					load = true;
 				}
+
 				if (load)
 				{
 					<a asp-action="Details" asp-controller="Schedule" asp-route-id="@scheduledEvent.Id" class="list-group-item list-group-item-action border-3 border-secondary mb-3">

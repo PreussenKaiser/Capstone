@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
@@ -16,18 +15,13 @@ namespace Scheduler.Web.Controllers;
 [Authorize]
 public sealed class TeamController : Controller
 {
-	private readonly SchedulerContext context;
-	private readonly UserManager<User> userManager;
-
 	/// <summary>
 	/// The repository to query and execute commands with.
 	/// </summary>
 	private readonly ITeamRepository teamRepository;
 
-	public TeamController(SchedulerContext context, UserManager<User> userManager, ITeamRepository teamRepository)
+	public TeamController(ITeamRepository teamRepository)
 	{
-		this.context = context;
-		this.userManager = userManager;
 		this.teamRepository = teamRepository;
 	}
 
