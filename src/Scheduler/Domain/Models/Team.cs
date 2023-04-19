@@ -30,5 +30,5 @@ public sealed record Team : Entity
 	/// The id of the user that made the team.
 	/// </summary>
 	[ScaffoldColumn(false)]
-	public Guid UserId { get; set; }
+	public Guid? UserId { get; set; }
 }

@@ -1,3 +1,4 @@
+@using Newtonsoft.Json;
 @using Scheduler.Infrastructure.Persistence;
 @using Scheduler.Infrastructure.Extensions;
 @using Microsoft.AspNetCore.Identity;
@@ -13,26 +14,33 @@
 {
     <input hidden asp-for="Id" />
 }
+@{
+    var userList = userManager.Users
+        .Select(user => new SelectListItem
+                {
+                    Text = string.Join(" ", user.FirstName, user.LastName),
+                    Value = user.Id.ToString(),
+                    Selected = Model != null && Model.UserId == user.Id
+                })
+        .ToList();
+    userList.Add(new SelectListItem { Text = "Visiting Coach", Value = null, Selected = false });
+}
 
 <div class="row mb-3">
     <div class="col-sm-6">
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <span asp-validation-for="Name" class="text-danger"></span> 
     </div>
 
     <div class="col-sm-6">
         <label asp-for="UserId" class="form-label">User</label>
-        <select class="form-select"
-                asp-for="UserId"
-                asp-items="userManager.Users
-                    .ToList()
-                    .Select(user => new SelectListItem
-                    {
-                        Text = string.Join(' ', user.FirstName, user.LastName),
-                        Value = user.Id.ToString(),
-                        Selected = this.Model is not null
-                    })"></select>
+        <select asp-for="UserId" class="form-select">
+            @foreach (var user in userList)
+            {
+                <option value=@user.Value>@user.Text</option>
+            }
+        </select>
         <span asp-validation-for="UserId" class="text-danger"></span>
     </div>
 

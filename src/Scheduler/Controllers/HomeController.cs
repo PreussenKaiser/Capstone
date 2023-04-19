@@ -148,8 +148,6 @@ public sealed class HomeController : Controller
 		var games = this.context.Games;
 		var practices = this.context.Practices;
 
-		Guid userId = Guid.Parse("def8f5cd-c5e5-4cbb-2aba-08db3c466f6b");
-
 		// Delete expired games
 		var gamesToDelete = this.context.Games
 			.Where(g => g.EndDate < currentDate)
@@ -160,11 +158,11 @@ public sealed class HomeController : Controller
 			var homeTeam = this.context.Teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
 			var opposingTeam = this.context.Teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
 			// Delete teams associated with the game that match the user ID
-			if (homeTeam is not null && homeTeam.UserId == userId && gamesToDelete.Count == 1)
+			if (homeTeam is not null && homeTeam.UserId == null && gamesToDelete.Count == 1)
 			{
 				this.context.Teams.Remove(homeTeam);
 			}
-			else if (opposingTeam is not null &&  opposingTeam.UserId == userId && gamesToDelete.Count == 1)
+			else if (opposingTeam is not null &&  opposingTeam.UserId == null && gamesToDelete.Count == 1)
 			{
 				this.context.Teams.Remove(opposingTeam);
 			}
@@ -180,7 +178,7 @@ public sealed class HomeController : Controller
 		foreach (var practice in practicesToDelete)
 		{
 			// Delete teams associated with the practice that match the user ID
-			if (practice.Team is not null && practice.Team.UserId == userId && practicesToDelete.Count == 1)
+			if (practice.Team is not null && practice.Team.UserId == null && practicesToDelete.Count == 1)
 			{
 				this.context.Teams.Remove(practice.Team);
 			}
