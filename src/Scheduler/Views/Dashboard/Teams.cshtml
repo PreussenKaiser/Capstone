@@ -36,9 +36,9 @@
                         <td scope="row">Visiting Coach</td>
                         string? userId = team.UserId.ToString();
 
-                        if (userId is not null)
+                        if (userId is not null && userId != "")
                         {
-                            User? user = await this.userManager.FindByIdAsync(userId);
+                            User? user = await this.UserManager.FindByIdAsync(userId);
 
                             string name = user is null
                                 ? string.Empty
