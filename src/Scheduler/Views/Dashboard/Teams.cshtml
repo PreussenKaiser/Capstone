@@ -34,6 +34,18 @@
                     else
                     {
                         <td scope="row">Visiting Coach</td>
+                        string? userId = team.UserId.ToString();
+
+                        if (userId is not null)
+                        {
+                            User? user = await this.userManager.FindByIdAsync(userId);
+
+                            string name = user is null
+                                ? string.Empty
+                                : $"{user.FirstName} {user.LastName}";
+
+                            <th scope="row">@name</th>
+                        }
                     }
                     <td class="text-end">
                         <a asp-action="Details"

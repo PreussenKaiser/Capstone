@@ -51,6 +51,7 @@ public sealed class TeamController : Controller
 		{
 			return this.View(team);
 		}
+
 		await this.teamRepository.AddAsync(team);
 
 		return this.RedirectToAction(
