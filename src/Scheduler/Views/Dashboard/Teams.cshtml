@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 
+@inject UserManager<User> userManager;
 @model IEnumerable<Team>
 
 <div class="text-center mb-3 mt-3">
@@ -14,6 +15,7 @@
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">League</th>
+                <th scope="col">Coach</th>
                 <th scope="col" colspan="2" class="text-center">Actions</th>
             </tr>
         </thead>
@@ -23,6 +25,15 @@
                 <tr>
                     <th scope="row">@team.Name</th>
                     <td>@(team.League is null ? string.Empty : team.League.Name)</td>
+                    @if (team.UserId is null)
+                    {
+                        <th scope="row">Visiting Coach</th>
+                    }
+                    else
+                    {
+                        var name = string.Join(' ', userManager.FindByIdAsync(team.UserId.ToString()).Result.FirstName, userManager.FindByIdAsync(team.UserId.ToString()).Result.LastName);
+                        <th scope="row">@name</th>
+                    }
                     <td class="text-end">
                         <a asp-action="Details"
                            asp-controller="Team"
