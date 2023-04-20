@@ -1,4 +1,5 @@
 ﻿using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Events;
 
 namespace Scheduler.Services;
@@ -14,6 +15,11 @@ public sealed class ScheduleCullingService : BackgroundService
 	private readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
+	/// Provides when to execute the service.
+	/// </summary>
+	private readonly IDateProvider dateProvider;
+
+	/// <summary>
 	/// Logs background service processes.
 	/// </summary>
 	private readonly ILogger<ScheduleCullingService> logger;
@@ -22,12 +28,15 @@ public sealed class ScheduleCullingService : BackgroundService
 	/// Initializes the <see cref="ScheduleCullingService"/> class.
 	/// </summary>
 	/// <param name="scheduleRepository">The repository to delete scheduled events fromt.</param>
+	/// <param name="dateProvider">Provides when to execute the service.</param>
 	/// <param name="logger">Logs background service processes.</param>
 	public ScheduleCullingService(
 		IScheduleRepository scheduleRepository,
+		IDateProvider dateProvider,
 		ILogger<ScheduleCullingService> logger)
 	{
 		this.scheduleRepository = scheduleRepository;
+		this.dateProvider = dateProvider;
 		this.logger = logger;
 	}
 
@@ -40,11 +49,11 @@ public sealed class ScheduleCullingService : BackgroundService
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		PastEventSpecification pastEventSpec = new();
-		TimeSpan scheduledTime = new(3, 0, 0);
+		TimeSpan scheduledTime = new(3, 0, 0); // 3am
 
 		while (!stoppingToken.IsCancellationRequested)
 		{
-			TimeSpan currentTime = DateTime.Now.TimeOfDay;
+			TimeSpan currentTime = this.dateProvider.Now.TimeOfDay;
 
 			if (currentTime >= scheduledTime)
 			{
@@ -54,8 +63,8 @@ public sealed class ScheduleCullingService : BackgroundService
 
 				this.logger.LogInformation("Culling complete.");
 
-				DateTime nextDay = DateTime.Today.AddDays(1);
-				TimeSpan timeToWait = nextDay + scheduledTime - DateTime.Now;
+				DateTime nextDay = this.dateProvider.Today.AddDays(1);
+				TimeSpan timeToWait = nextDay + scheduledTime - this.dateProvider.Now;
 
 				await Task.Delay(timeToWait, stoppingToken);
 			}
