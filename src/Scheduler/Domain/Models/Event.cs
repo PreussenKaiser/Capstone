@@ -3,7 +3,6 @@ using Scheduler.Domain.Specifications;
 using Scheduler.Domain.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Scheduler.Domain.Models;
 
