@@ -27,7 +27,6 @@ builder.Services
 	.AddScoped<ILeagueRepository, LeagueRepository>()
 	.AddScoped<ITeamRepository, TeamRepository>();
 
-// Configure identity
 builder.Services
 	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>();

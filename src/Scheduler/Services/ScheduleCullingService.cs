@@ -20,24 +20,16 @@ public sealed class ScheduleCullingService : BackgroundService
 	private readonly IDateProvider dateProvider;
 
 	/// <summary>
-	/// Logs background service processes.
-	/// </summary>
-	private readonly ILogger<ScheduleCullingService> logger;
-
-	/// <summary>
 	/// Initializes the <see cref="ScheduleCullingService"/> class.
 	/// </summary>
 	/// <param name="scheduleRepository">The repository to delete scheduled events fromt.</param>
 	/// <param name="dateProvider">Provides when to execute the service.</param>
-	/// <param name="logger">Logs background service processes.</param>
 	public ScheduleCullingService(
 		IScheduleRepository scheduleRepository,
-		IDateProvider dateProvider,
-		ILogger<ScheduleCullingService> logger)
+		IDateProvider dateProvider)
 	{
 		this.scheduleRepository = scheduleRepository;
 		this.dateProvider = dateProvider;
-		this.logger = logger;
 	}
 
 	/// <summary>
@@ -57,11 +49,7 @@ public sealed class ScheduleCullingService : BackgroundService
 
 			if (currentTime >= scheduledTime)
 			{
-				this.logger.LogInformation("Culling past events...");
-
 				await this.scheduleRepository.CancelAsync(pastEventSpec);
-
-				this.logger.LogInformation("Culling complete.");
 
 				DateTime nextDay = this.dateProvider.Today.AddDays(1);
 				TimeSpan timeToWait = nextDay + scheduledTime - this.dateProvider.Now;
