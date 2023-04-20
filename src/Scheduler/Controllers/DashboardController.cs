@@ -28,18 +28,43 @@ public sealed class DashboardController : Controller
 	private readonly SchedulerContext context;
 
 	/// <summary>
+	/// The variable to manage users.
+	/// </summary>
+	private readonly UserManager<User> userManager;
+
+	/// <summary>
 	/// Initializes the <see cref="DashboardController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	public DashboardController(SchedulerContext context)
+	public DashboardController(SchedulerContext context, UserManager<User> userManager)
 	{
 		this.context = context;
+		this.userManager = userManager;
 	}
 
 	/// <summary>
 	/// Displays the <see cref="Events(SchedulerContext, string?, string?)"/> view.
 	/// Can also be POSTed to in order to provide filtering.
 	/// </summary>
+	/// <returns>A view containing scheduled events.</returns>
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	public IActionResult Events()
+	{
+		var userId = userManager.GetUserId(User);
+		IEnumerable<Event> events = this.context.Events
+			.WithScheduling()
+			.AsRecurring();
+
+		return this.View(events);
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="type"></param>
+	/// <param name="searchTerm"></param>
+	/// <returns></returns>
+	[HttpPost]
 	/// <param name="type">The type of event to filter by.</param>
 	/// <param name="searchTerm">The event name to search for.</param>
 	/// <returns>A list of events.</returns>
@@ -59,6 +84,7 @@ public sealed class DashboardController : Controller
 
 			_ => this.context.Events
 		};
+		
 
 		if (searchTerm is not null)
 		{
@@ -117,12 +143,31 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Refreshes the Calendar View Component.
+	/// Checks if the user is associated with the team.
 	/// </summary>
-	/// <param name="year">The currently selected year.</param>
-	/// <param name="month">The currently selecte month.</param>
-	/// <returns>The Calendar ViewComponent.</returns>
-	public IActionResult refreshCalendar(int? year, int? month)
+	/// <returns>games and practices the user is associated with.</returns>
+	bool IsTeamMember(Event scheduledEvent)
+	{
+		if (scheduledEvent is Practice practice)
+		{
+			return practice?.Team?.UserId == Guid.Parse(userManager.GetUserId(User));
+		}
+		else if (scheduledEvent is Game game)
+		{
+			return game?.HomeTeam?.UserId == Guid.Parse(userManager.GetUserId(User))
+				|| game?.OpposingTeam?.UserId == Guid.Parse(userManager.GetUserId(User));
+		}
+
+		return false;
+	}
+
+    /// <summary>
+    /// Refreshes the Calendar View Component.
+    /// </summary>
+    /// <param name="year">The currently selected year.</param>
+    /// <param name="month">The currently selecte month.</param>
+    /// <returns>The Calendar ViewComponent.</returns>
+    public IActionResult refreshCalendar(int? year, int? month)
 	{
 		this.ViewData["Year"] = year;
 		this.ViewData["Month"] = month;

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
-using Scheduler.Domain.Specifications.Events;
 using Scheduler.Extensions;
 using Scheduler.Filters;
 using Scheduler.ViewModels;
