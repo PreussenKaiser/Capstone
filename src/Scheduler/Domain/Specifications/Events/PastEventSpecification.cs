@@ -1,4 +1,5 @@
 ﻿using Scheduler.Domain.Models;
+using Scheduler.Domain.Services;
 using System.Linq.Expressions;
 
 namespace Scheduler.Domain.Specifications.Events;
@@ -8,9 +9,23 @@ namespace Scheduler.Domain.Specifications.Events;
 /// </summary>
 public sealed class PastEventSpecification : Specification<Event>
 {
+	/// <summary>
+	/// Provides date APIs.
+	/// </summary>
+	private readonly IDateProvider dateProvider;
+
+	/// <summary>
+	/// Initializes the <see cref="PastEventSpecification"/> class.
+	/// </summary>
+	/// <param name="dateProvider">Provides date APIs.</param>
+	public PastEventSpecification(IDateProvider dateProvider)
+	{
+		this.dateProvider = dateProvider;
+	}
+
 	/// <inheritdoc/>
 	public override Expression<Func<Event, bool>> ToExpression()
 	{
-		return scheduledEvent => scheduledEvent.EndDate < DateTime.Now;
+		return scheduledEvent => scheduledEvent.EndDate < this.dateProvider.Now;
 	}
 }

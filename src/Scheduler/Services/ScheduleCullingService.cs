@@ -10,9 +10,9 @@ namespace Scheduler.Services;
 public sealed class ScheduleCullingService : BackgroundService
 {
 	/// <summary>
-	/// The repository to delete scheduled events from.
+	/// The service provider to pull <see cref="IScheduleRepository"/> from.
 	/// </summary>
-	private readonly IScheduleRepository scheduleRepository;
+	private readonly IServiceProvider serviceProvider;
 
 	/// <summary>
 	/// Provides when to execute the service.
@@ -22,14 +22,12 @@ public sealed class ScheduleCullingService : BackgroundService
 	/// <summary>
 	/// Initializes the <see cref="ScheduleCullingService"/> class.
 	/// </summary>
-	/// <param name="scheduleRepository">The repository to delete scheduled events fromt.</param>
+	/// <param name="serviceProvider">The service provider to pull <see cref="IScheduleRepository"/> from.</param>
 	/// <param name="dateProvider">Provides when to execute the service.</param>
-	public ScheduleCullingService(
-		IScheduleRepository scheduleRepository,
-		IDateProvider dateProvider)
+	public ScheduleCullingService(IServiceProvider serviceProvider)
 	{
-		this.scheduleRepository = scheduleRepository;
-		this.dateProvider = dateProvider;
+		this.serviceProvider = serviceProvider;
+		this.dateProvider = serviceProvider.GetRequiredService<IDateProvider>();
 	}
 
 	/// <summary>
@@ -40,19 +38,25 @@ public sealed class ScheduleCullingService : BackgroundService
 	/// <returns>Whether the task was completed or not.</returns>
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		PastEventSpecification pastEventSpec = new();
-		TimeSpan scheduledTime = new(3, 0, 0); // 3am
+		PastEventSpecification pastEventSpec = new(new SystemDateProvider());
+		TimeSpan threeAm = new(3, 0, 0);
 
 		while (!stoppingToken.IsCancellationRequested)
 		{
 			TimeSpan currentTime = this.dateProvider.Now.TimeOfDay;
 
-			if (currentTime >= scheduledTime)
+			if (currentTime >= threeAm)
 			{
-				await this.scheduleRepository.CancelAsync(pastEventSpec);
+				using (IServiceScope scope = this.serviceProvider.CreateScope())
+				{
+					// TODO: Catch possible exception then log.
+					IScheduleRepository scheduleRepository = scope.ServiceProvider.GetRequiredService<IScheduleRepository>();
+
+					await scheduleRepository.CancelAsync(pastEventSpec);
+				}
 
 				DateTime nextDay = this.dateProvider.Today.AddDays(1);
-				TimeSpan timeToWait = nextDay + scheduledTime - this.dateProvider.Now;
+				TimeSpan timeToWait = nextDay + threeAm - this.dateProvider.Now;
 
 				await Task.Delay(timeToWait, stoppingToken);
 			}

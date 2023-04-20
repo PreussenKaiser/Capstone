@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides <see cref="DateTime"/> using the system clock.
 /// </summary>
-public sealed class DateProvider : IDateProvider
+public sealed class SystemDateProvider : IDateProvider
 {
 	/// <summary>
 	/// Gets <see cref="DateTime.Now"/>.

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Services;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Repositories;
 using Scheduler.Services;
@@ -18,7 +19,6 @@ string connectionString = builder.Configuration.GetConnectionString(CONN)
 	?? throw new ArgumentException("Could not retrieve connection string.");
 
 builder.Services
-	.AddHostedService<ScheduleCullingService>()
 	.AddDbContext<SchedulerContext>(o => o
 		.UseSqlServer(connectionString)
 		.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking))
@@ -26,6 +26,10 @@ builder.Services
 	.AddScoped<IFieldRepository, FieldRepository>()
 	.AddScoped<ILeagueRepository, LeagueRepository>()
 	.AddScoped<ITeamRepository, TeamRepository>();
+
+builder.Services
+	.AddHostedService<ScheduleCullingService>()
+	.AddSingleton<IDateProvider, SystemDateProvider>();
 
 builder.Services
 	.AddIdentity<User, Role>()

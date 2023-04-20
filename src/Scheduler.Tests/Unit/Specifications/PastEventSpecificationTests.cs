@@ -1,5 +1,6 @@
 ﻿using Scheduler.Domain.Models;
 using Scheduler.Domain.Specifications.Events;
+using Scheduler.Tests.Services;
 using Xunit;
 
 namespace Scheduler.Tests.Unit.Specifications;
@@ -20,7 +21,8 @@ public sealed class PastEventSpecificationTests
 	/// </summary>
 	public PastEventSpecificationTests()
 	{
-		this.pastEventSpecification = new PastEventSpecification();
+		this.pastEventSpecification = new PastEventSpecification(
+			new MockDateProvider(new DateTime(2022, 3, 24)));
 	}
 
 	/// <summary>
@@ -31,7 +33,7 @@ public sealed class PastEventSpecificationTests
 	{
 		Event scheduledEvent = new()
 		{
-			EndDate = DateTime.Now
+			EndDate = new DateTime(2022, 3, 23)
 		};
 
 		bool result = this.pastEventSpecification.IsSatisifiedBy(scheduledEvent);
@@ -47,7 +49,7 @@ public sealed class PastEventSpecificationTests
 	{
 		Event scheduledEvent = new()
 		{
-			EndDate = DateTime.Now.AddDays(1)
+			EndDate = new DateTime(2022, 3, 25)
 		};
 
 		bool result = this.pastEventSpecification.IsSatisifiedBy(scheduledEvent);

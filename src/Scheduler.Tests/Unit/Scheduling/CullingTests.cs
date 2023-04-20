@@ -1,4 +1,5 @@
-﻿using Scheduler.Domain.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications;
@@ -20,18 +21,22 @@ public sealed class CullingTests
 	[Fact]
 	public async Task PastThreeAm_Run()
 	{
+		// Arrange
 		CancellationToken cancellationToken = CancellationToken.None;
 		IScheduleRepository scheduleRepository = new MockScheduleRepository();
-		IDateProvider dateProvider = new MockDateProvider();
-		ScheduleCullingService cullingService = new ScheduleCullingService(
-			scheduleRepository, dateProvider);
 
+		IServiceProvider services = new ServiceCollection()
+			.AddSingleton<IDateProvider, MockDateProvider>()
+			.AddScoped(p => scheduleRepository)
+			.BuildServiceProvider();
+
+		ScheduleCullingService cullingService = new ScheduleCullingService(services);
+
+		// Act
 		await cullingService.StartAsync(cancellationToken);
-
-		await Task.Delay(1000); // Give it enough time to run.
-
 		await cullingService.StopAsync(cancellationToken);
 
+		// Assert
 		IEnumerable<Event> events = await scheduleRepository.SearchAsync(
 			new GetAllSpecification<Event>());
 
@@ -45,18 +50,22 @@ public sealed class CullingTests
 	[Fact]
 	public async Task ThreeAm_Run()
 	{
+		// Arrange
 		CancellationToken cancellationToken = CancellationToken.None;
 		IScheduleRepository scheduleRepository = new MockScheduleRepository();
-		IDateProvider dateProvider = new MockDateProvider(new DateTime(2022, 3, 24, 3, 0, 0));
-		ScheduleCullingService cullingService = new ScheduleCullingService(
-			scheduleRepository, dateProvider);
 
+		IServiceProvider services = new ServiceCollection()
+			.AddSingleton<IDateProvider, MockDateProvider>()
+			.AddScoped(p => scheduleRepository)
+			.BuildServiceProvider();
+
+		ScheduleCullingService cullingService = new ScheduleCullingService(services);
+
+		// Act
 		await cullingService.StartAsync(cancellationToken);
-
-		await Task.Delay(1000); // Give it enough time to run.
-
 		await cullingService.StopAsync(cancellationToken);
 
+		// Assert
 		IEnumerable<Event> events = await scheduleRepository.SearchAsync(
 			new GetAllSpecification<Event>());
 
@@ -70,18 +79,24 @@ public sealed class CullingTests
 	[Fact]
 	public async Task BeforeThreeAm_WontRun()
 	{
+		// Arrange
 		CancellationToken cancellationToken = CancellationToken.None;
+
 		IScheduleRepository scheduleRepository = new MockScheduleRepository();
-		IDateProvider dateProvider = new MockDateProvider(new DateTime(2022, 3, 24, 1, 0, 0));
-		ScheduleCullingService cullingService = new ScheduleCullingService(
-			scheduleRepository, dateProvider);
+		IDateProvider dateProvider = new MockDateProvider(new DateTime(2022, 3, 24, 0, 0, 0));
 
+		IServiceProvider services = new ServiceCollection()
+			.AddSingleton(p => dateProvider)
+			.AddScoped(p => scheduleRepository)
+			.BuildServiceProvider();
+
+		ScheduleCullingService cullingService = new ScheduleCullingService(services);
+
+		// Act
 		await cullingService.StartAsync(cancellationToken);
-
-		await Task.Delay(1000); // Give it enough time to run.
-
 		await cullingService.StopAsync(cancellationToken);
 
+		// Assert
 		IEnumerable<Event> events = await scheduleRepository.SearchAsync(
 			new GetAllSpecification<Event>());
 
