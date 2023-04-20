@@ -17,5 +17,5 @@ public abstract class Entity
 	/// <summary>
 	/// The entity's unique identifier.
 	/// </summary>
-	public Guid Id { get; init; }
+	public Guid Id { get; set; }
 }

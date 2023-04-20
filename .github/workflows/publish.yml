@@ -18,3 +18,9 @@ jobs:
       
     - name: Deploy
       run: dotnet publish src/Scheduler /p:PublishProfile=WebDeploy /p:Password=${{ secrets.MWH_PASS }}
+
+    - name: Apply migrations
+      run: |
+        dotnet tool install --global dotnet-ef
+        dotnet tool restore
+        dotnet ef database update -p src/Scheduler

@@ -16,7 +16,8 @@
         : nameof(Practice));
 
     GetAllSpecification<Field> searchSpec = new();
-    IEnumerable<SelectListItem> fields = (await this.FieldRepository.SearchAsync(searchSpec))
+    IEnumerable<SelectListItem> fields = (await this.FieldRepository
+        .SearchAsync(searchSpec))
         .Select(f => new SelectListItem
         {
             Text = f.Name,
@@ -112,11 +113,11 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="mb-3">
-                        <label asp-for="FieldIds" class="form-label"></label>
-                        <select data-val="false" class="form-select" multiple size="6" asp-for="FieldIds" asp-items="fields">
+                        <label asp-for="FieldId" class="form-label"></label>
+                        <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields">
 
                         </select>
-                        <span asp-validation-for="FieldIds" class="text-danger"></span>
+                        <span asp-validation-for="FieldId" class="text-danger"></span>
                     </div>
                     <div class="col-lg">
                         <label class="form-label">Event Time</label>
@@ -139,8 +140,8 @@
                                 <label asp-for="IsBlackout" class="form-check-label"></label>
                             </div>
                             <div class="form-check mb-3">
-                                @*<input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                                <label class="form-check-label">Repeating?</label>*@
+                                <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                                <label class="form-check-label">Repeating?</label>
                             </div>
                             <div id="recurrenceInputs">
                                 @if (this.Model is not null &&

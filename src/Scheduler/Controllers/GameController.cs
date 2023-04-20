@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
-using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
 using Scheduler.Domain.Repositories;
+using Scheduler.ViewModels;
+using Scheduler.Domain.Specifications;
+using Scheduler.Extensions;
 
 namespace Scheduler.Web.Controllers.Scheduling;
 
@@ -31,15 +32,22 @@ public sealed class GameController : ScheduleController<Game>
 	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public override async Task<IActionResult> EditDetails(Game values)
+	public override async Task<IActionResult> EditDetails(
+		Game values, UpdateType updateType)
 	{
 		if (!this.ModelState.IsValid)
 		{
-			return this.DetailsError(values);
+			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		await this.scheduleRepository.EditGameDetails(values);
+		Specification<Event> updateSpec = updateType.ToSpecification(values);
 
-		return this.RedirectToAction("Details", "Schedule", new { values.Id });
+		await this.scheduleRepository.EditGameDetails(
+			values, updateSpec);
+
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 }
