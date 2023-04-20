@@ -86,8 +86,9 @@
         }
     </table>
 }
-else if (teamFilterMessage != "" || nameFilterMessage != "")
+else if (teamFilterMessage != null || nameFilterMessage != null || typeFilterMessage != null)
 {
+    <h5 class="text-center lead text-danger" >@typeFilterMessage</h5>
     <h5 class="text-center lead text-danger" style="white-space: pre-wrap">@teamFilterMessage</h5>
     <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
 }

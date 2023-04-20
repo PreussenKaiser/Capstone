@@ -49,9 +49,7 @@ public sealed class HomeController : Controller
 
 		this.ViewData["Teams"] = this.context.Teams;
 
-		return this.View(new IndexViewModel(
-			events.AsRecurring(),
-			games.AsRecurring()));
+		return this.View(new IndexViewModel(events,	games));
 	}
 
 	/// <summary>
@@ -102,9 +100,7 @@ public sealed class HomeController : Controller
 				g.EndDate <= gameEnd);
 		}
 
-		return this.View(new IndexViewModel(
-			events.AsRecurring(),
-			games.AsRecurring()));
+		return this.View(new IndexViewModel(events, games));
 	}
 
 	/// <summary>

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using System.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Scheduler.Web.Controllers;
 
@@ -52,49 +53,9 @@ public sealed class DashboardController : Controller
 	{
 		var userId = userManager.GetUserId(User);
 		IEnumerable<Event> events = this.context.Events
-			.WithScheduling()
-			.AsRecurring();
+			.WithScheduling();
 
 		return this.View(events);
-	}
-
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="type"></param>
-	/// <param name="searchTerm"></param>
-	/// <returns></returns>
-	[HttpPost]
-	/// <param name="type">The type of event to filter by.</param>
-	/// <param name="searchTerm">The event name to search for.</param>
-	/// <returns>A list of events.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
-	public IActionResult Events(
-		string? type = null,
-		string? searchTerm = null)
-	{
-		IQueryable<Event> events = type switch
-		{
-			nameof(Practice) => this.context.Practices
-				.Include(p => p.Team),
-
-			nameof(Game) => this.context.Games
-				.Include(g => g.HomeTeam)
-				.Include(g => g.OpposingTeam),
-
-			_ => this.context.Events
-		};
-		
-
-		if (searchTerm is not null)
-		{
-			events = events.Where(e => e.Name.Contains(searchTerm));
-		}
-
-		return this.View(events
-			.WithScheduling()
-			.OrderBy(e => e.StartDate)
-			.AsRecurring());
 	}
 
 	/// <summary>
@@ -146,7 +107,7 @@ public sealed class DashboardController : Controller
 	/// Checks if the user is associated with the team.
 	/// </summary>
 	/// <returns>games and practices the user is associated with.</returns>
-	bool IsTeamMember(Event scheduledEvent)
+	bool isTeamMember(Event scheduledEvent)
 	{
 		if (scheduledEvent is Practice practice)
 		{
@@ -190,13 +151,16 @@ public sealed class DashboardController : Controller
 		IQueryable<Event> events = type switch
 		{
 			nameof(Practice) => this.context.Practices
-				.Include(p => p.Team),
+				.Include(p => p.Team)
+				.WithScheduling(),
 
 			nameof(Game) => this.context.Games
 				.Include(g => g.HomeTeam)
-				.Include(g => g.OpposingTeam),
+				.Include(g => g.OpposingTeam)
+				.WithScheduling(),
 
 			_ => this.context.Events
+				.WithScheduling()
 		};
 		
 		events = this.dateSearch(start, end, events);
@@ -211,13 +175,17 @@ public sealed class DashboardController : Controller
 			events = this.teamSearch(teamName, type, events);
 		}
 
-		if(events is null)
+		if(events.IsNullOrEmpty())
 		{
 			this.ViewData["Events"] = null;
+
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 		else
 		{
 			this.ViewData["Events"] = events.ToList();
+
+			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
@@ -231,8 +199,6 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["Title"] = $"All {type}s from {start.ToString("M/dd/y")} to {end.ToString("M/dd/y")}";
 		}
-
-		this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 
 		return this.ViewComponent("SearchListModal");
 	}
@@ -331,16 +297,17 @@ public sealed class DashboardController : Controller
 		IQueryable<Event> events = type switch
 		{
 			nameof(Practice) => this.context.Practices
-				.Include(p => p.Team),
+				.Include(p => p.Team)
+				.WithScheduling(),
 
 			nameof(Game) => this.context.Games
 				.Include(g => g.HomeTeam)
-				.Include(g => g.OpposingTeam),
+				.Include(g => g.OpposingTeam)
+				.WithScheduling(),
 
 			_ => this.context.Events
+				.WithScheduling()
 		};
-
-		ViewData["TypeFilterMessage"] = "Showing all " + type + "s";
 
 		events = this.dateSearch(start, end, events);
 
@@ -352,6 +319,15 @@ public sealed class DashboardController : Controller
 		if (teamName is not null)
 		{
 			events = this.teamSearch(teamName, type, events);
+		}
+
+		if (events.IsNullOrEmpty())
+		{
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
+		}
+		else
+		{
+			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
@@ -369,10 +345,13 @@ public sealed class DashboardController : Controller
 	{
 		if (events == null)
 		{
-			events = this.context.Events.Include(e => e.Field);
+			events = this.context.Events
+					.WithScheduling();
 		}
 
-		return events.Where(e => e.EndDate >= DateTime.Now && (e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)).Include(e => e.Field).OrderBy(e => e.StartDate);
+		return events
+			.Where(e => e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)
+			.OrderBy(e => e.StartDate);
 	}
 
 	/// <summary>
@@ -386,7 +365,8 @@ public sealed class DashboardController : Controller
 	{
 		if (events == null)
 		{
-			events = this.context.Events;
+			events = this.context.Events
+					.WithScheduling();
 		}
 
 		IEnumerable<Team> teamList = this.context.Teams;
@@ -454,7 +434,8 @@ public sealed class DashboardController : Controller
 	{
 		if(events == null)
 		{
-			events = this.context.Events;
+			events = this.context.Events
+					.WithScheduling();
 		}
 		events = events.Where(e => e.Name.ToLower().Contains(searchTerm.ToLower()));
 

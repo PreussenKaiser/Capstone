@@ -18,7 +18,7 @@
         <div class="btn-group mb-2 noPrintIfModal">
             <form action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
                 <div>
-                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" onclick="showHomepageDropdown()" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">Searchbar Dropdown </button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Searchbar Dropdown </button>
                     <ul class="dropdown-menu p-3" id="homepage-dropdown">
                         <h5 class="lead text-danger text-center">Search Criteria</h5>
                         <div>
@@ -116,7 +116,7 @@
             endDate: endDateFormatted,
             minDate: minDateFormatted,
             timePickerIncrement: 30,
-            drops: "up",
+            drops: "down",
             locale: {
                 format: 'M/DD/YYYY'
             }
