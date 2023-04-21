@@ -4,6 +4,19 @@
 @inject SignInManager<User> SignInManager
 
 @{
+    // The current year is stored.
+    int currentDate = DateTime.Now.Year;
+
+    // The list to store the years used for the select.
+    List<int> yearList = new List<int>();
+    yearList.Add(currentDate);
+
+    // Store the next 9 years in addition to the current year.
+    for (int i = 1; i <= 9; i++)
+    {
+        yearList.Add(currentDate + i);
+    }
+
     int weeks = (int)ViewData["NumberOfWeeks"];
     int previousYear = (int)ViewData["previousYear"];
     int previousMonth = (int)ViewData["previousMonth"];
@@ -27,6 +40,26 @@
                     {
                         <button class="monthly-arrow left-arrow arrow-disabled">&#8592;</button>
                     }
+                    <select id="month">
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <select id="year">
+                        @foreach (var year in yearList)
+                        {
+                            <option value=@year>@year</option>
+                        }
+                    </select>
                     <span class="calendar-title text-center">@ViewData["MonthName"] @ViewData["CurrentYear"]</span>
                     <button class="monthly-arrow right-arrow" onclick="RefreshCalendar(@nextYear, @nextMonth)">&#8594;</button>
                 </th>
