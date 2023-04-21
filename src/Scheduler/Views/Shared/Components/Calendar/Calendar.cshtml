@@ -31,7 +31,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th colspan="3" class="text-center">
+                <th colspan="2" class="text-center">
                     @if ((int)ViewData["PreviousMonth"] != 0)
                     {
                         <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
@@ -41,10 +41,10 @@
                         <button class="monthly-arrow left-arrow arrow-disabled">&#8592;</button>
                     }
                 </th>
-                <th class="text-center" colspan="3">
-                    <div class="row justify-content-center align-items-center">
-                        <div class="col-lg">
-                            <select id="month" class="form-select text-center">
+                <th class="text-center align-middle" colspan="4">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col">
+                            <select id="month" class="form-select calendar-title text-center" style="width:120%">
                                 <option value="1" selected="@(currentMonth == 1)">January</option>
                                 <option value="2" selected="@(currentMonth == 2)">February</option>
                                 <option value="3" selected="@(currentMonth == 3)">March</option>
@@ -59,8 +59,8 @@
                                 <option value="12" selected="@(currentMonth == 12)">December</option>
                             </select>
                         </div>
-                        <div class="col-lg">
-                            <select id="year" class="form-select text-center">
+                        <div class="col d-flex justify-content-center">
+                            <select id="year" class="form-select calendar-title text-center w-75">
                                 @foreach (var year in yearList)
                                 {
                                     <option value="@year" selected="@(currentYear == year)">@year</option>
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                 </th>
-                <th class="text-center" colspan="3">
+                <th class="text-center" colspan="2">
                     <button class="monthly-arrow right-arrow" onclick="RefreshCalendar(@nextYear, @nextMonth)">&#8594;</button>
                 </th>
             </tr>

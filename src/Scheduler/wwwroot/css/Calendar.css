@@ -14,8 +14,12 @@
 }
 
 .calendar-title {
-    font-size: 30px;
+    font-size: 40px;
     text-shadow: 1px 1px 2px grey;
+}
+
+.calendar-title option:not(:checked) {
+    font-size:20px;
 }
 
 .monthly-arrow {
