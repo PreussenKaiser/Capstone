@@ -41,19 +41,20 @@
                         <button class="monthly-arrow left-arrow arrow-disabled">&#8592;</button>
                     }
                     <select id="month">
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
+                        <option value="1" selected="@(currentMonth == 1)">January</option>
+                        <option value="2" selected="@(currentMonth == 2)">February</option>
+                        <option value="3" selected="@(currentMonth == 3)">March</option>
+                        <option value="4" selected="@(currentMonth == 4)">April</option>
+                        <option value="5" selected="@(currentMonth == 5)">May</option>
+                        <option value="6" selected="@(currentMonth == 6)">June</option>
+                        <option value="7" selected="@(currentMonth == 7)">July</option>
+                        <option value="8" selected="@(currentMonth == 8)">August</option>
+                        <option value="9" selected="@(currentMonth == 9)">September</option>
+                        <option value="10" selected="@(currentMonth == 10)">October</option>
+                        <option value="11" selected="@(currentMonth == 11)">November</option>
+                        <option value="12" selected="@(currentMonth == 12)">December</option>
                     </select>
+
                     <select id="year">
                         @foreach (var year in yearList)
                         {
