@@ -31,7 +31,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th colspan="8" class="text-center">
+                <th colspan="3" class="text-center">
                     @if ((int)ViewData["PreviousMonth"] != 0)
                     {
                         <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
@@ -40,28 +40,36 @@
                     {
                         <button class="monthly-arrow left-arrow arrow-disabled">&#8592;</button>
                     }
-                    <select id="month">
-                        <option value="1" selected="@(currentMonth == 1)">January</option>
-                        <option value="2" selected="@(currentMonth == 2)">February</option>
-                        <option value="3" selected="@(currentMonth == 3)">March</option>
-                        <option value="4" selected="@(currentMonth == 4)">April</option>
-                        <option value="5" selected="@(currentMonth == 5)">May</option>
-                        <option value="6" selected="@(currentMonth == 6)">June</option>
-                        <option value="7" selected="@(currentMonth == 7)">July</option>
-                        <option value="8" selected="@(currentMonth == 8)">August</option>
-                        <option value="9" selected="@(currentMonth == 9)">September</option>
-                        <option value="10" selected="@(currentMonth == 10)">October</option>
-                        <option value="11" selected="@(currentMonth == 11)">November</option>
-                        <option value="12" selected="@(currentMonth == 12)">December</option>
-                    </select>
-
-                    <select id="year">
-                        @foreach (var year in yearList)
-                        {
-                            <option value=@year>@year</option>
-                        }
-                    </select>
-                    <span class="calendar-title text-center">@ViewData["MonthName"] @ViewData["CurrentYear"]</span>
+                </th>
+                <th class="text-center" colspan="3">
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-lg">
+                            <select id="month" class="form-select text-center">
+                                <option value="1" selected="@(currentMonth == 1)">January</option>
+                                <option value="2" selected="@(currentMonth == 2)">February</option>
+                                <option value="3" selected="@(currentMonth == 3)">March</option>
+                                <option value="4" selected="@(currentMonth == 4)">April</option>
+                                <option value="5" selected="@(currentMonth == 5)">May</option>
+                                <option value="6" selected="@(currentMonth == 6)">June</option>
+                                <option value="7" selected="@(currentMonth == 7)">July</option>
+                                <option value="8" selected="@(currentMonth == 8)">August</option>
+                                <option value="9" selected="@(currentMonth == 9)">September</option>
+                                <option value="10" selected="@(currentMonth == 10)">October</option>
+                                <option value="11" selected="@(currentMonth == 11)">November</option>
+                                <option value="12" selected="@(currentMonth == 12)">December</option>
+                            </select>
+                        </div>
+                        <div class="col-lg">
+                            <select id="year" class="form-select text-center">
+                                @foreach (var year in yearList)
+                                {
+                                    <option value="@year" selected="@(currentYear == year)">@year</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </th>
+                <th class="text-center" colspan="3">
                     <button class="monthly-arrow right-arrow" onclick="RefreshCalendar(@nextYear, @nextMonth)">&#8594;</button>
                 </th>
             </tr>
@@ -148,6 +156,62 @@
 </div>
 
 <script>
+    (function () {
+        // Get the select elements from the calendar.
+        const monthSelect = document.getElementById("month");
+        const yearSelect = document.getElementById("year");
+
+        // Event listeners for the id's.
+        monthSelect.addEventListener("change", updateCalendar);
+        yearSelect.addEventListener("change", updateCalendar);
+
+        function grayOutPastMonths() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+
+            const yearSelect = document.getElementById("year");
+            const monthSelect = document.getElementById("month");
+
+            for (let i = 1; i <= 12; i++) {
+                if (yearSelect.value < currentYear || (yearSelect.value == currentYear && i < currentMonth)) {
+                    const option = monthSelect.querySelector(`option[value='${i}']`);
+                    option.disabled = true;
+                    option.style.color = 'grey';
+                } else {
+                    const option = monthSelect.querySelector(`option[value='${i}']`);
+                    option.disabled = false;
+                    option.style.color = 'black';
+                }
+            }
+        }
+
+        function updateCalendar() {
+            // Get the selected month and year
+            const selectedMonth = monthSelect.value;
+            const selectedYear = yearSelect.value;
+
+            // Update the calendar by calling the RefreshCalendar function with the selected month and year
+            RefreshCalendar(selectedYear, selectedMonth);
+
+            // Disable past months in the month select.
+            if (currentYear === +yearSelect.value) {
+                for (let i = 1; i < currentMonth; i++) {
+                    monthSelect.options[i].disabled = true;
+                }
+            } else {
+                for (let i = 1; i <= 12; i++) {
+                    monthSelect.options[i].disabled = false;
+                }
+            }
+        }
+
+        
+
+        // Call the function to gray out past months on page load
+        grayOutPastMonths();
+    })();
+
     function RefreshCalendar(year, month) {
         $.ajax({
             url: '@Url.Action("refreshCalendar", "Home")',
