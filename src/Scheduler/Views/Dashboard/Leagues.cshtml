@@ -1,0 +1,78 @@
+﻿@using Microsoft.AspNetCore.Identity;
+
+@inject UserManager<User> UserManager
+@model IEnumerable<League>
+
+<div class="text-center mb-3 mt-3">
+    <a asp-action="Add" asp-controller="League" class="btn btn-sm btn-primary">
+        Add League
+    </a>
+</div>
+
+<div class="row">
+    @if (this.Model is null ||
+         this.Model.Count() == 0)
+    {
+        <h2 class="text-center">
+            There are currently no leagues.
+        </h2>
+    }
+    else
+    {
+        @foreach (var league in this.Model)
+        {
+            <div class="col-sm-4 mb-3">
+                <div class="card border-secondary border-3">
+                    <a asp-action="Details" asp-route-id="@league.Id" asp-controller="League" class="card-body text-decoration-none">
+                        <h5 class="card-title">@league.Name</h5>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Coach</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (league.Teams.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="2">
+                                            <b>@league.Name</b> has no teams in it.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var team in league.Teams)
+                                    {
+                                    }
+
+                                    for (int i = 0; i < league.Teams.Count; i++)
+                                    {
+                                        Team team = league.Teams.ToList()[i];
+
+                                        <tr>
+                                            <th scope="row">@team.Name</th>
+                                            <td>(Coach name)</td>
+                                        </tr>
+
+                                        if (i == 3)
+                                        {
+                                            <tr>
+                                                <td colspan="2" class="text-center">
+                                                    <small>Click for more</small>
+                                                </td>
+                                            </tr>
+
+                                            break;
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </a>
+                </div>
+            </div>
+        }
+    }
+</div>

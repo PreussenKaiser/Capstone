@@ -1,0 +1,49 @@
+﻿@using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Specifications;
+
+@inject ITeamRepository TeamRepository
+@model League
+
+@{
+    IEnumerable<SelectListItem> teams = (await this.TeamRepository
+        .SearchAsync(new GetAllSpecification<Team>()))
+        .Select(t => new SelectListItem
+        {
+            Text = t.Name,
+            Value = t.Id.ToString()
+        });
+}
+
+@if (this.Model is not null)
+{
+    <input hidden asp-for="Id" />
+}
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+                                                                        <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <label class="form-control">Teams</label>
+        <select asp-items="teams" name="teamIds" multiple size="6" class="form-control"></select>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-6">
+        <a asp-action="Leagues"
+           asp-controller="Dashboard"
+           class="btn btn-lg btn-danger w-100">
+            Cancel
+        </a>
+    </div>
+    <div class="col-6">
+        <button type="submit" class="btn btn-lg btn-primary w-100">
+            Submit
+        </button>
+    </div>
+</div>

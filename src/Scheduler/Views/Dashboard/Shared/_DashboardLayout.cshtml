@@ -16,6 +16,9 @@
 		</a>
 		@if (this.User.IsInRole(Role.ADMIN))
 		{
+			<a asp-action="Leagues" class="list-group-item list-group-item-action @this.Html.SelectedLink("Leagues")">
+				Leagues
+			</a>
 			<a asp-action="Fields"
 			   class="list-group-item list-group-item-action @this.Html.SelectedLink("Fields")">
 				Fields
