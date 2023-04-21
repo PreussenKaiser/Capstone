@@ -4,25 +4,10 @@
 @using Scheduler.Infrastructure.Persistence;
 @using System.Text;
 
-@inject UserManager<User> UserManager
-@inject IFieldRepository FieldRepository
-@inject ITeamRepository TeamRepositoey
-
-@model IEnumerable<Event>
-
-@{
-	GetAllSpecification<Field> allFieldSpec = new();
-	IEnumerable<Field> fields = await this.FieldRepository.SearchAsync(allFieldSpec);
-
-	GetAllSpecification<Team> allTeamSpec = new();
-	IEnumerable<Team> teams = await this.TeamRepositoey.SearchAsync(allTeamSpec);
-}
-
-
 <div class="text-center mb-3 mt-3">
 	<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded me-3">
 		Schedule New Event
-	</a>			
+	</a>
 </div>
 
 <div id="calendar">

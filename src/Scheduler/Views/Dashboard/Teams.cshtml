@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Team>
+﻿@using Microsoft.AspNetCore.Identity;
+
+@inject UserManager<User> UserManager;
+@model IEnumerable<Team>
 
 <div class="text-center mb-3 mt-3">
     <a asp-action="Add" asp-controller="Team" class="btn btn-sm btn-primary">
@@ -12,6 +15,7 @@
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">League</th>
+                <th scope="col">Coach</th>
                 <th scope="col" colspan="2" class="text-center">Actions</th>
             </tr>
         </thead>
@@ -21,6 +25,28 @@
                 <tr>
                     <th scope="row">@team.Name</th>
                     <td>@(team.League is null ? string.Empty : team.League.Name)</td>
+
+                    @if (team.UserId is not null)
+                    {
+                        var name = string.Join(' ', this.UserManager.FindByIdAsync(team.UserId.ToString()).Result?.FirstName, this.UserManager.FindByIdAsync(team.UserId.ToString()).Result?.LastName);
+                        <td scope="row">@name</td>
+                    }
+                    else
+                    {
+                        <td scope="row">Visiting Coach</td>
+                        string? userId = team.UserId.ToString();
+
+                        if (userId is not null && userId != "")
+                        {
+                            User? user = await this.UserManager.FindByIdAsync(userId);
+
+                            string name = user is null
+                                ? string.Empty
+                                : $"{user.FirstName} {user.LastName}";
+
+                            <th scope="row">@name</th>
+                        }
+                    }
                     <td class="text-end">
                         <a asp-action="Details"
                            asp-controller="Team"

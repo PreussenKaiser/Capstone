@@ -3,11 +3,14 @@
 @{
     IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
     string title = this.ViewData["Title"].ToString();
-    DateTime startTime = (DateTime)this.ViewData["Start"];
-    DateTime endTime = (DateTime)this.ViewData["End"];
+    string today = DateTime.Now.ToString("yyyy-MM-dd");
+    DateTime startDate = (DateTime)this.ViewData["Start"];
+    DateTime endDate = (DateTime)this.ViewData["End"];
+    string startDateString = startDate.ToString("yyyy-MM-dd");
+    string endDateString = endDate.ToString("yyyy-MM-dd");
 }
 
-<div class="modal fade" id="listModalPopup" tabindex="-1">
+<div class="modal fade" id="searchListModalPopup" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header m-auto">
@@ -16,11 +19,22 @@
             <div class="modal-body">
                 <div class="text-center">
                     <div class="btn-group mb-2 noPrintIfModal">
-                        <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="filterForm" autocomplete="off">
+                        <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="searchForm" autocomplete="off">
                             <div>                                
                                 <button type="button" class="btn btn-sm btn-secondary" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results </button>
-                                <ul class="dropdown-menu p-3" style="width:120%" id="listModalDropdown">
+                                <ul class="dropdown-menu p-3" style="width:120%" id="searchListModalDropdown">
                                     <h5 class="lead text-danger text-center">Filter Criteria</h5>
+                                    <div class="form-label">
+                                        <label class="form-label">Event Date(s)</label>
+                                        <input type="text" name="searchdaterange" class="text-center form-control" />
+                                    </div>
+                                    <div>
+                                        <input name="StartDate" type="hidden" id="StartDate" />
+                                        <br />
+                                    </div>
+                                    <div>
+                                        <input name="EndDate" type="hidden" id="EndDate" />
+                                    </div>
                                     <div class="mb-3">
                                         <label class="form-label">Type</label>
                                         <select name="type" class="form-select">
@@ -35,7 +49,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Team Name</label>
-                                        <select id="teamNameFilter" name="teamName" class="form-select">
+                                        <select id="teamNameSearchFilter" name="teamName" class="form-select">
                                             <option value=""></option>
                                             @foreach (Team t in (IEnumerable<Team>)ViewData["Teams"])
                                             {
@@ -46,6 +60,7 @@
                                     <div class="text-center">
                                         <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
                                         <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeDropdown()">Close</button>
+                                        
                                     </div>
                                 </ul>
                                 <button class="btn btn-sm btn-danger" type="reset" onclick="resetEvents()">Reset Filter</button>
@@ -53,7 +68,7 @@
                         </form>
                     </div>
                 </div>
-                <div id="listModalTable">
+                <div id="searchModalTable">
                     <partial name="_ListModalTable" model="events"/>
                 </div>
             </div>
@@ -65,28 +80,66 @@
     </div>
 </div>
 
+
 <script>
     $(document).ready(function (){
-        $("#listModalPopup").modal("show");
+        $("#searchListModalPopup").modal("show");
     });
 
     function showModalDropdown() {
-        $('#listModalDropdown').addClass('show');
+        $('#searchListModalDropdown').addClass('show');
     }
 
     function closeDropdown() {
-        $('#listModalDropdown').removeClass('show');
+        $('#searchListModalDropdown').removeClass('show');
     }
 
     $(document).ready(function () {
 
-        $("#teamNameFilter").chosen({
+        $("#teamNameSearchFilter").chosen({
             no_results_text: "Sorry, I can't find that Team!",
             placeholder_text_single: "Start typing to select a Team...",
             width: "100%",
             search_contains: true
         });
 
+    });
+
+    var startDateString = "@startDateString";
+    var endDateString = "@endDateString";
+    var minDateString = "@today";
+    var startDate;
+    var startDateFormatted;
+    var endDate;
+    var endDateFormatted;
+    var minDate;
+    var minDateFormatted;
+    startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
+    startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
+    endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
+    endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
+    minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
+    minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
+    $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+    $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+
+
+    $(function () {
+        $('input[name="searchdaterange"]').daterangepicker({
+            startDate: startDateFormatted,
+            endDate: endDateFormatted,
+            minDate: minDateFormatted,
+            timePickerIncrement: 30,
+            drops: "down",
+            locale: {
+                format: 'M/DD/YYYY'
+            }
+        }).on('apply.daterangepicker', function (ev, picker) {
+            startDateFormatted = picker.startDate.format('M/DD/YYYY');
+            endDateFormatted = picker.endDate.format('M/DD/YYYY');
+            $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
+            $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
+        });
     });
     
     function filterEvents(e){
@@ -95,13 +148,13 @@
             data: {
                 searchTerm: e.searchTerm.value,
                 type: e.type.value,
-                start: '@startTime.ToString()',
-                end: '@endTime.ToString()',
+                start: '@startDate.ToString()',
+                end: '@endDate.ToString()',
                 teamName: e.teamName.value
             },
             success: function(data) {
-                $("#listModalTable").html(data);
-                $('#listModalDropdown').removeClass('show');
+                $("#searchModalTable").html(data);
+                $('#searchListModalDropdown').removeClass('show');
             }
         });
     }
@@ -112,12 +165,12 @@
             data: {
                 searchTerm: '',
                 type: 'Event',
-                start: '@startTime.ToString()',
-                end: '@endTime.ToString()',
+                start: '@startDate.ToString()',
+                end: '@endDate.ToString()',
                 teamName: ''
             },
             success: function(data) {
-                $("#listModalTable").html(data);
+                $("#searchModalTable").html(data);
             }
         });
     }
