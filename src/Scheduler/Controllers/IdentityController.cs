@@ -397,7 +397,7 @@ public sealed class IdentityController : Controller
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	[AllowAnonymous]
-	public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModal viewModel)
+	public async Task<IActionResult> ForgotPassword(ForgottenPasswordViewModal viewModel)
 	{
 		if (!ModelState.IsValid)
 		{
@@ -405,7 +405,7 @@ public sealed class IdentityController : Controller
 		}
 
 		var user = await signInManager.UserManager.FindByEmailAsync(viewModel.Email);
-		if (user == null)
+		if (user is null)
 		{
 			this.ModelState.AddModelError(string.Empty, "Unable to find an account with that email.");
 			return this.View(viewModel);	
@@ -432,6 +432,7 @@ public sealed class IdentityController : Controller
 			Token = token,
 			Email = email
 		};
+
 		return this.View(viewModel);
 	}
 
@@ -439,6 +440,12 @@ public sealed class IdentityController : Controller
 	[AllowAnonymous]
 	public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
 	{
+
+		if (!ModelState.IsValid)
+		{
+			return this.View(viewModel);
+		}
+
 		var user = await this.signInManager.UserManager.FindByEmailAsync(viewModel.Email);
 
 		if (user != null)
@@ -456,6 +463,7 @@ public sealed class IdentityController : Controller
 				return this.View();
 			}
 		}
+
 		return this.View();
 	}
 

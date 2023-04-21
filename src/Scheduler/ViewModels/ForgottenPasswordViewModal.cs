@@ -2,7 +2,7 @@
 
 namespace Scheduler.ViewModels;
 
-public class ForgotPasswordViewModal
+public class ForgottenPasswordViewModal
 {
 	[Required]
 	[EmailAddress]
