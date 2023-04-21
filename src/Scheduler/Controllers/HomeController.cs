@@ -7,6 +7,7 @@ using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Scheduler.Filters;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Scheduler.Web.Controllers;
 
@@ -38,6 +39,7 @@ public sealed class HomeController : Controller
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Index()
 	{
+		this.DeleteExpiredGamesOrPracticeTypes();
 		IQueryable<Event> events = this.context.Events.WithScheduling();
 
 		IQueryable<Game> games = this.context.Games
@@ -45,9 +47,9 @@ public sealed class HomeController : Controller
 			.Include(g => g.HomeTeam)
 			.Include(g => g.OpposingTeam);
 
-		return this.View(new IndexViewModel(
-			events.AsRecurring(),
-			games.AsRecurring()));
+		this.ViewData["Teams"] = this.context.Teams;
+
+		return this.View(new IndexViewModel(events,	games));
 	}
 
 	/// <summary>
@@ -98,9 +100,7 @@ public sealed class HomeController : Controller
 				g.EndDate <= gameEnd);
 		}
 
-		return this.View(new IndexViewModel(
-			events.AsRecurring(),
-			games.AsRecurring()));
+		return this.View(new IndexViewModel(events, games));
 	}
 
 	/// <summary>
@@ -135,4 +135,62 @@ public sealed class HomeController : Controller
 
 		return ViewComponent("Calendar");
 	}
+
+	/// <summary>
+	/// Delete expired games.
+	/// </summary>
+	/// <returns>Redirect to the home page.</returns>
+	[HttpPost]
+	public IActionResult DeleteExpiredGamesOrPracticeTypes()
+	{
+		var currentDate = DateTime.Now;
+		var games = this.context.Games;
+		var practices = this.context.Practices;
+
+		// Delete expired games
+		var gamesToDelete = this.context.Games
+			.Where(g => g.EndDate < currentDate)
+			.ToList();
+
+		foreach (var game in gamesToDelete)
+		{
+			var homeTeam = this.context.Teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
+			var opposingTeam = this.context.Teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+			// Delete teams associated with the game that match the user ID
+			if (homeTeam is not null && homeTeam.UserId == null && gamesToDelete.Count == 1)
+			{
+				this.context.Teams.Remove(homeTeam);
+			}
+			else if (opposingTeam is not null &&  opposingTeam.UserId == null && gamesToDelete.Count == 1)
+			{
+				this.context.Teams.Remove(opposingTeam);
+			}
+		}
+
+		this.context.Games.RemoveRange(gamesToDelete);
+
+		// Delete expired practices
+		var practicesToDelete = this.context.Practices
+			.Where(p => p.EndDate < currentDate)
+			.ToList();
+
+		foreach (var practice in practicesToDelete)
+		{
+			var team = this.context.Teams.FirstOrDefault(t => t.Id == practice.TeamId);
+			// Delete teams associated with the practice that match the user ID
+			if (team is not null && team.UserId == null && practicesToDelete.Count == 1)
+			{
+				this.context.Teams.Remove(practice.Team);
+			}
+		}
+
+		this.context.Practices.RemoveRange(practicesToDelete);
+
+		// Save changes to the database
+		this.context.SaveChanges();
+
+		// Redirect to the appropriate view or action
+		return RedirectToAction("Index", "Home");
+	}
+
 }

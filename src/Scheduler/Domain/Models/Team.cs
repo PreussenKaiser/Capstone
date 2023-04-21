@@ -5,7 +5,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents a team playing in the facility.
 /// </summary>
-public sealed record Team : Entity
+public sealed class Team : Entity
 {
 	/// <summary>
 	/// References <see cref="League.Id"/>.
@@ -25,4 +25,10 @@ public sealed record Team : Entity
 	/// The league that the team is in.
 	/// </summary>
 	public League? League { get; init; }
+
+	/// <summary>
+	/// The id of the user that made the team.
+	/// </summary>
+	[ScaffoldColumn(false)]
+	public Guid? UserId { get; set; }
 }

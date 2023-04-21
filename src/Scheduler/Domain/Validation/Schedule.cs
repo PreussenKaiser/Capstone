@@ -60,11 +60,11 @@ public static class Schedule
 				_ => throw new Exception("How did we get here?")
 			};
 
-			schedule.Add(scheduledEvent with
-			{
-				StartDate = start,
-				EndDate = end,
-			});
+			Event? newEvent = scheduledEvent;
+			newEvent.StartDate = start;
+			newEvent.EndDate = end;
+
+			schedule.Add((TEvent)newEvent);
 		}
 
 		return schedule;

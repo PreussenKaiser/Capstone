@@ -7,7 +7,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents an event held at the facility.
 /// </summary>
-public record Event : Entity, IValidatableObject
+public class Event : Entity, IValidatableObject
 {
 	/// <summary>
 	/// Initializes the <see cref="Event"/> record.

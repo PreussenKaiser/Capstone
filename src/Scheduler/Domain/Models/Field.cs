@@ -5,7 +5,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents a field in the facility.
 /// </summary>
-public sealed record Field : Entity
+public sealed class Field : Entity
 {
 	/// <summary>
 	/// Initializes the <see cref="Field"/> record.
