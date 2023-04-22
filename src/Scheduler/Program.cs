@@ -30,10 +30,10 @@ builder.Services
 builder.Services
 	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>()
-	.AddDefaultTokenProviders();
-builder.Services.AddScoped<User>();
+	.AddDefaultTokenProviders()
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
+builder.Services.AddScoped<User>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 	options.TokenLifespan = TimeSpan.FromHours(2));
