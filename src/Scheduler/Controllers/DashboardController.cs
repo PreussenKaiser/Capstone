@@ -59,20 +59,6 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Teams"/> view.
-	/// </summary>
-	/// <returns>A table containing all teams.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Teams(
-		[FromServices] ITeamRepository teamRepository)
-	{
-		GetAllSpecification<Team> searchSpec = new();
-		IEnumerable<Team> teams = await teamRepository.SearchAsync(searchSpec);
-
-		return this.View(teams);
-	}
-
-	/// <summary>
 	/// Displays the <see cref="Fields(IFieldService)"/> view.
 	/// Only accessible to administrators.
 	/// </summary>
@@ -108,7 +94,7 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <param name="leagueRepository">Queries all leagues.</param>
 	/// <returns>A view displaying all leagues with pagination.</returns>
-	[Authorize(Roles = Role.ADMIN)]
+	[Authorize]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Leagues(
 		[FromServices] ILeagueRepository leagueRepository)

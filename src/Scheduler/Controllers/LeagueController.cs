@@ -11,7 +11,7 @@ namespace Scheduler.Controllers;
 /// <summary>
 /// Renders <see cref="League"/> views.
 /// </summary>
-[Authorize(Roles = Role.ADMIN)]
+[Authorize]
 public sealed class LeagueController : Controller
 {
 	/// <summary>
@@ -32,6 +32,7 @@ public sealed class LeagueController : Controller
 	/// Displays the <see cref="Add"/> view.
 	/// </summary>
 	/// <returns>A form for creating a <see cref="League"/>.</returns>
+	[Authorize(Roles = Role.ADMIN)]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Add()
 	{
@@ -48,6 +49,7 @@ public sealed class LeagueController : Controller
 	/// Redirected to <see cref="Add"/> if unsuccessfull.
 	/// </returns>
 	[HttpPost]
+	[Authorize(Roles = Role.ADMIN)]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Add(League league)
 	{
@@ -68,6 +70,7 @@ public sealed class LeagueController : Controller
 	/// </summary>
 	/// <param name="id">The identifier of the <see cref="League"/> to detail.</param>
 	/// <returns>A page with <see cref="League"/> details.</returns>
+	[Authorize]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
@@ -80,15 +83,26 @@ public sealed class LeagueController : Controller
 			: this.View(league);
 	}
 
+	/// <summary>
+	/// Handles POST request to update the details of a <see cref="League"/>.
+	/// </summary>
+	/// <param name="league"><see cref="League"/> values.</param>
+	/// <returns></returns>
 	[HttpPost]
+	[Authorize(Roles = Role.ADMIN)]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Details(League league)
 	{
-		if (this.ModelState.IsValid)
+		if (!this.ModelState.IsValid)
 		{
+			return this.View(league);
 		}
 
-		return this.View(league);
+		await this.leagueRepository.UpdateAsync(league);
+
+		return this.RedirectToAction(
+			nameof(LeagueController.Details),
+			new { league.Id });
 	}
 
 	/// <summary>
@@ -97,6 +111,7 @@ public sealed class LeagueController : Controller
 	/// <param name="id">The identifier of the <see cref="League"/> to delete.</param>
 	/// <returns>Redirected to <see cref="DashboardController.Leagues(ILeagueRepository)"/>.</returns>
 	[HttpPost]
+	[Authorize(Roles = Role.ADMIN)]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id)
 	{

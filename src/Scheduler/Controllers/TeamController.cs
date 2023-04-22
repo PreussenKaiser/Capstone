@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Scheduler.Controllers;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
 using Scheduler.Filters;
 using Scheduler.Infrastructure.Persistence;
+using Scheduler.Infrastructure.Persistence.Migrations;
 
 namespace Scheduler.Web.Controllers;
 
@@ -30,9 +31,15 @@ public sealed class TeamController : Controller
 	/// </summary>
 	/// <returns>Contains a form for adding a <see cref="Team"/>.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public IActionResult Add()
+	public IActionResult Add(Guid leagueId)
 	{
-		return this.View();
+		Team team = new()
+		{
+			Name = string.Empty,
+			LeagueId = leagueId
+		};
+
+		return this.View(team);
 	}
 
 	/// <summary>
@@ -55,8 +62,9 @@ public sealed class TeamController : Controller
 		await this.teamRepository.AddAsync(team);
 
 		return this.RedirectToAction(
-			nameof(DashboardController.Teams),
-			"Dashboard");
+			nameof(LeagueController.Details),
+			"League",
+			new { id = team.LeagueId });
 	}
 
 	/// <summary>
@@ -98,23 +106,26 @@ public sealed class TeamController : Controller
 		await this.teamRepository.UpdateAsync(team);
 
 		return this.RedirectToAction(
-			nameof(DashboardController.Teams),
-			"Dashboard");
+			nameof(LeagueController.Details),
+			"League",
+			new { id = team.LeagueId });
 	}
 
 	/// <summary>
 	/// POST request for removing a <see cref="Team"/>.
 	/// </summary>
-	/// <param name="id"></param>
+	/// <param name="id">References the <see cref="Team"/> to remove.</param>
+	/// <param name="leagueId">The <see cref="League"/> the <see cref="Team"/> belongs to.</param>
 	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Remove(Guid id)
+	public async Task<IActionResult> Remove(Guid id, Guid leagueId)
 	{
 		await this.teamRepository.RemoveAsync(id);
 
 		return this.RedirectToAction(
-			nameof(DashboardController.Teams),
-			"Dashboard");
+			nameof(LeagueController.Details),
+			"League",
+			new { id = leagueId });
 	}
 }

@@ -3,13 +3,16 @@
 @inject UserManager<User> UserManager
 @model IEnumerable<League>
 
-<div class="text-center mb-3 mt-3">
-    <a asp-action="Add" asp-controller="League" class="btn btn-sm btn-primary">
-        Add League
-    </a>
-</div>
+@if (this.User.IsInRole(Role.ADMIN))
+{ 
+    <div class="text-center mt-3">
+        <a asp-action="Add" asp-controller="League" class="btn btn-sm btn-primary">
+            Add League
+        </a>
+    </div>
+}
 
-<div class="row">
+<div class="row mt-3">
     @if (this.Model is null ||
          this.Model.Count() == 0)
     {
@@ -24,7 +27,7 @@
             <div class="col-sm-4 mb-3">
                 <div class="card border-secondary border-3">
                     <a asp-action="Details" asp-route-id="@league.Id" asp-controller="League" class="card-body text-decoration-none">
-                        <h5 class="card-title">@league.Name</h5>
+                        <h5 class="card-title text-black">@league.Name</h5>
                         <table class="table table-hover">
                             <thead>
                                 <tr>
@@ -53,7 +56,7 @@
 
                                         <tr>
                                             <th scope="row">@team.Name</th>
-                                            <td>(Coach name)</td>
+                                            <td>@(team.User is null ? "Couldn't find coach" : team.User.ToString())</td>
                                         </tr>
 
                                         if (i == 3)

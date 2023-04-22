@@ -10,15 +10,11 @@
 		   class="list-group-item list-group-item-action @this.Html.SelectedLink("Events")">
 			Calendar
 		</a>
-		<a asp-action="Teams"
-		   class="list-group-item list-group-item-action @this.Html.SelectedLink("Teams")">
-			Teams
+		<a asp-action="Leagues" class="list-group-item list-group-item-action @this.Html.SelectedLink("Leagues")">
+			Leagues
 		</a>
 		@if (this.User.IsInRole(Role.ADMIN))
 		{
-			<a asp-action="Leagues" class="list-group-item list-group-item-action @this.Html.SelectedLink("Leagues")">
-				Leagues
-			</a>
 			<a asp-action="Fields"
 			   class="list-group-item list-group-item-action @this.Html.SelectedLink("Fields")">
 				Fields

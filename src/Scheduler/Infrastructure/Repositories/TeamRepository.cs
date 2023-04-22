@@ -39,6 +39,7 @@ public sealed class TeamRepository : ITeamRepository
 		IEnumerable<Team> teams = await this.context.Teams
 			.AsNoTracking()
 			.Include(t => t.League)
+			.Include(t => t.User)
 			.Where(searchSpec.ToExpression())
 			.ToListAsync();
 

@@ -10,9 +10,14 @@ public sealed class Team : Entity
 	/// <summary>
 	/// References <see cref="League.Id"/>.
 	/// </summary>
-	[Display(Name = nameof(this.League))]
 	[Required(ErrorMessage = "Please select a league.")]
 	public Guid LeagueId { get; init; }
+
+	/// <summary>
+	/// The identifier of the <see cref="User"/> that made the team.
+	/// </summary>
+	[Required(ErrorMessage = "Please select the team's coach.")]
+	public Guid? UserId { get; set; }
 
 	/// <summary>
 	/// The team's name.
@@ -27,8 +32,7 @@ public sealed class Team : Entity
 	public League? League { get; init; }
 
 	/// <summary>
-	/// The id of the user that made the team.
+	/// The team's coach.
 	/// </summary>
-	[ScaffoldColumn(false)]
-	public Guid? UserId { get; set; }
+	public User? User { get; init; }
 }
