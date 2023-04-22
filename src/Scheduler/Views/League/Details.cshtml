@@ -26,26 +26,28 @@
                             </button>
                             <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">@this.Model.Name</h5>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <div class="mb-3">
-                                                        <label asp-for="Name" class="form-label h6"></label>
-                                                        <input asp-for="Name" class="form-control" />
-                                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    <form method="post">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">@this.Model.Name</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="mb-3">
+                                                            <label asp-for="Name" class="form-label h6"></label>
+                                                            <input asp-for="Name" class="form-control" />
+                                                            <span asp-validation-for="Name" class="text-danger"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                                                <input type="submit" value="Submit" class="btn btn-sm btn-primary" />
+                                            </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
-                                            <input asp-action="EditDetails" asp-controller="League" type="submit" value="Submit" class="btn btn-sm btn-primary" />
-                                        </div>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -57,15 +59,40 @@
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-12">
-                                <button type="button" class="btn btn-sm btn-danger w-100">
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeLeagueModal">
                                     Remove League
                                 </button>
+                                <div class="modal fade" id="removeLeagueModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Remove @this.Model.Name?</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete @this.Model.Name?</p>
+                                                <p>This league, a long with all teams in it will be permanently removed.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Cancel</button>
+                                                <form asp-action="Remove" asp-route-id="@this.Model.Id">
+                                                    <input type="submit" value="Remove" class="btn btn-sm btn-danger" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </li>
                 </ul>
             </div>
             <div class="col-sm-8">
+                <div class="mt-2">
+                    <a asp-action="Add" asp-controller="Team" class="btn btn-sm btn-primary">
+                        Add Team
+                    </a>
+                </div>
+
                 <table class="table">
                     <thead>
                         <tr>

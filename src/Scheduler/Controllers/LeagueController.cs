@@ -43,10 +43,13 @@ public sealed class LeagueController : Controller
 	/// </summary>
 	/// <param name="league"><see cref="League"/> values.</param>
 	/// <param name="teamIds">Teams in the league.</param>
-	/// <returns></returns>
+	/// <returns>
+	/// Redirected to <see cref="DashboardController.Leagues(ILeagueRepository)"/> if successful.
+	/// Redirected to <see cref="Add"/> if unsuccessfull.
+	/// </returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async ValueTask<IActionResult> Add(League league, Guid[] teamIds)
+	public async ValueTask<IActionResult> Add(League league)
 	{
 		if (!this.ModelState.IsValid)
 		{
@@ -77,6 +80,17 @@ public sealed class LeagueController : Controller
 			: this.View(league);
 	}
 
+	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	public async ValueTask<IActionResult> Details(League league)
+	{
+		if (this.ModelState.IsValid)
+		{
+		}
+
+		return this.View(league);
+	}
+
 	/// <summary>
 	/// POST request to delete a <see cref="League"/>.
 	/// </summary>
@@ -90,6 +104,6 @@ public sealed class LeagueController : Controller
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Leagues),
-			"Leagues");
+			"Dashboard");
 	}
 }
