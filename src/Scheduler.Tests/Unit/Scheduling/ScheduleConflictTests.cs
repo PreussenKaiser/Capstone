@@ -20,7 +20,7 @@ public sealed class ScheduleConflictTests
 	public ScheduleConflictTests()
 	{
 		this.events = SeedData.Events
-			.OrderBy(e => e.StartDate)
+			.OrderByDescending(e => e.StartDate)
 			.ToArray();
 	}
 

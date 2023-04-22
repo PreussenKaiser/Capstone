@@ -117,11 +117,11 @@ public class Event : Entity, IValidatableObject
 				if (scheduledEvent.EndDate < occurrence.StartDate ||
 					scheduledEvent.StartDate >= occurrence.EndDate)
 				{
-					left = mid + 1;
+					right = mid - 1;
 				}
 				else
 				{
-					right = mid - 1;
+					left = mid + 1;
 				}
 			}
 
