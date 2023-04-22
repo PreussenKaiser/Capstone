@@ -5,13 +5,19 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents a pattern of recurrence.
 /// </summary>
-public sealed record Recurrence : Entity
+public sealed class Recurrence : Entity
 {
+	/// <summary>
+	/// Events with he recurrence pattern.
+	/// </summary>
+	private readonly List<Event> events;
+
 	/// <summary>
 	/// Initializes the <see cref="Recurrence"/> record.
 	/// </summary>
 	public Recurrence() : base()
 	{
+		this.events = new List<Event>();
 	}
 
 	/// <summary>
@@ -27,7 +33,8 @@ public sealed record Recurrence : Entity
 	public RecurrenceType Type { get; init; }
 
 	/// <summary>
-	/// The <see cref="Event"/> with recurrence.
+	/// The events with recurrence.
 	/// </summary>
-	public Event? Event { get; init; }
+	public IReadOnlyCollection<Event> Events
+		=> this.events.AsReadOnly();
 }

@@ -24,7 +24,7 @@ public static class Schedule
 
 			foreach (var occurrence in schedule)
 				if (e.Id != occurrence.Id &&
-					(e.IsBlackout || e.Fields.Any(ef => occurrence.Fields.Any(of => ef.Id == of.Id))) &&
+				   (e.IsBlackout || e.FieldId == occurrence.FieldId) &&
 					e.StartDate <= occurrence.EndDate &&
 					e.EndDate > occurrence.StartDate)
 				{
@@ -60,11 +60,11 @@ public static class Schedule
 				_ => throw new Exception("How did we get here?")
 			};
 
-			schedule.Add(scheduledEvent with
-			{
-				StartDate = start,
-				EndDate = end,
-			});
+			Event? newEvent = scheduledEvent;
+			newEvent.StartDate = start;
+			newEvent.EndDate = end;
+
+			schedule.Add((TEvent)newEvent);
 		}
 
 		return schedule;

@@ -7,6 +7,8 @@ using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
+using Scheduler.ViewModels;
+using Scheduler.Extensions;
 
 namespace Scheduler.Web.Controllers;
 
@@ -122,7 +124,10 @@ public abstract class ScheduleController<TEvent> : Controller
 
 		await this.scheduleRepository.ScheduleAsync(scheduledEvent);
 
-		return this.DetailsSuccess(scheduledEvent.Id);
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { scheduledEvent.Id });
 	}
 
 	/// <summary>
@@ -132,7 +137,8 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public abstract Task<IActionResult> EditDetails(TEvent values);
+	public abstract Task<IActionResult> EditDetails(
+		TEvent values, UpdateType updateType);
 
 	/// <summary>
 	/// Reschedules a scheduled <see cref="Event"/>.
@@ -152,7 +158,10 @@ public abstract class ScheduleController<TEvent> : Controller
 
 		await this.scheduleRepository.RescheduleAsync(values);
 
-		return this.DetailsSuccess(values.Id);
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 
 	/// <summary>
@@ -162,16 +171,24 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <returns></returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async ValueTask<IActionResult> Relocate(TEvent values)
+	public async ValueTask<IActionResult> Relocate(
+		TEvent values, UpdateType updateType)
 	{
 		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		await this.scheduleRepository.RelocateAsync(values);
+		Specification<Event> relocateSpec = updateType.ToSpecification(values);
 
-		return this.DetailsSuccess(values.Id);
+		await this.scheduleRepository.RelocateAsync(
+			values, relocateSpec);
+
+
+		return this.RedirectToAction(
+			nameof(ScheduleController.Details),
+			"Schedule",
+			new { values.Id });
 	}
 
 	/// <summary>
@@ -181,23 +198,21 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <returns>Redirected to <see cref="DashboardController.Events(string?, string?)"/>.</returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Cancel(Guid id)
+	public async Task<IActionResult> Cancel(
+		Guid id, UpdateType updateType)
 	{
+		// TODO: Refactor this, pointless SELECT
 		ByIdSpecification<Event> byIdSpec = new(id);
-		await this.scheduleRepository.CancelAsync(byIdSpec);
+		Event? scheduledEvent = (await this.scheduleRepository
+			.SearchAsync(byIdSpec))
+			.FirstOrDefault();
+
+		Specification<Event> cancelSpec = updateType.ToSpecification(scheduledEvent);
+
+		await this.scheduleRepository.CancelAsync(cancelSpec);
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Events),
 			"Dashboard");
 	}
-
-	protected IActionResult DetailsError(TEvent values)
-		=> this.View("~/Views/Schedule/Details.cshtml", values);
-
-	protected IActionResult DetailsSuccess(Guid id)
-		=> this.RedirectToAction(
-			"Details",
-			"Schedule",
-			new { id });
-
 }

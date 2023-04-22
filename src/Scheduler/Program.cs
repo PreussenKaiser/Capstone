@@ -31,6 +31,9 @@ builder.Services
 	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
+builder.Services.AddScoped<User>();
+	.AddEntityFrameworkStores<SchedulerContext>()
+	.AddDefaultTokenProviders();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 	options.TokenLifespan = TimeSpan.FromHours(2));
@@ -38,6 +41,7 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
 
 WebApplication app = builder.Build();
 

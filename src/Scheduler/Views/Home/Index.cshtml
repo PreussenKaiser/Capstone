@@ -2,99 +2,163 @@
 
 @{
     this.ViewData["Title"] = "Home Page";
+    string today = DateTime.Now.ToString("yyyy-MM-dd");
+    string startDateString = DateTime.Now.Date.ToString("yyyy-MM-dd");
+    string endDateString = DateTime.Now.AddYears(2).ToString("yyyy-MM-dd");
 }
 
 <div class="layoutContainer noPrintIfModal text-center" style="padding-left:20px;padding-right:20px;border:2px solid gray;font-size:12px;">
-    <h3 class="text-danger">Welcome to the PCYS scheduling application</h3>
-    <p class="lead">Use the calendar below to search for dates and times of practices, games, and other events at the PCYS facility. You can use the filtering buttons in the list to refine your search.</p>
-    @*<p class="lead">You can also use the search bars above the calendar to search more specifically by Team name or a range of dates.</p>*@
+    <h3 class="text-danger">Welcome to the PCYS Scheduling Application</h3>
+    <p class="lead">Use the Calendar below to search for Dates and Times of Practices, Games, and other Events at the PCYS facility. You can use the Filtering Menu in the List to refine your search.</p>
+    <p class="lead">You can also use the Searchbar Dropdown Menu to search for Events outside of the Calendar. Search by Team Name, Event Name, or a range of Dates.</p>
 </div>
 <br />
-@*<div class="container mb-2">
-    <div class="row">
-        <div class="col-6 border border-2 searchContainer">
-            <div class="text-center text-danger">
-                <h3>Upcoming Games</h3>
-            </div>
-            <hr />
-
-            <form method="post">
-                <div class="mb-3">
-                    <div class="input-group">
-                        <input type="text" name="gameSearch" placeholder="Search games..." class="form-control" />
-                        <input type="submit" class="btn btn-primary" value="Search" />
-                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
-                        <ul class="dropdown-menu w-100 p-3">
-                            <div class="mb-3">
-                                <label class="form-label">Start date</label>
-                                <input type="datetime-local" name="gameStart" class="form-control" />
+<div id="searchBar">
+    <div class="text-center">
+        <div class="btn-group mb-2 noPrintIfModal">
+            <form action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
+                <div>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule</button>
+                    <ul class="dropdown-menu p-3" id="homepage-dropdown">
+                        <h5 class="lead text-danger text-center">Search Criteria</h5>
+                        <div>
+                            <div class="form-label">
+                                <label class="form-label">Event Date(s)</label>
+                                <input type="text" name="daterange" class="text-center form-control" />
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">End date</label>
-                                <input type="datetime-local" name="gameEnd" class="form-control" />
+                            <div>
+                                <input name="StartDate" type="hidden" id="StartDate" />
+                                <br />
                             </div>
-                        </ul>
-                    </div>
+                            <div>
+                                <input name="EndDate" type="hidden" id="EndDate" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Type</label>
+                            <select name="type" class="form-select">
+                                <option value="Event">Events</option>
+                                <option value="Practice">Practices</option>
+                                <option value="Game">Games</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Event Name</label>
+                            <input type="text" name="searchTerm" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Team Name</label>
+                            <select id="teamName" name="teamName" class="form-select">
+                                <option value=""></option>
+                                @foreach(Team t in (IEnumerable<Team>)ViewData["Teams"])
+                                {
+                                    <option value=@t.Name>@t.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <input type="submit" class="btn btn-sm btn-secondary" value="Search" />
+                            <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeHomePageDropdown()">Close</button>
+                        </div>
+                    </ul>
+                    <button class="btn btn-sm btn-danger" type="reset" onclick="resetEvents()">Reset Search</button>
                 </div>
             </form>
-
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th scope="col">Home Team</th>
-                        <th scope="col">Opposing Team</th>
-                        <th scope="col">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var game in this.Model.Games)
-                    {
-                        <tr>
-                            <td>@game.HomeTeam!.Name</td>
-                            <td>@game.OpposingTeam!.Name</td>
-                            <td>@this.Html.DisplayFor(x => game.StartDate)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="col-6 border border-2 searchContainer">
-            <div class="text-center text-danger">
-                <h3>Upcoming Events</h3>
-            </div>
-            <hr />
-
-            <form method="post">
-                <div class="mb-3">
-                    <div class="input-group">
-                        <input type="text" name="eventSearch" placeholder="Search events..." class="form-control" />
-                        <input type="submit" value="Search" class="btn btn-primary" />
-                    </div>
-                </div>
-            </form>
-
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th span="col">Name</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var events in this.Model.Events)
-                    {
-                        <tr>
-                            <td>@events.Name</td>
-                            <td>@this.Html.DisplayFor(x => events.StartDate)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
         </div>
     </div>
-</div>*@
-<div id="calendar">
-    @(
-            await Component.InvokeAsync("Calendar")
-            )
 </div>
+<div id="calendar">
+    @await this.Component.InvokeAsync("Calendar")
+</div>
+@section Scripts {
+<script>
+    function showHomepageDropdown() {
+        $('#homepage-dropdown').addClass('show');
+    }
+
+    function closeHomePageDropdown() {
+        $('#homepage-dropdown').removeClass('show');
+    }
+
+    $(document).ready(function () {
+
+        $("#teamName").chosen({
+            no_results_text: "Sorry, I can't find that Team!",
+            placeholder_text_single: "Start typing to select a Team...",
+            width: "100%",
+            search_contains: true
+        });
+
+    });
+
+    var startDateString = "@startDateString";
+    var endDateString = "@endDateString";
+    var minDateString = "@today";
+    var startDate;
+    var startDateFormatted;
+    var endDate;
+    var endDateFormatted;
+    var minDate;
+    var minDateFormatted;
+    startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
+    startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
+    endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
+    endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
+    minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
+    minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
+    $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+    $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+
+
+    $(function () {
+        $('input[name="daterange"]').daterangepicker({
+            startDate: startDateFormatted,
+            endDate: endDateFormatted,
+            minDate: minDateFormatted,
+            timePickerIncrement: 30,
+            drops: "down",
+            locale: {
+                format: 'M/DD/YYYY'
+            }
+        }).on('apply.daterangepicker', function (ev, picker) {
+            startDateFormatted = picker.startDate.format('M/DD/YYYY');
+            endDateFormatted = picker.endDate.format('M/DD/YYYY');
+            $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
+            $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
+        });
+    });    
+
+    function searchEvents(e) {
+        $.ajax({
+            url: '@Url.Action("searchModal", "Dashboard")',
+            data: {
+                start: e.StartDate.value,
+                end: e.EndDate.value,
+                type: e.type.value,
+                searchTerm: e.searchTerm.value,
+                teamName: e.teamName.value
+            },
+            success: function (data) {
+                $('#modal').html(data);
+                $('#homepage-dropdown').removeClass('show');
+            }
+        });
+    }
+
+        function resetEvents(e){
+        $.ajax({
+            url: '@Url.Action("searchModal", "Dashboard")',
+            data: {
+                start: @startDateString,
+                end: @endDateString,
+                type: 'Event',
+                searchTerm: '',
+                teamName: ''
+            },
+            success: function(data) {
+                    $("#modal").html(data);
+            }
+        });
+    }
+</script>
+}

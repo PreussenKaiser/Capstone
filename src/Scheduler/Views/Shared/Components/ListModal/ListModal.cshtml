@@ -16,11 +16,11 @@
             <div class="modal-body">
                 <div class="text-center">
                     <div class="btn-group mb-2 noPrintIfModal">
-                        <form class="me-3" action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm">
-                            <div class="btn-group">
-                                <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
-                                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"></button>
-                                <ul class="dropdown-menu w-100 p-3">
+                        <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="filterForm" autocomplete="off">
+                            <div>                                
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results </button>
+                                <ul class="dropdown-menu p-3" style="width:120%" id="listModalDropdown">
+                                    <h5 class="lead text-danger text-center">Filter Criteria</h5>
                                     <div class="mb-3">
                                         <label class="form-label">Type</label>
                                         <select name="type" class="form-select">
@@ -30,16 +30,30 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Name</label>
+                                        <label class="form-label">Event Name</label>
                                         <input type="text" name="searchTerm" class="form-control" />
                                     </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Team Name</label>
+                                        <select id="teamNameFilter" name="teamName" class="form-select">
+                                            <option value=""></option>
+                                            @foreach (Team t in (IEnumerable<Team>)ViewData["Teams"])
+                                            {
+                                                <option value=@t.Name>@t.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="text-center">
+                                        <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
+                                        <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeDropdown()">Close</button>
+                                    </div>
                                 </ul>
+                                <button class="btn btn-sm btn-danger" type="reset" onclick="resetEvents()">Reset Filter</button>
                             </div>
                         </form>
-                        <button class="btn btn-sm btn-danger rounded" onclick="resetEvents()">Reset</button>
                     </div>
                 </div>
-                <div id="modalTable">
+                <div id="listModalTable">
                     <partial name="_ListModalTable" model="events"/>
                 </div>
             </div>
@@ -55,33 +69,55 @@
     $(document).ready(function (){
         $("#listModalPopup").modal("show");
     });
+
+    function showModalDropdown() {
+        $('#listModalDropdown').addClass('show');
+    }
+
+    function closeDropdown() {
+        $('#listModalDropdown').removeClass('show');
+    }
+
+    $(document).ready(function () {
+
+        $("#teamNameFilter").chosen({
+            no_results_text: "Sorry, I can't find that Team!",
+            placeholder_text_single: "Start typing to select a Team...",
+            width: "100%",
+            search_contains: true
+        });
+
+    });
     
-    function searchEvents(e){
+    function filterEvents(e){
         $.ajax({
-            url: '@Url.Action("SearchModalEvents", "Dashboard")',
+            url: '@Url.Action("filterModalEvents", "Dashboard")',
             data: {
                 searchTerm: e.searchTerm.value,
                 type: e.type.value,
                 start: '@startTime.ToString()',
-                end: '@endTime.ToString()'
+                end: '@endTime.ToString()',
+                teamName: e.teamName.value
             },
             success: function(data) {
-                $("#modalTable").html(data);
+                $("#listModalTable").html(data);
+                $('#listModalDropdown').removeClass('show');
             }
         });
     }
 
         function resetEvents(e){
         $.ajax({
-            url: '@Url.Action("SearchModalEvents", "Dashboard")',
+            url: '@Url.Action("filterModalEvents", "Dashboard")',
             data: {
                 searchTerm: '',
                 type: 'Event',
                 start: '@startTime.ToString()',
-                end: '@endTime.ToString()'
+                end: '@endTime.ToString()',
+                teamName: ''
             },
             success: function(data) {
-                $("#modalTable").html(data);
+                $("#listModalTable").html(data);
             }
         });
     }
