@@ -4,7 +4,7 @@
 ///	Represents a data model.
 ///	</summary>
 /// <remarks>Could add a type parameter for extra extendability, we only use GUID's right now though.</remarks>
-public abstract record Entity
+public abstract class Entity
 {
 	/// <summary>
 	/// Initializes the <see cref="Entity"/> record.

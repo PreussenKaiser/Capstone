@@ -19,7 +19,7 @@ public static class SchedulerContextExtensions
 		where TEvent : Event
 	{
 		return events
-			.Where(e => e.EndDate > DateTime.Now)
+			.Where(e => e.EndDate >= DateTime.Now)
 			.OrderBy(e => e.StartDate)
 			.Include(e => e.Recurrence)
 			.Include(e => e.Field);

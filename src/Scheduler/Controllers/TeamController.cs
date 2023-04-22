@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
 using Scheduler.Filters;
+using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Web.Controllers;
 
@@ -18,10 +20,6 @@ public sealed class TeamController : Controller
 	/// </summary>
 	private readonly ITeamRepository teamRepository;
 
-	/// <summary>
-	/// Initializes the <see cref="TeamController"/> class.
-	/// </summary>
-	/// <param name="teamRepository">The repository to query and execute commands with.</param>
 	public TeamController(ITeamRepository teamRepository)
 	{
 		this.teamRepository = teamRepository;
