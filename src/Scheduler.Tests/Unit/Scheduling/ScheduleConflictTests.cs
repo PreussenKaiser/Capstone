@@ -19,112 +19,229 @@ public sealed class ScheduleConflictTests
 	/// </summary>
 	public ScheduleConflictTests()
 	{
-		this.events = SeedData.Events
-			.OrderByDescending(e => e.StartDate)
-			.ToArray();
+		Guid fieldOneId = Guid.NewGuid();
+		Guid fieldTwoId = Guid.NewGuid();
+
+		Recurrence dailyRecurrence = new() { Type= RecurrenceType.Daily, Occurrences = 3 };
+		Recurrence weeklyRecurrence = new() { Type = RecurrenceType.Weekly, Occurrences = 2 };
+
+		this.events = new Event[6]
+		{
+			new()
+			{
+				FieldId = fieldTwoId,
+				StartDate = new DateTime(2023, 3, 25, 10, 0, 0),
+				EndDate = new DateTime(2023, 3, 25, 12, 0, 0),
+				IsBlackout = true,
+				Recurrence = weeklyRecurrence
+			},
+			new()
+			{
+				FieldId = fieldOneId,
+				StartDate = new DateTime(2023, 3, 24, 17, 0, 0),
+				EndDate = new DateTime(2023, 3, 24, 19, 0, 0),
+				Recurrence = dailyRecurrence
+			},
+			new()
+			{
+				FieldId = fieldOneId,
+				StartDate = new DateTime(2023, 3, 23, 17, 0, 0),
+				EndDate = new DateTime(2023, 3, 23, 19, 0, 0),
+				Recurrence = dailyRecurrence
+			},
+			new()
+			{
+				FieldId = fieldOneId,
+				StartDate = new DateTime(2023, 3, 22, 17, 0, 0),
+				EndDate = new DateTime(2023, 3, 22, 19, 0, 0),
+				Recurrence = dailyRecurrence
+			},
+			new()
+			{
+				FieldId = fieldTwoId,
+				StartDate = new DateTime(2023, 3, 18, 10, 0, 0),
+				EndDate = new DateTime(2023, 3, 18, 12, 0, 0),
+				IsBlackout = true,
+				Recurrence = weeklyRecurrence
+			},
+			new()
+			{
+				FieldId = fieldOneId,
+				StartDate = new DateTime(2023, 3, 1, 12, 0, 0),
+				EndDate = new DateTime(2023, 3, 1, 17, 0, 0),
+			}
+		};
 	}
 
 	/// <summary>
-	/// Asserts that despite having a conflict, the conflicting event is the same as the scheduled one and therefore should be ignored.
+	/// Asserts that, when the scheduled event overlaps with another event to the left, a conflict is detected.
 	/// </summary>
 	[Fact]
-	public void Date_Overlap_SameEvent()
+	public void Left_Overlap()
 	{
-		Event newEvent = SeedData.Events.Last();
+		Event scheduledEvent = new()
+		{
+			FieldId = this.events.Last().FieldId,
+			StartDate = new DateTime(2023, 3, 1, 9, 0, 0),
+			EndDate = new DateTime(2023, 3, 1, 13, 0, 0)
+		};
 
-		Event? conflict = newEvent.FindConflict(this.events);
+		Event? conflict = scheduledEvent.FindConflict(this.events);
+
+		Assert.NotNull(conflict);
+	}
+
+	/// <summary>
+	/// Asserts that, when the scheduled event is full encompassed by another event, a conflict is detected.
+	/// </summary>
+	[Fact]
+	public void Full_Overlap_Inner()
+	{
+		Event scheduledEvent = new()
+		{
+			FieldId = this.events.Last().FieldId,
+			StartDate = new DateTime(2023, 3, 1, 13, 0, 0),
+			EndDate = new DateTime(2023, 3, 1, 14, 0, 0)
+		};
+
+		Event? conflict = scheduledEvent.FindConflict(this.events);
+
+		Assert.NotNull(conflict);
+	}
+
+	/// <summary>
+	/// Asserts that, when the scheduled event fully encompasses an existing event, a conflict is detected.
+	/// </summary>
+	[Fact]
+	public void Full_Overlap_Outer()
+	{
+		Event scheduledEvent = new()
+		{
+			FieldId = this.events.Last().FieldId,
+			StartDate = new DateTime(2023, 3, 1, 11, 0, 0),
+			EndDate = new DateTime(2023, 3, 1, 18, 0, 0)
+		};
+
+		Event? conflict = scheduledEvent.FindConflict(this.events);
+
+		Assert.NotNull(conflict);
+	}
+
+	/// <summary>
+	/// Asserts that, when the scheduled event partially overlaps with an existing event to it's right, a conflict is detected.
+	/// </summary>
+	[Fact]
+	public void Right_Overlap()
+	{
+		Event scheduledEvent = new()
+		{
+			FieldId = this.events.Last().FieldId,
+			StartDate = new DateTime(2023, 3, 1, 15, 0, 0),
+			EndDate = new DateTime(2023, 3, 1, 19, 0, 0)
+		};
+
+		Event? conflict = scheduledEvent.FindConflict(this.events);
+
+		Assert.NotNull(conflict);
+	}
+
+	/// <summary>
+	/// Asserts that, if the scheduled event's start time overlaps with another's end date, a conflict won't be detected.
+	/// </summary>
+	[Fact]
+	public void StartDate_Same_As_EndDate()
+	{
+		Event scheduledEvent = new()
+		{
+			FieldId = this.events.Last().FieldId,
+			StartDate = new DateTime(2023, 3, 1, 17, 0, 0),
+			EndDate = new DateTime(2023, 3, 1, 19, 0, 0)
+		};
+
+		Event? conflict = scheduledEvent.FindConflict(this.events);
 
 		Assert.Null(conflict);
 	}
 
 	/// <summary>
-	/// Asserts that a complete overlap fails.
+	/// Asserts that, if a scheduled event conflicts with another on a different field, a conflict isn't detected.
 	/// </summary>
 	[Fact]
-	public void Date_Overlap_Complete()
+	public void Conflict_Different_Field()
 	{
-		Event newEvent = new()
+		Event scheduledEvent = new()
 		{
-			FieldId = SeedData.Fields.First().Id,
-			StartDate = new DateTime(2023, 03, 24, 11, 0, 0),
-			EndDate = new DateTime(2023, 03, 24, 16, 0, 0)
+			FieldId = this.events.First().FieldId,
+			StartDate = new DateTime(2023, 3, 1, 13, 0, 0),
+			EndDate = new DateTime(2023, 3, 1, 14, 0, 0)
 		};
 
-		Event? conflictingEvent = newEvent.FindConflict(this.events);
-
-		Assert.NotNull(conflictingEvent);
-	}
-
-	/// <summary>
-	/// Asserts that a partial overlap fails.
-	/// </summary>
-	[Fact]
-	public void Date_Overlap_Partial()
-	{
-		Event newEvent = new()
-		{
-			FieldId = SeedData.Fields.Skip(1).First().Id,
-			StartDate = new DateTime(2023, 3, 15, 18, 0, 0),
-			EndDate = new DateTime(2023, 3, 15, 19, 0, 0),
-		};
-
-		Event? conflictingEvent = newEvent.FindConflict(this.events);
-
-		Assert.NotNull(conflictingEvent);
-	}
-
-	/// <summary>
-	/// Asserts that an event posted prior to Event 1 succeeds in being validated.
-	/// </summary>
-	[Fact]
-	public void Date_Overlap_None()
-	{
-		Event newEvent = new()
-		{
-			FieldId = SeedData.Fields.Skip(1).First().Id,
-			StartDate = new DateTime(2023, 03, 24, 10, 0, 0),
-			EndDate = new DateTime(2023, 03, 24, 11, 0, 0)
-		};
-
-		Event? conflict = newEvent.FindConflict(this.events);
+		Event? conflict = scheduledEvent?.FindConflict(this.events);
 
 		Assert.Null(conflict);
 	}
 
 	/// <summary>
-	/// Asserts that and event will be scheduled even if it overlaps with another event as long as it's on another field.
+	/// Asserts that, if a scheduled event has a conflict with another event on a different field and the event is a blackout, a conflict is detected.
 	/// </summary>
 	[Fact]
-	public void Date_Overlap_DifferentField()
+	public void Conflict_Different_Field_Blackout()
 	{
-		Event newEvent = new()
+		Event scheduledEvent = new()
 		{
-			FieldId = SeedData.Fields.Skip(3).First().Id,
-			Field = SeedData.Fields.Skip(3).Last(),
-			StartDate = new DateTime(2023, 03, 15, 18, 0, 0),
-			EndDate = new DateTime(2023, 03, 15, 19, 0, 0)
+			FieldId = this.events.Last().FieldId,
+			StartDate = new DateTime(2023, 3, 25, 9, 0, 0),
+			EndDate = new DateTime(2023, 3, 25, 13, 0, 0)
 		};
 
-		Event? conflict = newEvent.FindConflict(this.events);
+		Event? conflict = scheduledEvent.FindConflict(this.events);
 
-		Assert.Null(conflict);
+		Assert.NotNull(conflict);
 	}
 
 	/// <summary>
-	/// Asserts that an event will be scheduled event if the start date matches another event's end date.
+	/// Asserts that,
+	/// if the scheduled event is a blackout and conflicts with another event on a different field,
+	/// a conflict is detected.
 	/// </summary>
 	[Fact]
-	public void Date_Overlap_Edge()
+	public void Scheduled_Different_Field_Blackout()
 	{
-		Event newEvent = new()
+		Event scheduledEvent = new()
 		{
-			FieldId = SeedData.Fields.Last().Id,
-			StartDate = new DateTime(2023, 3, 15, 20, 0, 0),
-			EndDate = new DateTime(2023, 3, 15, 20, 30, 0)
+			FieldId = this.events.First().FieldId,
+			StartDate = new DateTime(2023, 3, 1, 13, 0, 0),
+			EndDate = new DateTime(2023, 3, 1, 14, 0, 0),
+			IsBlackout = true
 		};
 
-		Event? conflict = newEvent.FindConflict(this.events);
+		Event? conflict = scheduledEvent.FindConflict(this.events);
 
-		Assert.Null(conflict);
+		Assert.NotNull(conflict);
+	}
+
+	/// <summary>
+	/// Asserts that,
+	/// a recurring event where one recurrence conflicts with an event,
+	/// a conflict is detected.
+	/// </summary>
+	[Fact]
+	public void Recurring_Conflict()
+	{
+		Event scheduledEvent = new()
+		{
+			FieldId = this.events.Last().FieldId,
+			StartDate = new DateTime(2023, 3, 16, 16, 0, 0),
+			EndDate = new DateTime(2023, 3, 16, 20, 0, 0),
+			Recurrence = new Recurrence()
+			{
+				Type = RecurrenceType.Weekly,
+				Occurrences = 2
+			}
+		};
+
+		Event? conflict = scheduledEvent.FindConflict(this.events);
+
+		Assert.NotNull(conflict);
 	}
 }

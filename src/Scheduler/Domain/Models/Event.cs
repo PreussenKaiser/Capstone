@@ -111,19 +111,20 @@ public class Event : Entity, IValidatableObject
 				if (occurrence.Id != scheduledEvent.Id &&
 					occurrence.StartDate < scheduledEvent.EndDate &&
 					occurrence.EndDate > scheduledEvent.StartDate &&
-					(occurrence.IsBlackout || occurrence.FieldId == scheduledEvent.FieldId))
+						(occurrence.IsBlackout ||
+						scheduledEvent.IsBlackout ||
+						occurrence.FieldId == scheduledEvent.FieldId))
 				{
 					return scheduledEvent;
 				}
 
-				if (scheduledEvent.EndDate < occurrence.StartDate ||
-					scheduledEvent.StartDate >= occurrence.EndDate)
+				if (occurrence.StartDate < scheduledEvent.EndDate)
 				{
-					right = mid - 1;
+					left = mid + 1;
 				}
 				else
 				{
-					left = mid + 1;
+					right = mid - 1;
 				}
 			}
 		}
