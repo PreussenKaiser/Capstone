@@ -48,59 +48,6 @@ public sealed class HomeController : Controller
 	}
 
 	/// <summary>
-	/// Renders the page with search constraints for <see cref="IndexViewModel.Events"/> and <see cref="IndexViewModel.Games"/>.
-	/// </summary>
-	/// <param name="eventSearch">Constraint for <see cref="IndexViewModel.Events"/> by.</param>
-	/// <param name="gameSearch">Constraint for <see cref="IndexViewModel.Games"/>.</param>
-	/// <returns>The home page.</returns>
-	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
-	[AllowAnonymous]
-	public async Task<IActionResult> Index(
-		string? eventSearch = null,
-		string? gameSearch = null,
-		DateTime? gameStart = null,
-		DateTime? gameEnd = null)
-	{
-		IQueryable<Event> events = this.context.Events.WithScheduling();
-
-		IQueryable<Game> games = this.context.Games
-			.WithScheduling()
-			.Include(g => g.HomeTeam)
-			.Include(g => g.OpposingTeam);
-
-		if (!string.IsNullOrEmpty(eventSearch))
-		{
-			events = events.Where(e => e.Name.Contains(eventSearch));
-		}
-
-		if (!string.IsNullOrEmpty(gameSearch))
-		{
-			games = games
-				.Include(g => g.HomeTeam)
-				.Include(g => g.OpposingTeam)
-				.Where(g =>
-					g.HomeTeam!.Name.Contains(gameSearch) ||
-					g.OpposingTeam!.Name.Contains(gameSearch) ||
-					g.Name.Contains(gameSearch));
-		}
-
-		if (gameStart is not null || gameEnd is not null)
-		{
-			gameStart ??= DateTime.MinValue;
-			gameEnd ??= DateTime.MaxValue;
-
-			games = games.Where(g =>
-				g.StartDate >= gameStart &&
-				g.EndDate <= gameEnd);
-		}
-
-		return this.View(new IndexViewModel(
-			await events.ToListAsync(),
-			await games.ToListAsync()));
-	}
-
-	/// <summary>
 	/// Displays the <see cref="Error"/> view.
 	/// All page errors are redirected to this action.
 	/// </summary>
