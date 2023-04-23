@@ -8,8 +8,7 @@
     int currentDate = DateTime.Now.Year;
 
     // The list to store the years used for the select.
-    List<int> yearList = new List<int>();
-    yearList.Add(currentDate);
+    List<int> yearList = new() { currentDate };
 
     // Store the next 9 years in addition to the current year.
     for (int i = 1; i <= 9; i++)
