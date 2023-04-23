@@ -95,12 +95,14 @@ public class Event : Entity, IValidatableObject
 			throw new ArgumentException("Array size out of bounds.");
 		}
 
-		int left = 0;
-		int right = events.Length - 1; // Could overflow if value is above int.MaxValue
 
 		IEnumerable<Event> schedule = this.GenerateSchedule<Event>();
 
 		foreach (var occurrence in schedule)
+		{
+			int left = 0;
+			int right = events.Length - 1;
+
 			while (left <= right)
 			{
 				int mid = left + (right - left) / 2;
@@ -124,6 +126,7 @@ public class Event : Entity, IValidatableObject
 					left = mid + 1;
 				}
 			}
+		}
 
 		return null;
 	}

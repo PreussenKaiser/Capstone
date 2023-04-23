@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
-using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
