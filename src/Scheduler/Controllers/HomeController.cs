@@ -40,21 +40,11 @@ public sealed class HomeController : Controller
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Index()
 	{
-		IEnumerable<Event> events = await this.context.Events
-			.WithScheduling()
-			.ToListAsync();
-
 		this.DeleteExpiredGamesOrPracticeTypes();
 
-		IEnumerable<Game> games = await this.context.Games
-			.WithScheduling()
-			.Include(g => g.HomeTeam)
-			.Include(g => g.OpposingTeam)
-			.ToListAsync();
+		IEnumerable<Team> teams= this.context.Teams;
 
-		this.ViewData["Teams"] = this.context.Teams;
-
-		return this.View(new IndexViewModel(events,	games));
+		return this.View(new IndexViewModel(teams));
 	}
 
 	/// <summary>
