@@ -49,13 +49,32 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public IActionResult Events()
+	public async Task<IActionResult> Events(
+		string? type = null,
+		string? searchTerm = null)
 	{
 		var userId = userManager.GetUserId(User);
-		IEnumerable<Event> events = this.context.Events
-			.WithScheduling();
 
-		return this.View(events);
+		IQueryable<Event> events = type switch
+		{
+			nameof(Practice) => this.context.Practices.Include(p => p.Team),
+
+			nameof(Game) => this.context.Games
+				.Include(g => g.HomeTeam)
+				.Include(g => g.OpposingTeam),
+
+			_ => this.context.Events
+		};
+
+		if (searchTerm is not null)
+		{
+			events = events.Where(e => e.Name.Contains(searchTerm));
+		}
+
+		return this.View(await events
+			.WithScheduling()
+			.OrderBy(e => e.StartDate)
+			.ToListAsync());
 	}
 
 	/// <summary>

@@ -122,6 +122,7 @@ public static class SeedData
 		{
 			Id = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 			UserId = Users.First().Id,
+			FieldId = Fields.First().Id,
 			RecurrenceId = new Guid("41a55d61-9dfb-4c35-909c-f4e85f7b6dd1"),
 			Name = "Event",
 			StartDate = new DateTime(2023, 3, 24, 12, 0, 0),
@@ -139,6 +140,7 @@ public static class SeedData
 		{
 			Id = Guid.NewGuid(),
 			UserId = Users.First().Id,
+			FieldId = Fields.First().Id,
 			TeamId = Teams.First().Id,
 			Name = "Practice",
 			StartDate = new DateTime(2023, 3, 14, 17, 0, 0),
@@ -149,6 +151,7 @@ public static class SeedData
 		{
 			Id = Guid.NewGuid(),
 			UserId = Users.First().Id,
+			FieldId = Fields.Skip(1).First().Id,
 			HomeTeamId = Teams.First().Id,
 			OpposingTeamId = Teams.Last().Id,
 			Name = "Game",
