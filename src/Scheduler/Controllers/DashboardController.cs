@@ -62,13 +62,13 @@ public sealed class DashboardController : Controller
 	/// <returns>The appropriate ViewComponent.</returns>
 	public IActionResult coachEvents(string type)
 	{
-		var userId = userManager.GetUserId(User);
+		var userId = this.userManager.GetUserId(this.User);
 
-		IQueryable<Team> coachTeams = this.context.Teams.Where(t => t.UserId.ToString() == userId);
+		IQueryable<Team>? coachTeams = this.context.Teams.Where(t => t.UserId.ToString() == userId);
 
-		IQueryable<Event> games = null;
+		IQueryable<Event>? games = null;
 
-		IQueryable<Event> practices = null;
+		IQueryable<Event>? practices = null;
 		
 		foreach(Team team in coachTeams)
 		{
@@ -150,11 +150,11 @@ public sealed class DashboardController : Controller
 	{
 		var userId = userManager.GetUserId(User);
 
-		IQueryable<Team> coachTeams = this.context.Teams.Where(t => t.UserId.ToString() == userId);
+		IQueryable<Team>? coachTeams = this.context.Teams.Where(t => t.UserId.ToString() == userId);
 
-		IQueryable<Event> games = null;
+		IQueryable<Event>? games = null;
 
-		IQueryable<Event> practices = null;
+		IQueryable<Event>? practices = null;
 
 		foreach (Team team in coachTeams)
 		{
@@ -233,10 +233,6 @@ public sealed class DashboardController : Controller
 
 			filteredGames = games.Distinct().ToList();
 		}
-		else if (games.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
-		}
 
 		if (!practices.IsNullOrEmpty())
 		{
@@ -244,7 +240,8 @@ public sealed class DashboardController : Controller
 
 			filteredPractices = practices.Distinct().ToList();
 		}
-		else if (practices.IsNullOrEmpty())
+
+		if (games.IsNullOrEmpty() && practices.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
