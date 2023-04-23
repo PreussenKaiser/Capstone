@@ -8,6 +8,7 @@ using Scheduler.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Scheduler.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
 
 namespace Scheduler.Web.Controllers;
 
