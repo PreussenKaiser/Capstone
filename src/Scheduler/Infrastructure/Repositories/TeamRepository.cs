@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Routing.Template;
+using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
@@ -66,6 +67,22 @@ public sealed class TeamRepository : ITeamRepository
 			return;
 		}
 
+		/*
+		 * A bit hacky, this should be handled by the database.
+		 * Can't have multiple ON DELETE CASCADE on Home & Opposing Ids for games, dunno why.
+		*/
+		IEnumerable<Practice> practicesToRemove = await this.context.Practices
+			.Where(p => p.TeamId == teamToRemove.Id)
+			.ToListAsync();
+
+		IEnumerable<Game> gamesToRemove = await this.context.Games
+			.Where(g =>
+				g.HomeTeamId == teamToRemove.Id ||
+				g.OpposingTeamId == teamToRemove.Id)
+			.ToListAsync();
+
+		this.context.Practices.RemoveRange(practicesToRemove);
+		this.context.Games.RemoveRange(gamesToRemove);
 		this.context.Teams.Remove(teamToRemove);
 
 		await this.context.SaveChangesAsync();
