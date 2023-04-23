@@ -1,4 +1,6 @@
-﻿using Scheduler.Domain.Validation;
+﻿using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
+using Scheduler.Domain.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
@@ -7,7 +9,7 @@ namespace Scheduler.Domain.Models;
 /// <summary>
 /// Represents an event held at the facility.
 /// </summary>
-public record Event : Entity, IValidatableObject
+public class Event : Entity, IValidatableObject
 {
 	/// <summary>
 	/// Initializes the <see cref="Event"/> record.
@@ -21,7 +23,7 @@ public record Event : Entity, IValidatableObject
 	/// Fields referenced by the <see cref="Event"/>.
 	/// </summary>
 	[Display(Name = "Field")]
-	[RequiredIfFalse("IsBlackout", ErrorMessage = "Please select at least one field.")]
+	[RequiredIfFalse(nameof(IsBlackout), ErrorMessage = "Please select at least one field.")]
 	public Guid? FieldId { get; set; }
 
 	/// <summary>
@@ -73,6 +75,62 @@ public record Event : Entity, IValidatableObject
 	/// Fields where the <see cref="Event"/> happens.
 	/// </summary>
 	public Field? Field { get; set; }
+
+	/// <summary>
+	/// Uses a binary search to find an event who's <see cref="StartDate"/> and <see cref="EndDate"/> overlap with the current instance.
+	/// </summary>
+	/// <remarks>
+	/// Supplied <paramref name="events"/> must be ordered by date.
+	/// </remarks>
+	/// <param name="events">The list of events to find a conflict from.</param>
+	/// <returns>The conflicting <see cref="Event"/>, <see langword="null"/> if none were found.</returns>
+	/// <exception cref="ArgumentNullException"></exception>
+	/// <exception cref="ArgumentException"></exception>
+	public Event? FindConflict(Event[] events)
+	{
+		ArgumentNullException.ThrowIfNull(events);
+
+		if (events.Length - 1 > int.MaxValue)
+		{
+			throw new ArgumentException("Array size out of bounds.");
+		}
+
+
+		IEnumerable<Event> schedule = this.GenerateSchedule<Event>();
+
+		foreach (var occurrence in schedule)
+		{
+			int left = 0;
+			int right = events.Length - 1;
+
+			while (left <= right)
+			{
+				int mid = left + (right - left) / 2;
+				Event scheduledEvent = events[mid];
+
+				if (occurrence.Id != scheduledEvent.Id &&
+					occurrence.StartDate < scheduledEvent.EndDate &&
+					occurrence.EndDate > scheduledEvent.StartDate &&
+						(occurrence.IsBlackout ||
+						scheduledEvent.IsBlackout ||
+						occurrence.FieldId == scheduledEvent.FieldId))
+				{
+					return scheduledEvent;
+				}
+
+				if (occurrence.StartDate < scheduledEvent.EndDate)
+				{
+					left = mid + 1;
+				}
+				else
+				{
+					right = mid - 1;
+				}
+			}
+		}
+
+		return null;
+	}
 
 	/// <summary>
 	/// Generates a schedule from this instance using it's recurrence pattern.
@@ -136,13 +194,22 @@ public record Event : Entity, IValidatableObject
 	}
 
 	/// <summary>
-	/// 
+	/// Validation rules for <see cref="Event"/>.
+	/// <para>
+	/// <b>Checks done:</b>
+	/// <br></br>
+	/// <list type="bullet">
+	/// <item><see cref="EndDate"/> is at least 30 minutes away from <see cref="StartDate"/>.</item>
+	/// <item><see cref="StartDate"/> and <see cref="EndDate"/> are between 8am and 11pm.</item>
+	/// <item>No conflicts were detected with other events.</item>
+	/// </list>
+	/// </para>
 	/// </summary>
-	/// <param name="validationContext"></param>
-	/// <returns></returns>
+	/// <param name="validationContext">The current context.</param>
+	/// <returns>Errors resulting from validation.</returns>
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
-		ICollection<ValidationResult> results = new List<ValidationResult>();
+		ICollection<ValidationResult> results = new List<ValidationResult>(3);
 
 		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
 		{
@@ -152,6 +219,17 @@ public record Event : Entity, IValidatableObject
 		if (this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 22)
 		{
 			results.Add(new("Event Times must be between 8 am and 11 pm."));
+		}
+
+		IScheduleRepository scheduleRepository = validationContext.GetRequiredService<IScheduleRepository>();
+		Event? conflict = this.FindConflict(scheduleRepository
+			.SearchAsync(new GetAllSpecification<Event>())
+			.Result
+			.ToArray());
+
+		if (conflict is not null)
+		{
+			results.Add(new("An event is already scheduled for that date and location."));
 		}
 
 		return results;

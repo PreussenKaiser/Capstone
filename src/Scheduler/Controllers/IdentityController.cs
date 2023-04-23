@@ -5,6 +5,8 @@ using Scheduler.Domain.Models;
 using Scheduler.Domain.Utility;
 using Scheduler.Web.ViewModels;
 using Scheduler.Filters;
+using Scheduler.ViewModels;
+using System.Net.Mail;
 
 namespace Scheduler.Web.Controllers;
 
@@ -383,6 +385,86 @@ public sealed class IdentityController : Controller
 			}
 		}
 		return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
+	}
+
+	[HttpGet]
+	[AllowAnonymous]
+	public IActionResult ForgotPassword()
+	{
+		return this.View();
+	}
+
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	[AllowAnonymous]
+	public async Task<IActionResult> ForgotPassword(ForgottenPasswordViewModal viewModel)
+	{
+		if (!ModelState.IsValid)
+		{
+			return this.View(viewModel);
+		}
+
+		var user = await signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+		if (user is null)
+		{
+			this.ModelState.AddModelError(string.Empty, "Unable to find an account with that email.");
+			return this.View(viewModel);	
+		}
+
+		var token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
+		var callback = Url.Action(nameof(ResetPassword), "Identity", new { token, email = user.Email }, Request.Scheme);
+
+		var message = $"<p>A request has been made to reset your password.</p>" +
+			$"<p><a href=\"{callback}\">Click this link</a> to reset your password.";
+
+		Email.sendEmail(viewModel.Email, user.FirstName, "Reset Password Request", message);
+
+		this.ViewData["Message"] = "An email has been sent containing a link to reset your password.";
+		return this.View();
+	}
+
+	[HttpGet]
+	[AllowAnonymous]
+	public IActionResult ResetPassword(string token, string email)
+	{
+		ResetPasswordViewModel viewModel = new()
+		{
+			Token = token,
+			Email = email
+		};
+
+		return this.View(viewModel);
+	}
+
+	[HttpPost]
+	[AllowAnonymous]
+	public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
+	{
+
+		if (!ModelState.IsValid)
+		{
+			return this.View(viewModel);
+		}
+
+		var user = await this.signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+
+		if (user != null)
+		{
+			var result = await this.signInManager.UserManager.ResetPasswordAsync(user, viewModel.Token, viewModel.NewPassword);
+			if (result.Succeeded)
+			{
+				user.NeedsNewPassword = false;
+				await this.signInManager.UserManager.UpdateAsync(user);
+				await this.signInManager.SignInAsync(user, false);
+				return RedirectToAction(nameof(HomeController.Index), "Home");
+			}
+			else
+			{
+				return this.View();
+			}
+		}
+
+		return this.View();
 	}
 
 	/// <summary>

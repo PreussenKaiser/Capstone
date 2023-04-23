@@ -4,26 +4,51 @@
 @using Scheduler.Infrastructure.Persistence;
 @using System.Text;
 
-@inject UserManager<User> UserManager
-@inject IFieldRepository FieldRepository
-@inject ITeamRepository TeamRepositoey
+<div class="text-center mb-3 mt-3 noPrintIfModal">
+	<div>
+		<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded">
+			Schedule New Event
+		</a>
+	</div>
+	<div class="row mt-3">
+		<div class="col-md text-end">
+			<button class="btn btn-sm btn-secondary" onclick="gamesModal()">My Scheduled Games</button>
+		</div>
+		<div class="col-md text-start">
+			<button class="btn btn-sm btn-success" onclick="practicesModal()">My Scheduled Practices</button>
+		</div>
+	</div>
+</div>
 
-@model IEnumerable<Event>
-
-@{
-	GetAllSpecification<Field> allFieldSpec = new();
-	IEnumerable<Field> fields = await this.FieldRepository.SearchAsync(allFieldSpec);
-
-	GetAllSpecification<Team> allTeamSpec = new();
-	IEnumerable<Team> teams = await this.TeamRepositoey.SearchAsync(allTeamSpec);
-}
-
-<div class="text-center mb-3 mt-3">
-	<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded me-3">
-		Schedule New Event
-	</a>			
+			
+<div id="eventModal">
 </div>
 
 <div id="calendar">
-	@await Component.InvokeAsync("Calendar")
+	@await this.Component.InvokeAsync("Calendar")
 </div>
+
+<script>
+	function gamesModal() {
+		$.ajax({
+			url: '@Url.Action("coachEvents", "Dashboard")',
+			data: {
+				type: 'Game'
+			},
+			success: function(data) {
+				$("#eventModal").html(data);
+			}
+		});
+	}
+	function practicesModal() {
+		$.ajax({
+			url: '@Url.Action("coachEvents", "Dashboard")',
+			data: {
+				type: 'Practice'
+			},
+			success: function(data) {
+				$("#eventModal").html(data);
+			}
+		});
+	}
+</script>

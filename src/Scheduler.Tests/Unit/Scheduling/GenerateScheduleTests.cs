@@ -1,4 +1,5 @@
 ﻿using Scheduler.Domain.Models;
+using Scheduler.Domain.Specifications;
 using Xunit;
 
 namespace Scheduler.Tests.Unit.Scheduling;

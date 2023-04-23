@@ -132,27 +132,18 @@
                         <input asp-for="EndDate" type="hidden" id="EndDate" />
                         <span asp-validation-for="EndDate" class="text-danger"></span>
                     </div>
-                    @if(ViewData["field"] == "")
-                    {
-                        <div class="row mb-3">
-                            <div class="form-check mb-3">
-                                <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                                <label asp-for="IsBlackout" class="form-check-label"></label>
-                            </div>
-                            <div class="form-check mb-3">
-                                <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                                <label class="form-check-label">Repeating?</label>
-                            </div>
-                            <div id="recurrenceInputs">
-                                @if (this.Model is not null &&
-                                        this.Model.Recurrence is not null)
-                                {
-                                    <partial name="Forms/_RecurrenceInputs" />
-                                }
-                            </div>
+                    <div class="row mb-3">
+                        <div class="form-check mb-3">
+                            <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+                            <label asp-for="IsBlackout" class="form-check-label"></label>
                         </div>
-                    }
-                    
+                        <div class="form-check mb-3">
+                            <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
+                            <label class="form-check-label">Repeating?</label>
+                        </div>
+                        <div id="recurrenceInputs">
+                        </div>
+                    </div>
                 </div>
             </div>
 
