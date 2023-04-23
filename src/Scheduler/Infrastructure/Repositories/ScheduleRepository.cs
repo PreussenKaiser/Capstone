@@ -45,7 +45,7 @@ public sealed class ScheduleRepository : IScheduleRepository
 			.Include(e => e.Recurrence)
 			.Where(searchSpec.ToExpression())
 			.Where(e => e.EndDate > DateTime.Now)
-			.OrderBy(e => e.StartDate)
+			.OrderByDescending(e => e.StartDate)
 			.ToListAsync();
 
 		return events;

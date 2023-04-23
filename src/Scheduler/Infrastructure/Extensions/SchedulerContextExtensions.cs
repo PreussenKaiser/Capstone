@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
-using Scheduler.Domain.Validation;
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Infrastructure.Extensions;
