@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
-using Scheduler.Infrastructure.Persistence;
 using Scheduler.ViewModels;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;

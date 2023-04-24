@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Services;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Repositories;
+using Scheduler.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -26,7 +28,10 @@ builder.Services
 	.AddScoped<ILeagueRepository, LeagueRepository>()
 	.AddScoped<ITeamRepository, TeamRepository>();
 
-// Configure identity
+builder.Services
+	.AddHostedService<ScheduleCullingService>()
+	.AddSingleton<IDateProvider, SystemDateProvider>();
+
 builder.Services
 	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>()
