@@ -16,7 +16,6 @@ public sealed class Team : Entity
 	/// <summary>
 	/// The identifier of the <see cref="User"/> that made the team.
 	/// </summary>
-	[Required(ErrorMessage = "Please select the team's coach.")]
 	public Guid? UserId { get; set; }
 
 	/// <summary>
