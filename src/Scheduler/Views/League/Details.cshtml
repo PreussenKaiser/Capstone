@@ -1,4 +1,8 @@
-﻿@model League
+﻿@using Microsoft.AspNetCore.Identity;
+@using Scheduler.Domain.Models;
+
+@inject UserManager<User> UserManager
+@model League
 
 @{
     this.ViewData["Title"] = this.Model.Name;
@@ -119,7 +123,13 @@
                         else
                         {
                             @foreach (var team in this.Model.Teams)
-                            {                                 
+                            {
+                                string mutationEnabled = 
+                                        this.User.IsInRole(Role.ADMIN) ||
+                                        this.UserManager.GetUserId(this.User) == team.UserId.ToString()
+                                    ? string.Empty
+                                    : "disabled";
+
                                 <tr>
                                     <th scope="row">@team.Name</th>
                                     <td>@(team.User is null ? "Couldn't find coach" : team.User.ToString())</td>
@@ -127,7 +137,7 @@
                                         <a asp-action="Details"
                                            asp-controller="Team"
                                            asp-route-id="@team.Id"
-                                           class="btn btn-sm btn-secondary w-100">
+                                           class="btn btn-sm btn-secondary @mutationEnabled w-100">
                                             Edit
                                         </a>
                                     </td>
@@ -137,7 +147,7 @@
                                               asp-route-id="@team.Id"
                                               asp-route-leagueId="@this.Model.Id"
                                               method="post">
-                                            <input type="submit" value="Remove" class="btn btn-sm btn-danger" />
+                                            <input type="submit" value="Remove" class="btn btn-sm btn-danger @mutationEnabled" />
                                         </form>
                                     </td>
                                 </tr>
