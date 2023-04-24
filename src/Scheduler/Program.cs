@@ -5,6 +5,7 @@ using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Repositories;
+using Scheduler.Options;
 using Scheduler.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -38,6 +39,7 @@ builder.Services
 	.AddDefaultTokenProviders()
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
+
 builder.Services.AddScoped<User>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
@@ -47,6 +49,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+builder.Services
+	.AddOptions<CullingOptions>()
+	.Bind(builder.Configuration.GetSection(CullingOptions.Culling))
+	.ValidateDataAnnotations();
 
 WebApplication app = builder.Build();
 
