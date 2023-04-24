@@ -229,7 +229,16 @@ public class Event : Entity, IValidatableObject
 
 		if (conflict is not null)
 		{
-			results.Add(new("An event is already scheduled for that date and location."));
+			string eventName = conflict.Name;
+			string eventField = conflict.Field is null
+				? "(Unknown Field)"
+				: conflict.Field.Name;
+
+			string format = "0:M/dd/yy h:mm tt";
+			string eventStart = conflict.StartDate.ToString(format);
+			string eventEnd = conflict.EndDate.ToString(format);
+
+			results.Add(new($"An event titled '{eventName}' is already scheduled on {eventField} from {eventStart} to {eventEnd}."));
 		}
 
 		return results;
