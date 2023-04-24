@@ -69,13 +69,6 @@ public partial class TeamsCascade : Migration
 			table: "Teams",
 			column: "UserId");
 
-		migrationBuilder.AddForeignKey(
-			name: "FK_Teams_AspNetUsers_UserId",
-			table: "Teams",
-			column: "UserId",
-			principalTable: "AspNetUsers",
-			principalColumn: "Id");
-
 		migrationBuilder.DropForeignKey(
 			table: "Games",
 			name: "FK_Games_Teams_HomeTeamId");
