@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Moq;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications;
+using Scheduler.Options;
 using Scheduler.Services;
 using Scheduler.Tests.Services;
 using Xunit;
@@ -14,6 +17,22 @@ namespace Scheduler.Tests.Unit.Scheduling;
 /// </summary>
 public sealed class CullingTests
 {
+	private readonly Mock<IOptions<CullingOptions>> options;
+
+	private readonly IScheduleRepository scheduleRepository;
+
+	public CullingTests()
+	{
+		CullingOptions options = new() { Time = 3 };
+		this.options = new Mock<IOptions<CullingOptions>>();
+
+		this.options
+			.Setup(o => o.Value)
+			.Returns(options);
+
+		this.scheduleRepository = new MockScheduleRepository();
+	}
+
 	/// <summary>
 	/// Asserts that, when the time is past 3am, the background service will run.
 	/// </summary>
@@ -23,11 +42,11 @@ public sealed class CullingTests
 	{
 		// Arrange
 		CancellationToken cancellationToken = CancellationToken.None;
-		IScheduleRepository scheduleRepository = new MockScheduleRepository();
 
 		IServiceProvider services = new ServiceCollection()
 			.AddSingleton<IDateProvider, MockDateProvider>()
-			.AddScoped(p => scheduleRepository)
+			.AddScoped(p => this.scheduleRepository)
+			.AddSingleton(this.options.Object)
 			.BuildServiceProvider();
 
 		ScheduleCullingService cullingService = new ScheduleCullingService(services);
@@ -52,11 +71,11 @@ public sealed class CullingTests
 	{
 		// Arrange
 		CancellationToken cancellationToken = CancellationToken.None;
-		IScheduleRepository scheduleRepository = new MockScheduleRepository();
 
 		IServiceProvider services = new ServiceCollection()
 			.AddSingleton<IDateProvider, MockDateProvider>()
-			.AddScoped(p => scheduleRepository)
+			.AddScoped(p => this.scheduleRepository)
+			.AddSingleton(this.options.Object)
 			.BuildServiceProvider();
 
 		ScheduleCullingService cullingService = new ScheduleCullingService(services);
@@ -75,19 +94,18 @@ public sealed class CullingTests
 	/// <summary>
 	/// Asserts that, if the time is before 3am, the background servie won't run.
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>Whether the task was completed or not.</returns>
 	[Fact]
 	public async Task BeforeThreeAm_WontRun()
 	{
 		// Arrange
 		CancellationToken cancellationToken = CancellationToken.None;
-
-		IScheduleRepository scheduleRepository = new MockScheduleRepository();
 		IDateProvider dateProvider = new MockDateProvider(new DateTime(2022, 3, 24, 0, 0, 0));
 
 		IServiceProvider services = new ServiceCollection()
 			.AddSingleton(p => dateProvider)
-			.AddScoped(p => scheduleRepository)
+			.AddScoped(p => this.scheduleRepository)
+			.AddSingleton(this.options.Object)
 			.BuildServiceProvider();
 
 		ScheduleCullingService cullingService = new ScheduleCullingService(services);

@@ -1,6 +1,8 @@
-﻿using Scheduler.Domain.Repositories;
+﻿using Microsoft.Extensions.Options;
+using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Events;
+using Scheduler.Options;
 
 namespace Scheduler.Services;
 
@@ -20,6 +22,11 @@ public sealed class ScheduleCullingService : BackgroundService
 	private readonly IDateProvider dateProvider;
 
 	/// <summary>
+	/// Configuration for <see cref="ScheduleCullingService"/>.
+	/// </summary>
+	private readonly CullingOptions options;
+
+	/// <summary>
 	/// Initializes the <see cref="ScheduleCullingService"/> class.
 	/// </summary>
 	/// <param name="serviceProvider">The service provider to pull <see cref="IScheduleRepository"/> from.</param>
@@ -28,6 +35,9 @@ public sealed class ScheduleCullingService : BackgroundService
 	{
 		this.serviceProvider = serviceProvider;
 		this.dateProvider = serviceProvider.GetRequiredService<IDateProvider>();
+		this.options = serviceProvider
+			.GetRequiredService<IOptions<CullingOptions>>()
+			.Value;
 	}
 
 	/// <summary>
@@ -38,8 +48,7 @@ public sealed class ScheduleCullingService : BackgroundService
 	/// <returns>Whether the task was completed or not.</returns>
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		PastEventSpecification pastEventSpec = new(new SystemDateProvider());
-		TimeSpan cullTime = new(3, 0, 0); // 3am
+		TimeSpan cullTime = new(this.options.Time, 0, 0); // 3am
 
 		while (!stoppingToken.IsCancellationRequested)
 		{
@@ -52,7 +61,8 @@ public sealed class ScheduleCullingService : BackgroundService
 					// TODO: Catch possible exception then log.
 					IScheduleRepository scheduleRepository = scope.ServiceProvider.GetRequiredService<IScheduleRepository>();
 
-					await scheduleRepository.CancelAsync(pastEventSpec);
+					await scheduleRepository.CancelAsync(
+						new PastEventSpecification(new SystemDateProvider()));
 				}
 
 				DateTime nextDay = this.dateProvider.Today.AddDays(1);
