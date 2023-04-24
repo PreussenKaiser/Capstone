@@ -2,18 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Scheduler.Web.ViewModels;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Logging;
-using System.Web;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Scheduler.Web.Controllers;
@@ -60,23 +54,28 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <param name="type">The currently selected type of Event.</param>
 	/// <returns>The appropriate ViewComponent.</returns>
-	public IActionResult coachEvents(string type)
+	public async Task <IActionResult> coachEvents(string type)
 	{
-		var userId = this.userManager.GetUserId(this.User);
+		Guid userId = Guid.Parse(this.userManager.GetUserId(this.User)
+			?? throw new NullReferenceException("Could not get current user."));
 
-		IQueryable<Team>? coachTeams = this.context.Teams.Where(t => t.UserId.ToString() == userId);
-		IQueryable<Event>? games = null;
-		IQueryable<Event>? practices = null;
+		IEnumerable<Team>? coachTeams = await this.context.Teams
+			.Where(t => t.UserId == userId)
+			.ToListAsync();
+
+		IEnumerable<Event>? games = null;
+		IEnumerable<Event>? practices = null;
 		
 		foreach(Team team in coachTeams)
 		{
-			if(type == "Game")
+			if (type == nameof(Game))
 			{
-				IQueryable<Event> coachGames = this.context.Games
+				IEnumerable<Event> coachGames = await this.context.Games
 					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
-					.WithScheduling();
+					.WithScheduling()
+					.ToListAsync();
 
-				if (games == null && !coachGames.IsNullOrEmpty())
+				if (games is null && !coachGames.IsNullOrEmpty())
 				{
 					games = coachGames;
 				}
@@ -87,11 +86,12 @@ public sealed class DashboardController : Controller
 			}
 			else
 			{
-				IQueryable<Event> coachPractices = this.context.Practices
+				IEnumerable<Event> coachPractices = await this.context.Practices
 					.Where(g => g.TeamId == team.Id)
-					.WithScheduling();
+					.WithScheduling()
+					.ToListAsync();
 
-				if (practices == null && !coachPractices.IsNullOrEmpty())
+				if (practices is null && !coachPractices.IsNullOrEmpty())
 				{
 					practices = coachPractices;
 				}
@@ -125,7 +125,7 @@ public sealed class DashboardController : Controller
 
 		this.ViewData["Teams"] = this.context.Teams.ToList();
 
-		if(type == "Game")
+		if (type == nameof(Game))
 		{
 			return this.ViewComponent("GamesModal");
 		}
