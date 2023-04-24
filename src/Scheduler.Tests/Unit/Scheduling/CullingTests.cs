@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
+using Scheduler.Application.Options;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications;
-using Scheduler.Options;
 using Scheduler.Services;
 using Scheduler.Tests.Services;
 using Xunit;

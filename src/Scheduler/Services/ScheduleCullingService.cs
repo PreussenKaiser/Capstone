@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
+using Scheduler.Application.Options;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Events;
-using Scheduler.Options;
 
 namespace Scheduler.Services;
 
