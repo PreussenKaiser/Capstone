@@ -181,7 +181,6 @@ public abstract class ScheduleController<TEvent> : Controller
 		await this.scheduleRepository.RelocateAsync(
 			values, relocateSpec);
 
-
 		return this.RedirectToAction(
 			nameof(ScheduleController.Details),
 			"Schedule",
