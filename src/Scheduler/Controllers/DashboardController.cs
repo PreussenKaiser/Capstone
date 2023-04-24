@@ -166,7 +166,7 @@ public sealed class DashboardController : Controller
 					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
 					.WithScheduling();
 
-				if (games == null && !coachGames.IsNullOrEmpty())
+				if (games.IsNullOrEmpty() && !coachGames.IsNullOrEmpty())
 				{
 					games = coachGames;
 				}
@@ -180,12 +180,12 @@ public sealed class DashboardController : Controller
 					games = this.dateSearch(start, end, games);
 				}				
 
-				if (searchTerm is not null)
+				if (!searchTerm.IsNullOrEmpty())
 				{
 					games = this.nameSearch(searchTerm, type, games);
 				}
 
-				if (teamName is not null)
+				if (!teamName.IsNullOrEmpty() && !games.IsNullOrEmpty())
 				{
 					games = games.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Name == teamName || game.OpposingTeam.Name == teamName);
 
@@ -198,7 +198,7 @@ public sealed class DashboardController : Controller
 					.Where(g => g.TeamId == team.Id)
 					.WithScheduling();
 
-				if (practices == null && !coachPractices.IsNullOrEmpty())
+				if (practices.IsNullOrEmpty() && !coachPractices.IsNullOrEmpty())
 				{
 					practices = coachPractices;
 				}
@@ -212,12 +212,12 @@ public sealed class DashboardController : Controller
 					practices = this.dateSearch(start, end, practices);
 				}
 
-				if (searchTerm is not null)
+				if (!searchTerm.IsNullOrEmpty())
 				{
 					practices = this.nameSearch(searchTerm, type, practices);
 				}
 
-				if (teamName is not null)
+				if (!teamName.IsNullOrEmpty() && !practices.IsNullOrEmpty())
 				{
 					practices = practices.AsQueryable().OfType<Practice>().Where(Practice => Practice.Team.Name == teamName);
 
@@ -310,25 +310,6 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Checks if the user is associated with the team.
-	/// </summary>
-	/// <returns>games and practices the user is associated with.</returns>
-	bool isTeamMember(Event scheduledEvent)
-	{
-		if (scheduledEvent is Practice practice)
-		{
-			return practice?.Team?.UserId == Guid.Parse(userManager.GetUserId(User));
-		}
-		else if (scheduledEvent is Game game)
-		{
-			return game?.HomeTeam?.UserId == Guid.Parse(userManager.GetUserId(User))
-				|| game?.OpposingTeam?.UserId == Guid.Parse(userManager.GetUserId(User));
-		}
-
-		return false;
-	}
-
-	/// <summary>
 	/// Refreshes the Calendar View Component.
 	/// </summary>
 	/// <param name="year">The currently selected year.</param>
@@ -371,12 +352,12 @@ public sealed class DashboardController : Controller
 		
 		events = this.dateSearch(start, end, events);
 
-		if(searchTerm != null)
+		if(!searchTerm.IsNullOrEmpty())
 		{
 			events = this.nameSearch(searchTerm, type, events);
 		}
 
-		if(teamName != null)
+		if(!teamName.IsNullOrEmpty())
 		{
 			events = this.teamSearch(teamName, type, events);
 		}
@@ -517,12 +498,12 @@ public sealed class DashboardController : Controller
 
 		events = this.dateSearch(start, end, events);
 
-		if (searchTerm is not null)
+		if (!searchTerm.IsNullOrEmpty())
 		{
 			events = this.nameSearch(searchTerm, type, events);
 		}
 
-		if (teamName is not null)
+		if (!teamName.IsNullOrEmpty())
 		{
 			events = this.teamSearch(teamName, type, events);
 		}
@@ -549,7 +530,7 @@ public sealed class DashboardController : Controller
 	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event> dateSearch(DateTime start, DateTime end, IQueryable<Event>? events = null)
 	{
-		if (events == null)
+		if (events.IsNullOrEmpty())
 		{
 			events = this.context.Events
 					.WithScheduling();
@@ -569,7 +550,7 @@ public sealed class DashboardController : Controller
 	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event> teamSearch(string teamName, string type, IQueryable<Event>? events = null)
 	{
-		if (events == null)
+		if (events.IsNullOrEmpty())
 		{
 			events = this.context.Events
 					.WithScheduling();
@@ -585,41 +566,33 @@ public sealed class DashboardController : Controller
 			return null;			
 		}
 
-		IEnumerable<Event> matchingGames = null;
-		IEnumerable<Event> matchingPractices = null;
+		IEnumerable<Event>? matchingGames = null;
+		IEnumerable<Event>? matchingPractices = null;
 
 		if (type == "Event" || type == "Game")
 		{
 			matchingGames = events.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
-			if (!matchingGames.Any())
-			{
-				matchingGames = null;
-			}
 		}
 
 		if (type == "Event" || type == "Practice")
 		{
 			matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
-			if (!matchingPractices.Any())
-			{
-				matchingPractices = null;
-			}
 		}
 
-		if(matchingGames == null && matchingPractices == null)
+		if(matchingGames.IsNullOrEmpty() && matchingPractices.IsNullOrEmpty())
 		{
 			ViewData["TeamFilterMessage"] = "There are no scheduled " + type + "s for Team " + selectedTeam.Name + "\nduring the selected dates";
 			return null;
 		}
-		else if (matchingGames == null && matchingPractices.Any())
+		else if (matchingGames.IsNullOrEmpty() && !matchingPractices.IsNullOrEmpty())
 		{
 			events = (IQueryable<Event>)matchingPractices;
 		}
-		else if (matchingPractices == null && matchingGames.Any())
+		else if (matchingPractices.IsNullOrEmpty() && !matchingGames.IsNullOrEmpty())
 		{
 			events = (IQueryable<Event>)matchingGames;
 		}
-		else if (matchingGames.Any() && matchingPractices.Any())
+		else if (!matchingGames.IsNullOrEmpty() && !matchingPractices.IsNullOrEmpty())
 		{
 			events = matchingPractices.Concat((IQueryable<Event>)matchingGames).AsQueryable();
 		}
@@ -638,14 +611,14 @@ public sealed class DashboardController : Controller
 	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event> nameSearch(string searchTerm, string? type = "Event", IQueryable<Event>? events = null)
 	{
-		if(events == null)
+		if(events.IsNullOrEmpty())
 		{
 			events = this.context.Events
 					.WithScheduling();
 		}
 		events = events.Where(e => e.Name.ToLower().Contains(searchTerm.ToLower()));
 
-		if (!events.Any())
+		if (events.IsNullOrEmpty())
 		{
 			ViewData["NameFilterMessage"] = "There are no " + type + "s that match the search term " + searchTerm;
 		}
