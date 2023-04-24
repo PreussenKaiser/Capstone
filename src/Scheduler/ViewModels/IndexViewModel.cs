@@ -8,5 +8,4 @@ namespace Scheduler.Web.ViewModels;
 /// <param name="Events">Events to display.</param>
 /// <param name="Games">Games to display.</param>
 public sealed record IndexViewModel(
-	IEnumerable<Event> Events,
-	IEnumerable<Game> Games);
+	IEnumerable<Team> Teams);

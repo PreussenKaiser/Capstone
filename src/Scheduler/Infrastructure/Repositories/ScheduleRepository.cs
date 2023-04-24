@@ -149,10 +149,40 @@ public sealed class ScheduleRepository : IScheduleRepository
 			.Where(cancelSpec.ToExpression())
 			.ToListAsync();
 
-		foreach (var scheduledEvent in eventsToDelete)
+		foreach (Event e in eventsToDelete)
 		{
-			this.context.Events.Remove(scheduledEvent);
+			if (e is Practice practice)
+			{
+				Team? team = this.context.Teams.FirstOrDefault(t => t.Id == practice.TeamId);
+
+				if (team is not null &&
+					team.UserId is null &&
+					eventsToDelete.Count() >= 1)
+				{
+					this.context.Teams.Remove(practice.Team);
+				}
+			}
+			else if (e is Game game)
+			{
+				Team? homeTeam = this.context.Teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
+				Team? opposingTeam = this.context.Teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+
+				if (homeTeam is not null &&
+					homeTeam.UserId is null &&
+					eventsToDelete.Count() <= 1)
+				{
+					this.context.Teams.Remove(homeTeam);
+				}
+				else if (opposingTeam is not null &&
+						 opposingTeam.UserId is null &&
+						 eventsToDelete.Count() == 1)
+				{
+					this.context.Teams.Remove(opposingTeam);
+				}
+			}
 		}
+
+		this.context.Events.RemoveRange(eventsToDelete);
 
 		await this.context.SaveChangesAsync();
 	}
