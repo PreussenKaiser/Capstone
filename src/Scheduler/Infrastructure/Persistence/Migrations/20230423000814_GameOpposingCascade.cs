@@ -101,7 +101,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
 				column: "OpposingTeamId",
 				principalTable: "Teams",
 				principalColumn: "Id",
-				onDelete: ReferentialAction.Cascade);
+				onDelete: ReferentialAction.NoAction);
 		}
 
 		/// <inheritdoc />
