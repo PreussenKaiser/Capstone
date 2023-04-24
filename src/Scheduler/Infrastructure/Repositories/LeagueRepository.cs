@@ -38,6 +38,8 @@ public sealed class LeagueRepository : ILeagueRepository
 	{
 		IEnumerable<League> leagues = await this.context.Leagues
 			.AsNoTracking()
+			.Include(l => l.Teams)
+			.ThenInclude(t => t.User)
 			.Where(searchSpec.ToExpression())
 			.ToListAsync();
 

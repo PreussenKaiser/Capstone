@@ -2,10 +2,8 @@
 @using Scheduler.Infrastructure.Extensions;
 @using Microsoft.AspNetCore.Identity;
 @using System.Security.Claims;
-@using Scheduler.Domain.Repositories;
 @using Scheduler.Domain.Specifications;
 
-@inject ILeagueRepository LeagueRepository
 @inject UserManager<User> UserManager;
 @model Team
 
@@ -17,14 +15,17 @@
 @{
     var UserList = UserManager.Users
         .Select(user => new SelectListItem
-                {
-                    Text = string.Join(" ", user.FirstName, user.LastName),
-                    Value = user.Id.ToString(),
-                    Selected = Model != null && Model.UserId == user.Id
-                })
+        {
+            Text = string.Join(" ", user.FirstName, user.LastName),
+            Value = user.Id.ToString(),
+            Selected = Model != null && Model.UserId == user.Id
+        })
         .ToList();
+
     UserList.Add(new SelectListItem { Text = "Visiting Coach", Value = null, Selected = false });
 }
+
+<input hidden asp-for="LeagueId" />
 
 <div class="row mb-3">
     <div class="col-sm-6">
@@ -32,8 +33,6 @@
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span> 
     </div>
-</div>
-<div class="row mb-3">
     <div class="col-sm-6">
         <label asp-for="UserId" class="form-label">Coach</label>
         <select asp-for="UserId" class="form-select">
@@ -45,27 +44,12 @@
         <span asp-validation-for="UserId" class="text-danger"></span>
     </div>
 </div>
-<div class="row mb-3">
-    <div class="col-sm-6">
-        <label asp-for="LeagueId" class="form-label"></label>
-        <select class="form-select"
-                asp-for="LeagueId"
-                asp-items="(await this.LeagueRepository.SearchAsync(new GetAllSpecification<League>()))
-                    .Select(league => new SelectListItem
-                    {
-                        Text = league.Name,
-                        Value = league.Id.ToString(),
-                        Selected = this.Model is not null &&
-                                   this.Model.League is not null
-                    })"></select>
-        <span asp-validation-for="LeagueId" class="text-danger"></span>
-    </div>
-</div>
 
 <div class="row mb-3">
     <div class="col-6">
-        <a asp-action="Teams"
-           asp-controller="Dashboard"
+        <a asp-action="Details"
+           asp-controller="League"
+           asp-route-id="@this.Model.LeagueId"
            class="btn btn-lg btn-danger w-100">
             Cancel
         </a>

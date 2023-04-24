@@ -1,0 +1,77 @@
+﻿@using Microsoft.AspNetCore.Identity;
+
+@inject UserManager<User> UserManager
+@model IEnumerable<League>
+
+@if (this.User.IsInRole(Role.ADMIN))
+{ 
+    <div class="text-center mt-3">
+        <a asp-action="Add" asp-controller="League" class="btn btn-sm btn-primary">
+            Add League
+        </a>
+    </div>
+}
+
+<div class="row mt-3">
+    @if (this.Model is null ||
+         this.Model.Count() == 0)
+    {
+        <h2 class="text-center">
+            There are currently no leagues.
+        </h2>
+    }
+    else
+    {
+        @foreach (var league in this.Model)
+        {
+            <div class="col-sm-4 mb-3">
+                <div class="card border-secondary border-3">
+                    <a asp-action="Details" asp-route-id="@league.Id" asp-controller="League" class="card-body text-decoration-none">
+                        <h5 class="card-title text-black">@league.Name</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Coach</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (league.Teams.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="2">
+                                            <b>@league.Name</b> has no teams in it.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < league.Teams.Count; i++)
+                                    {
+                                        Team team = league.Teams.ToList()[i];
+
+                                        <tr>
+                                            <th scope="row">@team.Name</th>
+                                            <td>@(team.User is null ? "Couldn't find coach" : team.User.ToString())</td>
+                                        </tr>
+
+                                        if (i == 3)
+                                        {
+                                            <tr>
+                                                <td colspan="2" class="text-center py-0">
+                                                    <b>...</b>
+                                                </td>
+                                            </tr>
+
+                                            break;
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </a>
+                </div>
+            </div>
+        }
+    }
+</div>

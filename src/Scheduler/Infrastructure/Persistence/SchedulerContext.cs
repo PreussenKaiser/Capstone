@@ -66,7 +66,6 @@ public sealed class SchedulerContext : IdentityDbContext<User, Role, Guid>
 		builder.Entity<User>().HasData(SeedData.Users);
 		builder.Entity<Role>().HasData(SeedData.Roles);
 		builder.Entity<IdentityUserRole<Guid>>().HasData(SeedData.UserRoles);
-		builder.Entity<League>().HasData(SeedData.Leagues);
 
 		base.OnModelCreating(builder);
 	}

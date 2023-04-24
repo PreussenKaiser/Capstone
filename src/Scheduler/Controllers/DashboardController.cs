@@ -50,9 +50,7 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Events(
-		string? type = null,
-		string? searchTerm = null)
+	public IActionResult Events()
 	{
 		return this.View();
 	}
@@ -67,9 +65,7 @@ public sealed class DashboardController : Controller
 		var userId = this.userManager.GetUserId(this.User);
 
 		IQueryable<Team>? coachTeams = this.context.Teams.Where(t => t.UserId.ToString() == userId);
-
 		IQueryable<Event>? games = null;
-
 		IQueryable<Event>? practices = null;
 		
 		foreach(Team team in coachTeams)
@@ -80,11 +76,11 @@ public sealed class DashboardController : Controller
 					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
 					.WithScheduling();
 
-				if(games == null && !coachGames.IsNullOrEmpty())
+				if (games == null && !coachGames.IsNullOrEmpty())
 				{
 					games = coachGames;
 				}
-				else if(!coachGames.IsNullOrEmpty())
+				else if (!coachGames.IsNullOrEmpty())
 				{
 					games = games.Concat(coachGames);					
 				}				
@@ -265,20 +261,6 @@ public sealed class DashboardController : Controller
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Teams"/> view.
-	/// </summary>
-	/// <returns>A table containing all teams.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Teams(
-		[FromServices] ITeamRepository teamRepository)
-	{
-		GetAllSpecification<Team> searchSpec = new();
-		IEnumerable<Team> teams = await teamRepository.SearchAsync(searchSpec);
-
-		return this.View(teams);
-	}
-
-	/// <summary>
 	/// Displays the <see cref="Fields(IFieldService)"/> view.
 	/// Only accessible to administrators.
 	/// </summary>
@@ -304,9 +286,25 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> Users(
 		[FromServices] UserManager<User> userManager)
 	{
-		IEnumerable<User> fields = await userManager.Users.ToListAsync();
+		IEnumerable<User> users = await userManager.Users.ToListAsync();
 
-		return this.View(fields);
+		return this.View(users);
+	}
+
+	/// <summary>
+	/// Displays the <see cref="Leagues(ILeagueRepository)"/> view.
+	/// </summary>
+	/// <param name="leagueRepository">Queries all leagues.</param>
+	/// <returns>A view displaying all leagues with pagination.</returns>
+	[Authorize]
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	public async Task<IActionResult> Leagues(
+		[FromServices] ILeagueRepository leagueRepository)
+	{
+		IEnumerable<League> leagues = await leagueRepository.SearchAsync(
+			new GetAllSpecification<League>());
+
+		return this.View(leagues);
 	}
 
 	/// <summary>

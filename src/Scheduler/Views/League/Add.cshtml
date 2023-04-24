@@ -1,0 +1,18 @@
+﻿@model League
+
+@{
+    this.ViewData["Title"] = "Add League";
+}
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <form method="post">
+            <h1 class="text-center text-danger">
+                @this.ViewData["Title"]
+            </h1>
+            <hr />
+
+            @await this.Html.PartialAsync("Forms/_LeagueInputs", this.Model)
+        </form>
+    </div>
+</div>

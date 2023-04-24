@@ -8,10 +8,16 @@ namespace Scheduler.Domain.Models;
 public sealed class League : Entity
 {
 	/// <summary>
+	/// Teams in the league.
+	/// </summary>
+	private readonly List<Team> teams;
+
+	/// <summary>
 	/// Initializes the <see cref="League"/> record.
 	/// </summary>
 	public League(): base()
 	{
+		this.teams = new List<Team>();
 	}
 
 	/// <summary>
@@ -20,4 +26,10 @@ public sealed class League : Entity
 	[Required]
 	[MaxLength(32)]
 	public required string Name { get; init; }
+
+	/// <summary>
+	/// Gets teams in the <see cref="League"/>.
+	/// </summary>
+	public IReadOnlyCollection<Team> Teams
+		=> this.teams.AsReadOnly();
 }

@@ -29,4 +29,10 @@ public sealed class User : IdentityUser<Guid>
 	/// Determines whether the user needs to reset their password.
 	/// </summary>
 	public bool NeedsNewPassword { get; set; }
+
+	/// <inheritdoc/>
+	public override string ToString()
+	{
+		return $"{this.FirstName} {this.LastName}";
+	}
 }

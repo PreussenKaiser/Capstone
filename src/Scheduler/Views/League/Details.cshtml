@@ -1,0 +1,184 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using Scheduler.Domain.Models;
+
+@inject UserManager<User> UserManager
+@model League
+
+@{
+    this.ViewData["Title"] = this.Model.Name;
+
+    bool canEdit = this.User.IsInRole(Role.ADMIN);
+}
+
+<div class="row mb-3">
+    <div class="col-sm-8 px-4 mx-auto">
+        <a asp-action="Leagues" asp-controller="Dashboard" class="btn btn-sm btn-danger">
+            < Back
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-8 mx-auto">
+        <div class="row">
+            <div class="col-sm-4">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <h5>Details</h5>
+
+                            @if (canEdit)
+                            {      
+                                <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#detailsModal">
+                                    Edit
+                                </button>
+                                <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <form method="post">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">@this.Model.Name</h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <div class="mb-3">
+                                                                <label asp-for="Name" class="form-label h6"></label>
+                                                                <input asp-for="Name" class="form-control" />
+                                                                <span asp-validation-for="Name" class="text-danger"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                                                    <input type="submit" value="Submit" class="btn btn-sm btn-primary" />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            <h6>Name</h6>
+                            <p>@this.Model.Name</p>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-12">
+                                @if (canEdit)
+                                {        
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeLeagueModal">
+                                        Remove League
+                                    </button>
+                                    <div class="modal fade" id="removeLeagueModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Remove @this.Model.Name?</h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete <b>@this.Model.Name</b>?</p>
+                                                    <p>This league, along with all teams in it will be permanently removed.</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Cancel</button>
+                                                    <form asp-action="Remove" asp-route-id="@this.Model.Id">
+                                                        <input type="submit" value="Remove" class="btn btn-sm btn-danger" />
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-8">
+                <div class="mt-2">
+                    <a asp-action="Add" asp-route-leagueId="@this.Model.Id" asp-controller="Team" class="btn btn-sm btn-primary">
+                        Add Team
+                    </a>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Coach</th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (this.Model.Teams.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="2">@this.Model.Name has no teams.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var team in this.Model.Teams)
+                            {
+                                string mutationEnabled = 
+                                        this.User.IsInRole(Role.ADMIN) ||
+                                        this.UserManager.GetUserId(this.User) == team.UserId.ToString()
+                                    ? string.Empty
+                                    : "disabled";
+
+                                <tr>
+                                    <th scope="row">@team.Name</th>
+                                    <td>@(team.User is null ? "Couldn't find coach" : team.User.ToString())</td>
+                                    <td>
+                                        <a asp-action="Details"
+                                           asp-controller="Team"
+                                           asp-route-id="@team.Id"
+                                           class="btn btn-sm btn-secondary @mutationEnabled w-100">
+                                            Edit
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger @mutationEnabled" data-bs-toggle="modal" data-bs-target="#removeTeamModal">
+                                            Remove
+                                        </button>
+                                        <div class="modal fade" id="removeTeamModal" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Remove @team.Name</h5>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>
+                                                            Are you sure you want to permanently delete <b>@team.Name</b>?
+                                                            <br>
+                                                            All events <b>@team.Name</b> is particiapting in will be removed as well.
+                                                        </p>                
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form asp-action="Remove"
+                                                              asp-controller="Team"
+                                                              asp-route-id="@team.Id"
+                                                              asp-route-leagueId="@this.Model.Id"
+                                                              method="post">
+                                                            <input type="submit" value="Remove" class="btn btn-sm btn-danger @mutationEnabled" />
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
