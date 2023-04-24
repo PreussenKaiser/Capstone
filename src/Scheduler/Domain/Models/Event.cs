@@ -234,9 +234,9 @@ public class Event : Entity, IValidatableObject
 				? "(Unknown Field)"
 				: conflict.Field.Name;
 
-			string format = "0:M/dd/yy h:mm tt";
-			string eventStart = conflict.StartDate.ToString(format);
-			string eventEnd = conflict.EndDate.ToString(format);
+			const string FORMAT = "M/dd/yy h:mm tt";
+			string eventStart = conflict.StartDate.ToString(FORMAT);
+			string eventEnd = conflict.EndDate.ToString(FORMAT);
 
 			results.Add(new($"An event titled '{eventName}' is already scheduled on {eventField} from {eventStart} to {eventEnd}."));
 		}
