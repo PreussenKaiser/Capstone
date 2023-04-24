@@ -50,9 +50,7 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Events(
-		string? type = null,
-		string? searchTerm = null)
+	public IActionResult Events()
 	{
 		return this.View();
 	}
@@ -67,9 +65,7 @@ public sealed class DashboardController : Controller
 		var userId = this.userManager.GetUserId(this.User);
 
 		IQueryable<Team>? coachTeams = this.context.Teams.Where(t => t.UserId.ToString() == userId);
-
 		IQueryable<Event>? games = null;
-
 		IQueryable<Event>? practices = null;
 		
 		foreach(Team team in coachTeams)
@@ -80,11 +76,11 @@ public sealed class DashboardController : Controller
 					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
 					.WithScheduling();
 
-				if(games == null && !coachGames.IsNullOrEmpty())
+				if (games == null && !coachGames.IsNullOrEmpty())
 				{
 					games = coachGames;
 				}
-				else if(!coachGames.IsNullOrEmpty())
+				else if (!coachGames.IsNullOrEmpty())
 				{
 					games = games.Concat(coachGames);					
 				}				

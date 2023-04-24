@@ -32,31 +32,4 @@ public sealed class League : Entity
 	/// </summary>
 	public IReadOnlyCollection<Team> Teams
 		=> this.teams.AsReadOnly();
-
-	/// <summary>
-	/// Adds a <see cref="Team"/>(s) to the <see cref="League"/>.
-	/// </summary>
-	/// <param name="teams">The <see cref="Team"/>(s) to add.</param>
-	/// <exception cref="ArgumentNullException"></exception>
-	public void AddTeam(params Team[] teams)
-	{
-		ArgumentNullException.ThrowIfNull(teams, nameof(teams));
-
-		if (teams.Length > 0)
-		{
-			this.teams.AddRange(teams);
-		}
-	}
-
-	/// <summary>
-	/// Removes a <see cref="Team"/> from the <see cref="League"/>.
-	/// </summary>
-	/// <param name="team">The <see cref="Team"/> to remove.</param>
-	/// <exception cref="ArgumentNullException"></exception>
-	public void RemoveTeam(Team team)
-	{
-		ArgumentNullException.ThrowIfNull(team, nameof(team));
-
-		this.teams.Remove(team);
-	}
 }

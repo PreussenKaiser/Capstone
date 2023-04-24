@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Controllers;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
 using Scheduler.Filters;
-using Scheduler.Infrastructure.Persistence;
-using Scheduler.Infrastructure.Persistence.Migrations;
 
 namespace Scheduler.Web.Controllers;
 
@@ -21,9 +20,22 @@ public sealed class TeamController : Controller
 	/// </summary>
 	private readonly ITeamRepository teamRepository;
 
-	public TeamController(ITeamRepository teamRepository)
+	/// <summary>
+	/// Application user store.
+	/// </summary>
+	private readonly UserManager<User> userManager;
+
+	/// <summary>
+	/// Initializes the <see cref="TeamController"/> class.
+	/// </summary>
+	/// <param name="teamRepository">The repository to query and execute commands against.</param>
+	/// <param name="userManager">Application user store.</param>
+	public TeamController(
+		ITeamRepository teamRepository,
+		UserManager<User> userManager)
 	{
 		this.teamRepository = teamRepository;
+		this.userManager = userManager;
 	}
 
 	/// <summary>
@@ -75,10 +87,8 @@ public sealed class TeamController : Controller
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
-		ByIdSpecification<Team> searchSpec = new(id);
-
 		Team? team = (await this.teamRepository
-			.SearchAsync(searchSpec))
+			.SearchAsync(new ByIdSpecification<Team>(id)))
 			.FirstOrDefault();
 
 		return team is not null
@@ -103,6 +113,12 @@ public sealed class TeamController : Controller
 			return this.View(team);
 		}
 
+		if (!this.User.IsInRole(Role.ADMIN) &&
+			this.userManager.GetUserId(this.User) != team.UserId.ToString())
+		{
+			return this.BadRequest();
+		}
+
 		await this.teamRepository.UpdateAsync(team);
 
 		return this.RedirectToAction(
@@ -116,11 +132,27 @@ public sealed class TeamController : Controller
 	/// </summary>
 	/// <param name="id">References the <see cref="Team"/> to remove.</param>
 	/// <param name="leagueId">The <see cref="League"/> the <see cref="Team"/> belongs to.</param>
-	/// <returns></returns>
+	/// <returns>Redirected to <see cref="LeagueController.Details(Guid)"/>.</returns>
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id, Guid leagueId)
 	{
+		// TODO: Unecessary query, might be better to pass this into RemoveAsync vs the id.
+		Team? team = (await this.teamRepository.SearchAsync(
+			new ByIdSpecification<Team>(id)))
+			.FirstOrDefault();
+
+		if (team is null)
+		{
+			return this.BadRequest();
+		}
+
+		if (!this.User.IsInRole(Role.ADMIN) &&
+			this.userManager.GetUserId(this.User) != team.UserId.ToString())
+		{
+			return this.BadRequest();
+		}
+
 		await this.teamRepository.RemoveAsync(id);
 
 		return this.RedirectToAction(

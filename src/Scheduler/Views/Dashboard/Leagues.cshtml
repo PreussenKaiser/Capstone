@@ -46,10 +46,6 @@
                                 }
                                 else
                                 {
-                                    foreach (var team in league.Teams)
-                                    {
-                                    }
-
                                     for (int i = 0; i < league.Teams.Count; i++)
                                     {
                                         Team team = league.Teams.ToList()[i];
@@ -62,8 +58,8 @@
                                         if (i == 3)
                                         {
                                             <tr>
-                                                <td colspan="2" class="text-center">
-                                                    <small>Click for more</small>
+                                                <td colspan="2" class="text-center py-0">
+                                                    <b>...</b>
                                                 </td>
                                             </tr>
 
