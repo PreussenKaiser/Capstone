@@ -39,13 +39,13 @@ public sealed class ScheduleCullingService : BackgroundService
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		PastEventSpecification pastEventSpec = new(new SystemDateProvider());
-		TimeSpan threeAm = new(3, 0, 0);
+		TimeSpan cullTime = new(3, 0, 0); // 3am
 
 		while (!stoppingToken.IsCancellationRequested)
 		{
 			TimeSpan currentTime = this.dateProvider.Now.TimeOfDay;
 
-			if (currentTime >= threeAm)
+			if (currentTime >= cullTime)
 			{
 				using (IServiceScope scope = this.serviceProvider.CreateScope())
 				{
@@ -56,7 +56,7 @@ public sealed class ScheduleCullingService : BackgroundService
 				}
 
 				DateTime nextDay = this.dateProvider.Today.AddDays(1);
-				TimeSpan timeToWait = nextDay + threeAm - this.dateProvider.Now;
+				TimeSpan timeToWait = nextDay + cullTime - this.dateProvider.Now;
 
 				await Task.Delay(timeToWait, stoppingToken);
 			}
