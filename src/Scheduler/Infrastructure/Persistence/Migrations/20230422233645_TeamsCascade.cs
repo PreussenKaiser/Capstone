@@ -81,10 +81,6 @@ public partial class TeamsCascade : Migration
 			name: "FK_Games_Teams_HomeTeamId");
 
 		migrationBuilder.DropForeignKey(
-			table: "Games",
-			name: "FK_Games_Teams_OpposingTeamId");
-
-		migrationBuilder.DropForeignKey(
 			table: "Practices",
 			name: "FK_Practices_Teams_TeamId");
 
@@ -92,14 +88,6 @@ public partial class TeamsCascade : Migration
 			table: "Games",
 			name: "FK_Games_Teams_HomeTeamId",
 			column: "HomeTeamId",
-			principalTable: "Teams",
-			principalColumn: "Id",
-			onDelete: ReferentialAction.Cascade);
-
-		migrationBuilder.AddForeignKey(
-			table: "Games",
-			name: "FK_Games_Teams_OpposingTeamId",
-			column: "OpposingTeamId",
 			principalTable: "Teams",
 			principalColumn: "Id",
 			onDelete: ReferentialAction.Cascade);
