@@ -132,7 +132,7 @@
 
                                 <tr>
                                     <th scope="row">@team.Name</th>
-                                    <td>@(team.User is null ? "Couldn't find coach" : team.User.ToString())</td>
+                                    <td>@(team.User is null ? "Visiting Coach" : team.User.ToString())</td>
                                     <td>
                                         <a asp-action="Details"
                                            asp-controller="Team"
