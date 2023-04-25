@@ -231,7 +231,7 @@ public sealed class DashboardController : Controller
 			practices = practices!.Distinct();
 		}
 
-		if (games is null && practices is null)
+		if (games.IsNullOrEmpty() && practices.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
@@ -515,13 +515,12 @@ public sealed class DashboardController : Controller
 	/// <param name="end">The currently selected end date.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-	public IQueryable<Event> DateSearch(DateTime start, DateTime end, IQueryable<Event>? events = null)
+	public IQueryable<Event> DateSearch(
+		DateTime start,
+		DateTime end,
+		IQueryable<Event>? events = null)
 	{
-		if (events.IsNullOrEmpty())
-		{
-			events = this.context.Events
-					.WithScheduling();
-		}
+		events ??= this.context.Events.WithScheduling();
 
 		return events
 			.Where(e => e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)
@@ -596,23 +595,19 @@ public sealed class DashboardController : Controller
 	/// <param name="type">The currently selected Event type - defaults to Event.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-	public IQueryable<Event> NameSearch(string searchTerm, string? type = "Event", IQueryable<Event>? events = null)
+	public IQueryable<Event> NameSearch(
+		string searchTerm,
+		string? type = "Event", IQueryable<Event>? events = null)
 	{
-		if(events.IsNullOrEmpty())
-		{
-			events = this.context.Events
-					.WithScheduling();
-		}
-		events = events.Where(e => e.Name.ToLower().Contains(searchTerm.ToLower()));
+		events ??= this.context.Events.WithScheduling();
 
-		if (events.IsNullOrEmpty())
-		{
-			ViewData["NameFilterMessage"] = "There are no " + type + "s that match the search term " + searchTerm;
-		}
-		else
-		{
-			ViewData["NameFilterMessage"] = "that match the search term " + searchTerm;
-		}
+		events = events
+			.Where(e => e.Name.ToLower()
+			.Contains(searchTerm.ToLower()));
+
+		this.ViewData["NameFilterMessage"] = events.Count() > 0
+			? $"that match the search term {searchTerm}"
+			: $"There are no {type}s that match the search term {searchTerm}";
 
 		return events;
 	}

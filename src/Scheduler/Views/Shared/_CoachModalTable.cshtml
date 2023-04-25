@@ -14,17 +14,17 @@
 @if (this.Model is not null &&
      this.Model.Events.Count() > 0)
 {
-    if (string.IsNullOrEmpty(typeFilterMessage))
+    if (!string.IsNullOrEmpty(typeFilterMessage))
     {
         <h5 class="text-center lead text-danger">@typeFilterMessage</h5>
     }
 
-    if (string.IsNullOrEmpty(nameFilterMessage))
+    if (!string.IsNullOrEmpty(nameFilterMessage))
     {
         <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
     }
 
-    if (string.IsNullOrEmpty(teamFilterMessage))
+    if (!string.IsNullOrEmpty(teamFilterMessage))
     {
         <h5 class="text-center lead text-danger">@teamFilterMessage</h5>
     }
@@ -151,7 +151,7 @@ else if (teamFilterMessage is not null ||
 }
 else
 {
-    string message = $"You have no {type}s scheduled";
-
-    <h5 class="text-center lead text-danger">@message</h5>
+    <h5 class="text-center lead text-danger">
+        You have no @(type)s scheduled.
+    </h5>
 }
