@@ -346,7 +346,7 @@ public sealed class DashboardController : Controller
 
 		if(!teamName.IsNullOrEmpty())
 		{
-			events = this.teamSearch(teamName, type, events);
+			events = this.TeamSearch(teamName, type, events);
 		}
 
 		if(events.IsNullOrEmpty())
@@ -492,7 +492,7 @@ public sealed class DashboardController : Controller
 
 		if (!teamName.IsNullOrEmpty())
 		{
-			events = this.teamSearch(teamName, type, events);
+			events = this.TeamSearch(teamName, type, events);
 		}
 
 		if (events.IsNullOrEmpty())
@@ -534,33 +534,32 @@ public sealed class DashboardController : Controller
 	/// <param name="type">The currently selected type of Event.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-	public IQueryable<Event> teamSearch(string teamName, string type, IQueryable<Event>? events = null)
+	public IQueryable<Event>? TeamSearch(string teamName, string type, IQueryable<Event>? events = null)
 	{
-		if (events.IsNullOrEmpty())
-		{
-			events = this.context.Events
-					.WithScheduling();
-		}
+		events ??= this.context.Events.WithScheduling();
 
 		IQueryable<Team> teamList = this.context.Teams;
-
 		Team selectedTeam = teamList.FirstOrDefault(t => t.Name.ToLower() == teamName.ToLower());
 
-		if (selectedTeam == null)
+		if (selectedTeam is null)
 		{
-			ViewData["TeamFilterMessage"] = "Team " + teamName + " does not exist";
+			this.ViewData["TeamFilterMessage"] = "Team " + teamName + " does not exist";
+
 			return null;			
 		}
 
 		IEnumerable<Event>? matchingGames = null;
 		IEnumerable<Event>? matchingPractices = null;
 
-		if (type == "Event" || type == "Game")
+		if (type == nameof(Event) || type == nameof(Game))
 		{
-			matchingGames = events.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
+			matchingGames = events
+				.AsQueryable()
+				.OfType<Game>()
+				.Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
 		}
 
-		if (type == "Event" || type == "Practice")
+		if (type == nameof(Event) || type == nameof(Practice))
 		{
 			matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
 		}
@@ -583,7 +582,7 @@ public sealed class DashboardController : Controller
 			events = matchingPractices.Concat((IQueryable<Event>)matchingGames).AsQueryable();
 		}
 
-		ViewData["TeamFilterMessage"] = "for Team " + selectedTeam.Name;
+		this.ViewData["TeamFilterMessage"] = "for Team " + selectedTeam.Name;
 
 		return events;
 	}
@@ -597,7 +596,8 @@ public sealed class DashboardController : Controller
 	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event> NameSearch(
 		string searchTerm,
-		string? type = "Event", IQueryable<Event>? events = null)
+		string? type = nameof(Event),
+		IQueryable<Event>? events = null)
 	{
 		events ??= this.context.Events.WithScheduling();
 
