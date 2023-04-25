@@ -127,7 +127,12 @@ public sealed class DashboardController : Controller
 	/// <param name="searchTerm">The currently selected search term - defaults to null.</param>
 	/// <param name="teamName">The currently selected team name - defaults to null.</param>
 	/// <returns>The CoachModalTable partial view.</returns>
-	public async ValueTask<IActionResult> FilterCoachEvents(string type, DateTime start, DateTime end, string? searchTerm = null, string? teamName = null)
+	public async ValueTask<IActionResult> FilterCoachEvents(
+		string type,
+		DateTime start,
+		DateTime end,
+		string? searchTerm = null,
+		string? teamName = null)
 	{
 		Guid userId = Guid.Parse(userManager.GetUserId(this.User)
 			?? throw new NullReferenceException("Could not determine current user."));
@@ -148,28 +153,30 @@ public sealed class DashboardController : Controller
 					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
 					.WithScheduling();
 
-				if (games is null && !(coachGames is null))
+				if (games is null && coachGames.Count() > 0)
 				{
 					games = coachGames;
 				}
-				else if (!(coachGames is null))
+				else if (coachGames.Count() > 0)
 				{
 					games = games.Concat(coachGames);
 				}
 
 				if (games is not null)
 				{
-					games = this.dateSearch(start, end, games);
+					games = this.DateSearch(start, end, games);
 				}				
 
-				if (searchTerm is not null)
+				if (!searchTerm.IsNullOrEmpty())
 				{
-					games = this.nameSearch(searchTerm, type, games);
+					games = this.NameSearch(searchTerm!, type, games);
 				}
 
-				if (teamName is not null && !(games is null))
+				if (teamName is not null && games is not null)
 				{
-					games = games.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Name == teamName || game.OpposingTeam.Name == teamName);
+					games = games
+						.OfType<Game>()
+						.Where(game => game.HomeTeam.Name == teamName || game.OpposingTeam.Name == teamName);
 
 					this.ViewData["TeamFilterMessage"] = $"for Team {teamName}";
 				}
@@ -180,49 +187,48 @@ public sealed class DashboardController : Controller
 					.Where(g => g.TeamId == team.Id)
 					.WithScheduling();
 
-				if (practices is null && !(coachPractices is null))
+				if (practices is null && !coachPractices.IsNullOrEmpty())
 				{
 					practices = coachPractices;
 				}
-				else if (coachPractices is not null)
+				else if (!coachPractices.IsNullOrEmpty())
 				{
 					practices = practices.Concat(coachPractices);
 				}
 
 				if (practices is not null)
 				{
-					practices = this.dateSearch(start, end, practices);
+					practices = this.DateSearch(start, end, practices);
 				}
 
 				if (searchTerm is not null)
 				{
-					practices = this.nameSearch(searchTerm, type, practices);
+					practices = this.NameSearch(searchTerm, type, practices);
 				}
 
 				if (teamName is not null && practices is not null)
 				{
-					practices = practices.AsQueryable().OfType<Practice>().Where(Practice => Practice.Team.Name == teamName);
+					practices = practices
+						.OfType<Practice>()
+						.Where(p => p.Team.Name == teamName);
 
 					this.ViewData["TeamFilterMessage"] = $"for Team {teamName}";
 				}
 			}
 		}
 
-		IEnumerable<Event> filteredGames = null;
-		IEnumerable<Event> filteredPractices = null;
-
-		if (games is not null)
+		if (!games.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 
-			filteredGames = games.Distinct().ToList();
+			games = games!.Distinct();
 		}
 
-		if (practices is not null)
+		if (!practices.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 
-			filteredPractices = practices.Distinct().ToList();
+			practices = practices!.Distinct();
 		}
 
 		if (games is null && practices is null)
@@ -230,8 +236,6 @@ public sealed class DashboardController : Controller
 			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 
-		this.ViewData["CoachTeams"] = coachTeams.ToList();
-		this.ViewData["Teams"] = this.context.Teams.ToList();
 		this.ViewData["EventType"] = type;
 
 		UpcomingEventsModalViewModel viewModel = new(
@@ -333,11 +337,11 @@ public sealed class DashboardController : Controller
 				.WithScheduling()
 		};
 		
-		events = this.dateSearch(start, end, events);
+		events = this.DateSearch(start, end, events);
 
 		if(!searchTerm.IsNullOrEmpty())
 		{
-			events = this.nameSearch(searchTerm, type, events);
+			events = this.NameSearch(searchTerm, type, events);
 		}
 
 		if(!teamName.IsNullOrEmpty())
@@ -384,7 +388,7 @@ public sealed class DashboardController : Controller
 	{
 		DateTime monthDate = new DateTime(year, month, 1);
 		DateTime monthEndDate = monthDate.AddMonths(1);
-		this.ViewData["Events"] = await this.dateSearch(monthDate, monthEndDate).ToListAsync();
+		this.ViewData["Events"] = await this.DateSearch(monthDate, monthEndDate).ToListAsync();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = monthDate;
 		this.ViewData["End"] = monthEndDate;
@@ -405,7 +409,7 @@ public sealed class DashboardController : Controller
 	{
 		DateTime weekStartDate = new DateTime(year, month, weekStart);
 		DateTime weekEndDate = weekStartDate.AddDays(7);
-		this.ViewData["Events"] = await this.dateSearch(weekStartDate, weekEndDate).ToListAsync();
+		this.ViewData["Events"] = await this.DateSearch(weekStartDate, weekEndDate).ToListAsync();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = weekStartDate;
 		this.ViewData["End"] = weekEndDate;
@@ -425,7 +429,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		this.ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
+		this.ViewData["Events"] = await this.DateSearch(eventDate, eventDate).ToListAsync();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = eventDate; //12:00 AM on the selected day.
 		this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
@@ -445,7 +449,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		this.ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
+		this.ViewData["Events"] = await this.DateSearch(eventDate, eventDate).ToListAsync();
 		this.ViewData["Fields"] = await this.context.Fields.OrderBy(e => e.Name).ToListAsync();
 		this.ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
 		this.ViewData["CurrentDate"] = eventDate;
@@ -479,11 +483,11 @@ public sealed class DashboardController : Controller
 				.WithScheduling()
 		};
 
-		events = this.dateSearch(start, end, events);
+		events = this.DateSearch(start, end, events);
 
 		if (!searchTerm.IsNullOrEmpty())
 		{
-			events = this.nameSearch(searchTerm, type, events);
+			events = this.NameSearch(searchTerm, type, events);
 		}
 
 		if (!teamName.IsNullOrEmpty())
@@ -511,7 +515,7 @@ public sealed class DashboardController : Controller
 	/// <param name="end">The currently selected end date.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-	public IQueryable<Event> dateSearch(DateTime start, DateTime end, IQueryable<Event>? events = null)
+	public IQueryable<Event> DateSearch(DateTime start, DateTime end, IQueryable<Event>? events = null)
 	{
 		if (events.IsNullOrEmpty())
 		{
@@ -592,7 +596,7 @@ public sealed class DashboardController : Controller
 	/// <param name="type">The currently selected Event type - defaults to Event.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-	public IQueryable<Event> nameSearch(string searchTerm, string? type = "Event", IQueryable<Event>? events = null)
+	public IQueryable<Event> NameSearch(string searchTerm, string? type = "Event", IQueryable<Event>? events = null)
 	{
 		if(events.IsNullOrEmpty())
 		{
