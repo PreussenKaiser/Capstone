@@ -1,0 +1,39 @@
+﻿@using Scheduler.ViewModels;
+
+@model ErrorViewModel
+
+<div class="row my-5">
+    <div class="col-12 text-center">
+        <h1 class="display-5 text-danger fw-bold">
+            @(this.Model.StatusCode): @this.Model.Message
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 mx-auto h4 fw-light">
+            @switch (this.Model.StatusCode)
+            {
+                case 400:
+                    <p>There was an error process your request.</p>
+
+                    <p class="h5"><b>Potential reasons:</b></p>
+                    <ul>
+                        <li>Improper authorization</li>
+                        <li>Incorrect URL</li>
+                    </ul>
+
+                    break;
+
+                case 404:
+                    <p>Sorry, we couldn't find what you were looking for.</p>
+
+                    break;
+
+                default:
+                    break;
+            }
+            <br />
+            <p>Click <a href="javascript:history.go(-1)">here</a> to return to the previous page.</p>
+    </div>
+</div>

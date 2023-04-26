@@ -50,7 +50,7 @@
                             <label class="form-label">Team Name</label>
                             <select id="teamName" name="teamName" class="form-select">
                                 <option value=""></option>
-                                @foreach(Team t in Model.Teams)
+                                @foreach(Team t in this.Model.Teams)
                                 {
                                     <option value=@t.Name>@t.Name</option>
                                 }

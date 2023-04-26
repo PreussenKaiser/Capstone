@@ -36,16 +36,16 @@ builder.Services
 builder.Services
 	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>()
-	.AddDefaultTokenProviders()
-	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
-
-builder.Services.AddScoped<User>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 	options.TokenLifespan = TimeSpan.FromHours(2));
 
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+if (builder.Environment.IsDevelopment())
+{
+	builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+}
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -58,15 +58,17 @@ WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-	app.UseMigrationsEndPoint();
+	app.UseDeveloperExceptionPage()
+	   .UseMigrationsEndPoint();
 }
 else
 {
-	app.UseExceptionHandler("/Home/Error")
+	app.UseExceptionHandler("/Exception")
 	   .UseHsts();
 }
 
-app.UseHttpsRedirection()
+app.UseStatusCodePagesWithRedirects("/Error/{0}")
+   .UseHttpsRedirection()
    .UseStaticFiles()
    .UseRouting()
    .UseAuthentication()
@@ -75,7 +77,5 @@ app.UseHttpsRedirection()
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapRazorPages();
 
 app.Run();
