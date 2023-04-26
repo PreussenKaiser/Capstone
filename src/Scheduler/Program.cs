@@ -47,7 +47,6 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
 
 builder.Services
 	.AddOptions<CullingOptions>()
@@ -61,14 +60,14 @@ if (app.Environment.IsDevelopment())
 	app.UseDeveloperExceptionPage()
 	   .UseMigrationsEndPoint();
 }
-else
+else if (app.Environment.IsProduction())
 {
-	app.UseExceptionHandler("/Exception")
+	app.UseExceptionHandler("/Error/500")
+	   .UseStatusCodePagesWithRedirects("/Error/{0}")
 	   .UseHsts();
 }
 
-app.UseStatusCodePagesWithRedirects("/Error/{0}")
-   .UseHttpsRedirection()
+app.UseHttpsRedirection()
    .UseStaticFiles()
    .UseRouting()
    .UseAuthentication()

@@ -1,4 +1,6 @@
-﻿namespace Scheduler.ViewModels;
+﻿using System.Net;
+
+namespace Scheduler.ViewModels;
 
 /// <summary>
 /// The view model for displaying an error with an HTTP status code.
@@ -15,8 +17,9 @@ public sealed record ErrorViewModel
 
 		this.Message = statusCode switch
 		{
-			400 => "Bad Request",
-			404 => "Not Found",
+			StatusCodes.Status400BadRequest => "Bad Request",
+			StatusCodes.Status404NotFound => "Not Found",
+			StatusCodes.Status500InternalServerError => "Internal Server Error",
 			_ => "Problem"
 		};
 	}

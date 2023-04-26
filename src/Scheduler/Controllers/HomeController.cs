@@ -25,7 +25,8 @@ public sealed class HomeController : Controller
 	public async Task<IActionResult> Index(
 		[FromServices] ITeamRepository teamRepository)
 	{
-		IEnumerable<Team> teams = await teamRepository.SearchAsync(new GetAllSpecification<Team>());
+		IEnumerable<Team> teams = await teamRepository.SearchAsync(
+			new GetAllSpecification<Team>());
 
 		return this.View(new IndexViewModel(teams));
 	}

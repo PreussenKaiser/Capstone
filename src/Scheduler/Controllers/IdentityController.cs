@@ -70,16 +70,16 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 
-		var user = signInManager.UserManager.Users.FirstOrDefault(u => u.Email == viewModel.Email);
+		var user = this.signInManager.UserManager.Users.FirstOrDefault(u => u.Email == viewModel.Email);
 
-		if (user.NeedsNewPassword)
+		if (user is null)
 		{
-			return this.RedirectToAction(nameof(IdentityController.ForceReset), "Identity");
+			return this.BadRequest();
 		}
-		else
-		{
-			return this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
-		}
+
+		return user.NeedsNewPassword
+			? this.RedirectToAction(nameof(IdentityController.ForceReset), "Identity")
+			: this.RedirectToAction(nameof(DashboardController.Events), "Dashboard");
 	}
 
 	/// <summary>
@@ -153,7 +153,7 @@ public sealed class IdentityController : Controller
 			$"<p>Visit the website at http://wrentfrow-001-site1.etempurl.com/ to log in and change your temporary password, and you can begin scheduling events.</p>" +
 			$"<p style=\"text-decoration: underline\">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";
 
-		//This should work even with an invalid email, but eventually Google will change how the SMTP server is accessed. When that happens, the temp password will display on the screen like it used to.
+		// This should work even with an invalid email, but eventually Google will change how the SMTP server is accessed. When that happens, the temp password will display on the screen like it used to.
 		try {
 			Email.sendEmail(user.Email, user.FirstName, "Welcome to the PCYS Scheduler App!", message);
 			this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added!";
@@ -212,7 +212,7 @@ public sealed class IdentityController : Controller
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
 		{
-			return this.Problem();
+			return this.BadRequest();
 		}
 
 		ProfileViewModel viewModel = new()
@@ -239,14 +239,14 @@ public sealed class IdentityController : Controller
 	{
 		if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
 		{
-			return this.Problem();
+			return this.BadRequest();
 		}
 
 		if (this.ModelState.IsValid)
 		{
 			if (user is null)
 			{
-				return this.Problem();
+				return this.BadRequest();
 			}
 
 			user.FirstName = viewModel.FirstName;
@@ -289,7 +289,7 @@ public sealed class IdentityController : Controller
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
 		{
-			return this.Problem();
+			return this.BadRequest();
 		}
 
 		SecurityViewModel viewModel = new() { UserId = user.Id };
@@ -310,7 +310,7 @@ public sealed class IdentityController : Controller
 		{
 			if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
 			{
-				return this.Problem();
+				return this.BadRequest();
 			}
 
 			var result = await this.signInManager.UserManager.ChangePasswordAsync(
@@ -337,7 +337,7 @@ public sealed class IdentityController : Controller
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
 		{
-			return this.Problem();
+			return this.BadRequest();
 		}
 
 		if (user.NeedsNewPassword == false)
@@ -362,7 +362,7 @@ public sealed class IdentityController : Controller
 		{
 			if (!this.IsUser(out User? user, viewModel.UserId) || user is null)
 			{
-				return this.Problem();
+				return this.BadRequest();
 			}
 
 			var result = await this.signInManager.UserManager.ChangePasswordAsync(
@@ -381,6 +381,7 @@ public sealed class IdentityController : Controller
 			else
 			{
 				user.NeedsNewPassword = false;
+
 				await this.signInManager.UserManager.UpdateAsync(user);
 			}
 		}
@@ -399,7 +400,7 @@ public sealed class IdentityController : Controller
 	[AllowAnonymous]
 	public async Task<IActionResult> ForgotPassword(ForgottenPasswordViewModal viewModel)
 	{
-		if (!ModelState.IsValid)
+		if (!this.ModelState.IsValid)
 		{
 			return this.View(viewModel);
 		}
@@ -408,6 +409,7 @@ public sealed class IdentityController : Controller
 		if (user is null)
 		{
 			this.ModelState.AddModelError(string.Empty, "Unable to find an account with that email.");
+
 			return this.View(viewModel);	
 		}
 
@@ -420,6 +422,7 @@ public sealed class IdentityController : Controller
 		Email.sendEmail(viewModel.Email, user.FirstName, "Reset Password Request", message);
 
 		this.ViewData["Message"] = "An email has been sent containing a link to reset your password.";
+
 		return this.View();
 	}
 
@@ -441,7 +444,7 @@ public sealed class IdentityController : Controller
 	public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
 	{
 
-		if (!ModelState.IsValid)
+		if (!this.ModelState.IsValid)
 		{
 			return this.View(viewModel);
 		}
@@ -454,9 +457,12 @@ public sealed class IdentityController : Controller
 			if (result.Succeeded)
 			{
 				user.NeedsNewPassword = false;
+
 				await this.signInManager.UserManager.UpdateAsync(user);
+
 				await this.signInManager.SignInAsync(user, false);
-				return RedirectToAction(nameof(HomeController.Index), "Home");
+
+				return this.RedirectToAction(nameof(HomeController.Index), "Home");
 			}
 			else
 			{
@@ -477,7 +483,6 @@ public sealed class IdentityController : Controller
 	public async Task<IActionResult> AdminResetPassword(Guid id)
 	{
 		string newPassword = Password.Random();
-
 		var user = await this.signInManager.UserManager.FindByIdAsync(id.ToString());
 
 		if (user is not null)

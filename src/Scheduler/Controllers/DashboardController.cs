@@ -622,7 +622,7 @@ public sealed class DashboardController : Controller
 		}
 		else
 		{
-			ViewData["NameFilterMessage"] = "that match the search term " + searchTerm;
+			this.ViewData["NameFilterMessage"] = "that match the search term " + searchTerm;
 		}
 
 		return events;

@@ -1,4 +1,6 @@
-﻿@using Scheduler.ViewModels;
+﻿@using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Specifications;
+@using Scheduler.ViewModels;
 
 @model ErrorViewModel
 
@@ -14,19 +16,24 @@
     <div class="col-sm-6 mx-auto h4 fw-light">
             @switch (this.Model.StatusCode)
             {
-                case 400:
-                    <p>There was an error process your request.</p>
+                case StatusCodes.Status400BadRequest:
+                    <p>There was a problem getting to that page, ensure you have proper authorization.</p>
 
-                    <p class="h5"><b>Potential reasons:</b></p>
+                    break;
+
+                case StatusCodes.Status404NotFound:
+                    <p>Sorry, we couldn't find that page.</p>
+
+                    <p class="fw-bold">If the problem persists...</p>
                     <ul>
-                        <li>Improper authorization</li>
-                        <li>Incorrect URL</li>
+                        <li>Ensure the url is correct.</li>
+                        <li>Ensure that you have authorization for the page.</li>
                     </ul>
 
                     break;
 
-                case 404:
-                    <p>Sorry, we couldn't find what you were looking for.</p>
+                case StatusCodes.Status500InternalServerError:
+                    <p>Seems like there was a problem on our end, please try again later.</p>
 
                     break;
 

@@ -23,23 +23,4 @@ public sealed class ErrorController : Controller
 
 		return this.View(viewModel);
 	}
-
-	/// <summary>
-	/// Displays 
-	/// All page errors are redirected to this action.
-	/// </summary>
-	/// <returns>The rendered view.</returns>
-	[ResponseCache(
-		Duration = 0,
-		Location = ResponseCacheLocation.None,
-		NoStore = true)]
-	[AllowAnonymous]
-	public IActionResult Exception()
-	{
-		return this.View(new ExceptionViewModel
-		{
-			RequestId = Activity.Current?.Id 
-				?? this.HttpContext.TraceIdentifier
-		});
-	}
 }
