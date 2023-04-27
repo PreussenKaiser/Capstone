@@ -8,12 +8,8 @@ using Scheduler.Domain.Specifications;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Logging;
-using System.Web;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
+using Scheduler.ViewModels;
 
 namespace Scheduler.Web.Controllers;
 
@@ -49,46 +45,208 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Events(
-		string? type = null,
-		string? searchTerm = null)
+	public IActionResult Events()
 	{
-		var userId = userManager.GetUserId(User);
-
-		IQueryable<Event> events = type switch
-		{
-			nameof(Practice) => this.context.Practices.Include(p => p.Team),
-
-			nameof(Game) => this.context.Games
-				.Include(g => g.HomeTeam)
-				.Include(g => g.OpposingTeam),
-
-			_ => this.context.Events
-		};
-
-		if (searchTerm is not null)
-		{
-			events = events.Where(e => e.Name.Contains(searchTerm));
-		}
-
-		return this.View(await events
-			.WithScheduling()
-			.OrderBy(e => e.StartDate)
-			.ToListAsync());
+		return this.View();
 	}
 
 	/// <summary>
-	/// Displays the <see cref="Teams"/> view.
+	/// Builds a list of Games or Practices for the appropriate Coach Event modal.
 	/// </summary>
-	/// <returns>A table containing all teams.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
-	public async Task<IActionResult> Teams(
-		[FromServices] ITeamRepository teamRepository)
+	/// <param name="type">The currently selected type of Event.</param>
+	/// <returns>The appropriate ViewComponent.</returns>
+	public async Task <IActionResult> CoachEvents(string type)
 	{
-		GetAllSpecification<Team> searchSpec = new();
-		IEnumerable<Team> teams = await teamRepository.SearchAsync(searchSpec);
+		Guid userId = Guid.Parse(this.userManager.GetUserId(this.User)
+			?? throw new NullReferenceException("Could not get current user."));
 
-		return this.View(teams);
+		IEnumerable<Team> teams = await this.context.Teams.ToListAsync();
+		IEnumerable<Team>? coachTeams = await this.context.Teams
+			.Where(t => t.UserId == userId)
+			.ToListAsync();
+
+		List<Event> games = new List<Event>();
+		List<Event> practices = new List<Event>();
+		
+		foreach (Team team in coachTeams)
+		{
+			if (type == nameof(Game))
+			{
+				IEnumerable<Event> coachGames = await this.context.Games
+					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
+					.WithScheduling()
+					.ToListAsync();
+
+				games.AddRange(coachGames);			
+			}
+			else
+			{
+				IEnumerable<Event> coachPractices = await this.context.Practices
+					.Where(g => g.TeamId == team.Id)
+					.WithScheduling()
+					.ToListAsync();
+
+				practices.AddRange(coachPractices);
+			}			
+		}
+
+		if (games.Count > 0)
+		{
+			games = games
+				.DistinctBy(g => g.Id)
+				.ToList();
+
+			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
+		}
+
+		if (practices.Count > 0)
+		{
+			practices = practices
+				.DistinctBy(g => g.Id)
+				.ToList();
+
+			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
+		}
+
+		if (games.Count == 0 && practices.Count == 0)
+		{
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
+		}
+
+		return type == nameof(Game)
+			? this.ViewComponent("GamesModal", new { coachTeams, teams, games })
+			: this.ViewComponent("PracticesModal", new { coachTeams, teams, practices });
+	}
+
+	/// <summary>
+	/// Filters Games or Practices in the CoachModalTable.
+	/// </summary>
+	/// <param name="type">The currently selected type of Event.</param>
+	/// <param name="start">The currently selected start date to filter.</param>
+	/// <param name="end">The currently selected end date to filter.</param>
+	/// <param name="searchTerm">The currently selected search term - defaults to null.</param>
+	/// <param name="teamName">The currently selected team name - defaults to null.</param>
+	/// <returns>The CoachModalTable partial view.</returns>
+	public async ValueTask<IActionResult> FilterCoachEvents(
+		string type,
+		DateTime start,
+		DateTime end,
+		string? searchTerm = null,
+		string? teamName = null)
+	{
+		Guid userId = Guid.Parse(userManager.GetUserId(this.User)
+			?? throw new NullReferenceException("Could not determine current user."));
+
+		IEnumerable<Team> teams = await this.context.Teams.ToListAsync();
+		IEnumerable<Team> coachTeams = await this.context.Teams
+			.Where(t => t.UserId == userId)
+			.ToListAsync();
+
+		IQueryable<Event>? games = null;
+		IQueryable<Event>? practices = null;
+
+		foreach (Team team in coachTeams)
+		{
+			if (type == nameof(Game))
+			{
+				IQueryable<Event> coachGames = this.context.Games
+					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
+					.WithScheduling();
+
+				if (games is null && coachGames.Count() > 0)
+				{
+					games = coachGames;
+				}
+				else if (coachGames.Count() > 0)
+				{
+					games = games.Concat(coachGames);
+				}
+
+				if (games is not null)
+				{
+					games = this.DateSearch(start, end, games);
+				}				
+
+				if (!searchTerm.IsNullOrEmpty())
+				{
+					games = this.NameSearch(searchTerm!, type, games);
+				}
+
+				if (teamName is not null && games is not null)
+				{
+					games = games
+						.OfType<Game>()
+						.Where(game => game.HomeTeam.Name == teamName || game.OpposingTeam.Name == teamName);
+
+					this.ViewData["TeamFilterMessage"] = $"for Team {teamName}";
+				}
+			}
+			else
+			{
+				IQueryable<Event> coachPractices = this.context.Practices
+					.Where(g => g.TeamId == team.Id)
+					.WithScheduling();
+
+				if (practices is null && !coachPractices.IsNullOrEmpty())
+				{
+					practices = coachPractices;
+				}
+				else if (!coachPractices.IsNullOrEmpty())
+				{
+					practices = practices.Concat(coachPractices);
+				}
+
+				if (practices is not null)
+				{
+					practices = this.DateSearch(start, end, practices);
+				}
+
+				if (searchTerm is not null)
+				{
+					practices = this.NameSearch(searchTerm, type, practices);
+				}
+
+				if (teamName is not null && practices is not null)
+				{
+					practices = practices
+						.OfType<Practice>()
+						.Where(p => p.Team.Name == teamName);
+
+					this.ViewData["TeamFilterMessage"] = $"for Team {teamName}";
+				}
+			}
+		}
+
+		if (!games.IsNullOrEmpty())
+		{
+			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
+
+			games = games!.Distinct();
+		}
+
+		if (!practices.IsNullOrEmpty())
+		{
+			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
+
+			practices = practices!.Distinct();
+		}
+
+		if (games.IsNullOrEmpty() && practices.IsNullOrEmpty())
+		{
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
+		}
+
+		this.ViewData["EventType"] = type;
+
+		UpcomingEventsModalViewModel viewModel = new(
+			coachTeams,
+			teams,
+			(type == nameof(Game)
+				? games
+				: practices)
+				?? Enumerable.Empty<Event>());
+
+		return this.PartialView("_CoachModalTable", viewModel);
 	}
 
 	/// <summary>
@@ -117,28 +275,25 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> Users(
 		[FromServices] UserManager<User> userManager)
 	{
-		IEnumerable<User> fields = await userManager.Users.ToListAsync();
+		IEnumerable<User> users = await userManager.Users.ToListAsync();
 
-		return this.View(fields);
+		return this.View(users);
 	}
 
 	/// <summary>
-	/// Checks if the user is associated with the team.
+	/// Displays the <see cref="Leagues(ILeagueRepository)"/> view.
 	/// </summary>
-	/// <returns>games and practices the user is associated with.</returns>
-	bool isTeamMember(Event scheduledEvent)
+	/// <param name="leagueRepository">Queries all leagues.</param>
+	/// <returns>A view displaying all leagues with pagination.</returns>
+	[Authorize]
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	public async Task<IActionResult> Leagues(
+		[FromServices] ILeagueRepository leagueRepository)
 	{
-		if (scheduledEvent is Practice practice)
-		{
-			return practice?.Team?.UserId == Guid.Parse(userManager.GetUserId(User));
-		}
-		else if (scheduledEvent is Game game)
-		{
-			return game?.HomeTeam?.UserId == Guid.Parse(userManager.GetUserId(User))
-				|| game?.OpposingTeam?.UserId == Guid.Parse(userManager.GetUserId(User));
-		}
+		IEnumerable<League> leagues = await leagueRepository.SearchAsync(
+			new GetAllSpecification<League>());
 
-		return false;
+		return this.View(leagues);
 	}
 
 	/// <summary>
@@ -182,19 +337,19 @@ public sealed class DashboardController : Controller
 				.WithScheduling()
 		};
 		
-		events = this.dateSearch(start, end, events);
+		events = this.DateSearch(start, end, events);
 
-		if(searchTerm != null)
+		if (!searchTerm.IsNullOrEmpty())
 		{
-			events = this.nameSearch(searchTerm, type, events);
+			events = this.NameSearch(searchTerm, type, events);
 		}
 
-		if(teamName != null)
+		if (!teamName.IsNullOrEmpty())
 		{
-			events = this.teamSearch(teamName, type, events);
+			events = this.TeamSearch(teamName, type, events);
 		}
 
-		if(events.IsNullOrEmpty())
+		if (events.IsNullOrEmpty())
 		{
 			this.ViewData["Events"] = null;
 
@@ -210,6 +365,7 @@ public sealed class DashboardController : Controller
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = start;
 		this.ViewData["End"] = end;
+
 		if (end > start.AddYears(1))
 		{
 			this.ViewData["Title"] = $"All {type}s";
@@ -233,7 +389,7 @@ public sealed class DashboardController : Controller
 	{
 		DateTime monthDate = new DateTime(year, month, 1);
 		DateTime monthEndDate = monthDate.AddMonths(1);
-		this.ViewData["Events"] = await this.dateSearch(monthDate, monthEndDate).ToListAsync();
+		this.ViewData["Events"] = await this.DateSearch(monthDate, monthEndDate).ToListAsync();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = monthDate;
 		this.ViewData["End"] = monthEndDate;
@@ -254,7 +410,7 @@ public sealed class DashboardController : Controller
 	{
 		DateTime weekStartDate = new DateTime(year, month, weekStart);
 		DateTime weekEndDate = weekStartDate.AddDays(7);
-		this.ViewData["Events"] = await this.dateSearch(weekStartDate, weekEndDate).ToListAsync();
+		this.ViewData["Events"] = await this.DateSearch(weekStartDate, weekEndDate).ToListAsync();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = weekStartDate;
 		this.ViewData["End"] = weekEndDate;
@@ -274,7 +430,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		this.ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
+		this.ViewData["Events"] = await this.DateSearch(eventDate, eventDate).ToListAsync();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = eventDate; //12:00 AM on the selected day.
 		this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
@@ -294,7 +450,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		this.ViewData["Events"] = await this.dateSearch(eventDate, eventDate).ToListAsync();
+		this.ViewData["Events"] = await this.DateSearch(eventDate, eventDate).ToListAsync();
 		this.ViewData["Fields"] = await this.context.Fields.OrderBy(e => e.Name).ToListAsync();
 		this.ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
 		this.ViewData["CurrentDate"] = eventDate;
@@ -328,16 +484,16 @@ public sealed class DashboardController : Controller
 				.WithScheduling()
 		};
 
-		events = this.dateSearch(start, end, events);
+		events = this.DateSearch(start, end, events);
 
-		if (searchTerm is not null)
+		if (!searchTerm.IsNullOrEmpty())
 		{
-			events = this.nameSearch(searchTerm, type, events);
+			events = this.NameSearch(searchTerm, type, events);
 		}
 
-		if (teamName is not null)
+		if (!teamName.IsNullOrEmpty())
 		{
-			events = this.teamSearch(teamName, type, events);
+			events = this.TeamSearch(teamName, type, events);
 		}
 
 		if (events.IsNullOrEmpty())
@@ -360,13 +516,12 @@ public sealed class DashboardController : Controller
 	/// <param name="end">The currently selected end date.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-	public IQueryable<Event> dateSearch(DateTime start, DateTime end, IQueryable<Event>? events = null)
+	public IQueryable<Event> DateSearch(
+		DateTime start,
+		DateTime end,
+		IQueryable<Event>? events = null)
 	{
-		if (events == null)
-		{
-			events = this.context.Events
-					.WithScheduling();
-		}
+		events ??= this.context.Events.WithScheduling();
 
 		return events
 			.Where(e => e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)
@@ -380,64 +535,55 @@ public sealed class DashboardController : Controller
 	/// <param name="type">The currently selected type of Event.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-	public IQueryable<Event> teamSearch(string teamName, string type, IQueryable<Event>? events = null)
+	public IQueryable<Event>? TeamSearch(string teamName, string type, IQueryable<Event>? events = null)
 	{
-		if (events == null)
-		{
-			events = this.context.Events
-					.WithScheduling();
-		}
+		events ??= this.context.Events.WithScheduling();
 
-		IEnumerable<Team> teamList = this.context.Teams;
-
+		IQueryable<Team> teamList = this.context.Teams;
 		Team selectedTeam = teamList.FirstOrDefault(t => t.Name.ToLower() == teamName.ToLower());
 
-		if (selectedTeam == null)
+		if (selectedTeam is null)
 		{
-			ViewData["TeamFilterMessage"] = "Team " + teamName + " does not exist";
+			this.ViewData["TeamFilterMessage"] = "Team " + teamName + " does not exist";
+
 			return null;			
 		}
 
-		IEnumerable<Event> matchingGames = null;
-		IEnumerable<Event> matchingPractices = null;
+		IEnumerable<Event>? matchingGames = null;
+		IEnumerable<Event>? matchingPractices = null;
 
-		if (type == "Event" || type == "Game")
+		if (type == nameof(Event) || type == nameof(Game))
 		{
-			matchingGames = events.AsQueryable().OfType<Game>().Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
-			if (!matchingGames.Any())
-			{
-				matchingGames = null;
-			}
+			matchingGames = events
+				.AsQueryable()
+				.OfType<Game>()
+				.Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
 		}
 
-		if (type == "Event" || type == "Practice")
+		if (type == nameof(Event) || type == nameof(Practice))
 		{
 			matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
-			if (!matchingPractices.Any())
-			{
-				matchingPractices = null;
-			}
 		}
 
-		if(matchingGames == null && matchingPractices == null)
+		if(matchingGames.IsNullOrEmpty() && matchingPractices.IsNullOrEmpty())
 		{
 			ViewData["TeamFilterMessage"] = "There are no scheduled " + type + "s for Team " + selectedTeam.Name + "\nduring the selected dates";
 			return null;
 		}
-		else if (matchingGames == null && matchingPractices.Any())
+		else if (matchingGames.IsNullOrEmpty() && !matchingPractices.IsNullOrEmpty())
 		{
 			events = (IQueryable<Event>)matchingPractices;
 		}
-		else if (matchingPractices == null && matchingGames.Any())
+		else if (matchingPractices.IsNullOrEmpty() && !matchingGames.IsNullOrEmpty())
 		{
 			events = (IQueryable<Event>)matchingGames;
 		}
-		else if (matchingGames.Any() && matchingPractices.Any())
+		else if (!matchingGames.IsNullOrEmpty() && !matchingPractices.IsNullOrEmpty())
 		{
 			events = matchingPractices.Concat((IQueryable<Event>)matchingGames).AsQueryable();
 		}
 
-		ViewData["TeamFilterMessage"] = "for Team " + selectedTeam.Name;
+		this.ViewData["TeamFilterMessage"] = "for Team " + selectedTeam.Name;
 
 		return events;
 	}
@@ -449,23 +595,20 @@ public sealed class DashboardController : Controller
 	/// <param name="type">The currently selected Event type - defaults to Event.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-	public IQueryable<Event> nameSearch(string searchTerm, string? type = "Event", IQueryable<Event>? events = null)
+	public IQueryable<Event> NameSearch(
+		string searchTerm,
+		string? type = nameof(Event),
+		IQueryable<Event>? events = null)
 	{
-		if(events == null)
-		{
-			events = this.context.Events
-					.WithScheduling();
-		}
-		events = events.Where(e => e.Name.ToLower().Contains(searchTerm.ToLower()));
+		events ??= this.context.Events.WithScheduling();
 
-		if (!events.Any())
-		{
-			ViewData["NameFilterMessage"] = "There are no " + type + "s that match the search term " + searchTerm;
-		}
-		else
-		{
-			ViewData["NameFilterMessage"] = "that match the search term " + searchTerm;
-		}
+		events = events
+			.Where(e => e.Name.ToLower()
+			.Contains(searchTerm.ToLower()));
+
+		this.ViewData["NameFilterMessage"] = events.Count() > 0
+			? $"that match the search term {searchTerm}"
+			: $"There are no {type}s that match the search term {searchTerm}";
 
 		return events;
 	}

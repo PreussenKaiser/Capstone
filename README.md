@@ -10,10 +10,12 @@ The PCYS Scheduler application is a facility management system that allows Coach
 The public can then search this schedule to find events of interest to them.
 Parents and athletes can find out when their practices or games are scheduled, and which field they are on, and spectators can plan their attendance of the facility easily through the use of this app.
 
-#### Technologies
+#### Technologies & Frameworks
 - .NET Core 7
 - ASP.NET Core
 - ASP.NET Identity Core
 - Entity Framework Core
 - SQL Server 2022
 - xUnit
+- Chosen
+- Moq
