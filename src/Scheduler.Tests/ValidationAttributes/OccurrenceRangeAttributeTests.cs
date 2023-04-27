@@ -62,7 +62,7 @@ public sealed class OccurrenceRangeAttributeTests
 	/// <summary>
 	/// Asserts that,
 	/// given a value above <see cref="MAX_DAYS"/>,
-	/// validatino fails.
+	/// validation fails.
 	/// </summary>
 	[Fact]
 	public void Daily_Over_Range()
