@@ -60,12 +60,9 @@
                                         }
                                         else
                                         {
-                                            Team? team = this.Model.CoachTeams.FirstOrDefault();
-                                            string teamName = team is null
-                                                ? "Unknown Team"
-                                                : team.Name;
+                                            Team? team = this.Model.CoachTeams.First();
 
-                                            <select name="teamName" hidden value="@teamName"></select>
+                                            <select name="teamName" hidden value="@team.Name"></select>
                                         }
 
                                         <div class="text-center">

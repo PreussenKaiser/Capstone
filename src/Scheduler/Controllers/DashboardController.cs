@@ -339,17 +339,17 @@ public sealed class DashboardController : Controller
 		
 		events = this.DateSearch(start, end, events);
 
-		if(!searchTerm.IsNullOrEmpty())
+		if (!searchTerm.IsNullOrEmpty())
 		{
 			events = this.NameSearch(searchTerm, type, events);
 		}
 
-		if(!teamName.IsNullOrEmpty())
+		if (!teamName.IsNullOrEmpty())
 		{
 			events = this.TeamSearch(teamName, type, events);
 		}
 
-		if(events.IsNullOrEmpty())
+		if (events.IsNullOrEmpty())
 		{
 			this.ViewData["Events"] = null;
 
@@ -365,6 +365,7 @@ public sealed class DashboardController : Controller
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = start;
 		this.ViewData["End"] = end;
+
 		if (end > start.AddYears(1))
 		{
 			this.ViewData["Title"] = $"All {type}s";
