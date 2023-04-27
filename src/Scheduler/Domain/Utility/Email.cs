@@ -1,11 +1,9 @@
-﻿namespace Scheduler.Domain.Utility;
-
-using Azure.Core;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Scheduler.Domain.Models;
-using Scheduler.Web.Controllers;
 using System.Net;
 using System.Net.Mail;
+
+namespace Scheduler.Domain.Utility;
 
 public static class Email
 {

@@ -8,6 +8,7 @@ using Scheduler.Filters;
 using Scheduler.ViewModels;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Http.Extensions;
+using Scheduler.Domain.Services;
 
 namespace Scheduler.Web.Controllers;
 
@@ -23,12 +24,21 @@ public sealed class IdentityController : Controller
 	private readonly SignInManager<User> signInManager;
 
 	/// <summary>
+	/// The API to send emails with.
+	/// </summary>
+	private readonly IEmailSender emailSender;
+
+	/// <summary>
 	/// Initializes the <see cref="IdentityController"/> class.
 	/// </summary>
 	/// <param name="signInManager">The API to access <see cref="User"/> login information with.</param>
-	public IdentityController(SignInManager<User> signInManager)
+	/// <param name="emailSender">The API to send emails with.</param>
+	public IdentityController(
+		SignInManager<User> signInManager,
+		IEmailSender emailSender)
 	{
 		this.signInManager = signInManager;
+		this.emailSender = emailSender;
 	}
 
 	/// <summary>
@@ -150,15 +160,27 @@ public sealed class IdentityController : Controller
 			await this.signInManager.UserManager.AddToRoleAsync(user, "Admin");
 		}
 
-		string callback = Url.Action(nameof(HomeController.Index), "Home", new { }, Request.Scheme);
+		try
+		{
+			string callback = this.Url.Action(
+				nameof(HomeController.Index),
+				"Home", new { }, this.Request.Scheme)
+					?? throw new NullReferenceException("Could not retrieve link to home.");
 
-		string message = $"<p>Welcome to the PCYS Scheduler app! <br /> Your username is {user.UserName} and your password is <span style=\"color: red\">{randomPassword}</span></p>" +
-			$"<p>Visit the website at {callback} to log in and change your temporary password, and you can begin scheduling events.</p>" +
-			$"<p style=\"text-decoration: underline\">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";
+			string body = $@"
+				<p>
+					Welcome to the PCYS Scheduler app!
+					<br>
+					Your username is {user.UserName} and your password is <span style=\""color: red\"">{{randomPassword}}</span>
+				</p>
+				<p>To begin scheduling events, visit the website att {callback} to log in and change your temporary password.</p>
+				<p style=\""text-decoration: underline\"">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";
 
-		//This should work even with an invalid email, but eventually Google will change how the SMTP server is accessed. When that happens, the temp password will display on the screen like it used to.
-		try {
-			Email.sendEmail(user.Email, user.FirstName, "Welcome to the PCYS Scheduler App!", message);
+			await this.emailSender.SendAsync(
+				user.Email,
+				"Welcome to the PCYS Scheduler!",
+				body);
+
 			this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added!";
 		}
 		catch

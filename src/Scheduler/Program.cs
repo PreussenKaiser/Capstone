@@ -31,7 +31,8 @@ builder.Services
 
 builder.Services
 	.AddHostedService<ScheduleCullingService>()
-	.AddSingleton<IDateProvider, SystemDateProvider>();
+	.AddSingleton<IDateProvider, SystemDateProvider>()
+	.AddSingleton<IEmailSender, SmtpEmailSender>();
 
 builder.Services
 	.AddIdentity<User, Role>()
@@ -52,6 +53,16 @@ builder.Services.AddRazorPages();
 builder.Services
 	.AddOptions<CullingOptions>()
 	.Bind(builder.Configuration.GetSection(CullingOptions.Culling))
+	.ValidateDataAnnotations();
+
+builder.Services
+	.AddOptions<SmtpOptions>()
+	.Bind(builder.Configuration.GetSection(SmtpOptions.Smtp))
+	.ValidateDataAnnotations();
+
+builder.Services
+	.AddOptions<EmailOptions>()
+	.Bind(builder.Configuration.GetSection(EmailOptions.Email))
 	.ValidateDataAnnotations();
 
 WebApplication app = builder.Build();
