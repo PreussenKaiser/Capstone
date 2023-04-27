@@ -1,26 +1,28 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
-using Scheduler.Infrastructure.Extensions;
-using Scheduler.Infrastructure.Persistence;
-using Scheduler.Web.ViewModels;
-using Scheduler.Infrastructure.Persistence.Migrations;
+using Scheduler.ViewModels;
 
 namespace Scheduler.ViewComponents;
 
+/// <summary>
+/// Code-behind for the GamesModal view component.
+/// </summary>
 public sealed class GamesModalViewComponent : ViewComponent
 {
-	public async Task<IViewComponentResult> InvokeAsync()
+	/// <summary>
+	/// Invokes the view component.
+	/// </summary>
+	/// <param name="coachTeams">The current user's teams.</param>
+	/// <param name="games">Games the user's teams have participated in.</param>
+	/// <returns>A modal displaying all the user's teams if they have games.</returns>
+	public async Task<IViewComponentResult> InvokeAsync(
+		IEnumerable<Team> coachTeams,
+		IEnumerable<Team> teams,
+		IEnumerable<Event> games)
 	{
-		this.ViewData["Games"] = this.ViewData["Games"];
+		UpcomingEventsModalViewModel viewModel = new(
+			coachTeams, teams, games);
 
-		this.ViewData["CoachTeams"] = this.ViewData["CoachTeams"];
-
-		this.ViewData["Teams"] = this.ViewData["Teams"];
-
-		this.ViewData["Title"] = "My Scheduled Games";
-
-		return await Task.FromResult((IViewComponentResult)View("GamesModal"));
+		return this.View("GamesModal", viewModel);
 	}
 }

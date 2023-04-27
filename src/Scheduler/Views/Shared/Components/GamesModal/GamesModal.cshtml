@@ -1,9 +1,11 @@
-﻿@{
-    string title = this.ViewData["Title"].ToString();
-    IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
-    IEnumerable<Team> coachTeams = (IEnumerable<Team>)this.ViewData["CoachTeams"];
-    IEnumerable<Event> games = (IEnumerable<Event>)this.ViewData["Games"];
-    this.ViewData["EventType"] = "Game";
+﻿@using Scheduler.ViewModels;
+
+@model UpcomingEventsModalViewModel
+
+@{
+    this.ViewData["Title"] = "My Scheduled Games";
+    this.ViewData["EventType"] = nameof(Game);
+
     string today = DateTime.Now.ToString("yyyy-MM-dd");
     string startDateString = DateTime.Now.Date.ToString("yyyy-MM-dd");
     string endDateString = DateTime.Now.AddYears(2).ToString("yyyy-MM-dd");
@@ -13,9 +15,9 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header m-auto">
-                <h2 class="text-center">@title</h2>
+                <h2 class="text-center">@this.ViewData["Title"]</h2>
             </div>
-            @if (coachTeams.Count() != 0)
+            @if (this.Model.CoachTeamsCount != 0)
             {
                 <div class="modal-body">
                     <div class="text-center">
@@ -42,13 +44,14 @@
                                             <label class="form-label">Event Name</label>
                                             <input type="text" name="searchTerm" class="form-control" />
                                         </div>
-                                        @if(coachTeams.Count() > 1)
+                                        @if (this.Model.CoachTeamsCount > 1)
                                         {
                                             <div class="mb-3">
                                                 <label class="form-label">Team Name</label>
                                                 <select id="coachTeamNameFilterGames" name="teamName" class="form-select">
                                                     <option value=""></option>
-                                                    @foreach (Team t in coachTeams)
+
+                                                    @foreach (Team t in this.Model.CoachTeams)
                                                     {
                                                         <option value=@t.Name>@t.Name</option>
                                                     }
@@ -57,7 +60,9 @@
                                         }
                                         else
                                         {
-                                            <select name="teamName" hidden value="@coachTeams.FirstOrDefault().Name"></select>
+                                            Team? team = this.Model.CoachTeams.First();
+
+                                            <select name="teamName" hidden value="@team.Name"></select>
                                         }
                                         <div class="text-center">
                                             <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
@@ -70,13 +75,13 @@
                         </div>
                     </div>
                     <div id="gamesModalTable">
-                        <partial name="_CoachModalTable" model="games" />
+                        <partial name="_CoachModalTable" model="this.Model" />
                     </div>
                 </div>
-            <div class="modal-footer noPrintIfModal">
-                <button class="btn btn-sm btn-secondary" onclick="window.print()">Print These Results</button>
-                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
+                <div class="modal-footer noPrintIfModal">
+                    <button class="btn btn-sm btn-secondary" onclick="window.print()">Print These Results</button>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
             }
             else
             {    

@@ -20,8 +20,7 @@ public sealed class LeagueConfiguration : IEntityTypeConfiguration<League>
 			.IsRequired()
 			.HasMaxLength(32);
 
-		builder
-			.Metadata
+		builder.Metadata
 			.FindNavigation(nameof(League.Teams))
 			?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
