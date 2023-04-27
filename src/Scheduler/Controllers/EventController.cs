@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
@@ -20,8 +21,8 @@ public sealed class EventController : ScheduleController<Event>
 	/// </summary>
 	/// <param name="context">The database to query.</param>
 	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
-	public EventController(IScheduleRepository scheduleRepository)
-			: base(scheduleRepository)
+	public EventController(IScheduleRepository scheduleRepository, UserManager<User> userManager)
+			: base(scheduleRepository, userManager)
 	{
 	}
 

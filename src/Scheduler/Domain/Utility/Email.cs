@@ -1,4 +1,9 @@
 ﻿namespace Scheduler.Domain.Utility;
+
+using Azure.Core;
+using Microsoft.AspNetCore.Identity;
+using Scheduler.Domain.Models;
+using Scheduler.Web.Controllers;
 using System.Net;
 using System.Net.Mail;
 
@@ -31,6 +36,24 @@ public static class Email
 		})
 		{
 			smtp.Send(message);
+		}
+	}
+
+	public static async void eventChangeEmails(string subject, string body, List<Team> changedTeams, Guid currentUser, UserManager<User> userManager)
+	{
+		List<User> usersToEmail = new List<User>();
+
+		foreach(Team team in changedTeams)
+		{
+			User userToAdd = await userManager.FindByIdAsync(team.UserId.ToString());
+			usersToEmail.Add(userToAdd);
+		}
+
+		foreach (User user in usersToEmail) {
+			if (user.Id != currentUser)
+			{
+				sendEmail(user.Email, user.FirstName, subject, body);
+			}
 		}
 	}
 }

@@ -6,6 +6,8 @@ using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
 using Scheduler.ViewModels;
 using Scheduler.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Scheduler.Domain.Utility;
 
 namespace Scheduler.Web.Controllers;
 
@@ -90,14 +92,17 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// </summary>
 	protected readonly IScheduleRepository scheduleRepository;
 
+	private readonly UserManager<User> userManager;
+
 	/// <summary>
 	/// Initializes the <see cref="ScheduleController{TEvent}"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
 	/// <param name="scheduleRepository">The repository to execute queries and commands against.</param>
-	protected ScheduleController(IScheduleRepository scheduleRepository)
+	protected ScheduleController(IScheduleRepository scheduleRepository, UserManager<User> userManager)
 	{
 		this.scheduleRepository = scheduleRepository;
+		this.userManager = userManager;
 	}
 
 	/// <summary>
@@ -153,6 +158,15 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
+		User currentUser = await this.userManager.FindByNameAsync(this.User.Identity.Name);
+
+		string emailMessage = $"Event {values.Name} has been rescheduled to start at {values.StartDate} and end at {values.EndDate}. This change was made by {currentUser.FirstName} {currentUser.LastName}" +
+			$"<br /><a href=\"{Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
+
+		IEnumerable<Team> teamsChanged = await this.scheduleRepository.GetTeamsForEvent(values);
+
+		Email.eventChangeEmails("Event Rescheduled", emailMessage, teamsChanged.ToList(), currentUser.Id, this.userManager);
+
 		await this.scheduleRepository.RescheduleAsync(values);
 
 		return this.RedirectToAction(
@@ -178,9 +192,19 @@ public abstract class ScheduleController<TEvent> : Controller
 
 		Specification<Event> relocateSpec = updateType.ToSpecification(values);
 
+		User currentUser = await this.userManager.FindByNameAsync(this.User.Identity.Name);
+
+		Field field = await this.scheduleRepository.GetFieldForEvent(values);
+
+		string emailMessage = $"Event {values.Name} has been relocated to {field.Name}. This change was made by {currentUser.FirstName} {currentUser.LastName}" +
+			$"<br /><a href=\"{Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
+
+		IEnumerable<Team> teamsChanged = await this.scheduleRepository.GetTeamsForEvent(values);
+
+		Email.eventChangeEmails("Event Relocated", emailMessage, teamsChanged.ToList(), currentUser.Id, this.userManager);
+
 		await this.scheduleRepository.RelocateAsync(
 			values, relocateSpec);
-
 
 		return this.RedirectToAction(
 			nameof(ScheduleController.Details),
@@ -205,6 +229,15 @@ public abstract class ScheduleController<TEvent> : Controller
 			.FirstOrDefault();
 
 		Specification<Event> cancelSpec = updateType.ToSpecification(scheduledEvent);
+
+		User currentUser = await this.userManager.FindByNameAsync(this.User.Identity.Name);
+
+		string emailMessage = $"Event {scheduledEvent.Name} has been cancelled by {currentUser.FirstName} {currentUser.LastName}" +
+			$"<br /><a href=\"{Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
+
+		IEnumerable<Team> teamsChanged = await this.scheduleRepository.GetTeamsForEvent(scheduledEvent);
+
+		Email.eventChangeEmails("Event Cancelled", emailMessage, teamsChanged.ToList(), currentUser.Id, this.userManager);
 
 		await this.scheduleRepository.CancelAsync(cancelSpec);
 

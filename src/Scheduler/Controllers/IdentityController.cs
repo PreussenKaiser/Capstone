@@ -7,6 +7,7 @@ using Scheduler.Web.ViewModels;
 using Scheduler.Filters;
 using Scheduler.ViewModels;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Scheduler.Web.Controllers;
 
@@ -149,8 +150,10 @@ public sealed class IdentityController : Controller
 			await this.signInManager.UserManager.AddToRoleAsync(user, "Admin");
 		}
 
+		string callback = Url.Action(nameof(HomeController.Index), "Home", new { }, Request.Scheme);
+
 		string message = $"<p>Welcome to the PCYS Scheduler app! <br /> Your username is {user.UserName} and your password is <span style=\"color: red\">{randomPassword}</span></p>" +
-			$"<p>Visit the website at http://wrentfrow-001-site1.etempurl.com/ to log in and change your temporary password, and you can begin scheduling events.</p>" +
+			$"<p>Visit the website at {callback} to log in and change your temporary password, and you can begin scheduling events.</p>" +
 			$"<p style=\"text-decoration: underline\">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";
 
 		//This should work even with an invalid email, but eventually Google will change how the SMTP server is accessed. When that happens, the temp password will display on the screen like it used to.

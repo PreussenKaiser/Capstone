@@ -7,6 +7,7 @@ using Scheduler.Domain.Specifications;
 using Scheduler.Filters;
 using Scheduler.ViewModels;
 using Scheduler.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Scheduler.Web.Controllers;
 
@@ -21,8 +22,8 @@ public sealed class PracticeController : ScheduleController<Practice>
 	/// </summary>
 	/// <param name="context">The database to query.</param>
 	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
-	public PracticeController(IScheduleRepository scheduleRepository)
-		: base(scheduleRepository)
+	public PracticeController(IScheduleRepository scheduleRepository, UserManager<User> userManager)
+		: base(scheduleRepository, userManager)
 	{
 	}
 
