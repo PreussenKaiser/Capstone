@@ -29,55 +29,6 @@ public sealed class HomeController : Controller
 	/// <param name="context">The database to query.</param>
 	public HomeController(SchedulerContext context)
 	{
-		List<League> leagues = new List<League>();
-		List<User> users = new List<User>();
-		List<Team> teams = new List<Team>();
-		List<Field> fields = new List<Field>();
-		List<Event> events = new List<Event>();
-
-		for (var i = 0; i < 1000; i++)
-		{
-			leagues.Add(new League
-			{
-				Id = Guid.NewGuid(),
-				Name = i.ToString()
-			});
-
-			users.Add(new User
-			{
-				Id = Guid.NewGuid(),
-				FirstName = i.ToString(),
-				LastName = i.ToString(),
-			});
-
-			teams.Add(new Team
-			{
-				Id = Guid.NewGuid(),
-				LeagueId = Guid.NewGuid(),
-				UserId = Guid.NewGuid(),
-				Name = i.ToString()
-			});
-
-			fields.Add(new Field
-			{
-				Id = Guid.NewGuid()
-			});
-		}
-
-		for (int i = 0; i < 10000; i++)
-		{
-			events.Add(new Event()
-			{
-				Id = Guid.NewGuid()
-			});
-		}
-
-		context.AddRange(leagues);
-		context.AddRange(users);
-		context.AddRange(teams);
-		context.AddRange(fields);
-		context.AddRange(events);
-
 		this.context = context;
 	}
 
