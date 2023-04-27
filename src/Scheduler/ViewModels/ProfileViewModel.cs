@@ -35,10 +35,4 @@ public sealed record ProfileViewModel
 	[MaxLength(256)]
 	[EmailAddress(ErrorMessage = "Please enter a valid email address.")]
 	public required string Email { get; init; }
-
-	/// <summary>
-	/// Whether the user is an admin or not.
-	/// </summary>
-	[Display(Name = "Admin?")]
-	public bool IsAdmin { get; init; }
 }

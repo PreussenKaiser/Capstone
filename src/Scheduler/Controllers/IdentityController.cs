@@ -220,8 +220,7 @@ public sealed class IdentityController : Controller
 			UserId = user.Id,
 			FirstName = user.FirstName,
 			LastName = user.LastName,
-			Email = user.Email ?? string.Empty,
-			IsAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN)
+			Email = user.Email ?? string.Empty
 		};
 
 		return this.View(viewModel);
@@ -254,17 +253,6 @@ public sealed class IdentityController : Controller
 			user.UserName = viewModel.Email;
 			user.Email = viewModel.Email;
 
-			bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN);
-
-			if (isAdmin && !viewModel.IsAdmin)
-			{
-				await this.signInManager.UserManager.RemoveFromRoleAsync(user, Role.ADMIN);
-			}
-			else if (!isAdmin && viewModel.IsAdmin)
-			{
-				await this.signInManager.UserManager.AddToRoleAsync(user, Role.ADMIN);
-			}
-
 			var result = await this.signInManager.UserManager.UpdateAsync(user);
 
 			if (!result.Succeeded)
@@ -274,6 +262,7 @@ public sealed class IdentityController : Controller
 					this.ModelState.AddModelError(string.Empty, error.Description);
 				}
 			}
+			await this.signInManager.RefreshSignInAsync(user);
 		}
 
 		return this.View(viewModel);
