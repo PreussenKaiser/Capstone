@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications;
 using Scheduler.Extensions;
 using Scheduler.Filters;
@@ -19,10 +20,13 @@ public sealed class EventController : ScheduleController<Event>
 	/// <summary>
 	/// Initializes the <see cref="EventController"/> class.
 	/// </summary>
-	/// <param name="context">The database to query.</param>
 	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
-	public EventController(IScheduleRepository scheduleRepository, UserManager<User> userManager)
-			: base(scheduleRepository, userManager)
+	public EventController(
+		IScheduleRepository scheduleRepository,
+		ITeamRepository teamRepository,
+		IEmailSender emailSender,
+		UserManager<User> userManager)
+			: base(scheduleRepository, teamRepository, emailSender, userManager)
 	{
 	}
 

@@ -8,6 +8,8 @@ using Scheduler.ViewModels;
 using Scheduler.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Scheduler.Domain.Utility;
+using Scheduler.Domain.Services;
+using Scheduler.Domain.Specifications.Teams;
 
 namespace Scheduler.Web.Controllers;
 
@@ -92,16 +94,34 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// </summary>
 	protected readonly IScheduleRepository scheduleRepository;
 
+	/// <summary>
+	/// The repository to get teams with.
+	/// </summary>
+	private readonly ITeamRepository teamRepository;
+
+	/// <summary>
+	/// The API to send emails with.
+	/// </summary>
+	private readonly IEmailSender emailSender;
+
+	/// <summary>
+	/// API to query users for.
+	/// </summary>
 	private readonly UserManager<User> userManager;
 
 	/// <summary>
 	/// Initializes the <see cref="ScheduleController{TEvent}"/> class.
 	/// </summary>
-	/// <param name="context">The database to query.</param>
 	/// <param name="scheduleRepository">The repository to execute queries and commands against.</param>
-	protected ScheduleController(IScheduleRepository scheduleRepository, UserManager<User> userManager)
+	protected ScheduleController(
+		IScheduleRepository scheduleRepository,
+		ITeamRepository teamRepository,
+		IEmailSender emailSender,
+		UserManager<User> userManager)
 	{
 		this.scheduleRepository = scheduleRepository;
+		this.teamRepository = teamRepository;
+		this.emailSender = emailSender;
 		this.userManager = userManager;
 	}
 
@@ -158,16 +178,23 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.View("~/Views/Schedule/Details.cshtml", values);
 		}
 
-		User currentUser = await this.userManager.FindByNameAsync(this.User.Identity.Name);
-
-		string emailMessage = $"Event {values.Name} has been rescheduled to start at {values.StartDate} and end at {values.EndDate}. This change was made by {currentUser.FirstName} {currentUser.LastName}" +
-			$"<br /><a href=\"{Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
-
-		IEnumerable<Team> teamsChanged = await this.scheduleRepository.GetTeamsForEvent(values);
-
-		Email.eventChangeEmails("Event Rescheduled", emailMessage, teamsChanged.ToList(), currentUser.Id, this.userManager);
-
 		await this.scheduleRepository.RescheduleAsync(values);
+
+		User? currentUser = await this.userManager.GetUserAsync(this.User);
+		string callback = this.Url.Action(
+			nameof(DashboardController.Events),
+			"Dashboard", new { }, this.Request.Scheme)
+				?? throw new NullReferenceException("Could not get Events link.");
+
+		string emailMessage = $@"
+			<p>Event {values.Name} has been rescheduled to start at {values.StartDate} and end at {values.EndDate}. This change was made by {currentUser.FirstName} {currentUser.LastName}</p>
+			<p><a href='{callback}'>Click here to view events.</a></p>";
+
+		await this.SendTeamEmailsAsync(
+			values,
+			"Event Rescheduled",
+			emailMessage,
+			currentUser.Id);
 
 		return this.RedirectToAction(
 			nameof(ScheduleController.Details),
@@ -192,11 +219,11 @@ public abstract class ScheduleController<TEvent> : Controller
 
 		Specification<Event> relocateSpec = updateType.ToSpecification(values);
 
-		User currentUser = await this.userManager.FindByNameAsync(this.User.Identity.Name);
-
+		User? currentUser = await this.userManager.GetUserAsync(this.User);
 		Field field = await this.scheduleRepository.GetFieldForEvent(values);
 
-		string emailMessage = $"Event {values.Name} has been relocated to {field.Name}. This change was made by {currentUser.FirstName} {currentUser.LastName}" +
+		string emailMessage =
+			$"Event {values.Name} has been relocated to {field.Name}. This change was made by {currentUser.FirstName} {currentUser.LastName}" +
 			$"<br /><a href=\"{Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
 
 		IEnumerable<Team> teamsChanged = await this.scheduleRepository.GetTeamsForEvent(values);
@@ -229,20 +256,67 @@ public abstract class ScheduleController<TEvent> : Controller
 			.FirstOrDefault();
 
 		Specification<Event> cancelSpec = updateType.ToSpecification(scheduledEvent);
+		await this.scheduleRepository.CancelAsync(cancelSpec);
 
-		User currentUser = await this.userManager.FindByNameAsync(this.User.Identity.Name);
+		User? currentUser = await this.userManager.GetUserAsync(this.User);
 
-		string emailMessage = $"Event {scheduledEvent.Name} has been cancelled by {currentUser.FirstName} {currentUser.LastName}" +
+		string emailMessage = 
+			$"Event {scheduledEvent.Name} has been cancelled by {currentUser.FirstName} {currentUser.LastName}" +
 			$"<br /><a href=\"{Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
 
-		IEnumerable<Team> teamsChanged = await this.scheduleRepository.GetTeamsForEvent(scheduledEvent);
+		await this.SendTeamEmailsAsync(
+			scheduledEvent,
+			"Event Cancelled",
+			emailMessage,
+			currentUser.Id);
 
-		Email.eventChangeEmails("Event Cancelled", emailMessage, teamsChanged.ToList(), currentUser.Id, this.userManager);
-
-		await this.scheduleRepository.CancelAsync(cancelSpec);
 
 		return this.RedirectToAction(
 			nameof(DashboardController.Events),
 			"Dashboard");
+	}
+
+	private async Task SendTeamEmailsAsync(
+		Event scheduledEvent,
+		string subject,
+		string body,
+		Guid currentUserId)
+	{
+		IEnumerable<Team> teams = Enumerable.Empty<Team>();
+		ByCoachSpecification byCurrentUserSpec = new(currentUserId);
+
+		if (scheduledEvent is Practice practice)
+		{
+			ByIdSpecification<Team> byTeamId = new(practice.TeamId);
+			ByCoachSpecification byCurrentUser = new(currentUserId);
+
+			teams = await this.teamRepository.SearchAsync(
+				byTeamId
+					.And(byCurrentUser
+						.Not()));
+		}
+		else if (scheduledEvent is Game game)
+		{
+			ByIdSpecification<Team> byHomeTeamSpec = new(game.HomeTeamId);
+			ByIdSpecification<Team> byOpposingTeamSpec = new(game.OpposingTeamId);
+
+			teams = await this.teamRepository.SearchAsync(
+				byHomeTeamSpec
+					.Or(byOpposingTeamSpec)
+					.And(byCurrentUserSpec
+						.Not()));
+		}
+
+		foreach (Team team in teams)
+		{
+			User? user = await this.userManager.FindByIdAsync(team.UserId.ToString()!);
+
+			if (user is not null &&
+				user.Email is not null)
+			{
+				await this.emailSender.SendAsync(
+					user.Email, subject, body);
+			}
+		}
 	}
 }

@@ -169,17 +169,15 @@ public sealed class IdentityController : Controller
 
 			string body = $@"
 				<p>
-					Welcome to the PCYS Scheduler app!
+					Welcome to the PCYS Scheduler!
 					<br>
 					Your username is {user.UserName} and your password is <span style=\""color: red\"">{{randomPassword}}</span>
 				</p>
-				<p>To begin scheduling events, visit the website att {callback} to log in and change your temporary password.</p>
+				<p>To begin scheduling events, visit the website at {callback} to log in and change your temporary password.</p>
 				<p style=\""text-decoration: underline\"">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";
 
 			await this.emailSender.SendAsync(
-				user.Email,
-				"Welcome to the PCYS Scheduler!",
-				body);
+				user.Email, "Welcome to the PCYS Scheduler!", body);
 
 			this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added!";
 		}
@@ -349,7 +347,8 @@ public sealed class IdentityController : Controller
 				{
 					this.ModelState.AddModelError(string.Empty, error.Description);
 				}
-			}else
+			}
+			else
 			{
 				user.NeedsNewPassword = false;
 			}
@@ -401,6 +400,7 @@ public sealed class IdentityController : Controller
 				{
 					this.ModelState.AddModelError(string.Empty, error.Description);
 				}
+
 				return this.View(viewModel);
 			}
 			else
@@ -422,29 +422,42 @@ public sealed class IdentityController : Controller
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	[AllowAnonymous]
-	public async Task<IActionResult> ForgotPassword(ForgottenPasswordViewModal viewModel)
+	public async ValueTask<IActionResult> ForgotPassword(ForgottenPasswordViewModal viewModel)
 	{
-		if (!ModelState.IsValid)
+		if (!this.ModelState.IsValid)
 		{
 			return this.View(viewModel);
 		}
 
-		var user = await signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+		User? user = await signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+
 		if (user is null)
 		{
-			this.ModelState.AddModelError(string.Empty, "Unable to find an account with that email.");
+			this.ModelState.AddModelError(
+				string.Empty, "Unable to find an account with that email.");
+			
 			return this.View(viewModel);	
 		}
 
-		var token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
-		var callback = Url.Action(nameof(ResetPassword), "Identity", new { token, email = user.Email }, Request.Scheme);
+		string? token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
+		string? callback = this.Url.Action(
+			nameof(this.ResetPassword),
+			"Identity",
+			new { token, email = user.Email },
+			this.Request.Scheme);
 
-		var message = $"<p>A request has been made to reset your password.</p>" +
-			$"<p><a href=\"{callback}\">Click this link</a> to reset your password.";
-
-		Email.sendEmail(viewModel.Email, user.FirstName, "Reset Password Request", message);
+		string body = $@"
+			<p>A request has been made to reset your password.</p>
+			<p><a href='{callback}'>Click this link</a> to reset your password.";
+		
+		if (user.Email is not null)
+		{
+			await this.emailSender.SendAsync(
+				user.Email, "Reset Password", body);
+		}
 
 		this.ViewData["Message"] = "An email has been sent containing a link to reset your password.";
+		
 		return this.View();
 	}
 

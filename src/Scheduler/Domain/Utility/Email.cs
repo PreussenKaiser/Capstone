@@ -41,13 +41,14 @@ public static class Email
 	{
 		List<User> usersToEmail = new List<User>();
 
-		foreach(Team team in changedTeams)
+		foreach (Team team in changedTeams)
 		{
 			User userToAdd = await userManager.FindByIdAsync(team.UserId.ToString());
 			usersToEmail.Add(userToAdd);
 		}
 
-		foreach (User user in usersToEmail) {
+		foreach (User user in usersToEmail)
+		{
 			if (user.Id != currentUser)
 			{
 				sendEmail(user.Email, user.FirstName, subject, body);

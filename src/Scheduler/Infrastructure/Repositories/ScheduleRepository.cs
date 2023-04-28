@@ -188,10 +188,12 @@ public sealed class ScheduleRepository : IScheduleRepository
 		await this.context.SaveChangesAsync();
 	}
 
-	public async Task<IEnumerable<Team>> GetTeamsForEvent(Event eventToSearch) {
+	public async Task<IEnumerable<Team>> GetTeamsForEvent(Event eventToSearch)
+	{
 		List<Team> teams = new();
 
-		if (eventToSearch is Practice) {
+		if (eventToSearch is Practice)
+		{
 			teams = this.context.Teams.Where(team => (eventToSearch as Practice).TeamId == team.Id).ToList();
 		}
 		else if (eventToSearch is Game)

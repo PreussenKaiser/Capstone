@@ -7,6 +7,7 @@ using Scheduler.ViewModels;
 using Scheduler.Domain.Specifications;
 using Scheduler.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Scheduler.Domain.Services;
 
 namespace Scheduler.Web.Controllers.Scheduling;
 
@@ -19,10 +20,13 @@ public sealed class GameController : ScheduleController<Game>
 	/// <summary>
 	/// Initializes the <see cref="GameController"/> class.
 	/// </summary>
-	/// <param name="context">The database to query.</param>
 	/// <param name="scheduleRepository">The repository to execute commands and queries against.</param>
-	public GameController(IScheduleRepository scheduleRepository, UserManager<User> userManager)
-		: base(scheduleRepository, userManager)
+	public GameController(
+		IScheduleRepository scheduleRepository,
+		ITeamRepository teamRepository,
+		IEmailSender emailSender,
+		UserManager<User> userManager)
+			: base(scheduleRepository, teamRepository, emailSender, userManager)
 	{
 	}
 
