@@ -1,34 +1,41 @@
-﻿@model IEnumerable<Event>;
+﻿@using Scheduler.Domain.Repositories;
+@using Scheduler.ViewModels;
+
+@model UpcomingEventsModalViewModel
 
 @{
-    IEnumerable<Team> coachTeams = (IEnumerable<Team>)this.ViewData["CoachTeams"];
-    IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
-    string type = (string)this.ViewData["EventType"];
-    string typeFilterMessage = (string)ViewData["TypeFilterMessage"];
-    string nameFilterMessage = (string)ViewData["NameFilterMessage"];
-    string teamFilterMessage = (string)ViewData["TeamFilterMessage"];
+    string type = this.ViewData["EventType"] as string ?? nameof(Game);
 
+    string? typeFilterMessage = this.ViewData["TypeFilterMessage"] as string;
+    string? nameFilterMessage = this.ViewData["NameFilterMessage"] as string;
+    string? teamFilterMessage = this.ViewData["TeamFilterMessage"] as string;
 }
 
-@if (Model != null && Model.Count() > 0)
+@if (this.Model is not null &&
+     this.Model.Events.Count() > 0)
 {
-    if (typeFilterMessage != "")
+    if (!string.IsNullOrEmpty(typeFilterMessage))
     {
         <h5 class="text-center lead text-danger">@typeFilterMessage</h5>
     }
-    if (nameFilterMessage != "")
+
+    if (!string.IsNullOrEmpty(nameFilterMessage))
     {
         <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
     }
-    if (teamFilterMessage != "")
+
+    if (!string.IsNullOrEmpty(teamFilterMessage))
     {
         <h5 class="text-center lead text-danger">@teamFilterMessage</h5>
     }
+
     <br />
-    @foreach (Team team in coachTeams)
+
+    @foreach (Team team in this.Model.CoachTeams)
     {
         bool load = false;
-        foreach (Event e in Model)
+
+        foreach (Event e in this.Model.Events)
         {
             if (e is Game game)
             {
@@ -45,11 +52,13 @@
                 }
             }
         }
+
         if (load)
         {
-            string caption = $"{type}s for Team {team.Name}";
+            <h5 class="text-center text-danger">
+                @(type)s for Team @team.Name
+            </h5>
 
-            <h5 class="text-center text-danger">@caption</h5>
             <table class="table-bordered w-100 m-auto text-center">
                 <thead>
                     <tr>
@@ -59,13 +68,16 @@
                         <th>Location</th>
                         <th>Team 1</th>
                         <th>Team 2</th>
-                        @if (User.Identity.IsAuthenticated)
+
+                        @if (this.User.Identity is not null &&
+                             this.User.Identity.IsAuthenticated)
                         {
                             <th>Details</th>
                         }
                     </tr>
                 </thead>
-                @foreach (Event e in Model)
+
+                @foreach (Event e in this.Model.Events)
                 {
                     if (e is Game game)
                     {
@@ -76,13 +88,17 @@
                                 <td>@this.Html.DisplayFor(x => e.StartDate)</td>
                                 <td>@this.Html.DisplayFor(x => e.EndDate)</td>
                                 <td>@e.Field?.Name</td>
+
                                 @{
-                                    Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
-                                    Team? awayTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
+                                    Team? homeTeam = this.Model.Teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
+                                    Team? awayTeam = this.Model.Teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
                                 }
+
                                 <td>@homeTeam.Name</td>
                                 <td>@awayTeam.Name</td>
-                                @if (User.Identity.IsAuthenticated)
+
+                                @if (this.User.Identity is not null &&
+                                     this.User.Identity.IsAuthenticated)
                                 {
                                     <td>
                                         <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
@@ -101,18 +117,19 @@
                                 <td>@this.Html.DisplayFor(x => e.EndDate)</td>
                                 <td>@e.Field?.Name</td>
 
-                                    @{
-                                        Team? homeTeam = teams.FirstOrDefault(t => t.Id == practice.TeamId);
-                                    }
+                                @{
+                                    Team? homeTeam = this.Model.Teams.FirstOrDefault(t => t.Id == practice.TeamId);
+                                }
 
                                 <td>@homeTeam.Name</td>
                                 <td class="bg-secondary"></td>
 
-                                    @if (User.Identity.IsAuthenticated)
+                                    @if (this.User.Identity is not null &&
+                                         this.User.Identity.IsAuthenticated)
                                     {
-                                    <td>
-                                        <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
-                                    </td>
+                                        <td>
+                                            <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
+                                        </td>
                                     }
                             </tr>
                         }
@@ -124,15 +141,17 @@
         }
     }
 }
-else if (teamFilterMessage != null || nameFilterMessage != null || typeFilterMessage != null)
+else if (teamFilterMessage is not null ||
+         nameFilterMessage is not null ||
+         typeFilterMessage is not null)
 {
-<h5 class="text-center lead text-danger">@typeFilterMessage</h5>
-<h5 class="text-center lead text-danger" style="white-space: pre-wrap">@teamFilterMessage</h5>
-<h5 class="text-center lead text-danger">@nameFilterMessage</h5>
+    <h5 class="text-center lead text-danger">@typeFilterMessage</h5>
+    <h5 class="text-center lead text-danger" style="white-space: pre-wrap">@teamFilterMessage</h5>
+    <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
 }
 else
 {
-    string message = $"You have no {type}s scheduled";
-
-<h5 class="text-center lead text-danger">@message</h5>
+    <h5 class="text-center lead text-danger">
+        You have no @(type)s scheduled.
+    </h5>
 }

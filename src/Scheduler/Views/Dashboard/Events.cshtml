@@ -12,17 +12,20 @@
 	</div>
 	<div class="row mt-3">
 		<div class="col-md text-end">
-			<button class="btn btn-sm btn-secondary" onclick="gamesModal()">My Scheduled Games</button>
+			<button class="btn btn-sm btn-secondary" onclick="gamesModal()">
+				My Scheduled Games
+			</button>
 		</div>
 		<div class="col-md text-start">
-			<button class="btn btn-sm btn-success" onclick="practicesModal()">My Scheduled Practices</button>
+			<button class="btn btn-sm btn-success" onclick="practicesModal()">
+				My Scheduled Practices
+			</button>
 		</div>
 	</div>
 </div>
 
 			
-<div id="eventModal">
-</div>
+<div id="eventModal"></div>
 
 <div id="calendar">
 	@await this.Component.InvokeAsync("Calendar")
@@ -31,7 +34,7 @@
 <script>
 	function gamesModal() {
 		$.ajax({
-			url: '@Url.Action("coachEvents", "Dashboard")',
+			url: '@this.Url.Action("coachEvents", "Dashboard")',
 			data: {
 				type: 'Game'
 			},
@@ -42,7 +45,7 @@
 	}
 	function practicesModal() {
 		$.ajax({
-			url: '@Url.Action("coachEvents", "Dashboard")',
+			url: '@this.Url.Action("coachEvents", "Dashboard")',
 			data: {
 				type: 'Practice'
 			},

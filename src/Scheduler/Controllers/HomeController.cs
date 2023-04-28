@@ -2,13 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Scheduler.Web.ViewModels;
 using System.Diagnostics;
-using Scheduler.Infrastructure.Extensions;
 using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Scheduler.Filters;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Identity;
 
 namespace Scheduler.Web.Controllers;
 
