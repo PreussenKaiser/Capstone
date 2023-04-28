@@ -215,12 +215,24 @@ public sealed class IdentityController : Controller
 			return this.Problem();
 		}
 
+		bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN);
+
+		User currentUser = await this.signInManager.UserManager.GetUserAsync(this.User);
+
+		bool currentUserIsAdmin = false;
+		if (currentUser != null)
+		{
+			currentUserIsAdmin = await this.signInManager.UserManager.IsInRoleAsync(currentUser, Role.ADMIN);
+		}
+
 		ProfileViewModel viewModel = new()
 		{
 			UserId = user.Id,
 			FirstName = user.FirstName,
 			LastName = user.LastName,
-			Email = user.Email ?? string.Empty
+			Email = user.Email ?? string.Empty,
+			IsAdmin = isAdmin,
+			currentUserIsAdmin = currentUserIsAdmin,
 		};
 
 		return this.View(viewModel);
@@ -253,6 +265,27 @@ public sealed class IdentityController : Controller
 			user.UserName = viewModel.Email;
 			user.Email = viewModel.Email;
 
+			User currentUser = await this.signInManager.UserManager.GetUserAsync(this.User);
+
+			bool isAdmin = false;
+			if (currentUser != null)
+			{
+				isAdmin = await this.signInManager.UserManager.IsInRoleAsync(currentUser, Role.ADMIN);
+			}
+
+			//A non-admin user should not be able to edit roles, not even their own.
+			if (isAdmin)
+			{
+				if (!viewModel.IsAdmin)
+				{
+					await this.signInManager.UserManager.RemoveFromRoleAsync(user, Role.ADMIN);
+				}
+				else if (viewModel.IsAdmin)
+				{
+					await this.signInManager.UserManager.AddToRoleAsync(user, Role.ADMIN);
+				}
+			}
+
 			var result = await this.signInManager.UserManager.UpdateAsync(user);
 
 			if (!result.Succeeded)
@@ -262,7 +295,12 @@ public sealed class IdentityController : Controller
 					this.ModelState.AddModelError(string.Empty, error.Description);
 				}
 			}
-			await this.signInManager.RefreshSignInAsync(user);
+
+			//If the current user is the same as the user being edited, the signin must be refreshed to replace the current token.
+			if (currentUser.Id == user.Id)
+			{
+				await this.signInManager.RefreshSignInAsync(user);
+			}
 		}
 
 		return this.View(viewModel);
