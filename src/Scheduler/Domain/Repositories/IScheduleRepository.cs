@@ -81,18 +81,4 @@ public interface IScheduleRepository
 	/// <param name="cancelSpec">The specification to delete scheduled events by.</param>
 	/// <returns>Whether the task was completed or not.</returns>
 	Task CancelAsync(Specification<Event> cancelSpec);
-
-	/// <summary>
-	/// Returns list of teams for the passed in event.
-	/// </summary>
-	/// <param name="scheduledEvent"></param>
-	/// <returns></returns>
-	Task<IEnumerable<Team>> GetTeamsForEvent(Event eventToSearch);
-
-	/// <summary>
-	/// Returns field for the passed in event.
-	/// </summary>
-	/// <param name="eventToSearch"></param>
-	/// <returns></returns>
-	Task<Field?> GetFieldForEvent(Event eventToSearch);
 }

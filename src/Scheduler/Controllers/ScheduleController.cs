@@ -210,7 +210,8 @@ public abstract class ScheduleController<TEvent> : Controller
 	[HttpPost]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Relocate(
-		TEvent values, UpdateType updateType)
+		TEvent values, UpdateType updateType,
+		[FromServices] IFieldRepository fieldRepository)
 	{
 		if (!this.ModelState.IsValid)
 		{
@@ -219,19 +220,23 @@ public abstract class ScheduleController<TEvent> : Controller
 
 		Specification<Event> relocateSpec = updateType.ToSpecification(values);
 
+		await this.scheduleRepository.RelocateAsync(
+			values, relocateSpec);
+
 		User? currentUser = await this.userManager.GetUserAsync(this.User);
-		Field field = await this.scheduleRepository.GetFieldForEvent(values);
+		Field? field = (await fieldRepository
+			.SearchAsync(new ByIdSpecification<Field>((Guid)values.FieldId)))
+			.FirstOrDefault();
 
 		string emailMessage =
 			$"Event {values.Name} has been relocated to {field.Name}. This change was made by {currentUser.FirstName} {currentUser.LastName}" +
-			$"<br /><a href=\"{Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
+			$"<br /><a href=\"{this.Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
 
-		IEnumerable<Team> teamsChanged = await this.scheduleRepository.GetTeamsForEvent(values);
-
-		Email.eventChangeEmails("Event Relocated", emailMessage, teamsChanged.ToList(), currentUser.Id, this.userManager);
-
-		await this.scheduleRepository.RelocateAsync(
-			values, relocateSpec);
+		await this.SendTeamEmailsAsync(
+			values,
+			"Event Relocated",
+			emailMessage,
+			currentUser.Id);
 
 		return this.RedirectToAction(
 			nameof(ScheduleController.Details),
@@ -262,7 +267,7 @@ public abstract class ScheduleController<TEvent> : Controller
 
 		string emailMessage = 
 			$"Event {scheduledEvent.Name} has been cancelled by {currentUser.FirstName} {currentUser.LastName}" +
-			$"<br /><a href=\"{Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
+			$"<br /><a href=\"{this.Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
 
 		await this.SendTeamEmailsAsync(
 			scheduledEvent,
@@ -270,13 +275,20 @@ public abstract class ScheduleController<TEvent> : Controller
 			emailMessage,
 			currentUser.Id);
 
-
 		return this.RedirectToAction(
 			nameof(DashboardController.Events),
 			"Dashboard");
 	}
 
-	private async Task SendTeamEmailsAsync(
+	/// <summary>
+	/// Sends an email to all user's who's teams where affeced by an <see cref="Event"/> mutation.
+	/// </summary>
+	/// <param name="scheduledEvent">The mutated <see cref="Event"/>.</param>
+	/// <param name="subject">The email's subject.</param>
+	/// <param name="body">Email body.</param>
+	/// <param name="currentUserId">The identifier of the current user.</param>
+	/// <returns>Whether the task was completed or not.</returns>
+	private async ValueTask SendTeamEmailsAsync(
 		Event scheduledEvent,
 		string subject,
 		string body,

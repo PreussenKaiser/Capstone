@@ -187,29 +187,4 @@ public sealed class ScheduleRepository : IScheduleRepository
 
 		await this.context.SaveChangesAsync();
 	}
-
-	public async Task<IEnumerable<Team>> GetTeamsForEvent(Event eventToSearch)
-	{
-		List<Team> teams = new();
-
-		if (eventToSearch is Practice)
-		{
-			teams = this.context.Teams.Where(team => (eventToSearch as Practice).TeamId == team.Id).ToList();
-		}
-		else if (eventToSearch is Game)
-		{
-			teams = this.context.Teams.Where(team => (eventToSearch as Game).HomeTeamId == team.Id || (eventToSearch as Game).OpposingTeamId == team.Id).ToList();
-		}
-
-		return teams;
-	}
-
-	public async Task<Field?> GetFieldForEvent(Event eventToSearch)
-	{
-		Field? field;
-
-		field = await this.context.Fields.Where(field => field.Id == eventToSearch.FieldId).FirstOrDefaultAsync();
-
-		return field;
-	}
 }

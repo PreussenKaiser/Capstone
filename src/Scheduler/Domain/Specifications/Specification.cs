@@ -1,5 +1,4 @@
 ﻿using Scheduler.Domain.Models;
-using Scheduler.Domain.Specifications.Teams;
 using System.Linq.Expressions;
 
 namespace Scheduler.Domain.Specifications;
@@ -31,6 +30,11 @@ public abstract class Specification<TEntity>
 		return predicate(entity);
 	}
 
+	/// <summary>
+	/// Combines this <see cref="Specification{TEntity}"/> and <paramref name="specification"/> into an and/&& operation.
+	/// </summary>
+	/// <param name="specification">The <see cref="Specification{TEntity}"/> on the right side of the operation.</param>
+	/// <returns>The combined specification, this one beng on the left.</returns>
 	public Specification<TEntity> And(Specification<TEntity> specification)
 	{
 		return new AndSpecification<TEntity>(this, specification);
@@ -46,6 +50,10 @@ public abstract class Specification<TEntity>
 		return new OrSpecification<TEntity>(this, specification);
 	}
 
+	/// <summary>
+	/// Negates the current <see cref="Specification{TEntity}"/>.
+	/// </summary>
+	/// <returns>The current <see cref="Specification{TEntity}"/> but negated.</returns>
 	public Specification<TEntity> Not()
 	{
 		return new NotSpecification<TEntity>(this);

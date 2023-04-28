@@ -1,7 +1,7 @@
 ﻿using Scheduler.Domain.Models;
 using System.Linq.Expressions;
 
-namespace Scheduler.Domain.Specifications.Teams;
+namespace Scheduler.Domain.Specifications;
 
 /// <summary>
 /// Combines two specifications into an and/&& operation.
@@ -37,8 +37,8 @@ public sealed class AndSpecification<TEntity> : Specification<TEntity>
 	public override Expression<Func<TEntity, bool>> ToExpression()
 	{
 		ParameterExpression? parameter = Expression.Parameter(typeof(TEntity));
-		Expression<Func<TEntity, bool>>? leftExpr = this.leftSpec.ToExpression();
-		Expression<Func<TEntity, bool>>? rightExpr = this.rightSpec.ToExpression();
+		var leftExpr = this.leftSpec.ToExpression();
+		var rightExpr = this.rightSpec.ToExpression();
 
 		SpecificationVisitor leftVisitor = new(leftExpr.Parameters[0], parameter);
 		Expression? left = leftVisitor.Visit(leftExpr.Body);
