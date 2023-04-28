@@ -344,10 +344,14 @@ public sealed class DashboardController : Controller
 				.Include(g => g.OpposingTeam)
 				.WithScheduling(),
 
+			"Non-Team Events" => this.context.Events
+				.Where(e => !(this.context.Practices.Any(p => p.Id == e.Id) || this.context.Games.Any(g => g.Id == e.Id)))
+				.WithScheduling(),
+
 			_ => this.context.Events
 				.WithScheduling()
 		};
-		
+
 		events = this.dateSearch(start, end, events);
 
 		if(!searchTerm.IsNullOrEmpty())
@@ -488,6 +492,10 @@ public sealed class DashboardController : Controller
 			nameof(Game) => this.context.Games
 				.Include(g => g.HomeTeam)
 				.Include(g => g.OpposingTeam)
+				.WithScheduling(),
+
+			"Non-Team Events" => this.context.Events
+				.Where(e => !(this.context.Practices.Any(p => p.Id == e.Id) || this.context.Games.Any(g => g.Id == e.Id)))
 				.WithScheduling(),
 
 			_ => this.context.Events
