@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Scheduler.Application.Logging;
+using Scheduler.Application.Middleware;
 using Scheduler.Application.Options;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
@@ -25,9 +27,18 @@ builder.Services
 		.UseSqlServer(connectionString)
 		.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking))
 	.AddScoped<IScheduleRepository, ScheduleRepository>()
-	.AddScoped<IFieldRepository, FieldRepository>()
-	.AddScoped<ILeagueRepository, LeagueRepository>()
-	.AddScoped<ITeamRepository, TeamRepository>();
+	.AddScoped<IFieldRepository>(
+		p => new FieldRepositoryLogger(
+				new FieldRepository(p.GetRequiredService<SchedulerContext>()),
+				p.GetRequiredService<ILogger<IFieldRepository>>()))
+	.AddScoped<ILeagueRepository>(
+		p => new LeagueRepositoryLogger(
+				new LeagueRepository(p.GetRequiredService<SchedulerContext>()),
+				p.GetRequiredService<ILogger<ILeagueRepository>>()))
+	.AddScoped<ITeamRepository>(
+		p => new TeamRepositoryLogger(
+				new TeamRepository(p.GetRequiredService<SchedulerContext>()),
+				p.GetRequiredService<ILogger<ITeamRepository>>()));
 
 builder.Services
 	.AddHostedService<ScheduleCullingService>()
@@ -54,6 +65,10 @@ builder.Services
 	.Bind(builder.Configuration.GetSection(CullingOptions.Culling))
 	.ValidateDataAnnotations();
 
+builder.Logging
+	.ClearProviders()
+	.AddTextLogging();
+ 
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())

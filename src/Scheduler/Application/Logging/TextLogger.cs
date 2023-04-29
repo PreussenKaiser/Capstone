@@ -26,10 +26,10 @@ public sealed class TextLogger : ILogger
 	/// <param name="options">Configuration options for <see cref="TextLogger"/>.</param>
 	/// <param name="dateProvider">The API to get dates from.</param>
 	public TextLogger(
-		IOptions<TextLoggerOptions> options,
+		TextLoggerOptions options,
 		IDateProvider dateProvider)
 	{
-		this.options = options.Value;
+		this.options = options;
 		this.dateProvider = dateProvider;
 	}
 
@@ -43,7 +43,7 @@ public sealed class TextLogger : ILogger
 	/// <inheritdoc/>
 	public bool IsEnabled(LogLevel logLevel)
 	{
-		throw new NotImplementedException();
+		return this.options.Default == logLevel;
 	}
 
 	/// <inheritdoc/>
