@@ -44,6 +44,8 @@ public sealed class FieldRepositoryLogger : IFieldRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -62,6 +64,8 @@ public sealed class FieldRepositoryLogger : IFieldRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 
 		return fields ?? Enumerable.Empty<Field>();
@@ -79,6 +83,8 @@ public sealed class FieldRepositoryLogger : IFieldRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -94,6 +100,8 @@ public sealed class FieldRepositoryLogger : IFieldRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 }

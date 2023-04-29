@@ -44,6 +44,8 @@ public sealed class LeagueRepositoryLogger : ILeagueRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -61,6 +63,8 @@ public sealed class LeagueRepositoryLogger : ILeagueRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 
 		return leagues ?? Enumerable.Empty<League>();
@@ -78,6 +82,8 @@ public sealed class LeagueRepositoryLogger : ILeagueRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -93,6 +99,8 @@ public sealed class LeagueRepositoryLogger : ILeagueRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 }

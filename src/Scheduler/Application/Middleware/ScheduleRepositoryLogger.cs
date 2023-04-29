@@ -44,6 +44,8 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -60,6 +62,8 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 
 		return events ?? Enumerable.Empty<Event>();
@@ -79,6 +83,8 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -94,6 +100,8 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -110,6 +118,8 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -126,6 +136,8 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -141,6 +153,8 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -156,6 +170,8 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 }

@@ -44,6 +44,8 @@ public sealed class TeamRepositoryLogger : ITeamRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -62,6 +64,8 @@ public sealed class TeamRepositoryLogger : ITeamRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 
 		return teams ?? Enumerable.Empty<Team>();
@@ -79,6 +83,8 @@ public sealed class TeamRepositoryLogger : ITeamRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 
@@ -94,6 +100,8 @@ public sealed class TeamRepositoryLogger : ITeamRepository
 		catch (Exception exception)
 		{
 			this.logger.LogError(exception.Message);
+
+			throw;
 		}
 	}
 }
