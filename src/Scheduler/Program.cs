@@ -26,7 +26,10 @@ builder.Services
 	.AddDbContext<SchedulerContext>(o => o
 		.UseSqlServer(connectionString)
 		.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking))
-	.AddScoped<IScheduleRepository, ScheduleRepository>()
+	.AddScoped<IScheduleRepository>(
+		p => new ScheduleRepositoryLogger(
+				new ScheduleRepository(p.GetRequiredService<SchedulerContext>()),
+				p.GetRequiredService<ILogger<IScheduleRepository>>()))
 	.AddScoped<IFieldRepository>(
 		p => new FieldRepositoryLogger(
 				new FieldRepository(p.GetRequiredService<SchedulerContext>()),
@@ -42,6 +45,7 @@ builder.Services
 
 builder.Services
 	.AddHostedService<ScheduleCullingService>()
+	.AddHostedService<LogCullingService>()
 	.AddSingleton<IDateProvider, SystemDateProvider>();
 
 builder.Services
@@ -70,6 +74,8 @@ builder.Logging
 	.AddTextLogging();
  
 WebApplication app = builder.Build();
+
+app.UseMiddleware<LoggingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

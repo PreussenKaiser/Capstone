@@ -59,20 +59,24 @@ public sealed class ScheduleCullingService : BackgroundService
 				using (IServiceScope scope = this.serviceProvider.CreateScope())
 				{
 					// TODO: Catch possible exception then log.
-					IScheduleRepository scheduleRepository = scope.ServiceProvider.GetRequiredService<IScheduleRepository>();
+					IScheduleRepository scheduleRepository = scope
+						.ServiceProvider
+						.GetRequiredService<IScheduleRepository>();
 
 					await scheduleRepository.CancelAsync(
 						new PastEventSpecification(new SystemDateProvider()));
 				}
 
-				DateTime nextDay = this.dateProvider.Today.AddDays(1);
+				DateTime nextDay = this.dateProvider.Today.AddDays(this.options.Interval);
 				TimeSpan timeToWait = nextDay + cullTime - this.dateProvider.Now;
 
 				await Task.Delay(timeToWait, stoppingToken);
 			}
 			else
 			{
-				await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+				await Task.Delay(
+					TimeSpan.FromMinutes(1),
+					stoppingToken);
 			}
 		}
 	}

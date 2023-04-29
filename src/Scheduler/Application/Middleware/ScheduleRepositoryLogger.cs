@@ -7,7 +7,7 @@ namespace Scheduler.Application.Middleware;
 /// <summary>
 /// Adds logging to a <see cref="IScheduleRepository"/>.
 /// </summary>
-public sealed class ScheduleRepositryLogger : IScheduleRepository
+public sealed class ScheduleRepositoryLogger : IScheduleRepository
 {
 	/// <summary>
 	/// The repository to add logging to.
@@ -20,11 +20,11 @@ public sealed class ScheduleRepositryLogger : IScheduleRepository
 	private readonly ILogger<IScheduleRepository> logger;
 
 	/// <summary>
-	/// Initializes the <see cref="ScheduleRepositryLogger"/> class.
+	/// Initializes the <see cref="ScheduleRepositoryLogger"/> class.
 	/// </summary>
 	/// <param name="scheduleRepository">The repository to log.</param>
 	/// <param name="logger">The logger to use.</param>
-	public ScheduleRepositryLogger(
+	public ScheduleRepositoryLogger(
 		IScheduleRepository scheduleRepository,
 		ILogger<IScheduleRepository> logger)
 	{

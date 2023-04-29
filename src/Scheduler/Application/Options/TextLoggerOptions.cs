@@ -1,4 +1,6 @@
-﻿namespace Scheduler.Application.Options;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Scheduler.Application.Options;
 
 /// <summary>
 /// Configuration options for text logging.
@@ -19,4 +21,9 @@ public sealed class TextLoggerOptions
 	/// Gets the file path to log to.
 	/// </summary>
 	public required string FilePath { get; init; }
+
+    /// <summary>
+    /// Options for culling the log file.
+    /// </summary>
+	public required CullingOptions Culling { get; init; }
 }

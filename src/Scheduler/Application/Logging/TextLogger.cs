@@ -20,6 +20,8 @@ public sealed class TextLogger : ILogger
 	/// </summary>
 	private readonly IDateProvider dateProvider;
 
+	private readonly static object locker;
+
 	/// <summary>
 	/// Initializes the <see cref="TextLogger"/> class.
 	/// </summary>
@@ -31,6 +33,14 @@ public sealed class TextLogger : ILogger
 	{
 		this.options = options;
 		this.dateProvider = dateProvider;
+	}
+
+	/// <summary>
+	/// Initializes static members.
+	/// </summary>
+	static TextLogger()
+	{
+		locker = new object();
 	}
 
 	/// <inheritdoc/>
@@ -59,12 +69,10 @@ public sealed class TextLogger : ILogger
 
 		string filePath = $"{executingPath}\\{this.options.FilePath}";
 
-		using StreamWriter writer = new StreamWriter(filePath, true);
-
-		// Trying to make this thread-safe.
-		// Will throw an exception if multiple threads write to a file.
-		lock (writer)
+		lock (locker)
 		{
+			using StreamWriter writer = new StreamWriter(filePath, true);
+
 			writer.WriteLine($"[{eventId.Id, 2}: {logLevel, -12}]");
 			writer.Write($"{this.dateProvider.Now.ToLongTimeString()}: ");
 			writer.WriteLine($"{formatter(state, exception)}");

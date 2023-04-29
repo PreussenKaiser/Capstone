@@ -17,4 +17,10 @@ public sealed class CullingOptions
 	/// </summary>
 	[Range(1, 24)]
 	public required byte Time { get; init; }
+
+	/// <summary>
+	/// Gets the interval on when to cull in days.
+	/// </summary>
+	[Range(1, 366)]
+	public required ushort Interval { get; init; }
 }
