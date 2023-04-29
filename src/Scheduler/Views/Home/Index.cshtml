@@ -18,12 +18,14 @@
         <div class="btn-group mb-2 noPrintIfModal">
             <form action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
                 <div>
-                    <button type="button" class="btn btn-sm btn-secondary" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule</button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Search the Schedule using specific criteria"></i></button>
                     <ul class="dropdown-menu p-3" id="homepage-dropdown">
                         <h5 class="lead text-danger text-center">Search Criteria</h5>
                         <div>
                             <div class="form-label">
-                                <label class="form-label">Event Date(s)</label>
+                                <label class="form-label">
+                                    Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br />Once the desired dates are selected and shown at the bottom, click 'Apply' and confirm that the desired dates show in the resulting box.<br /><br />DO NOT click outside of the datepicker box without clicking 'Apply' or the new dates will NOT be applied."></i>
+                                </label>
                                 <input type="text" name="daterange" class="text-center form-control" />
                             </div>
                             <div>
