@@ -23,7 +23,7 @@ public sealed class CullingTests
 
 	public CullingTests()
 	{
-		CullingOptions options = new() { Time = 3 };
+		CullingOptions options = new() { Time = 3, Interval = 1 };
 		this.options = new Mock<IOptions<CullingOptions>>();
 
 		this.options

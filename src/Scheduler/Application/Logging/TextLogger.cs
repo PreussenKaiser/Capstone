@@ -20,6 +20,9 @@ public sealed class TextLogger : ILogger
 	/// </summary>
 	private readonly IDateProvider dateProvider;
 
+	/// <summary>
+	/// Used to ensure thread-safety for file writing.
+	/// </summary>
 	private readonly static object locker;
 
 	/// <summary>
