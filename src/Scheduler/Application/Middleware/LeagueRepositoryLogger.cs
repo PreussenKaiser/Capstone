@@ -56,7 +56,7 @@ public sealed class LeagueRepositoryLogger : ILeagueRepository
 		{
 			leagues = await this.leagueRepository.SearchAsync(searchSpec);
 
-			this.logger.LogInformation("Leagues successfully queried");
+			this.logger.LogInformation($"{leagues.Count()} leagues queried.");
 		}
 		catch (Exception exception)
 		{

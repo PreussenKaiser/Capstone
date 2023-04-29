@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Scheduler.Application.Options;
 using Scheduler.Domain.Services;
 using System.Reflection;
@@ -61,8 +61,13 @@ public sealed class TextLogger : ILogger
 
 		using StreamWriter writer = new StreamWriter(filePath);
 
-		writer.WriteLine($"[{eventId.Id,2}: {logLevel,-12}]");
-		writer.Write($"{this.dateProvider.Now.ToLongTimeString()}");
-		writer.WriteLine($"{formatter(state, exception)}");
+		// Trying to make this thread-safe.
+		// Will throw an exception if multiple threads write to a file.
+		lock (writer)
+		{
+			writer.WriteLine($"[{eventId.Id, 2}: {logLevel, -12}]");
+			writer.Write($"{this.dateProvider.Now.ToLongTimeString()}: ");
+			writer.WriteLine($"{formatter(state, exception)}");
+		}
 	}
 }

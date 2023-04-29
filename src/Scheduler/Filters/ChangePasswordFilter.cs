@@ -6,9 +6,9 @@ using Scheduler.Web.Controllers;
 
 namespace Scheduler.Filters;
 
-public sealed class ChangePasswordFilter: AuthorizeAttribute, IAuthorizationFilter
+public sealed class ChangePasswordFilter : AuthorizeAttribute, IAuthorizationFilter
 {
-	private SchedulerContext context;
+	private readonly SchedulerContext context;
 
 	public ChangePasswordFilter(SchedulerContext? context)
 	{
@@ -20,9 +20,12 @@ public sealed class ChangePasswordFilter: AuthorizeAttribute, IAuthorizationFilt
 		if (filterContext.HttpContext.User.Identity.IsAuthenticated)
 		{
 			var user = this.context.Users.FirstOrDefault(u => u.UserName == filterContext.HttpContext.User.Identity.Name);
+			
 			if (user.NeedsNewPassword)
 			{
-				filterContext.Result = new RedirectToActionResult(nameof(IdentityController.ForceReset), "Identity", null);
+				filterContext.Result = new RedirectToActionResult(
+					nameof(IdentityController.ForceReset),
+					"Identity", null);
 			}
 		}
 	}
