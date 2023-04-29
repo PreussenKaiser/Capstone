@@ -59,7 +59,7 @@ public sealed class TextLogger : ILogger
 
 		string filePath = $"{executingPath}\\{this.options.FilePath}";
 
-		using StreamWriter writer = new StreamWriter(filePath);
+		using StreamWriter writer = new StreamWriter(filePath, true);
 
 		// Trying to make this thread-safe.
 		// Will throw an exception if multiple threads write to a file.
