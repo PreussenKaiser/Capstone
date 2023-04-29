@@ -52,7 +52,7 @@ public sealed class LeagueRepositoryLogger : ILeagueRepository
 	/// <inheritdoc/>
 	public async Task<IEnumerable<League>> SearchAsync(Specification<League> searchSpec)
 	{
-		IEnumerable<League>? leagues = null;
+		IEnumerable<League>? leagues;
 
 		try
 		{

@@ -53,7 +53,7 @@ public sealed class TeamRepositoryLogger : ITeamRepository
 	public async Task<IEnumerable<Team>> SearchAsync(
 		Specification<Team> searchSpec)
 	{
-		IEnumerable<Team>? teams = null;
+		IEnumerable<Team>? teams;
 
 		try
 		{
