@@ -40,8 +40,6 @@ builder.Services
 		opt.Lockout.MaxFailedAccessAttempts = 10;
 	})
 	.AddEntityFrameworkStores<SchedulerContext>()
-	.AddDefaultTokenProviders()
-	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
 
 builder.Services.AddScoped<User>();
