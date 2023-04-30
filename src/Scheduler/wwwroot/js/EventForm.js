@@ -5,22 +5,10 @@
 function navClick(eventType) {
     const eventInputs = $('#eventInputs')
 
-    const refreshInputs = eventType == 'Event'
-        ? eventInputs.empty()
-        : (result) => {
-            eventInputs.empty();
-            eventInputs.html(result);
-        }
-
-    $.ajax({
-        type: 'GET',
-        url: '/Schedule/RenderInputs',
-        data: { type: eventType},
-        success: refreshInputs
-    })
-
+    
     refreshNav(eventType)
 }
+
 
 /**
  * Refreshes navbar to show the current event type as active.
@@ -40,3 +28,4 @@ function refreshNav(eventType) {
     title.empty()
     title.html(eventType)
 }
+

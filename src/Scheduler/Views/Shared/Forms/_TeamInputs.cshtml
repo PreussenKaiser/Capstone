@@ -35,7 +35,8 @@
     </div>
     <div class="col-sm-6">
         <label asp-for="UserId" class="form-label">Coach</label>
-        <select asp-for="UserId" class="form-select">
+        <select asp-for="UserId" name="coachName" id="coachName" class="form-select">
+            <option value=""></option>
             @foreach (var user in UserList)
             {
                 <option value=@user.Value>@user.Text</option>
@@ -60,3 +61,4 @@
         </button>
     </div>
 </div>
+

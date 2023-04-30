@@ -8,6 +8,7 @@
 
 @{
     this.ViewData["Title"] = "Schedule";
+    bool isAdmin = User.IsInRole(Role.ADMIN);
 
     string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
     string eventType = this.ViewData["EventType"] as string
@@ -109,12 +110,17 @@
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
 
-                    <div id="eventInputs"></div>
+                    <div id="practiceInputs" style="display:none;">
+                            <partial name="Forms/_PracticeInputs" />
+                    </div>
+                    <div id="gameInputs" style="display:none;">
+                            <partial name="Forms/_GameInputs" />
+                    </div>
                 </div>
                 <div class="col-sm-6">
                     <div class="mb-3">
                         <label asp-for="FieldId" class="form-label"></label>
-                        <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields">
+                        <select data-val="false" name="fieldSelect" id="fieldSelect" class="form-select" asp-for="FieldId" asp-items="fields">
 
                         </select>
                         <span asp-validation-for="FieldId" class="text-danger"></span>
@@ -168,7 +174,56 @@
     <script src="~/js/RecurrenceForm.js"></script>
     <script src="~/js/EventForm.js"></script>
     <script>
-        document.onload = navClick('@eventType');
+        $(document).ready(function () {
+            var isAdmin = '@User.IsInRole(Role.ADMIN)';
+            if (isAdmin.toLowerCase() === 'true') {
+                $('#practiceInputs').hide();
+                $('#gameInputs').hide();
+            } else {
+                $('#practiceInputs').show();
+            }
+            $('#Event').click(function () {
+                $('#practiceInputs').hide();
+                $('#gameInputs').hide();
+            });
+            $('#Practice').click(function () {
+                $('#practiceInputs').show();
+                $('#gameInputs').hide();
+            });
+            $('#Game').click(function () {
+                $('#practiceInputs').hide();
+                $('#gameInputs').show();
+            });
+        });
+        $(document).ready(function () {
+            navClick('@eventType');
+            $("#fieldSelect").chosen({
+                no_results_text: "Sorry, I can't find that field!",
+                placeholder_text_single: "Start typing to select a field...",
+                width: "100%",
+                search_contains: true
+            });
+            $("#homeTeam").chosen({
+                no_results_text: "Sorry, I can't find that team!",
+                placeholder_text_single: "Start typing to select a team...",
+                width: "100%",
+                search_contains: true
+            });
+
+            $("#opposingTeam").chosen({
+                no_results_text: "Sorry, I can't find that team!",
+                placeholder_text_single: "Start typing to select a team...",
+                width: "100%",
+                search_contains: true
+            });
+
+            $("#practiceTeam").chosen({
+                no_results_text: "Sorry, I can't find that team!",
+                placeholder_text_single: "Start typing to select a team...",
+                width: "100%",
+                search_contains: true
+            });
+        });
     </script>
     <script>
         var startDateString = "@startDateString";

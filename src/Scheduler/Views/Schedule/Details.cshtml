@@ -262,7 +262,7 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label asp-for="FieldId" class="form-label"></label>
-                                                        <select data-val="false" asp-for="FieldId" asp-items="fieldList" class="form-select"></select>
+                                                        <select data-val="false" asp-for="FieldId" id="fieldSelect" name="fieldSelect" asp-items="fieldList" class="form-select"></select>
                                                         <span asp-validation-for="FieldId" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -299,6 +299,34 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script>
+    $(document).ready(function () {
+
+        $("#fieldSelect").chosen({
+            no_results_text: "Sorry, I can't find that Team!",
+            placeholder_text_single: "Start typing to select a Team...",
+            width: "100%",
+            search_contains: true
+        });
+                $("#homeTeam").chosen({
+                    no_results_text: "Sorry, I can't find that coach!",
+                    placeholder_text_single: "Start typing to select a coach...",
+                    width: "100%",
+                    search_contains: true
+                });
+            $("#opposingTeam").chosen({
+                no_results_text: "Sorry, I can't find that coach!",
+                placeholder_text_single: "Start typing to select a coach...",
+                width: "100%",
+                search_contains: true
+            });
+            $("#practiceTeam").chosen({
+                no_results_text: "Sorry, I can't find that coach!",
+                placeholder_text_single: "Start typing to select a coach...",
+                width: "100%",
+                search_contains: true
+            });
+    });
+
      var startDateString = "@startDateString";
      var endDateString = "@endDateString";
      var minDateString = "@today";
