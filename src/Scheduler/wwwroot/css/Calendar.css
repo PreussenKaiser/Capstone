@@ -2,15 +2,12 @@
     border: none;
 }
 
-.calendar table td, th {
-    width: 130px;
+.calendar td, th {
+    width: 12.5%;
 }
 
-.calendar table td {
-    height: 130px;
-}
-
-.calendar table td {
+.calendar td {
+    height: 120px;
 }
 
 .calendar-title {
@@ -134,3 +131,95 @@
     background:lightblue;
 }
 
+/* Mobile Calendar Styling */
+@media (min-width: 1025px) {
+
+    .calendar-full {
+        visibility: visible;
+    }
+    .calendar-mobile {
+        display: none;
+    }
+}
+@media (max-width: 1024px) {
+
+    .calendar-full {
+        display: none;
+    }
+
+    .calendar-mobile {
+        visibility: visible;
+    }
+
+    .calendar td {
+        height: 75px;
+    }
+
+    .calendar-mobile {
+        table-layout: fixed;
+    }
+
+    .calendar-title {
+        font-size: 30px !important;
+    }
+
+    .calendar-event {
+        font-size: 12px;
+    }
+
+    .calendar-date {
+        display: block;
+        width: 30px;
+        justify-content: center;
+        border: none;
+    }
+
+    .right-arrow {
+        font-size: 45px;
+        display: block;
+        float: right;
+        margin-right: 0px;
+    }
+
+    .left-arrow {
+        font-size: 45px;
+        display: block;
+        float: left;
+        margin-left: 0px;
+    }
+
+    .table-format {
+        border: none;
+    }
+
+    .clickable-cell {
+        font-size: 12px;
+        color: green;
+    }
+
+    .clickable-grid {
+        font-size: 12px;
+        color: darkblue;
+    }
+
+    .calendar-date {
+        font-size: 16px;
+        color: black;
+    }
+}
+
+@media (max-width: 360px) {
+    .clickable-cell {
+        font-size: 9px;
+    }
+
+    .clickable-grid {
+        font-size: 9px;
+        color: darkblue;
+    }
+
+    .calendar-date {
+        font-size: 14px;
+        color: black;
+    }
+}
