@@ -61,11 +61,18 @@ public sealed class IdentityController : Controller
 			viewModel.Email,
 			viewModel.Password,
 			viewModel.PersistUser,
-			lockoutOnFailure: false);
+			lockoutOnFailure: true);
 
 		if (!result.Succeeded)
 		{
-			this.ModelState.AddModelError(string.Empty, "Incorrect credentials, please try again.");
+			if (result.IsLockedOut)
+			{
+				this.ModelState.AddModelError(string.Empty, "This account is unavailable. Please reset your password or wait 15 minutes to try again.");
+			}
+			else
+			{
+				this.ModelState.AddModelError(string.Empty, "Incorrect credentials, please try again.");
+			}
 
 			return this.View(viewModel);
 		}
@@ -129,7 +136,8 @@ public sealed class IdentityController : Controller
 			Email = viewModel.Email,
 			FirstName = viewModel.FirstName,
 			LastName = viewModel.LastName,
-			NeedsNewPassword = true
+			NeedsNewPassword = true,
+			LockoutEnabled = true
 		};
 
 		string randomPassword = Password.Random();

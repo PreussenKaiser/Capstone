@@ -34,7 +34,11 @@ builder.Services
 	.AddSingleton<IDateProvider, SystemDateProvider>();
 
 builder.Services
-	.AddIdentity<User, Role>()
+	.AddIdentity<User, Role>(opt =>
+	{
+		opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+		opt.Lockout.MaxFailedAccessAttempts = 10;
+	})
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders()
 	.AddEntityFrameworkStores<SchedulerContext>()
