@@ -115,7 +115,4 @@ body {
     .theme-mobile-nav, .sidebarIconToggle {
         display: block;
     }
-    .calendar-title, .monthly-arrow {
-        font-size: 35px !important;
-    }
 }

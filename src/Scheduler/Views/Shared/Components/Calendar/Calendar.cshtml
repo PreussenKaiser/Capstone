@@ -23,11 +23,12 @@
     int nextMonth = (int)ViewData["nextMonth"];
     int currentMonth = (int)ViewData["Month"];
     int currentYear = (int)ViewData["Year"];
+    string currentMonthName = (string)ViewData["MonthName"];
 }
 
-<div class="calendar noPrintIfModal">
+<div class="calendar noPrintIfModal table-responsive w-100 m-auto">
 
-    <table class="table table-bordered">
+    <table id="calendar-full" class="table table-bordered calendar-full">
         <thead>
             <tr>
                 <th colspan="2" class="text-center">
@@ -113,17 +114,15 @@
 
                                 @if (currentWeek[ii + 6] != "0")
                                 {
-                                    <br />
                                     @if (currentWeek[ii + 6] == "1")
                                     {
-                                        <span class="text-center">@currentWeek[ii+6] Event</span>
+                                        <span class="calendar-event">@currentWeek[ii+6] Event</span>
                                     }
                                     else
                                     {
-                                        <span class="text-center">@currentWeek[ii+6] Events</span>
+                                        <span class="calendar-event">@currentWeek[ii+6] Events</span>
                                     }
-                                    <br />
-                                    <br />
+                                    <hr>
                                     <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">LIST</button>
                                     @if (this.SignInManager.IsSignedIn(this.User))
                                     {
@@ -132,10 +131,8 @@
                                 }
                                 else
                                 {
-                                    <br />
-                                    <span class="text-center">No Events</span>
-                                    <br />
-                                    <br />
+                                    <span class="calendar-event">No Events</span>
+                                    <hr>
                                     @if (this.SignInManager.IsSignedIn(this.User))
                                     {
                                         <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID</button>
@@ -149,12 +146,133 @@
         </tbody>
     </table>
 
+    <table id="calendar-mobile" class="table table-bordered calendar-mobile w-100 m-auto">
+        <thead>
+            <tr aria-hidden="true" class="table-format">
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <th>
+                    @if ((int)ViewData["PreviousMonth"] != 0)
+                    {
+                        <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
+                    }
+                    else
+                    {
+                        <button class="monthly-arrow left-arrow arrow-disabled">&#8592;</button>
+                    }
+                </th>
+                <th class="text-center align-middle calendar-title" colspan="5">
+                    @currentMonthName
+                    @currentYear
+                </th>
+                <th>
+                    <button class="monthly-arrow right-arrow" onclick="RefreshCalendar(@nextYear, @nextMonth)">&#8594;</button>
+                </th>
+            </tr>
+            <tr class="text-start">
+                <th colspan="4"><button class="btn btn-sm btn-danger" onclick="monthModal(@currentYear, @currentMonth)">MONTHLY EVENTS</button></th>
+            </tr>
+            <tr class="text-center">
+                <th>Sun</th>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 1; i < weeks + 1; i++)
+            {
+                List<string> currentWeek = (List<string>)ViewData["Week" + i + "List"];
+
+                <tr>
+                    
+                    @for (int ii = 0; ii < 49; ii += 7)
+                    {
+
+                        @if (currentWeek[ii + 3] == "active")
+                        {
+                            DateTime buttonDate = DateTime.Parse(currentWeek[ii]);
+
+                            if (currentWeek[ii + 6] != "0")
+                            {
+                                <td class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center clickable-cell"
+                    data-year="@buttonDate.Year" data-month="@buttonDate.Month" data-date="@buttonDate.Day">
+                                    <span class="calendar-date text-center">@currentWeek[ii+1]</span>
+                                    Click for Events
+                                </td>
+                            }
+                            else if (User.Identity.IsAuthenticated)
+                            {
+                                <td class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center clickable-grid"
+                    data-year="@buttonDate.Year" data-month="@buttonDate.Month" data-date="@buttonDate.Day">
+                                    <span class="calendar-date text-center">@currentWeek[ii+1]</span>
+                                    Click for Grid
+                                </td>
+                            }
+                            else
+                            {
+                               <td class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center">
+                                    <span class="calendar-date text-center">@currentWeek[ii+1]</span>
+                               </td> 
+                            }
+                        }
+                        else
+                        {
+                           <td class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center">
+                                <span class="calendar-date text-center">@currentWeek[ii+1]</span>
+                           </td> 
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<div id="gridmodal">
+
 </div>
 
 <div id="modal">
 </div>
 
 <script>
+    var calendar = document.getElementById('calendar-full');
+    calendar.removeEventListener('click', handleClick);
+
+    var mobileCalendar = document.getElementById('calendar-mobile');
+    mobileCalendar.addEventListener('click', handleClick);
+
+    function handleClick(event) {
+        var target = event.target;
+        if (target.classList.contains('clickable-cell')) {
+            var year = target.getAttribute('data-year') || new Date().getFullYear();
+            var month = target.getAttribute('data-month') || new Date().getMonth();
+            var date = target.getAttribute('data-date') || new Date().getDate();
+
+            dayModal(year, month, date);
+        }
+        if (target.classList.contains('clickable-grid')) {
+            var year = target.getAttribute('data-year') || new Date().getFullYear();
+            var month = target.getAttribute('data-month') || new Date().getMonth();
+            var date = target.getAttribute('data-date') || new Date().getDate();
+
+            gridModal(year, month, date);
+        }
+    }
+
+
     (function () {
         // Get the select elements from the calendar.
         const monthSelect = document.getElementById("month");
@@ -203,9 +321,7 @@
                     monthSelect.options[i].disabled = false;
                 }
             }
-        }
-
-        
+        }        
 
         // Call the function to gray out past months on page load
         grayOutPastMonths();
