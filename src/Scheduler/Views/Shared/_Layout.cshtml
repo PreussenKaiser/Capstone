@@ -87,6 +87,17 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script type="text/javascript" src="~/js/chosen.jquery.js"></script>
     <script src="~/js/NavBar.js"></script>
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+    <style>
+        .custom-tooltip .tooltip-inner {
+            max-width: 500px;
+        }
+    </style>
     @await this.RenderSectionAsync("Scripts", false)
 </body>
 </html>
