@@ -74,7 +74,7 @@
                 </th>
             </tr>
             <tr class="text-center">
-                <th><button class="btn btn-sm btn-danger" onclick="monthModal(@currentYear, @currentMonth)">Monthly List</button></th>
+                <th><button class="btn btn-sm btn-danger month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a List of all Events for this Month."></i></button></th>
                 <th>Sunday</th>
                 <th>Monday</th>
                 <th>Tuesday</th>
@@ -99,7 +99,7 @@
                         }
                         @if (endOfWeek >= currentDay)
                         {
-                            <button class="btn btn-sm btn-warning" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List</button>
+                            <button class="btn btn-sm btn-warning" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a List of all Events for this Week."></i></button>
                         }
                     </td>
 
@@ -123,10 +123,10 @@
                                         <span class="calendar-event">@currentWeek[ii+6] Events</span>
                                     }
                                     <hr>
-                                    <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">LIST</button>
+                                    <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">LIST <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="View a List of all Events for this Day."></i></button>
                                     @if (this.SignInManager.IsSignedIn(this.User))
                                     {
-                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID</button>
+                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Access the Interactive Scheduling Grid for this Day."></i></button>
                                     }
                                 }
                                 else
@@ -135,7 +135,7 @@
                                     <hr>
                                     @if (this.SignInManager.IsSignedIn(this.User))
                                     {
-                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID</button>
+                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Access the Interactive Scheduling Grid for this Day."></i></button>
                                     }
                                 }
                             }
@@ -177,7 +177,7 @@
                 </th>
             </tr>
             <tr class="text-start">
-                <th colspan="4"><button class="btn btn-sm btn-danger" onclick="monthModal(@currentYear, @currentMonth)">MONTHLY EVENTS</button></th>
+                <th colspan="4"><button class="btn btn-sm btn-danger" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a List of all Events for this Month."></i></button></th>
             </tr>
             <tr class="text-center">
                 <th>Sun</th>

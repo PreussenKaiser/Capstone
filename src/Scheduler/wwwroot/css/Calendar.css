@@ -76,7 +76,7 @@
 }
 
 .day-button {
-    padding: 2px;
+    padding: 1px;
     width: 45%;
     max-height: 20px;
     border-radius: 0px;
@@ -135,28 +135,32 @@
 @media (min-width: 1025px) {
 
     .calendar-full {
-        visibility: visible;
+        visibility: visible !important;
     }
     .calendar-mobile {
-        display: none;
+        display: none !important;
+    }
+    .month-button {
+        font-size:13px;
     }
 }
 @media (max-width: 1024px) {
 
     .calendar-full {
-        display: none;
+        display: none !important;
     }
 
     .calendar-mobile {
-        visibility: visible;
+        visibility: visible !important;
+        table-layout: fixed;
     }
 
     .calendar td {
         height: 75px;
     }
 
-    .calendar-mobile {
-        table-layout: fixed;
+    .month-button {
+        font-size: 14px;
     }
 
     .calendar-title {

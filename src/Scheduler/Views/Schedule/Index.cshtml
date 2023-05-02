@@ -113,14 +113,14 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="mb-3">
-                        <label asp-for="FieldId" class="form-label"></label>
+                        <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please Select One Field from the List, or use the Blackout Facility Option below to Choose All Fields."></i></label>
                         <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields">
 
                         </select>
                         <span asp-validation-for="FieldId" class="text-danger"></span>
                     </div>
                     <div class="col-lg">
-                        <label class="form-label">Event Time <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />DO NOT click outside of the datepicker box without clicking 'Apply' or the new dates and times will NOT be applied."></i></label>
+                        <label class="form-label">Event Time <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />DO NOT click outside of the datepicker box without clicking 'Apply' or the new dates and times will NOT be applied."></i></label>
                         <input type="text" name="daterange" class="text-center form-control" />
                         </div>
                     <div>
@@ -135,11 +135,11 @@
                     <div class="row mb-3">
                         <div class="form-check mb-3">
                             <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                            <label asp-for="IsBlackout" class="form-check-label"></label>
+                            <label asp-for="IsBlackout" class="form-check-label">Blackout Facility <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Use this to Schedule your Event to Occur on Every Field in the Facility."></i></label>
                         </div>
                         <div class="form-check mb-3">
                             <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                            <label class="form-check-label">Repeating?</label>
+                            <label class="form-check-label">Repeating <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Use this to Schedule your Event to Repeat for a Set Number of Occurrences, Daily, Weekly, or Monthly."></i></label>
                         </div>
                         <div id="recurrenceInputs">
                         </div>
