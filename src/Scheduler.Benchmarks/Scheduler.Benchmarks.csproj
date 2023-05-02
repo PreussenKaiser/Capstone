@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
+    <PackageReference Include="jQuery" Version="3.6.4" />
+    <PackageReference Include="jQuery.Validation" Version="1.19.5" />
   </ItemGroup>
 
   <ItemGroup>
