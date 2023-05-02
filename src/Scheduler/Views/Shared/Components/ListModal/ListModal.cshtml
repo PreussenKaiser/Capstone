@@ -58,6 +58,10 @@
                 </div>
             </div>
             <div class="modal-footer noPrintIfModal">
+                @if (User.Identity.IsAuthenticated && startTime.Day == endTime.Day)
+                {
+                    <button class="d-flex btn btn-sm btn-dark calendar-mobile" data-bs-dismiss="modal" onclick="gridModal(@startTime.Year, @startTime.Month, @startTime.Day)">Scheduling Grid</button>
+                }
                 <button class="btn btn-sm btn-secondary" onclick="window.print()">Print These Results</button>
                 <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
@@ -118,6 +122,20 @@
             },
             success: function(data) {
                 $("#listModalTable").html(data);
+            }
+        });
+    }
+
+    function gridModal(year, month, date) {
+        $.ajax({
+            url: '@Url.Action("gridModal", "Dashboard")',
+            data: {
+                year: year ?? new Date().getFullYear(),
+                month: month ?? new Date().getMonth(),
+                date: date ?? new Date().getDate()
+            },
+            success: function (data) {
+                $("#gridmodal").html(data);
             }
         });
     }
