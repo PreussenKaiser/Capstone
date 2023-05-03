@@ -92,27 +92,20 @@ public sealed class DashboardController : Controller
 
 		if (games.Count > 0)
 		{
-<<<<<<< HEAD
-			this.ViewData["Games"] = games.Distinct().ToList();
-=======
+
 			games = games
 				.DistinctBy(g => g.Id)
 				.ToList();
 
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 		}
 
 		if (practices.Count > 0)
 		{
-<<<<<<< HEAD
-			this.ViewData["Practices"] = practices.Distinct().ToList();
-=======
 			practices = practices
 				.DistinctBy(g => g.Id)
 				.ToList();
 
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 		}
 
@@ -121,18 +114,9 @@ public sealed class DashboardController : Controller
 			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 
-<<<<<<< HEAD
-		this.ViewData["CoachTeams"] = coachTeams.ToList();
-		this.ViewData["Teams"] = this.context.Teams.ToList();
-
-		return type == nameof(Game)
-			? this.ViewComponent("GamesModal")
-			: this.ViewComponent("PracticesModal");
-=======
 		return type == nameof(Game)
 			? this.ViewComponent("GamesModal", new { coachTeams, teams, games })
 			: this.ViewComponent("PracticesModal", new { coachTeams, teams, practices });
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 	}
 
 	/// <summary>
@@ -144,19 +128,6 @@ public sealed class DashboardController : Controller
 	/// <param name="searchTerm">The currently selected search term - defaults to null.</param>
 	/// <param name="teamName">The currently selected team name - defaults to null.</param>
 	/// <returns>The CoachModalTable partial view.</returns>
-<<<<<<< HEAD
-	public async ValueTask<IActionResult> filterCoachEvents(string type, DateTime start, DateTime end, string? searchTerm = null, string? teamName = null)
-	{
-		Guid userId = Guid.Parse(this.userManager.GetUserId(this.User)
-			?? throw new NullReferenceException("Could not determine current user."));
-
-		IEnumerable<Team>? coachTeams =await this.context.Teams
-			.Where(t => t.UserId == userId)
-			.ToListAsync();
-
-		IEnumerable<Event>? games = null;
-		IEnumerable<Event>? practices = null;
-=======
 	public async ValueTask<IActionResult> FilterCoachEvents(
 		string type,
 		DateTime start,
@@ -174,16 +145,14 @@ public sealed class DashboardController : Controller
 
 		IQueryable<Event>? games = null;
 		IQueryable<Event>? practices = null;
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 
 		foreach (Team team in coachTeams)
 		{
 			if (type == nameof(Game))
 			{
-				IEnumerable<Event> coachGames = await this.context.Games
+				IQueryable<Event> coachGames = this.context.Games
 					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
-					.WithScheduling()
-					.ToListAsync();
+					.WithScheduling();
 
 				if (games is null && coachGames.Count() > 0)
 				{
@@ -196,24 +165,12 @@ public sealed class DashboardController : Controller
 
 				if (games is not null)
 				{
-<<<<<<< HEAD
-					games = await this
-						.dateSearch(start, end, games.AsQueryable())
-						.ToListAsync();
-=======
 					games = this.DateSearch(start, end, games);
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 				}				
 
 				if (!searchTerm.IsNullOrEmpty())
 				{
-<<<<<<< HEAD
-					games = await this
-						.nameSearch(searchTerm, type, games.AsQueryable())
-						.ToListAsync();
-=======
 					games = this.NameSearch(searchTerm!, type, games);
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 				}
 
 				if (teamName is not null && games is not null)
@@ -227,10 +184,9 @@ public sealed class DashboardController : Controller
 			}
 			else
 			{
-				IEnumerable<Event> coachPractices = await this.context.Practices
+				IQueryable<Event> coachPractices = this.context.Practices
 					.Where(g => g.TeamId == team.Id)
-					.WithScheduling()
-					.ToListAsync();
+					.WithScheduling();
 
 				if (practices is null && !coachPractices.IsNullOrEmpty())
 				{
@@ -243,24 +199,12 @@ public sealed class DashboardController : Controller
 
 				if (practices is not null)
 				{
-<<<<<<< HEAD
-					practices = await this
-						.dateSearch(start, end, practices.AsQueryable())
-						.ToListAsync();
-=======
 					practices = this.DateSearch(start, end, practices);
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 				}
 
 				if (searchTerm is not null)
 				{
-<<<<<<< HEAD
-					practices = await this
-						.nameSearch(searchTerm, type, practices.AsQueryable())
-						.ToListAsync();
-=======
 					practices = this.NameSearch(searchTerm, type, practices);
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 				}
 
 				if (teamName is not null && practices is not null)
@@ -274,12 +218,9 @@ public sealed class DashboardController : Controller
 			}
 		}
 
-<<<<<<< HEAD
 		IEnumerable<Event>? filteredGames = null;
 		IEnumerable<Event>? filteredPractices = null;
 
-=======
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 		if (!games.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
@@ -299,15 +240,6 @@ public sealed class DashboardController : Controller
 			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 
-<<<<<<< HEAD
-		this.ViewData["CoachTeams"] = coachTeams.ToList();
-		this.ViewData["Teams"] = this.context.Teams.ToList();
-		this.ViewData["EventType"] = type;
-
-		return type == nameof(Game)
-			? this.PartialView("_CoachModalTable", filteredGames)
-			: this.PartialView("_CoachModalTable", filteredPractices);
-=======
 		this.ViewData["EventType"] = type;
 
 		UpcomingEventsModalViewModel viewModel = new(
@@ -319,7 +251,6 @@ public sealed class DashboardController : Controller
 				?? Enumerable.Empty<Event>());
 
 		return this.PartialView("_CoachModalTable", viewModel);
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 	}
 
 	/// <summary>
@@ -589,11 +520,7 @@ public sealed class DashboardController : Controller
 	/// <param name="end">The currently selected end date.</param>
 	/// <param name="events">A list of Events - defaults to null.</param>
 	/// <returns>A filtered list of Events.</returns>
-<<<<<<< HEAD
-	public IQueryable<Event> dateSearch(
-=======
 	public IQueryable<Event> DateSearch(
->>>>>>> 19918c65347a74a6f9901858b0a703e7849376c6
 		DateTime start,
 		DateTime end,
 		IQueryable<Event>? events = null)
