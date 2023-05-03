@@ -600,8 +600,6 @@ public sealed class DashboardController : Controller
 		string? type = nameof(Event),
 		IQueryable<Event>? events = null)
 	{
-		events ??= this.context.Events.WithScheduling();
-
 		events = events
 			.Where(e => e.Name.ToLower()
 			.Contains(searchTerm.ToLower()));
