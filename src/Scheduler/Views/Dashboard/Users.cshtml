@@ -57,10 +57,10 @@
                     <td>
                         @if (this.UserManager.GetUserAsync(this.User).Result?.Id != user.Id)
                         {
-                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeUserModal">
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#remove@(user.Id)">
                                 Remove
                             </button>
-                            <div class="modal fade" id="removeUserModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal fade" id="remove@(user.Id)" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
