@@ -30,7 +30,7 @@
                             @if (canEdit)
                             {      
                                 <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#detailsModal">
-                                    Edit
+                                    Edit <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Details for the @Model.Name League."></i>
                                 </button>
                                 <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -61,8 +61,8 @@
                             }
                         </div>
                         <div class="row">
-                            <h6>Name</h6>
-                            <p>@this.Model.Name</p>
+                            <h6>League Name</h6>
+                            <h4 class="text-danger text-center" style="text-shadow: .5px .5px black;">@this.Model.Name</h4>
                         </div>
                     </li>
                     <li class="list-group-item">
@@ -101,7 +101,7 @@
             <div class="col-sm-8">
                 <div class="mt-2">
                     <a asp-action="Add" asp-route-leagueId="@this.Model.Id" asp-controller="Team" class="btn btn-sm btn-primary">
-                        Add Team
+                        Add Team <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
                     </a>
                 </div>
 
