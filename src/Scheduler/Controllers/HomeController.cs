@@ -6,6 +6,9 @@ using Scheduler.Domain.Models;
 using Scheduler.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Scheduler.Filters;
+using Scheduler.Domain.Specifications;
+using Scheduler.Infrastructure.Persistence.Migrations;
+using Scheduler.Domain.Repositories;
 
 namespace Scheduler.Web.Controllers;
 
