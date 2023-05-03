@@ -60,7 +60,7 @@ public sealed class OccurrenceRangeAttribute : ValidationAttribute
 		this.Type = validationContext.ObjectType
 			.GetRuntimeProperty(this.PropertyName)
 			?.GetValue(validationContext.ObjectInstance) as RecurrenceType?
-				?? throw new ArgumentException($"Could not retrieve the proeprty: {this.PropertyName}");
+				?? throw new ArgumentException($"Could not retrieve the property: {this.PropertyName}");
 
 		int occurrences = value is int
 			? (int)value

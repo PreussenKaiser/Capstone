@@ -9,7 +9,7 @@
     </div>
     <div class="col-6">
         <label asp-for="Recurrence!.Occurrences" class="form-label"></label>
-        <input type="number" min="2" max="366" asp-for="Recurrence!.Occurrences" class="form-control" />
+        <input type="number" min="2" asp-for="Recurrence!.Occurrences" class="form-control" />
         <span asp-validation-for="Recurrence!.Occurrences" class="text-danger"></span>
     </div>
 </div>
