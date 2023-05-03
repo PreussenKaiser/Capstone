@@ -7,7 +7,6 @@ using Scheduler.Domain.Specifications;
 using Scheduler.ViewModels;
 using Scheduler.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Scheduler.Domain.Utility;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Teams;
 
@@ -25,12 +24,21 @@ public sealed class ScheduleController : Controller
 	private readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
+	/// API for retrieving dates.
+	/// </summary>
+	private readonly IDateProvider dateProvider;
+
+	/// <summary>
 	/// Initializes the <see cref="ScheduleController"/> class.
 	/// </summary>
 	/// <param name="scheduleRepository">The repository to execute queries and commands against.</param>
-	public ScheduleController(IScheduleRepository scheduleRepository)
+	/// <param name="dateProvider">API for retrieving dates.</param>
+	public ScheduleController(
+		IScheduleRepository scheduleRepository,
+		IDateProvider dateProvider)
 	{
 		this.scheduleRepository = scheduleRepository;
+		this.dateProvider = dateProvider;
 	}
 
 	/// <summary>
@@ -52,10 +60,32 @@ public sealed class ScheduleController : Controller
 	public IActionResult Index(
 		DateTime? date = null, Guid? fieldId = null)
 	{
-		this.ViewData["enteredDate"] = date;
-		this.ViewData["field"] = field;
+		DateTime startDate = this.dateProvider.Now;
 
-		return this.View();
+		if (date is null)
+		{
+			DateTime currentTime = startDate.AddHours(1);
+
+			startDate = new DateTime(
+				currentTime.Year,
+				currentTime.Month,
+				currentTime.Day,
+				currentTime.Hour,
+				0, 0);
+		}
+		else
+		{
+			startDate = (DateTime)date;
+		}
+
+		Event scheduledEvent = new()
+		{
+			FieldId = fieldId,
+			StartDate = startDate,
+			EndDate = startDate.AddMinutes(30)
+		};
+
+		return this.View(scheduledEvent);
 	}
 
 	/// <summary>
