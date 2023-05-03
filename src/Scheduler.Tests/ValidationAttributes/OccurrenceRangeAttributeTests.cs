@@ -27,7 +27,7 @@ public sealed class OccurrenceRangeAttributeTests
 	/// <summary>
 	/// Asserts that,
 	/// given a range of inputs that fall within the maximum amount of days in a year,
-	/// validaion is successful.
+	/// validation is successful.
 	/// </summary>
 	[Fact]
 	public void Daily_Within_Range()

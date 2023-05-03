@@ -57,10 +57,14 @@ public sealed class OccurrenceRangeAttribute : ValidationAttribute
 	protected override ValidationResult? IsValid(
 		object? value, ValidationContext validationContext)
 	{
-		this.Type = validationContext.ObjectType
+		var type = validationContext?.ObjectType
 			.GetRuntimeProperty(this.PropertyName)
-			?.GetValue(validationContext.ObjectInstance) as RecurrenceType?
-				?? throw new ArgumentException($"Could not retrieve the property: {this.PropertyName}");
+			?.GetValue(validationContext.ObjectInstance) as RecurrenceType?;
+
+		if (type is not null)
+		{
+			this.Type = type;
+		}	
 
 		int occurrences = value is int
 			? (int)value
