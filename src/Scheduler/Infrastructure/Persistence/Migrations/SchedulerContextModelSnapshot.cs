@@ -114,7 +114,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         new
                         {
                             UserId = new Guid("9e55284c-a2ba-425f-be26-a18e384668a7"),
-                            RoleId = new Guid("f8ffe243-4320-484e-bbe2-079eccafb482")
+                            RoleId = new Guid("0b32fb4e-1c0b-4b62-8535-114023faed36")
                         });
                 });
 
@@ -213,17 +213,17 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f8d4ad4a-5ef2-4a61-93c7-39f2f416b0c6"),
+                            Id = new Guid("4bfcc09b-a3bd-4ef0-9d9c-13a1d460a2f1"),
                             Name = "Recreation"
                         },
                         new
                         {
-                            Id = new Guid("c4a56d82-7d63-4a83-94f4-b11413d0f63a"),
+                            Id = new Guid("ed07d69a-23e5-4f31-8853-51c4ff15b8e7"),
                             Name = "Classic"
                         },
                         new
                         {
-                            Id = new Guid("0e2879db-775c-47aa-8dc5-1596a1ae3b75"),
+                            Id = new Guid("6a9b5dfe-6816-4c92-aa4a-3019361031c3"),
                             Name = "Select"
                         });
                 });
@@ -276,14 +276,14 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = new Guid("cfd242d3-2107-4563-b2a4-15383e683964"),
-                            ConcurrencyStamp = "59558c5e-9e07-44a9-8817-02044c9caaa5",
+                            ConcurrencyStamp = "0a320e9a-1cc2-449d-ae14-58254ab295b0",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("f8ffe243-4320-484e-bbe2-079eccafb482"),
-                            ConcurrencyStamp = "a29d43e7-8db8-41ba-874d-97ca52a725a5",
+                            Id = new Guid("0b32fb4e-1c0b-4b62-8535-114023faed36"),
+                            ConcurrencyStamp = "16b6218b-0ecf-475b-92e3-251f58675dd5",
                             Name = "Coach",
                             NormalizedName = "Coach"
                         });
@@ -398,7 +398,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("7eb05375-f2a2-4323-8371-8f81efba9a9c"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d269bd76-ee32-405a-9e4d-6ca9b3d45bd3",
+                            ConcurrencyStamp = "924f3d2e-7822-44e8-8955-837dc9086104",
                             Email = "teamnull@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Team",
@@ -406,9 +406,9 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NeedsNewPassword = false,
                             NormalizedUserName = "TEAMNULL@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKpFaSbuCKLqkLayR5P+qTm9R8jgM02ftFr/QHYM/EOGAD+OP4odRuAVrTLFtBU3BA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM/4KNADzohdlSYaE7ZfgdFUcSXyjssHB/FshEmm+dFMWox63OYzn3i9wf6yuB4u8g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4701da5a-0c8b-42ee-a432-1eafc1688c47",
+                            SecurityStamp = "d1d6f9c6-fa7d-42e6-995b-6ea8b7c033d9",
                             TwoFactorEnabled = false,
                             UserName = "teamnull@gmail.com"
                         },
@@ -416,7 +416,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("9e55284c-a2ba-425f-be26-a18e384668a7"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "54ce7a24-bf4f-4438-9f8f-a48252cfed9c",
+                            ConcurrencyStamp = "166cda6d-4795-4c74-a7a5-18b613cbcab6",
                             Email = "johncoach@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "John",
@@ -424,9 +424,9 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NeedsNewPassword = false,
                             NormalizedUserName = "JOHNCOACH@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIPs7PxPP7P3W7wMcDio64gkc+CyNewq9iY/fR/S+6zycQS7nRRENTza14hnPNuKNQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFTN6zqhWIQNqECU2FQ8WgJQ+mNRTukg/FZPSn/Yopn4TbrmxHpriDAGzD+sM6gAtA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f458d00e-4953-4cb6-9694-4655f6ad722e",
+                            SecurityStamp = "ce669a38-5496-4a16-8655-4cc584e15012",
                             TwoFactorEnabled = false,
                             UserName = "johncoach@gmail.com"
                         });
@@ -516,7 +516,8 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("Scheduler.Domain.Models.Field", "Field")
                         .WithMany("Events")
-                        .HasForeignKey("FieldId");
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Scheduler.Domain.Models.Recurrence", "Recurrence")
                         .WithMany("Events")

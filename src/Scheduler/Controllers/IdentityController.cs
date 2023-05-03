@@ -7,6 +7,8 @@ using Scheduler.Web.ViewModels;
 using Scheduler.Filters;
 using Scheduler.ViewModels;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Http.Extensions;
+using Scheduler.Domain.Services;
 
 namespace Scheduler.Web.Controllers;
 
@@ -22,12 +24,21 @@ public sealed class IdentityController : Controller
 	private readonly SignInManager<User> signInManager;
 
 	/// <summary>
+	/// The API to send emails with.
+	/// </summary>
+	private readonly IEmailSender emailSender;
+
+	/// <summary>
 	/// Initializes the <see cref="IdentityController"/> class.
 	/// </summary>
 	/// <param name="signInManager">The API to access <see cref="User"/> login information with.</param>
-	public IdentityController(SignInManager<User> signInManager)
+	/// <param name="emailSender">The API to send emails with.</param>
+	public IdentityController(
+		SignInManager<User> signInManager,
+		IEmailSender emailSender)
 	{
 		this.signInManager = signInManager;
+		this.emailSender = emailSender;
 	}
 
 	/// <summary>
@@ -149,13 +160,25 @@ public sealed class IdentityController : Controller
 			await this.signInManager.UserManager.AddToRoleAsync(user, "Admin");
 		}
 
-		string message = $"<p>Welcome to the PCYS Scheduler app! <br /> Your username is {user.UserName} and your password is <span style=\"color: red\">{randomPassword}</span></p>" +
-			$"<p>Visit the website at http://wrentfrow-001-site1.etempurl.com/ to log in and change your temporary password, and you can begin scheduling events.</p>" +
-			$"<p style=\"text-decoration: underline\">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";
+		try
+		{
+			string callback = this.Url.Action(
+				nameof(HomeController.Index),
+				"Home", new { }, this.Request.Scheme)
+					?? throw new NullReferenceException("Could not retrieve link to home.");
 
-		// This should work even with an invalid email, but eventually Google will change how the SMTP server is accessed. When that happens, the temp password will display on the screen like it used to.
-		try {
-			Email.sendEmail(user.Email, user.FirstName, "Welcome to the PCYS Scheduler App!", message);
+			string body = $@"
+				<p>
+					Welcome to the PCYS Scheduler!
+					<br>
+					Your username is {user.UserName} and your password is <span style=\""color: red\"">{{randomPassword}}</span>
+				</p>
+				<p>To begin scheduling events, visit the website at {callback} to log in and change your temporary password.</p>
+				<p style=\""text-decoration: underline\"">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";
+
+			await this.emailSender.SendAsync(
+				user.Email, "Welcome to the PCYS Scheduler!", body);
+
 			this.TempData["ConfirmStatement"] = $"{user.FirstName} {user.LastName} successfully added!";
 		}
 		catch
@@ -215,13 +238,24 @@ public sealed class IdentityController : Controller
 			return this.BadRequest();
 		}
 
+		bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN);
+
+		User currentUser = await this.signInManager.UserManager.GetUserAsync(this.User);
+
+		bool currentUserIsAdmin = false;
+		if (currentUser != null)
+		{
+			currentUserIsAdmin = await this.signInManager.UserManager.IsInRoleAsync(currentUser, Role.ADMIN);
+		}
+
 		ProfileViewModel viewModel = new()
 		{
 			UserId = user.Id,
 			FirstName = user.FirstName,
 			LastName = user.LastName,
 			Email = user.Email ?? string.Empty,
-			IsAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN)
+			IsAdmin = isAdmin,
+			currentUserIsAdmin = currentUserIsAdmin,
 		};
 
 		return this.View(viewModel);
@@ -254,15 +288,25 @@ public sealed class IdentityController : Controller
 			user.UserName = viewModel.Email;
 			user.Email = viewModel.Email;
 
-			bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN);
+			User currentUser = await this.signInManager.UserManager.GetUserAsync(this.User);
 
-			if (isAdmin && !viewModel.IsAdmin)
+			bool isAdmin = false;
+			if (currentUser != null)
 			{
-				await this.signInManager.UserManager.RemoveFromRoleAsync(user, Role.ADMIN);
+				isAdmin = await this.signInManager.UserManager.IsInRoleAsync(currentUser, Role.ADMIN);
 			}
-			else if (!isAdmin && viewModel.IsAdmin)
+
+			//A non-admin user should not be able to edit roles, not even their own.
+			if (isAdmin)
 			{
-				await this.signInManager.UserManager.AddToRoleAsync(user, Role.ADMIN);
+				if (!viewModel.IsAdmin)
+				{
+					await this.signInManager.UserManager.RemoveFromRoleAsync(user, Role.ADMIN);
+				}
+				else if (viewModel.IsAdmin)
+				{
+					await this.signInManager.UserManager.AddToRoleAsync(user, Role.ADMIN);
+				}
 			}
 
 			var result = await this.signInManager.UserManager.UpdateAsync(user);
@@ -273,6 +317,12 @@ public sealed class IdentityController : Controller
 				{
 					this.ModelState.AddModelError(string.Empty, error.Description);
 				}
+			}
+
+			//If the current user is the same as the user being edited, the signin must be refreshed to replace the current token.
+			if (currentUser.Id == user.Id)
+			{
+				await this.signInManager.RefreshSignInAsync(user);
 			}
 		}
 
@@ -324,7 +374,8 @@ public sealed class IdentityController : Controller
 				{
 					this.ModelState.AddModelError(string.Empty, error.Description);
 				}
-			}else
+			}
+			else
 			{
 				user.NeedsNewPassword = false;
 			}
@@ -376,6 +427,7 @@ public sealed class IdentityController : Controller
 				{
 					this.ModelState.AddModelError(string.Empty, error.Description);
 				}
+
 				return this.View(viewModel);
 			}
 			else
@@ -398,28 +450,39 @@ public sealed class IdentityController : Controller
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	[AllowAnonymous]
-	public async Task<IActionResult> ForgotPassword(ForgottenPasswordViewModal viewModel)
+	public async ValueTask<IActionResult> ForgotPassword(ForgottenPasswordViewModal viewModel)
 	{
 		if (!this.ModelState.IsValid)
 		{
 			return this.View(viewModel);
 		}
 
-		var user = await signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+		User? user = await signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+
 		if (user is null)
 		{
-			this.ModelState.AddModelError(string.Empty, "Unable to find an account with that email.");
-
+			this.ModelState.AddModelError(
+				string.Empty, "Unable to find an account with that email.");
+			
 			return this.View(viewModel);	
 		}
 
-		var token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
-		var callback = Url.Action(nameof(ResetPassword), "Identity", new { token, email = user.Email }, Request.Scheme);
+		string? token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
+		string? callback = this.Url.Action(
+			nameof(this.ResetPassword),
+			"Identity",
+			new { token, email = user.Email },
+			this.Request.Scheme);
 
-		var message = $"<p>A request has been made to reset your password.</p>" +
-			$"<p><a href=\"{callback}\">Click this link</a> to reset your password.";
-
-		Email.sendEmail(viewModel.Email, user.FirstName, "Reset Password Request", message);
+		string body = $@"
+			<p>A request has been made to reset your password.</p>
+			<p><a href='{callback}'>Click this link</a> to reset your password.";
+		
+		if (user.Email is not null)
+		{
+			await this.emailSender.SendAsync(
+				user.Email, "Reset Password", body);
+		}
 
 		this.ViewData["Message"] = "An email has been sent containing a link to reset your password.";
 

@@ -31,12 +31,18 @@ builder.Services
 
 builder.Services
 	.AddHostedService<ScheduleCullingService>()
-	.AddSingleton<IDateProvider, SystemDateProvider>();
+	.AddSingleton<IDateProvider, SystemDateProvider>()
+	.AddSingleton<IEmailSender, SmtpEmailSender>();
 
 builder.Services
 	.AddIdentity<User, Role>()
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.ExpireTimeSpan = TimeSpan.FromDays(1);
+});
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 	options.TokenLifespan = TimeSpan.FromHours(2));
@@ -51,6 +57,16 @@ builder.Services.AddControllersWithViews();
 builder.Services
 	.AddOptions<CullingOptions>()
 	.Bind(builder.Configuration.GetSection(CullingOptions.Culling))
+	.ValidateDataAnnotations();
+
+builder.Services
+	.AddOptions<SmtpOptions>()
+	.Bind(builder.Configuration.GetSection(SmtpOptions.Smtp))
+	.ValidateDataAnnotations();
+
+builder.Services
+	.AddOptions<EmailOptions>()
+	.Bind(builder.Configuration.GetSection(EmailOptions.Email))
 	.ValidateDataAnnotations();
 
 WebApplication app = builder.Build();
