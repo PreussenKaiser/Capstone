@@ -96,7 +96,7 @@ public sealed class CalendarViewComponent : ViewComponent
 			ViewData["NextYear"] = currentYear + 1;
 		}
 
-		ViewData["MonthName"] = (Month)currentMonth - 1;
+		ViewData["MonthName"] = ((Month)currentMonth - 1).ToString();
 
 		ViewData["MonthDateStart"] = firstOfMonth;
 

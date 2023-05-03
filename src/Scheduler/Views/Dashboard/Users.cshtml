@@ -14,8 +14,9 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Email</th>
-                <th>Admin</th>
+                <th colspan="2">Email</th>
+                <th class="text-center">Admin</th>
+                <th></th>
                 <th scope="col" colspan="3" class="text-center">Actions</th>
             </tr>
         </thead>
@@ -24,14 +25,14 @@
             {
                 <tr>
                     <th scope="row">@user.FirstName @user.LastName</th>
-                    <td>@user.Email</td>
-                    <td>
+                    <td colspan="2">@user.Email</td>
+                    <td class="text-center">
                         @if (this.UserManager.IsInRoleAsync(user, Role.ADMIN).Result)
                         {
                             <span>✔</span>
                         }
                     </td>
-                    <td>
+                    <td colspan="2" class="text-end">
                         @if (this.UserManager.GetUserAsync(User).Result?.Id != user.Id)
                         {
                             <form asp-action="AdminResetPassword"
@@ -45,7 +46,7 @@
                             </form>
                         }
                     </td>
-                    <td>
+                    <td class="text-center">
                         <a asp-action="Profile"
                            asp-controller="Identity"
                            asp-route-id="@user.Id"

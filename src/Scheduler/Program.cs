@@ -40,6 +40,11 @@ builder.Services
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.ExpireTimeSpan = TimeSpan.FromDays(1);
+});
+
 builder.Services.AddScoped<User>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
