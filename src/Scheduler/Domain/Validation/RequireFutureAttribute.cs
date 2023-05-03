@@ -12,10 +12,13 @@ namespace Scheduler.Domain.Validation;
 public sealed class RequireFutureAttribute : ValidationAttribute
 {
 	/// <inheritdoc />
-	protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+	protected override ValidationResult? IsValid(
+		object? value, ValidationContext validationContext)
 	{
 		if (value is not DateTime time)
+		{
 			return new("Unsupported date format.");
+		}
 
 		return time > DateTime.Now
 			? null
