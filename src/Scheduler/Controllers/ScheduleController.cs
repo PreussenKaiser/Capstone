@@ -49,7 +49,8 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <returns>A form for scheduling an event.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public IActionResult Index(DateTime? date = null, string field = "")
+	public IActionResult Index(
+		DateTime? date = null, Guid? fieldId = null)
 	{
 		this.ViewData["enteredDate"] = date;
 		this.ViewData["field"] = field;
