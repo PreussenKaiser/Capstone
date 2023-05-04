@@ -106,6 +106,10 @@
     height: 650px;
 }
 
+.grid-time {
+    font-size: 12px;
+}
+
 #grid-table thead th {
     position: sticky;
     top: -17px;
@@ -142,6 +146,14 @@
     }
     .month-button {
         font-size:13px;
+    }
+
+    .grid-time {
+        font-size: 16px;
+    }
+
+    .dash-buttons {
+        width: 80%;
     }
 }
 @media (max-width: 1024px) {
@@ -209,6 +221,14 @@
     .calendar-date {
         font-size: 16px;
         color: black;
+    }
+
+    .grid-time {
+        font-size: 10px;
+    }
+
+    .dash-buttons {
+        width: 100%;
     }
 }
 
