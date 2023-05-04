@@ -23,7 +23,7 @@ public class Event : Entity, IValidatableObject
 	/// Fields referenced by the <see cref="Event"/>.
 	/// </summary>
 	[Display(Name = "Field")]
-	[RequiredIfFalse(nameof(IsBlackout), ErrorMessage = "Please select at least one field.")]
+	[RequiredIfFalse(nameof(this.IsBlackout), ErrorMessage = "Please select at least one field.")]
 	public Guid? FieldId { get; set; }
 
 	/// <summary>
