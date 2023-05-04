@@ -14,7 +14,7 @@ public sealed class CalendarViewComponent : ViewComponent
 	private readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
-	/// Initalizes the <see cref="CalendarViewComponent"/> class.
+	/// Initializes the <see cref="CalendarViewComponent"/> class.
 	/// </summary>
 	/// <param name="scheduleRepository">The repository to qiery events with.</param>
 	public CalendarViewComponent(IScheduleRepository scheduleRepository)
@@ -24,34 +24,27 @@ public sealed class CalendarViewComponent : ViewComponent
 
 	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
 	{
-		GetAllSpecification<Event> searchSpec = new();
-		IEnumerable<Event> events = await this.scheduleRepository.SearchAsync(searchSpec);
+		IEnumerable<Event> events = await this.scheduleRepository.SearchAsync(
+			new GetAllSpecification<Event>());
 
 		int currentYear;
-
 		int currentMonth;
 
-		if (ViewData["Year"] != null)
+		if (this.ViewData["Year"] is not null)
 		{
-			currentYear = (int)ViewData["Year"];
-
-			currentMonth = (int)ViewData["Month"];
+			currentYear = (int)this.ViewData["Year"];
+			currentMonth = (int)this.ViewData["Month"];
 		}
 		else
 		{
 			currentYear = DateTime.Today.Year;
-
 			currentMonth = DateTime.Today.Month;
 		}
 
 		DateTime firstOfMonth;
-
 		DateTime lastOfMonth;
-
 		DateTime currentDay;
-
 		DateTime topOfCalendar;
-
 		DateTime bottomOfCalendar;
 
 		firstOfMonth = new DateTime(currentYear, currentMonth, 1);
@@ -64,49 +57,40 @@ public sealed class CalendarViewComponent : ViewComponent
 
 		if (currentMonth == DateTime.Today.Month && currentYear == DateTime.Today.Year)
 		{
-			ViewData["PreviousMonth"] = 0;
-			ViewData["PreviousYear"] = 0;
+			this.ViewData["PreviousMonth"] = 0;
+			this.ViewData["PreviousYear"] = 0;
 		}
 		else
 		{
 			if (currentMonth != 1)
 			{
-				ViewData["PreviousMonth"] = currentMonth - 1;
-
-				ViewData["PreviousYear"] = currentYear;
+				this.ViewData["PreviousMonth"] = currentMonth - 1;
+				this.ViewData["PreviousYear"] = currentYear;
 			}
 			else
 			{
-				ViewData["PreviousMonth"] = 12;
-
-				ViewData["PreviousYear"] = currentYear - 1;
+				this.ViewData["PreviousMonth"] = 12;
+				this.ViewData["PreviousYear"] = currentYear - 1;
 			}
 		}
 
 		if (currentMonth != 12)
 		{
-			ViewData["NextMonth"] = currentMonth + 1;
-
-			ViewData["NextYear"] = currentYear;
+			this.ViewData["NextMonth"] = currentMonth + 1;
+			this.ViewData["NextYear"] = currentYear;
 		}
 		else
 		{
-			ViewData["NextMonth"] = 1;
-
-			ViewData["NextYear"] = currentYear + 1;
+			this.ViewData["NextMonth"] = 1;
+			this.ViewData["NextYear"] = currentYear + 1;
 		}
 
-		ViewData["MonthName"] = ((Month)currentMonth - 1).ToString();
-
-		ViewData["MonthDateStart"] = firstOfMonth;
-
-		ViewData["MonthDateEnd"] = firstOfMonth.AddMonths(1).AddDays(-1);
-
-		ViewData["CurrentDay"] = currentDay;
-
-		ViewData["Month"] = currentMonth;
-
-		ViewData["Year"] = currentYear;
+		this.ViewData["MonthName"] = ((Month)currentMonth - 1).ToString();
+		this.ViewData["MonthDateStart"] = firstOfMonth;
+		this.ViewData["MonthDateEnd"] = firstOfMonth.AddMonths(1).AddDays(-1);
+		this.ViewData["CurrentDay"] = currentDay;
+		this.ViewData["Month"] = currentMonth;
+		this.ViewData["Year"] = currentYear;
 
 		BuildCalendarDays(topOfCalendar, bottomOfCalendar, currentDay, firstOfMonth, lastOfMonth, currentMonth, events);
 
