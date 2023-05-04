@@ -53,7 +53,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Team Name</label>
-                            <select id="teamName" name="teamName" class="form-select">
+                            <select id="teamName" name="teamName" class="form-select chosen">
                                 <option value=""></option>
                                 @foreach (Team t in this.Model.Teams)
                                 {
@@ -163,9 +163,11 @@
         });
     }
 
-        function resetEvents(e){
+    function resetEvents(){
+        console.log(@startDateString);
+        console.log(@endDateString);
         $.ajax({
-            url: '@Url.Action("filterModal", "Dashboard")',
+            url: '@Url.Action("searchModal", "Dashboard")',
             data: {
                 start: @startDateString,
                 end: @endDateString,
@@ -173,11 +175,13 @@
                 searchTerm: '',
                 teamName: ''
             },
-            success: function(data) {
-                    $("#modal").html(data);
+            success: function (data) {
+                    $('.chosen option-selected').removeAttr('selected');
+                    $('.chosen').trigger('chosen:updated');
             }
         });
     }
+
 </script>
 }
 
