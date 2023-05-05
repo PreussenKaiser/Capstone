@@ -284,7 +284,15 @@
                             </div>
                         }
                     </div>
-                    @this.Model.Field?.Name
+
+                    @if (this.Model.IsBlackout)
+                    {
+                        <span>Entire Facility</span>
+                    }
+                    else
+                    {
+                        @this.Model.Field?.Name
+                    }
                 </li>
             </ul>
         </form>
