@@ -23,9 +23,14 @@ builder.Services
 	.AddScoped<ILeagueRepository, LeagueRepository>()
 	.AddScoped<ITeamRepository, TeamRepository>();
 
+string timeZone = builder.Configuration
+	.GetSection("TimeZone")
+	.Value
+		?? "Central Standard Time";
+
 builder.Services
 	.AddHostedService<ScheduleCullingService>()
-	.AddSingleton<IDateProvider, SystemDateProvider>()
+	.AddSingleton<IDateProvider, SystemDateProvider>(p => new(timeZone))
 	.AddSingleton<IEmailSender, SmtpEmailSender>();
 
 builder.Services

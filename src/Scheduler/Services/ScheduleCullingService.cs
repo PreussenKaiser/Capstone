@@ -65,7 +65,7 @@ public sealed class ScheduleCullingService : BackgroundService
 						new PastEventSpecification(new SystemDateProvider()));
 				}
 
-				DateTime nextDay = this.dateProvider.Today.AddDays(1);
+				DateTime nextDay = this.dateProvider.Now.AddDays(1);
 				TimeSpan timeToWait = nextDay + cullTime - this.dateProvider.Now;
 
 				await Task.Delay(timeToWait, stoppingToken);

@@ -3,6 +3,8 @@ using Scheduler.Domain.Models;
 using Scheduler.ViewModels;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
+using Scheduler.Domain.Specifications.Events;
+using Scheduler.Domain.Services;
 
 namespace Scheduler.ViewComponents;
 
@@ -14,18 +16,28 @@ public sealed class CalendarViewComponent : ViewComponent
 	private readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
+	/// API for retrieving dates.
+	/// </summary>
+	private readonly IDateProvider dateProvider;
+
+	/// <summary>
 	/// Initializes the <see cref="CalendarViewComponent"/> class.
 	/// </summary>
-	/// <param name="scheduleRepository">The repository to qiery events with.</param>
-	public CalendarViewComponent(IScheduleRepository scheduleRepository)
+	/// <param name="scheduleRepository">The repository to query events with.</param>
+	/// <param name="dateProvider">API for retrieving dates.</param>
+	public CalendarViewComponent(
+		IScheduleRepository scheduleRepository,
+		IDateProvider dateProvider)
 	{
 		this.scheduleRepository = scheduleRepository;
+		this.dateProvider = dateProvider;
 	}
 
 	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
 	{
+		Specification<Event> pastEventsSpec = new PastEventSpecification(this.dateProvider);
 		IEnumerable<Event> events = await this.scheduleRepository.SearchAsync(
-			new GetAllSpecification<Event>());
+			pastEventsSpec.Not());
 
 		int currentYear;
 		int currentMonth;
