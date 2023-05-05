@@ -11,13 +11,7 @@ using Scheduler.Services;
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
 // Configure database
-#if DEBUG
-const string CONN = "Local";
-#else
-const string CONN = "Hosted";
-#endif
-
-string connectionString = builder.Configuration.GetConnectionString(CONN)
+string connectionString = builder.Configuration.GetConnectionString("Default")
 	?? throw new ArgumentException("Could not retrieve connection string.");
 
 builder.Services
@@ -35,7 +29,11 @@ builder.Services
 	.AddSingleton<IEmailSender, SmtpEmailSender>();
 
 builder.Services
-	.AddIdentity<User, Role>()
+	.AddIdentity<User, Role>(opt =>
+	{
+		opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+		opt.Lockout.MaxFailedAccessAttempts = 10;
+	})
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
 

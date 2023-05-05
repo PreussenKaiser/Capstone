@@ -1,0 +1,12 @@
+﻿@model Event
+
+<div class="form-check mb-3">
+    <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+    <label asp-for="IsBlackout" class="form-check-label">Blackout Facility <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Use this to schedule your Event to occur on every Field in the facility."></i></label>
+</div>
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>

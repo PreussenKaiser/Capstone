@@ -256,15 +256,19 @@
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-6">
-                                                    <div class="form-check mb-3">
-                                                        <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                                                        <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
-                                                    </div>
                                                     <div class="mb-3">
                                                         <label asp-for="FieldId" class="form-label"></label>
                                                         <select data-val="false" asp-for="FieldId" asp-items="fieldList" class="form-select"></select>
                                                         <span asp-validation-for="FieldId" class="text-danger"></span>
                                                     </div>
+                                                    @if (this.User.IsInRole(Role.ADMIN) &&
+                                                         eventType == nameof(Event))
+                                                    {                                               
+                                                        <div class="form-check mb-3">
+                                                            <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+                                                            <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
+                                                        </div>
+                                                    }
                                                 </div>
                                                 <div class="col-6">
                                                     <partial name="Forms/_UpdateTypeInput" />
@@ -280,7 +284,15 @@
                             </div>
                         }
                     </div>
-                    @this.Model.Field?.Name
+
+                    @if (this.Model.IsBlackout)
+                    {
+                        <span>Entire Facility</span>
+                    }
+                    else
+                    {
+                        @this.Model.Field?.Name
+                    }
                 </li>
             </ul>
         </form>
