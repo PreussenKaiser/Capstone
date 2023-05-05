@@ -9,6 +9,7 @@ using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
+using Scheduler.ViewComponents;
 
 namespace Scheduler.Web.Controllers;
 
@@ -344,7 +345,7 @@ public sealed class DashboardController : Controller
 				.Include(g => g.OpposingTeam)
 				.WithScheduling(),
 
-			"Non-Team Events" => this.context.Events
+			"Non-Team Event" => this.context.Events
 				.Where(e => !(this.context.Practices.Any(p => p.Id == e.Id) || this.context.Games.Any(g => g.Id == e.Id)))
 				.WithScheduling(),
 
@@ -352,9 +353,11 @@ public sealed class DashboardController : Controller
 				.WithScheduling()
 		};
 
-		events = this.dateSearch(start, end, events);
-
-		if(!searchTerm.IsNullOrEmpty())
+		if (!events.IsNullOrEmpty())
+		{
+			events = this.dateSearch(start, end, events);
+		}
+		if (!searchTerm.IsNullOrEmpty())
 		{
 			events = this.nameSearch(searchTerm, type, events);
 		}
@@ -368,7 +371,7 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["Events"] = null;
 
-			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
+			this.ViewData["TypeFilterMessage"] = $"No {type} found";
 		}
 		else
 		{
@@ -494,7 +497,7 @@ public sealed class DashboardController : Controller
 				.Include(g => g.OpposingTeam)
 				.WithScheduling(),
 
-			"Non-Team Events" => this.context.Events
+			"Non-Team Event" => this.context.Events
 				.Where(e => !(this.context.Practices.Any(p => p.Id == e.Id) || this.context.Games.Any(g => g.Id == e.Id)))
 				.WithScheduling(),
 
@@ -502,7 +505,10 @@ public sealed class DashboardController : Controller
 				.WithScheduling()
 		};
 
-		events = this.dateSearch(start, end, events);
+		if (!events.IsNullOrEmpty())
+		{
+			events = this.dateSearch(start, end, events);
+		}
 
 		if (!searchTerm.IsNullOrEmpty())
 		{
@@ -516,7 +522,7 @@ public sealed class DashboardController : Controller
 
 		if (events.IsNullOrEmpty())
 		{
-			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
+			this.ViewData["TypeFilterMessage"] = $"No {type} found";
 		}
 		else
 		{
