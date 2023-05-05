@@ -3,6 +3,29 @@ html {
     background-color: #000000;
 }
 
+.linkElement button {
+    background-color: #c9000a;
+    box-shadow: 0 -3px #af0006 inset;
+    color: #fff !important;
+    padding: 10px 20px 10px 10px;
+    line-height: 1.3;
+    text-decoration: none;
+    transition: background-color .2s;
+}
+
+.buttonRed:before {
+    font-family: FontAwesome;
+    font-size: 14px;
+}
+
+.buttonGreen {
+    font-family: FontAwesome;
+    font-size: 14px;
+    background-color: #095211;
+    color: #fff !important;
+    box-shadow: 0 -3px #095211 inset;
+}
+
 .site-background {
     position: absolute;
     top: 0;

@@ -12,7 +12,7 @@
     <p class="lead">Use the Calendar below to search for Dates and Times of Practices, Games, and other Events at the PCYS facility. You can use the Filtering Menu in the List to refine your search.</p>
     <p class="lead">You can also use the Searchbar Dropdown Menu to search for Events outside of the Calendar. Search by Team Name, Event Name, or a range of Dates.</p>
     <div class="text-end mb-2">
-        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#mapModal">Facility Map</button>
+        <button class="buttonGreen" data-bs-toggle="modal" data-bs-target="#mapModal">Facility Map</button>
     </div>
 </div>
 <br />
@@ -21,7 +21,10 @@
         <div class="btn-group mb-2 noPrintIfModal">
             <form action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
                 <div>
-                    <button type="button" class="btn btn-sm btn-secondary" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule</button>
+                    <div class="linkElement">
+                        <button type="button" class="buttonRed" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule</button>
+                        <button class="buttonRed" type="reset" onclick="resetEvents()">Reset Search</button>
+                    </div>
                     <ul class="dropdown-menu p-3" id="homepage-dropdown">
                         <h5 class="lead text-danger text-center">Search Criteria</h5>
                         <div>
@@ -64,7 +67,6 @@
                             <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeHomePageDropdown()">Close</button>
                         </div>
                     </ul>
-                    <button class="btn btn-sm btn-danger" type="reset" onclick="resetEvents()">Reset Search</button>
                 </div>
             </form>
         </div>
