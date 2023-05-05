@@ -114,7 +114,7 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="mb-3">
-                        <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please Select One Field from the List, or use the Blackout Facility Option below to Choose All Fields."></i></label>
+                        <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please select one Field from the list, or use the Blackout Facility option to choose all Fields."></i></label>
                         <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields">
 
                         </select>
@@ -133,14 +133,14 @@
                         <input asp-for="EndDate" type="hidden" id="EndDate" />
                         <span asp-validation-for="EndDate" class="text-danger"></span>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row ms-3 mb-3">
                         <div class="form-check mb-3">
                             <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                            <label asp-for="IsBlackout" class="form-check-label">Blackout Facility <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Use this to Schedule your Event to Occur on Every Field in the Facility."></i></label>
+                            <label asp-for="IsBlackout" class="form-check-label">Blackout Facility <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Use this to schedule your Event to occur on every Field in the facility."></i></label>
                         </div>
                         <div class="form-check mb-3">
                             <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                            <label class="form-check-label">Repeating <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Use this to Schedule your Event to Repeat for a Set Number of Occurrences, Daily, Weekly, or Monthly."></i></label>
+                            <label class="form-check-label">Repeating <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Use this to schedule your Event to repeat for a set number of Occurrences: Daily, Weekly, or Monthly."></i></label>
                         </div>
                         <div id="recurrenceInputs">
                             @if (this.Model is not null &&

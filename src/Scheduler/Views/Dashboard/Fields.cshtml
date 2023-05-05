@@ -9,7 +9,7 @@
 <div class="row">
     @foreach (var field in this.Model)
     {
-        <div class="col-sm-3">
+        <div class="col-md mb-2 w-50">
             <div class="card border border-3 border-success">
                 <img src="~/Images/field.png" class="card-img-top rounded-0">
                 <div class="card-body">
@@ -23,7 +23,7 @@
                                 Update
                             </a>
                         </div>
-                        <div class="col mb-2">
+                        <div class="col mb-2 text-center">
                             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#remove@(field.Id)">
                                 Remove
                             </button>

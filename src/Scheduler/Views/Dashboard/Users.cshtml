@@ -24,7 +24,7 @@
             @foreach (var user in this.Model)
             {
                 <tr>
-                    <th scope="row">@user.FirstName @user.LastName</th>
+                    <th>@user.FirstName @user.LastName</th>
                     <td colspan="2">@user.Email</td>
                     <td class="text-center">
                         @if (this.UserManager.IsInRoleAsync(user, Role.ADMIN).Result)
