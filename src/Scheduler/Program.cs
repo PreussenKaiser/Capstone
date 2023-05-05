@@ -35,7 +35,11 @@ builder.Services
 	.AddSingleton<IEmailSender, SmtpEmailSender>();
 
 builder.Services
-	.AddIdentity<User, Role>()
+	.AddIdentity<User, Role>(opt =>
+	{
+		opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+		opt.Lockout.MaxFailedAccessAttempts = 10;
+	})
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
 

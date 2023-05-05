@@ -175,6 +175,12 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.View("~/Views/Schedule/Index.cshtml", scheduledEvent);
 		}
 
+		if (scheduledEvent.IsBlackout &&
+			!this.User.IsInRole(Role.ADMIN))
+		{
+			return this.BadRequest();
+		}
+
 		await this.scheduleRepository.ScheduleAsync(scheduledEvent);
 
 		return this.RedirectToAction(
@@ -207,6 +213,12 @@ public abstract class ScheduleController<TEvent> : Controller
 		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Details.cshtml", values);
+		}
+
+		if (values.IsBlackout &&
+			!this.User.IsInRole(Role.ADMIN))
+		{
+			return this.BadRequest();
 		}
 
 		await this.scheduleRepository.RescheduleAsync(values);
