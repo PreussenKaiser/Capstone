@@ -112,11 +112,10 @@
 
     $(document).ready(function () {
 
-        $("#coachTeamNameFilterPractices").chosen({
-            no_results_text: "Sorry, I can't find that Team!",
-            placeholder_text_single: "Start typing to select a Team...",
+        $("#coachTeamNameFilterPractices").select2({
+            placeholder: "Start typing to select a Team...",
             width: "100%",
-            search_contains: true
+            dropdownParent: $('#practicesModalPopup')
         });
 
     });
@@ -186,6 +185,7 @@
                 teamName: ''
             },
             success: function (data) {
+                $("#coachTeamNameFilterPractices").val(null).trigger('change');
                 $("#practicesModalTable").html(data);
             }
         });

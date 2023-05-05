@@ -27,6 +27,11 @@
             Text = f.Name,
             Value = f.Id.ToString()
         });
+
+    if (Model.FieldId != null)
+    {
+        fields = fields.Where(f => f.Value == Model.FieldId.ToString());
+    }
 }
 
 <div class="row">
@@ -84,7 +89,21 @@
                             {
                                 <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please select one Field from the List."></i></label>
                             }
-                            <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields"></select>
+                            @if (Model.FieldId != null)
+                            {
+                                <select data-val="false" class="form-select" asp-for="FieldId" id="fieldSelect" asp-items="fields"></select>
+                            }
+                            else
+                            {
+                                <select data-val="false" class="form-select" asp-for="FieldId" id="fieldSelect" asp-items="fields">
+                                <option value=""></option>
+                                @foreach (SelectListItem f in fields)
+                                {
+                                    <option value=@f.Value>@f.Text</option>
+                                }
+                            </select>
+                            }
+                            
                             <span asp-validation-for="FieldId" class="text-danger"></span>
                         </div>
                         <div class="col-6">
@@ -151,6 +170,14 @@
         document.onload = navClick('@eventType');
     </script>
     <script>
+        $(document).ready(function () {
+
+            $("#fieldSelect").select2({
+                placeholder: "Start typing to select a Field...",
+                width: "100%"
+            });
+
+        });
         var startDateString = "@this.Model.StartDate.ToString(DATE_FORMAT)";
         var endDateString = "@this.Model.EndDate.ToString(DATE_FORMAT)";
         var minDateString = "@this.DateProvider.Now.ToString(DATE_FORMAT)";
