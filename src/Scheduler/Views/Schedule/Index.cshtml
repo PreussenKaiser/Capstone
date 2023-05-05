@@ -109,19 +109,22 @@
                     <div id="eventInputs"></div>
                 </div>
                 <div class="col-sm-6">
-                    <div class="mb-3">
-                        <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please Select One Field from the List, or use the Blackout Facility Option below to Choose All Fields."></i></label>
-                        <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields">
-
-                        </select>
-                        <span asp-validation-for="FieldId" class="text-danger"></span>
-                    </div>
-                    <div id="blackoutInputs">
-                        @if (this.User.IsInRole(Role.ADMIN) &&
-                             eventType == nameof(Event))
-                        {
-                            <partial name="Forms/_BlackoutInputs" />
-                        }
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please Select One Field from the List, or use the Blackout Facility Option below to Choose All Fields."></i></label>
+                            <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields"></select>
+                            <span asp-validation-for="FieldId" class="text-danger"></span>
+                        </div>
+                        <div class="col-6">
+                            <label style="visibility: hidden" class="form-label">Blackout</label>
+                            <div id="blackoutInputs">
+                                @if (this.User.IsInRole(Role.ADMIN) &&
+                                     eventType == nameof(Event))
+                                {
+                                    <partial name="Forms/_BlackoutInputs" />
+                                }
+                            </div>
+                        </div>
                     </div>
                     <div class="col-lg">
                         <label class="form-label">Event Time <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates and times will <u>not</u> be applied."></i></label>

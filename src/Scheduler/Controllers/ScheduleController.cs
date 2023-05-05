@@ -7,7 +7,6 @@ using Scheduler.Domain.Specifications;
 using Scheduler.ViewModels;
 using Scheduler.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Scheduler.Domain.Utility;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Teams;
 
@@ -144,6 +143,12 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.View("~/Views/Schedule/Index.cshtml", scheduledEvent);
 		}
 
+		if (scheduledEvent.IsBlackout &&
+			!this.User.IsInRole(Role.ADMIN))
+		{
+			return this.BadRequest();
+		}
+
 		await this.scheduleRepository.ScheduleAsync(scheduledEvent);
 
 		return this.RedirectToAction(
@@ -176,6 +181,12 @@ public abstract class ScheduleController<TEvent> : Controller
 		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Details.cshtml", values);
+		}
+
+		if (values.IsBlackout &&
+			!this.User.IsInRole(Role.ADMIN))
+		{
+			return this.BadRequest();
 		}
 
 		await this.scheduleRepository.RescheduleAsync(values);
