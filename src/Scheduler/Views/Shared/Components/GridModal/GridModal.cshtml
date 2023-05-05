@@ -57,13 +57,13 @@
                             {
                                 timestring += ":30";
                             }
-                            if (daypart == 0)
+                            if (daypart == 0 && halfHour != 30)
                             {
-                                timestring += " AM";
+                                timestring += " am";
                             }
-                            else
+                            else if (halfHour != 30)
                             {
-                                timestring += " PM";
+                                timestring += " pm";
                             }
                             if (hour > 7 && hour < 23)
                             {
@@ -71,7 +71,7 @@
                                 Guid userId = Guid.NewGuid();
 
                                 <tr>
-                                    <td>@timestring</td>
+                                    <td class="grid-time">@timestring</td>
 
                                     @foreach (var f in fields)
                                     {
