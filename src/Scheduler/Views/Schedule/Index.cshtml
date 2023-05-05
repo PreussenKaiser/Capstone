@@ -76,7 +76,14 @@
                 <div class="col-sm-6">
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please Select One Field from the List, or use the Blackout Facility Option below to Choose All Fields."></i></label>
+                            @if (this.User.IsInRole(Role.ADMIN))
+                            {
+                                <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="Please select one Field from the List.<br><br>For regular Events, you can use the Blackout Facility option to choose ALL Fields."></i></label>
+                            }
+                            else
+                            {
+                                <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please select one Field from the List."></i></label>
+                            }
                             <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields"></select>
                             <span asp-validation-for="FieldId" class="text-danger"></span>
                         </div>
