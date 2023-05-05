@@ -7,6 +7,14 @@
     transition: transform 250ms ease-in-out;
 }
 
+.theme-nav-menu {
+    z-index:999;
+}
+
+.dropdown-menu {
+    z-index: 1;
+}
+
 .sidebarIconToggle {
     transition: all 0.3s;
     box-sizing: border-box;

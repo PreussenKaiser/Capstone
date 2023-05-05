@@ -1,22 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
-using Scheduler.Infrastructure.Persistence;
-using Scheduler.Web.ViewModels;
+using Scheduler.ViewModels;
 
 namespace Scheduler.ViewComponents;
 
+/// <summary>
+/// Code-behind for the PracticesModal view component.
+/// </summary>
 public sealed class PracticesModalViewComponent : ViewComponent
 {
-	public async Task<IViewComponentResult> InvokeAsync()
+	public async Task<IViewComponentResult> InvokeAsync(
+		IEnumerable<Team> coachTeams,
+		IEnumerable<Team> teams,
+		IEnumerable<Event> practices)
 	{
-		this.ViewData["Practices"] = this.ViewData["Practices"];
+		UpcomingEventsModalViewModel viewModel = new(
+			coachTeams, teams, practices);
 
-		this.ViewData["CoachTeams"] = this.ViewData["CoachTeams"];
-
-		this.ViewData["Teams"] = this.ViewData["Teams"];
-
-		this.ViewData["Title"] = "My Scheduled Practices";
-
-		return await Task.FromResult((IViewComponentResult)View("PracticesModal"));
+		return this.View("PracticesModal", viewModel);
 	}
 }

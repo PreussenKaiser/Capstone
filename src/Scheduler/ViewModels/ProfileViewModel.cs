@@ -37,8 +37,13 @@ public sealed record ProfileViewModel
 	public required string Email { get; init; }
 
 	/// <summary>
-	/// Whether the user is an admin or not.
+	/// Whether the user being edited is an admin or not.
 	/// </summary>
 	[Display(Name = "Admin?")]
 	public bool IsAdmin { get; init; }
+
+	/// <summary>
+	/// Whether or not the current user is an admin
+	/// </summary>
+	public bool currentUserIsAdmin { get; init; }
 }

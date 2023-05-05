@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Scheduler.Domain.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Domain.Models;
 
@@ -23,8 +24,8 @@ public sealed class Recurrence : Entity
 	/// <summary>
 	/// How many times the pattern occurs.
 	/// </summary>
-	[Range(1, byte.MaxValue, ErrorMessage = "There must be at least one occurrence.")]
-	public byte Occurrences { get; init; }
+	[OccurrenceRange(nameof(Type))]
+	public int Occurrences { get; init; }
 
 	/// <summary>
 	/// The pattern's type.
