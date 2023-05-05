@@ -1,14 +1,18 @@
-﻿@using Scheduler.ViewModels;
+﻿@using Scheduler.Domain.Services;
+@using Scheduler.ViewModels;
 
+@inject IDateProvider DateProvider
 @model UpcomingEventsModalViewModel
 
 @{
     this.ViewData["Title"] = "My Scheduled Practices";
     this.ViewData["EventType"] = nameof(Practice);
 
-    string today = DateTime.Now.ToString("yyyy-MM-dd");
-    string startDateString = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    string endDateString = DateTime.Now.AddYears(2).ToString("yyyy-MM-dd");
+    const string DATE_FORMAT = "yyyy-MM-dd";
+
+    string today = this.DateProvider.Now.ToString(DATE_FORMAT);
+    string startDateString = this.DateProvider.Now.Date.ToString(DATE_FORMAT);
+    string endDateString = this.DateProvider.Now.AddYears(2).ToString(DATE_FORMAT);
 }
 
 <div class="modal fade" id="practicesModalPopup" tabindex="-1">

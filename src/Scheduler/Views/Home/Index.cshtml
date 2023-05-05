@@ -1,10 +1,16 @@
-﻿@model IndexViewModel
+﻿@using Scheduler.Domain.Services;
+
+@inject IDateProvider DateProvider
+@model IndexViewModel
 
 @{
     this.ViewData["Title"] = "Home Page";
-    string today = DateTime.Now.ToString("yyyy-MM-dd");
-    string startDateString = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    string endDateString = DateTime.Now.AddYears(2).ToString("yyyy-MM-dd");
+
+    const string DATE_FORMAT = "yyyy-MM-dd";
+
+    string today = this.DateProvider.Now.ToString(DATE_FORMAT);
+    string startDateString = this.DateProvider.Now.Date.ToString(DATE_FORMAT);
+    string endDateString = this.DateProvider.Now.AddYears(2).ToString(DATE_FORMAT);
 }
 
 <div class="layoutContainer noPrintIfModal text-center" style="padding-left:20px;padding-right:20px;border:2px solid gray;font-size:12px;">

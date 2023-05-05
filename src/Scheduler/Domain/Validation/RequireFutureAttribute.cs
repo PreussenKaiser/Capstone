@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Scheduler.Domain.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Domain.Validation;
 
@@ -15,12 +16,25 @@ public sealed class RequireFutureAttribute : ValidationAttribute
 	protected override ValidationResult? IsValid(
 		object? value, ValidationContext validationContext)
 	{
+		DateTime currentTime;
+
+		try
+		{
+			var dateProvider = validationContext.GetRequiredService<IDateProvider>();
+
+			currentTime = dateProvider.Now;
+		}
+		catch
+		{
+			currentTime = DateTime.Now;
+		}
+
 		if (value is not DateTime time)
 		{
 			return new("Unsupported date format.");
 		}
 
-		return time > DateTime.Now
+		return time > currentTime
 			? null
 			: new(this.ErrorMessage);
 	}

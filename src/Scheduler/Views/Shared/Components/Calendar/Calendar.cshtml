@@ -1,11 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Scheduler.Domain.Services;
 @using Scheduler.Web.Controllers;
 
+@inject IDateProvider DateProvider
 @inject SignInManager<User> SignInManager
 
 @{
     // The current year is stored.
-    int currentDate = DateTime.Now.Year;
+    int currentDate = this.DateProvider.Now.Year;
 
     // The list to store the years used for the select.
     List<int> yearList = new() { currentDate };
@@ -16,14 +18,14 @@
         yearList.Add(currentDate + i);
     }
 
-    int weeks = (int)ViewData["NumberOfWeeks"];
-    int previousYear = (int)ViewData["previousYear"];
-    int previousMonth = (int)ViewData["previousMonth"];
-    int nextYear = (int)ViewData["nextYear"];
-    int nextMonth = (int)ViewData["nextMonth"];
-    int currentMonth = (int)ViewData["Month"];
-    int currentYear = (int)ViewData["Year"];
-    string currentMonthName = (string)ViewData["MonthName"];
+    int weeks = (int)this.ViewData["NumberOfWeeks"];
+    int previousYear = (int)this.ViewData["previousYear"];
+    int previousMonth = (int)this.ViewData["previousMonth"];
+    int nextYear = (int)this.ViewData["nextYear"];
+    int nextMonth = (int)this.ViewData["nextMonth"];
+    int currentMonth = (int)this.ViewData["Month"];
+    int currentYear = (int)this.ViewData["Year"];
+    string currentMonthName = (string)this.ViewData["MonthName"];
 }
 
 <div class="calendar noPrintIfModal table-responsive w-100 m-auto">

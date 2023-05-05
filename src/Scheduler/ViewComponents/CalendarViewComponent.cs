@@ -8,6 +8,9 @@ using Scheduler.Domain.Services;
 
 namespace Scheduler.ViewComponents;
 
+/// <summary>
+/// Code-behind for the Calendar component.
+/// </summary>
 public sealed class CalendarViewComponent : ViewComponent
 {
 	/// <summary>
@@ -35,9 +38,8 @@ public sealed class CalendarViewComponent : ViewComponent
 
 	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
 	{
-		Specification<Event> pastEventsSpec = new PastEventSpecification(this.dateProvider);
 		IEnumerable<Event> events = await this.scheduleRepository.SearchAsync(
-			pastEventsSpec.Not());
+			new PastEventSpecification(this.dateProvider));
 
 		int currentYear;
 		int currentMonth;

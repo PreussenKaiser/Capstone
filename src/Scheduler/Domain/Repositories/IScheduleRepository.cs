@@ -23,12 +23,13 @@ public interface IScheduleRepository
 	/// Usage
 	/// 
 	/// For finding single elements you can use
-	/// <code>(await this.fieldRepository.SearchAsync[spec]).FirstOrDefault();</code>
+	/// <code>(await this.repository.SearchAsync[spec]).FirstOrDefault();</code>
 	/// </example>
 	/// </summary>
 	/// <param name="searchSpec">The specification to search events by.</param>
 	/// <returns>Events which meet the specification.</returns>
-	Task<IEnumerable<Event>> SearchAsync(Specification<Event> searchSpec);
+	Task<IEnumerable<TEvent>> SearchAsync<TEvent>(Specification<TEvent> searchSpec)
+		where TEvent : Event;
 
 	/// <summary>
 	/// Edits the details of a scheduled event.

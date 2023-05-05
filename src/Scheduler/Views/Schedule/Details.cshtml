@@ -1,10 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using Microsoft.EntityFrameworkCore;
 @using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Services;
 @using Scheduler.Domain.Specifications;
 @using System.Security.Claims;
 @using System.Text;
 
+@inject IDateProvider DateProvider
 @inject UserManager<User> UserManager
 @inject ITeamRepository TeamRepository
 @inject IFieldRepository FieldRepository
@@ -13,9 +15,12 @@
 
 @{
     this.ViewData["Title"] = "Reschedule Event";
-    string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
-    string startDateString = Model.StartDate.ToString("yyyy-MM-ddTHH:mm");
-    string endDateString = Model.EndDate.ToString("yyyy-MM-ddTHH:mm");
+
+    const string DATE_FORMAT = "yyyy-MM-ddTHH:mm";
+
+    string today = this.DateProvider.Now.ToString(DATE_FORMAT);
+    string startDateString = this.Model.StartDate.ToString(DATE_FORMAT);
+    string endDateString = this.Model.EndDate.ToString(DATE_FORMAT);
 
     string eventType = this.Model.GetType().Name;
     bool recurringEvent = this.Model.Recurrence is not null;

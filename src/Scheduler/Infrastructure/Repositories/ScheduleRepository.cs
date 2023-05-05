@@ -38,9 +38,10 @@ public sealed class ScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public async Task<IEnumerable<Event>> SearchAsync(Specification<Event> searchSpec)
+	public async Task<IEnumerable<TEvent>> SearchAsync<TEvent>(Specification<TEvent> searchSpec)
+		where TEvent : Event
 	{
-		IEnumerable<Event> events = await this.context.Events
+		IEnumerable<TEvent> events = await this.context.Set<TEvent>()
 			.AsNoTracking()
 			.Include(e => e.Field)
 			.Include(e => e.Recurrence)

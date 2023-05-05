@@ -1,5 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity;
+@using Scheduler.Domain.Services;
+
+@inject IDateProvider DateProvider
 @inject UserManager<User> UserManager;
+
 @{    
     IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
     IEnumerable<Field> fields = (IEnumerable<Field>)this.ViewData["Fields"];
@@ -247,7 +251,7 @@
                                         DateTime squareDate = new DateTime(squareYear, squareMonth, squareDay, squareHour, squareMinutes, 0);
                                         if (eventhit == 0)
                                         {
-                                            if (squareDate > DateTime.Now)
+                                            if (squareDate > this.DateProvider.Now)
                                             {
                                                 <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-fieldId="@f.Id">*</a></td>
                                             }
@@ -259,10 +263,9 @@
                                         }
                                         else
                                         {
-                                            if (squareDate > DateTime.Now)
+                                            if (squareDate > this.DateProvider.Now)
                                             {
                                                 <td class="bg-danger"><a asp-action="Details" asp-controller="Schedule" asp-route-id="@eventId">*</a></td>
-                                                
                                             }
                                             else
                                             {
@@ -273,7 +276,7 @@
                                 </tr>
                             }
                             
-                            if(halfHour == 0)
+                            if (halfHour == 0)
                             {
                                 halfHour = 30;
                             }
@@ -283,7 +286,7 @@
                                 hour++;
                             }
 
-                            if(hour > 11)
+                            if (hour > 11)
                             {
                                 daypart = 1;
                             }

@@ -10,6 +10,8 @@ using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Scheduler.ViewModels;
+using Scheduler.Domain.Specifications.Events;
+
 namespace Scheduler.Web.Controllers;
 
 /// <summary>
@@ -19,21 +21,37 @@ namespace Scheduler.Web.Controllers;
 public sealed class DashboardController : Controller
 {
 	/// <summary>
+	/// The repository to execute commands and queries against.
+	/// </summary>
+	private readonly IScheduleRepository scheduleRepository;
+
+	/// <summary>
+	/// 
+	/// </summary>
+	private readonly ITeamRepository teamRepository;
+
+	/// <summary>
 	/// The database to query.
 	/// </summary>
 	private readonly SchedulerContext context;
 
 	/// <summary>
-	/// The variable to manage users.
+	/// The API to retrieve users with.
 	/// </summary>
 	private readonly UserManager<User> userManager;
 
 	/// <summary>
 	/// Initializes the <see cref="DashboardController"/> class.
 	/// </summary>
+	/// <param name="scheduleRepository"></param>
 	/// <param name="context">The database to query.</param>
-	public DashboardController(SchedulerContext context, UserManager<User> userManager)
+	/// <param name="userManager">The API to retrieve users with.</param>
+	public DashboardController(
+		IScheduleRepository scheduleRepository,
+		SchedulerContext context,
+		UserManager<User> userManager)
 	{
+		this.scheduleRepository = scheduleRepository;
 		this.context = context;
 		this.userManager = userManager;
 	}
@@ -59,7 +77,9 @@ public sealed class DashboardController : Controller
 		Guid userId = Guid.Parse(this.userManager.GetUserId(this.User)
 			?? throw new NullReferenceException("Could not get current user."));
 
-		IEnumerable<Team> teams = await this.context.Teams.ToListAsync();
+		IEnumerable<Event> events = type == nameof(Practice)
+			? await this.scheduleRepository.SearchAsync()
+
 		IEnumerable<Team>? coachTeams = await this.context.Teams
 			.Where(t => t.UserId == userId)
 			.ToListAsync();
@@ -71,19 +91,19 @@ public sealed class DashboardController : Controller
 		{
 			if (type == nameof(Game))
 			{
-				IEnumerable<Event> coachGames = await this.context.Games
-					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
-					.WithScheduling()
-					.ToListAsync();
+				ByHomeTeamSpecification byHomeTeamSpec = new(team.Id);
+				ByOpposingTeamSpecification byOpposingTeamSpec = new(team.Id);
+
+				IEnumerable<Event> coachGames = await this.scheduleRepository
+					.SearchAsync(byHomeTeamSpec
+						.Or(byOpposingTeamSpec));
 
 				games.AddRange(coachGames);			
 			}
 			else
 			{
-				IEnumerable<Event> coachPractices = await this.context.Practices
-					.Where(g => g.TeamId == team.Id)
-					.WithScheduling()
-					.ToListAsync();
+				IEnumerable<Event> coachPractices = await this.scheduleRepository
+					.SearchAsync(new ByPracticingTeamSpecification(team.Id));
 
 				practices.AddRange(coachPractices);
 			}			
@@ -523,7 +543,7 @@ public sealed class DashboardController : Controller
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
-		return PartialView("_ListModalTable", events);
+		return this.PartialView("_ListModalTable", events);
 	}
 
 	/// <summary>
@@ -538,7 +558,7 @@ public sealed class DashboardController : Controller
 		DateTime end,
 		IQueryable<Event>? events = null)
 	{
-		events ??= this.context.Events.WithScheduling();
+		events ??= this.scheduleRepository.SearchAsync(new GetAllSpecification<Event>());
 
 		return events
 			.Where(e => e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)
@@ -554,7 +574,7 @@ public sealed class DashboardController : Controller
 	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event>? TeamSearch(string teamName, string type, IQueryable<Event>? events = null)
 	{
-		events ??= this.context.Events.WithScheduling();
+		events ??= this.scheduleRepository.SearchAsync(new GetAllSpecification<Event>());
 
 		IQueryable<Team> teamList = this.context.Teams;
 		Team selectedTeam = teamList.FirstOrDefault(t => t.Name.ToLower() == teamName.ToLower());
@@ -582,7 +602,7 @@ public sealed class DashboardController : Controller
 			matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
 		}
 
-		if(matchingGames.IsNullOrEmpty() && matchingPractices.IsNullOrEmpty())
+		if (matchingGames.IsNullOrEmpty() && matchingPractices.IsNullOrEmpty())
 		{
 			ViewData["TeamFilterMessage"] = "There are no scheduled " + type + "s for Team " + selectedTeam.Name + "\nduring the selected dates";
 			return null;
