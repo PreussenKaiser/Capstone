@@ -93,7 +93,7 @@ public sealed class TeamController : Controller
 
 		return team is not null
 			? this.View(team)
-			: this.BadRequest("Could not find specified team.");
+			: this.BadRequest();
 	}
 
 	/// <summary>

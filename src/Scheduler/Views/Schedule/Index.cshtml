@@ -1,66 +1,32 @@
 ﻿@using System.Security.Claims;
 @using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Services;
 @using Scheduler.Domain.Specifications;
 @using Scheduler.Domain.Specifications.Fields;
 
 @inject IFieldRepository FieldRepository
+@inject IDateProvider DateProvider
+
 @model Event
 
 @{
     this.ViewData["Title"] = "Schedule";
 
-    string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
-    string eventType = this.ViewData["EventType"] as string
-        ?? (this.User.IsInRole(Role.ADMIN)
-        ? nameof(Event)
-        : nameof(Practice));
+    const string DATE_FORMAT = "yyyy-MM-ddTHH:mm";
+    bool isAdmin = this.User.IsInRole(Role.ADMIN);
 
-    GetAllSpecification<Field> searchSpec = new();
+    string eventType = this.ViewData["EventType"] as string
+        ?? (isAdmin
+            ? nameof(Event)
+            : nameof(Practice));
+
     IEnumerable<SelectListItem> fields = (await this.FieldRepository
-        .SearchAsync(searchSpec))
+        .SearchAsync(new GetAllSpecification<Field>()))
         .Select(f => new SelectListItem
         {
             Text = f.Name,
             Value = f.Id.ToString()
         });
-
-    DateTime currentTime = DateTime.Now.AddHours(1);
-    DateTime timeStamp = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, currentTime.Hour, 0, 0);
-
-    string startDateString = timeStamp.ToString("yyyy-MM-ddTHH:mm");
-    string endDateString = timeStamp.AddMinutes(30).ToString("yyyy-MM-ddTHH:mm");
-
-    string selectedField;
-
-    if (this.ViewData["field"] != "")
-    {
-        selectedField = (string)this.ViewData["field"];
-    }
-    else
-    {
-        selectedField = null;
-    }
-
-
-    if (this.ViewData["enteredDate"] != null)
-    {
-        DateTime enteredDate = (DateTime)this.ViewData["enteredDate"];
-        startDateString = enteredDate.ToString("yyyy-MM-ddTHH:mm");
-        endDateString = enteredDate.AddMinutes(30).ToString("yyyy-MM-ddTHH:mm");
-    }
-
-    if (selectedField != null)
-    {
-        FieldByNameSpecification byName = new(selectedField);
-        fields = (await this.FieldRepository.SearchAsync(byName))
-            .Select(f => new SelectListItem
-                    {
-                        Text = f.Name,
-                        Value = f.Id.ToString(),
-                        Selected = (f.Id == f.Id)
-            });
-    }
-
 }
 
 <div class="row">
@@ -80,7 +46,7 @@
                     <input hidden asp-for="UserId" value="@this.User.FindFirst(ClaimTypes.NameIdentifier)!.Value" />
 
                     <div class="list-group list-group-horizontal mb-3">
-                        @if (this.User.IsInRole(Role.ADMIN))
+                        @if (isAdmin)
                         {
                             <button type="button"
                                     id="Event"
@@ -103,26 +69,39 @@
                         </button>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Name" class="form-label"></label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
+                    <partial name="Forms/_EventInputs" />
 
                     <div id="eventInputs"></div>
                 </div>
                 <div class="col-sm-6">
-                    <div class="mb-3">
-                        <label asp-for="FieldId" class="form-label"></label>
-                        <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields">
-
-                        </select>
-                        <span asp-validation-for="FieldId" class="text-danger"></span>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            @if (this.User.IsInRole(Role.ADMIN))
+                            {
+                                <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="Please select one Field from the List.<br><br>For regular Events, you can use the Blackout Facility option to choose ALL Fields."></i></label>
+                            }
+                            else
+                            {
+                                <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Please select one Field from the List."></i></label>
+                            }
+                            <select data-val="false" class="form-select" asp-for="FieldId" asp-items="fields"></select>
+                            <span asp-validation-for="FieldId" class="text-danger"></span>
+                        </div>
+                        <div class="col-6">
+                            <label style="visibility: hidden" class="form-label">Blackout</label>
+                            <div id="blackoutInputs">
+                                @if (this.User.IsInRole(Role.ADMIN) &&
+                                     eventType == nameof(Event))
+                                {
+                                    <partial name="Forms/_BlackoutInputs" />
+                                }
+                            </div>
+                        </div>
                     </div>
                     <div class="col-lg">
-                        <label class="form-label">Event Time</label>
+                        <label class="form-label">Event Time <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates and times will <u>not</u> be applied."></i></label>
                         <input type="text" name="daterange" class="text-center form-control" />
-                        </div>
+                    </div>
                     <div>
                         <input asp-for="StartDate" type="hidden" id="StartDate" />
                         <span asp-validation-for="StartDate" class="text-danger"></span>
@@ -132,16 +111,17 @@
                         <input asp-for="EndDate" type="hidden" id="EndDate" />
                         <span asp-validation-for="EndDate" class="text-danger"></span>
                     </div>
-                    <div class="row mb-3">
-                        <div class="form-check mb-3">
-                            <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                            <label asp-for="IsBlackout" class="form-check-label"></label>
-                        </div>
+                    <div class="row ms-3 mb-3">
                         <div class="form-check mb-3">
                             <input type="checkbox" checked="@(this.Model is not null && this.Model.Recurrence is not null)" class="form-check-input" id="recurrenceCheck">
-                            <label class="form-check-label">Repeating?</label>
+                            <label class="form-check-label">Repeating <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Use this to schedule your Event to repeat for a set number of Occurrences: Daily, Weekly, or Monthly."></i></label>
                         </div>
                         <div id="recurrenceInputs">
+                            @if (this.Model is not null &&
+                                 this.Model.Recurrence is not null)
+                            {
+                                <partial name="Forms/_RecurrenceInputs" />
+                            }
                         </div>
                     </div>
                 </div>
@@ -171,24 +151,25 @@
         document.onload = navClick('@eventType');
     </script>
     <script>
-        var startDateString = "@startDateString";
-        var endDateString = "@endDateString";
-        var minDateString = "@today";
+        var startDateString = "@this.Model.StartDate.ToString(DATE_FORMAT)";
+        var endDateString = "@this.Model.EndDate.ToString(DATE_FORMAT)";
+        var minDateString = "@this.DateProvider.Now.ToString(DATE_FORMAT)";
         var startDate;
         var startDateFormatted;
         var endDate;
         var endDateFormatted;
         var minDate;
         var minDateFormatted;
+
         startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the start date string and specify the format
         startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the start date as desired
         endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the end date string and specify the format
         endDateFormatted = endDate.format('M/DD/YYYY hh:mm A'); // Format the end date as desired
         minDate = moment(minDateString, "YYYY-MM-DDTHH:mm"); // Parse the min date string and specify the format
         minDateFormatted = minDate.format('M/DD/YYYY hh:mm A'); // Format the min date as desired
+
         $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
         $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
-        
 
         $(function () {
             $('input[name="daterange"]').daterangepicker({

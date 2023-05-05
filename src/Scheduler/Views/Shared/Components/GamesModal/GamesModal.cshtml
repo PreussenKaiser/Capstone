@@ -26,10 +26,10 @@
                                 <div>
                                     <button type="button" class="btn btn-sm btn-secondary" onclick="showGamesModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results </button>
                                     <ul class="dropdown-menu p-3" style="width:120%" id="gamesModalDropdown">
-                                        <h5 class="lead text-danger text-center">Filter Criteria</h5>
+                                        <h5 class="lead text-danger text-center">Filter Criteria <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose options below to filter your results."></i></h5>
                                         <div>
                                             <div class="form-label">
-                                                <label class="form-label">Event Date(s)</label>
+                                                <label class="form-label">Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates and times will <u>not</u> be applied."></i></label>
                                                 <input type="text" name="gamesDaterange" class="text-center form-control" />
                                             </div>
                                             <div>
@@ -69,12 +69,12 @@
                                             <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeGamesDropdown()">Close</button>
                                         </div>
                                     </ul>
-                                    <button class="btn btn-sm btn-danger" type="reset" onclick="resetGamesFilter()">Reset Filter</button>
+                                    <button class="btn btn-sm btn-danger" type="reset" onclick="resetGamesFilter()">Reset Filter <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Reset your filter criteria."></i></button>
                                 </div>
                             </form>
                         </div>
                     </div>
-                    <div id="gamesModalTable">
+                    <div id="gamesModalTable" class="table-responsive w-100 m-auto">
                         <partial name="_CoachModalTable" model="this.Model" />
                     </div>
                 </div>
@@ -189,7 +189,16 @@
             }
         });
     }
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
 </script>
+<style>
+    .custom-tooltip .tooltip-inner {
+        max-width: 500px;
+    }
+</style>
 
 <style media="print">
     .noPrintIfModal {

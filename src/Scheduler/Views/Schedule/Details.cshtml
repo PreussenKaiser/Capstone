@@ -53,7 +53,7 @@
                         @if (canEdit)
                         {                
                             <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#detailsModal">
-                                Edit
+                                Edit <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Name of this Event, or Participating Teams."></i>
                             </button>
                             <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -138,7 +138,7 @@
                             @if (canEdit)
                             {             
                                 <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
-                                    Reschedule
+                                    Reschedule <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Times of this Event."></i>
                                 </button>
                                 <div class="modal fade" id="rescheduleModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -150,7 +150,7 @@
                                                 <div class="row">
                                                     <div class="col-6">
                                                         <div class="col-lg">
-                                                            <label class="form-label">Event Time</label>
+                                                            <label class="form-label">Event Time <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates and times will <u>not</u> be applied."></i></label>
                                                             <input type="text" name="daterange" class="text-center form-control" />
                                                         </div>
                                                         <div>
@@ -194,7 +194,7 @@
                                     </div>
                                 </div>
                                 <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                                    Cancel Event
+                                    Cancel Event <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel this Event."></i>
                                 </button>
                                 <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -245,7 +245,7 @@
                         @if (canEdit)
                         {   
                             <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#relocateModal">
-                                Relocate
+                                Relocate <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Location of this Event."></i>
                             </button>
                             <div class="modal fade" id="relocateModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -256,15 +256,19 @@
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-6">
-                                                    <div class="form-check mb-3">
-                                                        <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                                                        <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
-                                                    </div>
                                                     <div class="mb-3">
                                                         <label asp-for="FieldId" class="form-label"></label>
                                                         <select data-val="false" asp-for="FieldId" asp-items="fieldList" class="form-select"></select>
                                                         <span asp-validation-for="FieldId" class="text-danger"></span>
                                                     </div>
+                                                    @if (this.User.IsInRole(Role.ADMIN) &&
+                                                         eventType == nameof(Event))
+                                                    {                                               
+                                                        <div class="form-check mb-3">
+                                                            <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+                                                            <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
+                                                        </div>
+                                                    }
                                                 </div>
                                                 <div class="col-6">
                                                     <partial name="Forms/_UpdateTypeInput" />
@@ -280,8 +284,15 @@
                             </div>
                         }
                     </div>
-                    <h6>Field(s)</h6>
-                    @this.Model.Field?.Name
+
+                    @if (this.Model.IsBlackout)
+                    {
+                        <span>Entire Facility</span>
+                    }
+                    else
+                    {
+                        @this.Model.Field?.Name
+                    }
                 </li>
             </ul>
         </form>

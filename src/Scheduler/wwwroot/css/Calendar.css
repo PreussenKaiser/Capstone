@@ -2,15 +2,12 @@
     border: none;
 }
 
-.calendar table td, th {
-    width: 130px;
+.calendar td, th {
+    width: 12.5%;
 }
 
-.calendar table td {
-    height: 130px;
-}
-
-.calendar table td {
+.calendar td {
+    height: 120px;
 }
 
 .calendar-title {
@@ -79,7 +76,7 @@
 }
 
 .day-button {
-    padding: 2px;
+    padding: 1px;
     width: 45%;
     max-height: 20px;
     border-radius: 0px;
@@ -109,6 +106,10 @@
     height: 650px;
 }
 
+.grid-time {
+    font-size: 12px;
+}
+
 #grid-table thead th {
     position: sticky;
     top: -17px;
@@ -134,3 +135,123 @@
     background:lightblue;
 }
 
+/* Mobile Calendar Styling */
+@media (min-width: 1025px) {
+
+    .calendar-full {
+        visibility: visible !important;
+    }
+    .calendar-mobile {
+        display: none !important;
+    }
+    .month-button {
+        font-size:13px;
+    }
+
+    .grid-time {
+        font-size: 16px;
+    }
+
+    .dash-buttons {
+        width: 80%;
+    }
+}
+@media (max-width: 1024px) {
+
+    .calendar-full {
+        display: none !important;
+    }
+
+    .calendar-mobile {
+        visibility: visible !important;
+        table-layout: fixed;
+    }
+
+    .calendar td {
+        height: 75px;
+    }
+
+    .month-button {
+        font-size: 14px;
+    }
+
+    .calendar-title {
+        font-size: 30px !important;
+    }
+
+    .calendar-event {
+        font-size: 12px;
+    }
+
+    .calendar-date {
+        display: block;
+        width: 30px;
+        justify-content: center;
+        border: none;
+    }
+
+    .right-arrow {
+        font-size: 45px;
+        display: block;
+        float: right;
+        margin-right: 0px;
+    }
+
+    .left-arrow {
+        font-size: 45px;
+        display: block;
+        float: left;
+        margin-left: 0px;
+    }
+
+    .table-format {
+        border: none;
+    }
+
+    .clickable-cell {
+        font-size: 12px;
+        color: green;
+    }
+
+    .clickable-grid {
+        font-size: 12px;
+        color: darkblue;
+    }
+
+    .calendar-date {
+        font-size: 16px;
+        color: black;
+    }
+
+    .grid-time {
+        font-size: 10px;
+    }
+
+    .dash-buttons {
+        width: 100%;
+    }
+
+    .list-table {
+        font-size: 12px;
+    }
+
+    .field-card {
+        width: 50%;
+    }
+}
+
+@media (max-width: 360px) {
+    .clickable-cell {
+        font-size: 9px;
+    }
+
+    .clickable-grid {
+        font-size: 9px;
+        color: darkblue;
+    }
+
+    .calendar-date {
+        font-size: 14px;
+        color: black;
+    }
+}

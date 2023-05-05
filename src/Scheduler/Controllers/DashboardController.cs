@@ -10,7 +10,6 @@ using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Scheduler.ViewModels;
-
 namespace Scheduler.Web.Controllers;
 
 /// <summary>
@@ -55,7 +54,7 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <param name="type">The currently selected type of Event.</param>
 	/// <returns>The appropriate ViewComponent.</returns>
-	public async Task <IActionResult> CoachEvents(string type)
+	public async ValueTask <IActionResult> CoachEvents(string type)
 	{
 		Guid userId = Guid.Parse(this.userManager.GetUserId(this.User)
 			?? throw new NullReferenceException("Could not get current user."));
@@ -92,6 +91,7 @@ public sealed class DashboardController : Controller
 
 		if (games.Count > 0)
 		{
+
 			games = games
 				.DistinctBy(g => g.Id)
 				.ToList();
@@ -217,6 +217,9 @@ public sealed class DashboardController : Controller
 			}
 		}
 
+		IEnumerable<Event>? filteredGames = null;
+		IEnumerable<Event>? filteredPractices = null;
+
 		if (!games.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
@@ -333,11 +336,18 @@ public sealed class DashboardController : Controller
 				.Include(g => g.OpposingTeam)
 				.WithScheduling(),
 
+			"Non-Team Event" => this.context.Events
+				.Where(e => !(this.context.Practices.Any(p => p.Id == e.Id) || this.context.Games.Any(g => g.Id == e.Id)))
+				.WithScheduling(),
+
 			_ => this.context.Events
 				.WithScheduling()
 		};
-		
-		events = this.DateSearch(start, end, events);
+
+		if (!events.IsNullOrEmpty())
+		{
+			events = this.DateSearch(start, end, events);
+		}
 
 		if (!searchTerm.IsNullOrEmpty())
 		{
@@ -353,7 +363,7 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["Events"] = null;
 
-			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
+			this.ViewData["TypeFilterMessage"] = $"No {type} found";
 		}
 		else
 		{
@@ -480,11 +490,18 @@ public sealed class DashboardController : Controller
 				.Include(g => g.OpposingTeam)
 				.WithScheduling(),
 
+			"Non-Team Event" => this.context.Events
+				.Where(e => !(this.context.Practices.Any(p => p.Id == e.Id) || this.context.Games.Any(g => g.Id == e.Id)))
+				.WithScheduling(),
+
 			_ => this.context.Events
 				.WithScheduling()
 		};
 
-		events = this.DateSearch(start, end, events);
+		if (!events.IsNullOrEmpty())
+		{
+			events = this.DateSearch(start, end, events);
+		}
 
 		if (!searchTerm.IsNullOrEmpty())
 		{
@@ -498,7 +515,7 @@ public sealed class DashboardController : Controller
 
 		if (events.IsNullOrEmpty())
 		{
-			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
+			this.ViewData["TypeFilterMessage"] = $"No {type} found";
 		}
 		else
 		{
@@ -600,8 +617,6 @@ public sealed class DashboardController : Controller
 		string? type = nameof(Event),
 		IQueryable<Event>? events = null)
 	{
-		events ??= this.context.Events.WithScheduling();
-
 		events = events
 			.Where(e => e.Name.ToLower()
 			.Contains(searchTerm.ToLower()));
