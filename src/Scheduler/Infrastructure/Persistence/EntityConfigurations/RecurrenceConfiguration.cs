@@ -12,6 +12,10 @@ public sealed class RecurrenceConfiguration : IEntityTypeConfiguration<Recurrenc
 	/// <inheritdoc/>
 	public void Configure(EntityTypeBuilder<Recurrence> builder)
 	{
+		builder
+			.Property(r => r.Occurrences)
+			.HasColumnType("SMALLINT");
+
 		builder.Metadata
 			.FindNavigation(nameof(Recurrence.Events))
 			?.SetPropertyAccessMode(PropertyAccessMode.Field);

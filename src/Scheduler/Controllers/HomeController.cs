@@ -6,6 +6,8 @@ using Scheduler.Filters;
 using Scheduler.Domain.Specifications;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications.Events;
+using System.Net.Mail;
+using System.Net;
 
 namespace Scheduler.Web.Controllers;
 

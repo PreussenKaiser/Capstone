@@ -7,8 +7,8 @@
     string? userId = this.ViewContext.RouteData.Values["id"] as string;
 }
 
-<div class="row mb-3 w-75 m-auto">
-    <aside class="col-sm-3">
+<div class="row w-100 m-auto">
+    <aside class="col-sm-3 mb-3">
         <a asp-action="Profile"
            asp-route-id="@userId"
            class="list-group-item list-group-item-action @this.Html.SelectedLink("Profile")">

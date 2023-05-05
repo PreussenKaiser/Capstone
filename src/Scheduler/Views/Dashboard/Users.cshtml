@@ -24,7 +24,7 @@
             @foreach (var user in this.Model)
             {
                 <tr>
-                    <th scope="row">@user.FirstName @user.LastName</th>
+                    <th>@user.FirstName @user.LastName</th>
                     <td colspan="2">@user.Email</td>
                     <td class="text-center">
                         @if (this.UserManager.IsInRoleAsync(user, Role.ADMIN).Result)
@@ -57,12 +57,30 @@
                     <td>
                         @if (this.UserManager.GetUserAsync(this.User).Result?.Id != user.Id)
                         {
-                            <form asp-action="Delete"
-                                  asp-controller="Identity"
-                                  asp-route-id="@user.Id"
-                                  method="post">
-                                <input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove @user.FirstName?')" class="btn btn-sm btn-danger" />
-                            </form>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#remove@(user.Id)">
+                                Remove
+                            </button>
+                            <div class="modal fade" id="remove@(user.Id)" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">@user.ToString()</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to remove @(user.ToString())?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">Close</button>
+                                            <form asp-action="Delete"
+                                                  asp-controller="Identity"
+                                                  asp-route-id="@user.Id"
+                                                  method="post">
+                                                <input type="submit" value="Remove" class="btn btn-sm btn-danger" />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         }
                     </td>
                 </tr>
