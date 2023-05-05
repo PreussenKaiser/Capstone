@@ -37,7 +37,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Team Name</label>
-                                        <select id="teamNameFilter" name="teamName" class="form-select">
+                                        <select id="teamNameFilter" name="teamName" class="form-select chosen">
                                             <option value=""></option>
                                             @foreach (Team t in (IEnumerable<Team>)ViewData["Teams"])
                                             {
@@ -123,6 +123,8 @@
                 teamName: ''
             },
             success: function(data) {
+                $('.chosen option-selected').removeAttr('selected');
+                $('.chosen').trigger('chosen:updated');
                 $("#listModalTable").html(data);
             }
         });
