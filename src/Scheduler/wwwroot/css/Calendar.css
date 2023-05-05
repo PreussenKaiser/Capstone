@@ -234,6 +234,10 @@
     .list-table {
         font-size: 12px;
     }
+
+    .field-card {
+        width: 50%;
+    }
 }
 
 @media (max-width: 360px) {
