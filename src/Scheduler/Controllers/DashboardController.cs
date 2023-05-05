@@ -55,7 +55,7 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <param name="type">The currently selected type of Event.</param>
 	/// <returns>The appropriate ViewComponent.</returns>
-	public async Task <IActionResult> CoachEvents(string type)
+	public async ValueTask <IActionResult> CoachEvents(string type)
 	{
 		Guid userId = Guid.Parse(this.userManager.GetUserId(this.User)
 			?? throw new NullReferenceException("Could not get current user."));
@@ -92,6 +92,7 @@ public sealed class DashboardController : Controller
 
 		if (games.Count > 0)
 		{
+
 			games = games
 				.DistinctBy(g => g.Id)
 				.ToList();
@@ -216,6 +217,9 @@ public sealed class DashboardController : Controller
 				}
 			}
 		}
+
+		IEnumerable<Event>? filteredGames = null;
+		IEnumerable<Event>? filteredPractices = null;
 
 		if (!games.IsNullOrEmpty())
 		{

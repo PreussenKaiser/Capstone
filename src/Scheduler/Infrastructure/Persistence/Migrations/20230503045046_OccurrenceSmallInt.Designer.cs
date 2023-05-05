@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scheduler.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Scheduler.Infrastructure.Persistence;
 namespace Scheduler.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    partial class SchedulerContextModelSnapshot : ModelSnapshot
+    [Migration("20230503045046_OccurrenceSmallInt")]
+    partial class OccurrenceSmallInt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -403,7 +406,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                             EmailConfirmed = false,
                             FirstName = "Team",
                             LastName = "Null",
-                            LockoutEnabled = true,
+                            LockoutEnabled = false,
                             NeedsNewPassword = false,
                             NormalizedUserName = "TEAMNULL@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEOA3Bd85FS6ANpEYTjgpLPK1lWMRkbEZ7evteVfnANTlV7ScXljYdRROBANAE6cjlw==",
@@ -421,7 +424,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                             EmailConfirmed = false,
                             FirstName = "John",
                             LastName = "Coach",
-                            LockoutEnabled = true,
+                            LockoutEnabled = false,
                             NeedsNewPassword = false,
                             NormalizedUserName = "JOHNCOACH@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEDAmLfkVTmfK7CfNhUYRBKUe1u13VD53UQjj2yQ00dThMwIpqLImfHZxdqx635BRVw==",
@@ -516,8 +519,7 @@ namespace Scheduler.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("Scheduler.Domain.Models.Field", "Field")
                         .WithMany("Events")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FieldId");
 
                     b.HasOne("Scheduler.Domain.Models.Recurrence", "Recurrence")
                         .WithMany("Events")
