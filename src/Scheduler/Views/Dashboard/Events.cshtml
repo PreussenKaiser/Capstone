@@ -5,11 +5,29 @@
 @using System.Text;
 
 <div class="text-center mb-3 mt-3 noPrintIfModal">
-	<div>
-		<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded">
-			Schedule New Event
-		</a>
-	</div>
+	@if (this.User.IsInRole(Role.ADMIN))
+	{
+		<div class="row">
+			<div class="col-md text-end">
+				<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded">
+					Schedule New Event
+				</a>
+			</div>
+			<div class="col-md text-start">
+				<a asp-controller="Schedule" asp-action="CloseFacility" class="btn btn-sm btn-danger rounded text-start">
+					Close Facility
+				</a>
+			</div>
+		</div>
+	}
+	else
+	{
+		<div>
+			<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded">
+				Schedule New Event
+			</a>
+		</div>
+	}
 	<div class="row mt-3">
 		<div class="col-md text-end">
 			<button class="btn btn-sm btn-secondary" onclick="gamesModal()">
@@ -23,7 +41,7 @@
 		</div>
 	</div>
 </div>
-
+			
 			
 <div id="eventModal"></div>
 
