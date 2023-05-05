@@ -261,18 +261,8 @@
                                         {
                                             if (squareDate > DateTime.Now)
                                             {
-                                                @if (this.User.IsInRole(Role.ADMIN))
-                                                {
-                                                    <td class="bg-danger"><a asp-action="Details" asp-controller="Schedule" asp-route-id="@eventId">*</a></td>
-                                                }
-                                                else if (this.UserManager.GetUserAsync(this.User).Result?.Id == userId)
-                                                {
-                                                    <td style="background-color:darkred"><a asp-action="Details" asp-controller="Schedule" asp-route-id="@eventId">*</a></td>
-                                                }
-                                                else
-                                                {
-                                                    <td class="bg-danger"></td>
-                                                }
+                                                <td class="bg-danger"><a asp-action="Details" asp-controller="Schedule" asp-route-id="@eventId">*</a></td>
+                                                
                                             }
                                             else
                                             {

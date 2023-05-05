@@ -53,7 +53,7 @@ public static class SeedData
 		},
 		new()
 		{
-			Id = Guid.NewGuid(),
+			Id = new Guid("a3bc18ef-042d-4de7-bdba-698a90c82b26"),
 			Name = Role.COACH,
 			NormalizedName = Role.COACH,
 			ConcurrencyStamp = Guid.NewGuid().ToString()

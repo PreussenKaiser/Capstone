@@ -95,7 +95,6 @@ public class Event : Entity, IValidatableObject
 			throw new ArgumentException("Array size out of bounds.");
 		}
 
-
 		IEnumerable<Event> schedule = this.GenerateSchedule<Event>();
 
 		foreach (var occurrence in schedule)

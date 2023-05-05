@@ -1,0 +1,46 @@
+﻿@using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Specifications;
+@using Scheduler.ViewModels;
+
+@model ErrorViewModel
+
+<div class="row my-5">
+    <div class="col-12 text-center">
+        <h1 class="display-5 text-danger fw-bold">
+            @(this.Model.StatusCode): @this.Model.Message
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 mx-auto h4 fw-light">
+            @switch (this.Model.StatusCode)
+            {
+                case StatusCodes.Status400BadRequest:
+                    <p>There was a problem getting to that page, ensure you have proper authorization.</p>
+
+                    break;
+
+                case StatusCodes.Status404NotFound:
+                    <p>Sorry, we couldn't find that page.</p>
+
+                    <p class="fw-bold">If the problem persists...</p>
+                    <ul>
+                        <li>Ensure the url is correct.</li>
+                        <li>Ensure that you have authorization for the page.</li>
+                    </ul>
+
+                    break;
+
+                case StatusCodes.Status500InternalServerError:
+                    <p>Seems like there was a problem on our end, please try again later.</p>
+
+                    break;
+
+                default:
+                    break;
+            }
+            <br />
+            <p>Click <a href="javascript:history.go(-1)">here</a> to return to the previous page.</p>
+    </div>
+</div>
