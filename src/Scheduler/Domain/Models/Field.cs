@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Scheduler.Domain.Models;
 
@@ -8,12 +9,17 @@ namespace Scheduler.Domain.Models;
 public sealed class Field : Entity
 {
 	/// <summary>
+	/// Events occurring on the field.
+	/// </summary>
+	private readonly List<Event> events;
+
+	/// <summary>
 	/// Initializes the <see cref="Field"/> record.
 	/// </summary>
 	public Field() : base()
 	{
 		this.Name = string.Empty;
-		this.Events = new List<Event>();
+		this.events = new List<Event>();
 	}
 
 	/// <summary>
@@ -24,7 +30,8 @@ public sealed class Field : Entity
 	public string Name { get; init; }
 
 	/// <summary>
-	/// Events occuring on the field.
+	/// Events occurring on the field.
 	/// </summary>
-	public List<Event> Events { get; init; }
+	public IReadOnlyCollection<Event> Events
+		=> this.events.AsReadOnly();
 }

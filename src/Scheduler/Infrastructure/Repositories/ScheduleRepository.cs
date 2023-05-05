@@ -2,6 +2,7 @@
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
+using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Infrastructure.Repositories;
