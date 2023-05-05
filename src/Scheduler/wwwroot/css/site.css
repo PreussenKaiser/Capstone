@@ -3,19 +3,13 @@ html {
     background-color: #000000;
 }
 
-.linkElement button {
+.buttonRed {
     background-color: #c9000a;
     box-shadow: 0 -3px #af0006 inset;
     color: #fff !important;
-    padding: 10px 20px 10px 10px;
     line-height: 1.3;
     text-decoration: none;
     transition: background-color .2s;
-}
-
-.buttonRed:before {
-    font-family: FontAwesome;
-    font-size: 14px;
 }
 
 .buttonGreen {
@@ -24,6 +18,20 @@ html {
     background-color: #095211;
     color: #fff !important;
     box-shadow: 0 -3px #095211 inset;
+}
+
+.linkElement .buttonRed:after {
+    color: #000000;
+    font-family: FontAwesome;
+    transition: color .2s;
+}
+
+.linkElement button {
+    background-color: #c9000a;
+    box-shadow: 0 -3px #af0006 inset;
+    color: #fff !important;
+    text-decoration: none;
+    transition: background-color .2s;
 }
 
 .site-background {
