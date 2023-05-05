@@ -230,6 +230,10 @@
     .dash-buttons {
         width: 100%;
     }
+
+    .list-table {
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 360px) {

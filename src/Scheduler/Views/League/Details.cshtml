@@ -18,11 +18,11 @@
 
 
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-4 mb-3">
                 <ul class="list-group">
                     <li class="list-group-item">
                         <div class="d-flex justify-content-between">
-                            <h5>Details</h5>
+                            <h5>League Name:</h5>
 
                             @if (canEdit)
                             {      
@@ -58,17 +58,17 @@
                             }
                         </div>
                         <div class="row">
-                            <h6>League Name</h6>
-                            <h4 class="text-danger text-center" style="text-shadow: .5px .5px black;">@this.Model.Name</h4>
+                        <h4 class="text-danger text-start" style="text-shadow: .5px .5px black;">@this.Model.Name</h4>
+                            
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-12 text-end">
                                 @if (canEdit)
                                 {        
                                     <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeLeagueModal">
-                                        Remove League
+                                        Remove
                                     </button>
                                     <div class="modal fade" id="removeLeagueModal" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -95,11 +95,14 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-8">
-                <div class="mt-2">
-                    <a asp-action="Add" asp-route-leagueId="@this.Model.Id" asp-controller="Team" class="btn btn-sm btn-primary">
-                        Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
-                    </a>
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between">
+            <h4 class="text-center">@this.Model.Name Teams</h4>
+                    <div>
+                <a asp-action="Add" asp-route-leagueId="@this.Model.Id" asp-controller="Team" class="btn btn-sm btn-primary me-3">
+                            Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
+                        </a>
+                    </div>
                 </div>
 
                 <table class="table">
