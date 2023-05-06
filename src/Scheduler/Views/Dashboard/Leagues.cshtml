@@ -6,9 +6,11 @@
 @if (this.User.IsInRole(Role.ADMIN))
 { 
     <div class="text-center mt-3">
-        <a asp-action="Add" asp-controller="League" class="btn btn-sm btn-primary">
-            Add League
-        </a>
+        <div class="linkElement">
+            <a asp-action="Add" asp-controller="League" class="">
+                Add League
+            </a>
+        </div>
     </div>
 }
 

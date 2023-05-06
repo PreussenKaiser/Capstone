@@ -67,8 +67,10 @@
                             </select>
                         </div>
                         <div class="text-center">
-                            <input type="submit" class="btn btn-sm btn-secondary" value="Search" />
-                            <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeHomePageDropdown()">Close</button>
+                            <div class="linkElement">
+                                <input type="submit" class="buttonGreen" value="Search" />
+                                <button type="button" class="buttonRed" onclick="closeHomePageDropdown()">Close</button>
+                            </div>
                         </div>
                     </ul>
                 </div>
@@ -83,8 +85,10 @@
                 <img class="w-100 m-auto"src="~/Images/PCYS Facility Map.png" />
             </div>
             <div class="modal-footer noPrintIfModal">
-                <button class="btn btn-sm btn-secondary" onclick="window.print()">Print The Map</button>
-                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                <div class="linkElement">
+                    <button class="" onclick="window.print()">Print The Map</button>
+                    <button type="button" class="" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
