@@ -10,7 +10,10 @@
 <div class="layoutContainer noPrintIfModal text-center" style="padding-left:20px;padding-right:20px;border:2px solid gray;font-size:12px;">
     <h3 class="text-danger">Welcome to the PCYS Scheduling Application</h3>
     <p class="lead">Use the Calendar below to search for Dates and Times of Practices, Games, and other Events at the PCYS facility. You can use the Filtering Menu in the List to refine your search.</p>
-    <p class="lead">You can also use the Searchbar Dropdown Menu to search for Events outside of the Calendar. Search by Team Name, Event Name, or a range of Dates.</p>
+    <p class="lead">You can also use the Search Button to search for Events outside of the Calendar. Search by Team Name, Event Name, or a range of Dates.</p>
+    <div class="text-end mb-2">
+        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#mapModal">Facility Map</button>
+    </div>
 </div>
 <br />
 <div id="searchBar">
@@ -18,12 +21,14 @@
         <div class="btn-group mb-2 noPrintIfModal">
             <form action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
                 <div>
-                    <button type="button" class="btn btn-sm btn-secondary" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule</button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Search the Schedule using specific criteria."></i></button>
                     <ul class="dropdown-menu p-3" id="homepage-dropdown">
-                        <h5 class="lead text-danger text-center">Search Criteria</h5>
+                        <h5 class="lead text-danger text-center">Search Criteria <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose options below to search the Schedule."></i></h5>
                         <div>
                             <div class="form-label">
-                                <label class="form-label">Event Date(s)</label>
+                                <label class="form-label">
+                                    Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br />Once the desired dates are selected and shown at the bottom, click 'Apply' and confirm that the desired dates show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates will <u>not</u> be applied."></i>
+                                </label>
                                 <input type="text" name="daterange" class="text-center form-control" />
                             </div>
                             <div>
@@ -35,9 +40,10 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Type</label>
+                            <label class="form-label">Event Type</label>
                             <select name="type" class="form-select">
                                 <option value="Event">Events</option>
+                                <option value="Non-Team Event">Non-Team Events</option>
                                 <option value="Practice">Practices</option>
                                 <option value="Game">Games</option>
                             </select>
@@ -48,9 +54,9 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Team Name</label>
-                            <select id="teamName" name="teamName" class="form-select">
+                            <select id="teamName" name="teamName" class="form-select chosen">
                                 <option value=""></option>
-                                @foreach(Team t in Model.Teams)
+                                @foreach (Team t in this.Model.Teams)
                                 {
                                     <option value=@t.Name>@t.Name</option>
                                 }
@@ -61,9 +67,22 @@
                             <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeHomePageDropdown()">Close</button>
                         </div>
                     </ul>
-                    <button class="btn btn-sm btn-danger" type="reset" onclick="resetEvents()">Reset Search</button>
+                    <button class="btn btn-sm btn-danger" type="reset" onclick="resetEvents()">Reset Search <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset your search criteria."></i></button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="mapModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body bg-dark">
+                <img class="w-100 m-auto"src="~/Images/PCYS Facility Map.png" />
+            </div>
+            <div class="modal-footer noPrintIfModal">
+                <button class="btn btn-sm btn-secondary" onclick="window.print()">Print The Map</button>
+                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
@@ -145,7 +164,9 @@
         });
     }
 
-        function resetEvents(e){
+    function resetEvents(){
+        console.log(@startDateString);
+        console.log(@endDateString);
         $.ajax({
             url: '@Url.Action("searchModal", "Dashboard")',
             data: {
@@ -155,10 +176,23 @@
                 searchTerm: '',
                 teamName: ''
             },
-            success: function(data) {
-                    $("#modal").html(data);
+            success: function (data) {
+                    $('.chosen option-selected').removeAttr('selected');
+                    $('.chosen').trigger('chosen:updated');
             }
         });
     }
+
 </script>
 }
+
+<style media="print">
+    .noPrintIfModal {
+        display: none;
+    }
+
+    html, body {
+        height: 100%;
+        overflow: hidden;
+    }
+</style>

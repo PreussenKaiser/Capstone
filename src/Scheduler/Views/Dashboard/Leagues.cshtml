@@ -12,7 +12,7 @@
     </div>
 }
 
-<div class="row mt-3">
+<div class="row mt-3 m-auto w-100">
     @if (this.Model is null ||
          this.Model.Count() == 0)
     {
@@ -24,10 +24,10 @@
     {
         @foreach (var league in this.Model)
         {
-            <div class="col-sm-4 mb-3">
+            <div class="col-lg-4 mb-3">
                 <div class="card border-secondary border-3">
                     <a asp-action="Details" asp-route-id="@league.Id" asp-controller="League" class="card-body text-decoration-none">
-                        <h5 class="card-title text-black">@league.Name</h5>
+                        <h4 class="text-danger" style="text-shadow: .5px .5px black;">@league.Name <i class="bi bi-question-circle text-dark calendar-full" style="text-shadow:none; font-size:17px;" data-bs-toggle="tooltip" data-bs-placement="right" title="Click anywhere on this card to bring up the Team Management page for the @league.Name League."></i></h4>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -52,7 +52,7 @@
 
                                         <tr>
                                             <th scope="row">@team.Name</th>
-                                            <td>@(team.User is null ? "Couldn't find coach" : team.User.ToString())</td>
+                                            <td>@(team.User is null ? "Visiting Coach" : team.User.ToString())</td>
                                         </tr>
 
                                         if (i == 3)

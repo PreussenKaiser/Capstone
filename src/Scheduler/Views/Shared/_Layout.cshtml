@@ -77,6 +77,7 @@
             &copy; 2023 - PCYS
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -86,6 +87,17 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script type="text/javascript" src="~/js/chosen.jquery.js"></script>
     <script src="~/js/NavBar.js"></script>
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+    <style>
+        .custom-tooltip .tooltip-inner {
+            max-width: 500px;
+        }
+    </style>
     @await this.RenderSectionAsync("Scripts", false)
 </body>
 </html>

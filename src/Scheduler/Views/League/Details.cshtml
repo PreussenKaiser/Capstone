@@ -10,27 +10,24 @@
     bool canEdit = this.User.IsInRole(Role.ADMIN);
 }
 
-<div class="row mb-3">
-    <div class="col-sm-8 px-4 mx-auto">
-        <a asp-action="Leagues" asp-controller="Dashboard" class="btn btn-sm btn-danger">
-            < Back
-        </a>
-    </div>
+<div class="mb-3">
+    <a asp-action="Leagues" asp-controller="Dashboard" class="btn btn-sm btn-danger">
+        < Back
+    </a>
 </div>
 
-<div class="row">
-    <div class="col-sm-8 mx-auto">
+
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-4 mb-3">
                 <ul class="list-group">
                     <li class="list-group-item">
                         <div class="d-flex justify-content-between">
-                            <h5>Details</h5>
+                            <h5>League Name:</h5>
 
                             @if (canEdit)
                             {      
                                 <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#detailsModal">
-                                    Edit
+                                    Edit <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Details for the @Model.Name League."></i>
                                 </button>
                                 <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -61,17 +58,17 @@
                             }
                         </div>
                         <div class="row">
-                            <h6>Name</h6>
-                            <p>@this.Model.Name</p>
+                        <h4 class="text-danger text-start" style="text-shadow: .5px .5px black;">@this.Model.Name</h4>
+                            
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-12 text-end">
                                 @if (canEdit)
                                 {        
                                     <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeLeagueModal">
-                                        Remove League
+                                        Remove
                                     </button>
                                     <div class="modal fade" id="removeLeagueModal" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -98,11 +95,14 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-sm-8">
-                <div class="mt-2">
-                    <a asp-action="Add" asp-route-leagueId="@this.Model.Id" asp-controller="Team" class="btn btn-sm btn-primary">
-                        Add Team
-                    </a>
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between">
+            <h4 class="text-center">@this.Model.Name Teams</h4>
+                    <div>
+                <a asp-action="Add" asp-route-leagueId="@this.Model.Id" asp-controller="Team" class="btn btn-sm btn-primary me-3">
+                            Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
+                        </a>
+                    </div>
                 </div>
 
                 <table class="table">
@@ -132,7 +132,7 @@
 
                                 <tr>
                                     <th scope="row">@team.Name</th>
-                                    <td>@(team.User is null ? "Couldn't find coach" : team.User.ToString())</td>
+                                    <td>@(team.User is null ? "Visiting Coach" : team.User.ToString())</td>
                                     <td>
                                         <a asp-action="Details"
                                            asp-controller="Team"
@@ -178,7 +178,4 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
-    </div>
-</div>
