@@ -92,14 +92,14 @@ html {
     line-height: 1.3;
 }
 
-.exemptAnchor {
+.exemptAnchor a {
     display: inline-block;
     color: #fff !important;
     text-decoration: none;
     transition: background-color .2s;
     background-color: #c9000a;
     box-shadow: 0 -3px #af0006 inset;
-    padding: 0px 0px 6px 0px;
+    padding: 0px 0px 4px 0px;
     margin-bottom: 0px;
     line-height: 1.3;
     text-align: center;
