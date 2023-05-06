@@ -16,7 +16,7 @@
     var UserList = UserManager.Users
        .Select(user => new SelectListItem
                {
-                   Text = string.Join(" ", user.FirstName, user.LastName),
+                   Text = user.ToString(),
                    Value = user.Id.ToString(),
                    Selected = Model != null && Model.UserId == user.Id
                })

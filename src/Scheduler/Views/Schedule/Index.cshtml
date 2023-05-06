@@ -20,18 +20,17 @@
             ? nameof(Event)
             : nameof(Practice));
 
+    Specification<Field> fieldSpec = this.Model.FieldId is null
+    ? new GetAllSpecification<Field>()
+    : new ByIdSpecification<Field>((Guid)this.Model.FieldId);
+
     IEnumerable<SelectListItem> fields = (await this.FieldRepository
-        .SearchAsync(new GetAllSpecification<Field>()))
+        .SearchAsync(fieldSpec))
         .Select(f => new SelectListItem
         {
             Text = f.Name,
             Value = f.Id.ToString()
         });
-
-    if (Model.FieldId != null)
-    {
-        fields = fields.Where(f => f.Value == Model.FieldId.ToString());
-    }
 }
 
 <div class="row">
@@ -81,7 +80,7 @@
                 <div class="col-sm-6">
                     <div class="row mb-3">
                         <div class="col-6">
-                            @if (this.User.IsInRole(Role.ADMIN))
+                            @if (isAdmin)
                             {
                                 <label asp-for="FieldId" class="form-label">Field <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="Please select one Field from the List.<br><br>For regular Events, you can use the Blackout Facility option to choose ALL Fields."></i></label>
                             }
@@ -95,7 +94,7 @@
                             }
                             else
                             {
-                                <select data-val="false" class="form-select" asp-for="FieldId" id="fieldSelect" asp-items="fields">
+                                <select data-val="false" class="form-select" asp-for="FieldId" id="fieldSelect">
                                 <option value=""></option>
                                 @foreach (SelectListItem f in fields)
                                 {
