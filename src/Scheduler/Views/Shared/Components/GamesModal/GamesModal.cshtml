@@ -1,4 +1,8 @@
-﻿@using Scheduler.ViewModels;
+﻿@using Scheduler.Domain.Services;
+@using Scheduler.ViewModels;
+@using Scheduler;
+
+@inject IDateProvider DateProvider
 
 @model UpcomingEventsModalViewModel
 
@@ -6,9 +10,9 @@
     this.ViewData["Title"] = "My Scheduled Games";
     this.ViewData["EventType"] = nameof(Game);
 
-    string today = DateTime.Now.ToString("yyyy-MM-dd");
-    string startDateString = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    string endDateString = DateTime.Now.AddYears(2).ToString("yyyy-MM-dd");
+    string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
+    string startDateString = this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT);
+    string endDateString = this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT);
 }
 
 <div class="modal fade" id="gamesModalPopup" tabindex="-1">

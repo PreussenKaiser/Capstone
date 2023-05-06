@@ -38,7 +38,7 @@ public sealed class SystemDateProvider : IDateProvider
 	}
 
 	/// <summary>
-	/// Gets <see cref="DateTime.Now"/>.
+	/// Gets the current <see cref="DateTime"/>.
 	/// </summary>
 	public DateTime Now
 		=> TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, this.timeZone);

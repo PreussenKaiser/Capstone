@@ -49,8 +49,8 @@ public sealed class CalendarViewComponent : ViewComponent
 		}
 		else
 		{
-			currentYear = DateTime.Today.Year;
-			currentMonth = DateTime.Today.Month;
+			currentYear = this.dateProvider.Now.Year;
+			currentMonth = this.dateProvider.Now.Month;
 		}
 
 		DateTime firstOfMonth;
@@ -63,11 +63,11 @@ public sealed class CalendarViewComponent : ViewComponent
 		lastOfMonth = firstOfMonth.AddMonths(1).AddDays(-1);
 		topOfCalendar = GetTopOfCalendar(firstOfMonth);
 		bottomOfCalendar = GetBottomOfCalendar(lastOfMonth);
-		currentDay = DateTime.Today;
+		currentDay = this.dateProvider.Now.Date;
 
 		ViewData["CurrentYear"] = currentYear;
 
-		if (currentMonth == DateTime.Today.Month && currentYear == DateTime.Today.Year)
+		if (currentMonth == this.dateProvider.Now.Month && currentYear == this.dateProvider.Now.Year)
 		{
 			this.ViewData["PreviousMonth"] = 0;
 			this.ViewData["PreviousYear"] = 0;
