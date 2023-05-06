@@ -6,17 +6,38 @@
 
 @{
     IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository.SearchAsync(new GetAllSpecification<Team>()))
-        .Select(t => new SelectListItem
+    .Select(t => new SelectListItem
         {
             Text = t.Name,
             Value = t.Id.ToString()
         });
+
 }
 
 <div class="row mb-3">
-    <div class="col-6">
+    <div class="col-lg">
         <label asp-for="TeamId" class="form-label"></label>
-        <select asp-for="TeamId" asp-items="teamsSelect" class="form-select"></select>
+        <select id="practiceTeams" asp-for="TeamId" class="form-select">
+            <option value=""></option>
+            @foreach (SelectListItem t in teamsSelect)
+            {
+                <option value=@t.Value>@t.Text</option>
+            }
+        </select>
         <span asp-validation-for="TeamId" class="text-danger"></span>
     </div>
 </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#practiceTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%"
+        });
+
+    });
+</script>

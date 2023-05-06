@@ -106,11 +106,9 @@
 
     $(document).ready(function () {
 
-        $("#teamName").chosen({
-            no_results_text: "Sorry, I can't find that Team!",
-            placeholder_text_single: "Start typing to select a Team...",
-            width: "100%",
-            search_contains: true
+        $("#teamName").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%"
         });
 
     });
@@ -182,8 +180,7 @@
                 teamName: ''
             },
             success: function (data) {
-                    $('.chosen option-selected').removeAttr('selected');
-                    $('.chosen').trigger('chosen:updated');
+                    $("#teamName").val(null).trigger('change');
             }
         });
     }
