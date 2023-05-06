@@ -32,6 +32,8 @@ public sealed class HomeController : Controller
 
 		IEnumerable<Event> closeoutEvents = await scheduleRepository.SearchAsync(new CloseoutSpecification());
 
+		closeoutEvents = closeoutEvents.OrderBy(e => e.StartDate).ToList();
+
 		List<string> closedWarnings = new List<string>();
 
 		foreach (Event closedEvent in closeoutEvents)
