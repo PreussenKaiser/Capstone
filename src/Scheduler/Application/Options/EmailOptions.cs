@@ -1,4 +1,4 @@
-﻿namespace Scheduler.Options;
+﻿namespace Scheduler.Application.Options;
 
 /// <summary>
 /// Contains options for sending emails.

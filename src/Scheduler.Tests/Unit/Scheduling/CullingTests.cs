@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
+using Scheduler.Application.Options;
+using Scheduler.Application.Services;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications;
-using Scheduler.Options;
-using Scheduler.Services;
 using Scheduler.Tests.Services;
 using Xunit;
 
@@ -23,7 +23,7 @@ public sealed class CullingTests
 
 	public CullingTests()
 	{
-		CullingOptions options = new() { Time = 3 };
+		CullingOptions options = new() { Time = 3, Interval = 1 };
 		this.options = new Mock<IOptions<CullingOptions>>();
 
 		this.options
