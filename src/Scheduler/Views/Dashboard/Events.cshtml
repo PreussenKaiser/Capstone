@@ -16,22 +16,24 @@
 				</div>
 			</div>
 			<div class="col-md text-start">
-				<a asp-controller="Schedule" asp-action="CloseFacility" class="btn btn-sm btn-danger rounded text-start">
-					Close Facility
-				</a>
+				<div class="linkElement">
+					<a asp-controller="Schedule" asp-action="CloseFacility" class="">
+						Close Facility
+					</a>
+				</div>
 			</div>
 		</div>
 	}
 	else
 	{
-		<div>
-			<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded">
+		<div class="linkElement">
+			<a asp-controller="Schedule" asp-action="" class="">
 				Schedule New Event
 			</a>
 		</div>
 	}
 	<div class="mt-3">
-			<button class="btn btn-sm btn-secondary mb-2" onclick="gamesModal()">
+			<button class="buttonRed" onclick="gamesModal()">
 				My Scheduled Games <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Games for all of your teams."></i>
 			</button>
 			<button class="buttonRed" onclick="practicesModal()">

@@ -46,16 +46,16 @@
 </div>
 
 <div class="row mb-3">
-    <div class="col-6">
+    <div class="col-6 linkElement">
         <a asp-action="Details"
            asp-controller="League"
            asp-route-id="@this.Model.LeagueId"
-           class="btn btn-lg btn-danger w-100">
+           class="buttonRed w-100">
             Cancel
         </a>
     </div>
-    <div class="col-6">
-        <button type="submit" class="btn btn-lg btn-primary w-100">
+    <div class="col-6 linkElement">
+        <button type="submit" class="formSubmit buttonGreen w-100">
             Submit
         </button>
     </div>
