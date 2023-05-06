@@ -110,6 +110,42 @@ public sealed class ScheduleController : Controller
 
 		return this.View(scheduledEvent);
 	}
+
+	[HttpGet]
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	[Authorize(Roles = Role.ADMIN)]
+	public async Task<IActionResult> CloseFacility([FromServices] UserManager<User> userManager)
+	{
+		var user = await userManager.GetUserAsync(this.User);
+
+		Event closeoutEvent = new Event()
+		{
+			//Tomorrow at 8 am and a month from tomorrow at 11 pm
+			StartDate = DateTime.Today.AddDays(1).AddHours(8),
+			EndDate = DateTime.Today.AddMonths(1).AddDays(1).AddHours(22).AddMinutes(59),
+			RecurrenceId = null,
+			Name = "Facility Closed",
+			IsBlackout = true,
+			Id = Guid.NewGuid(),
+			UserId = user.Id
+		};
+
+		return this.View(closeoutEvent);
+	}
+
+	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	public async Task<IActionResult> CloseFacility(Event closeoutEvent)
+	{
+		if (!this.ModelState.IsValid)
+		{
+			return this.View(closeoutEvent);
+		}
+
+		await this.scheduleRepository.ScheduleAsync(closeoutEvent);
+
+		return this.View("~/Views/Schedule/Details.cshtml", closeoutEvent);
+	}
 }
 
 /// <summary>

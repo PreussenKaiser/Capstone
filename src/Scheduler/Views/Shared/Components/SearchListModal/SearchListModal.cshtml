@@ -1,13 +1,17 @@
 ﻿@using System.Text.Json;
+@using Scheduler;
+@using Scheduler.Domain.Services;
+
+@inject IDateProvider DateProvider
 
 @{
     IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
     string title = this.ViewData["Title"].ToString();
-    string today = DateTime.Now.ToString("yyyy-MM-dd");
+    string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
     DateTime startDate = (DateTime)this.ViewData["Start"];
     DateTime endDate = (DateTime)this.ViewData["End"];
-    string startDateString = startDate.ToString("yyyy-MM-dd");
-    string endDateString = endDate.ToString("yyyy-MM-dd");
+    string startDateString = startDate.ToString(Constants.DATE_FORMAT);
+    string endDateString = endDate.ToString(Constants.DATE_FORMAT);
 }
 
 <div class="modal fade" id="searchListModalPopup" tabindex="-1">

@@ -10,6 +10,8 @@ using Scheduler.Infrastructure.Persistence;
 using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Scheduler.ViewModels;
+using Scheduler.Domain.Services;
+
 namespace Scheduler.Web.Controllers;
 
 /// <summary>
@@ -24,7 +26,12 @@ public sealed class DashboardController : Controller
 	private readonly SchedulerContext context;
 
 	/// <summary>
-	/// The variable to manage users.
+	/// API for retrieving dates.
+	/// </summary>
+	private readonly IDateProvider dateProvider;
+
+	/// <summary>
+	/// API for querying users.
 	/// </summary>
 	private readonly UserManager<User> userManager;
 
@@ -32,9 +39,15 @@ public sealed class DashboardController : Controller
 	/// Initializes the <see cref="DashboardController"/> class.
 	/// </summary>
 	/// <param name="context">The database to query.</param>
-	public DashboardController(SchedulerContext context, UserManager<User> userManager)
+	/// <param name="dateProvider">API for getting dates.</param>
+	/// <param name="userManager">API for querying users.</param>
+	public DashboardController(
+		SchedulerContext context,
+		IDateProvider dateProvider,
+		UserManager<User> userManager)
 	{
 		this.context = context;
+		this.dateProvider = dateProvider;
 		this.userManager = userManager;
 	}
 
@@ -73,7 +86,7 @@ public sealed class DashboardController : Controller
 			{
 				IEnumerable<Event> coachGames = await this.context.Games
 					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
-					.WithScheduling()
+					.WithScheduling(this.dateProvider)
 					.ToListAsync();
 
 				games.AddRange(coachGames);			
@@ -82,7 +95,7 @@ public sealed class DashboardController : Controller
 			{
 				IEnumerable<Event> coachPractices = await this.context.Practices
 					.Where(g => g.TeamId == team.Id)
-					.WithScheduling()
+					.WithScheduling(this.dateProvider)
 					.ToListAsync();
 
 				practices.AddRange(coachPractices);
@@ -151,7 +164,7 @@ public sealed class DashboardController : Controller
 			{
 				IQueryable<Event> coachGames = this.context.Games
 					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
-					.WithScheduling();
+					.WithScheduling(this.dateProvider);
 
 				if (games is null && coachGames.Count() > 0)
 				{
@@ -185,7 +198,7 @@ public sealed class DashboardController : Controller
 			{
 				IQueryable<Event> coachPractices = this.context.Practices
 					.Where(g => g.TeamId == team.Id)
-					.WithScheduling();
+					.WithScheduling(this.dateProvider);
 
 				if (practices is null && !coachPractices.IsNullOrEmpty())
 				{
@@ -329,19 +342,19 @@ public sealed class DashboardController : Controller
 		{
 			nameof(Practice) => this.context.Practices
 				.Include(p => p.Team)
-				.WithScheduling(),
+				.WithScheduling(this.dateProvider),
 
 			nameof(Game) => this.context.Games
 				.Include(g => g.HomeTeam)
 				.Include(g => g.OpposingTeam)
-				.WithScheduling(),
+				.WithScheduling(this.dateProvider),
 
 			"Non-Team Event" => this.context.Events
 				.Where(e => !(this.context.Practices.Any(p => p.Id == e.Id) || this.context.Games.Any(g => g.Id == e.Id)))
-				.WithScheduling(),
+				.WithScheduling(this.dateProvider),
 
 			_ => this.context.Events
-				.WithScheduling()
+				.WithScheduling(this.dateProvider)
 		};
 
 		if (!events.IsNullOrEmpty())
@@ -483,19 +496,19 @@ public sealed class DashboardController : Controller
 		{
 			nameof(Practice) => this.context.Practices
 				.Include(p => p.Team)
-				.WithScheduling(),
+				.WithScheduling(this.dateProvider),
 
 			nameof(Game) => this.context.Games
 				.Include(g => g.HomeTeam)
 				.Include(g => g.OpposingTeam)
-				.WithScheduling(),
+				.WithScheduling(this.dateProvider),
 
 			"Non-Team Event" => this.context.Events
 				.Where(e => !(this.context.Practices.Any(p => p.Id == e.Id) || this.context.Games.Any(g => g.Id == e.Id)))
-				.WithScheduling(),
+				.WithScheduling(this.dateProvider),
 
 			_ => this.context.Events
-				.WithScheduling()
+				.WithScheduling(this.dateProvider)
 		};
 
 		if (!events.IsNullOrEmpty())
@@ -538,7 +551,7 @@ public sealed class DashboardController : Controller
 		DateTime end,
 		IQueryable<Event>? events = null)
 	{
-		events ??= this.context.Events.WithScheduling();
+		events ??= this.context.Events.WithScheduling(this.dateProvider);
 
 		return events
 			.Where(e => e.StartDate.Date <= end.Date && e.EndDate.Date >= start.Date)
@@ -554,7 +567,7 @@ public sealed class DashboardController : Controller
 	/// <returns>A filtered list of Events.</returns>
 	public IQueryable<Event>? TeamSearch(string teamName, string type, IQueryable<Event>? events = null)
 	{
-		events ??= this.context.Events.WithScheduling();
+		events ??= this.context.Events.WithScheduling(this.dateProvider);
 
 		IQueryable<Team> teamList = this.context.Teams;
 		Team selectedTeam = teamList.FirstOrDefault(t => t.Name.ToLower() == teamName.ToLower());

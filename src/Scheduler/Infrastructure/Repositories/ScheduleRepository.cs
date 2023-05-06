@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications;
-using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Infrastructure.Repositories;
@@ -45,7 +45,6 @@ public sealed class ScheduleRepository : IScheduleRepository
 			.Include(e => e.Field)
 			.Include(e => e.Recurrence)
 			.Where(searchSpec.ToExpression())
-			.Where(e => e.EndDate > DateTime.Now)
 			.OrderByDescending(e => e.StartDate)
 			.ToListAsync();
 

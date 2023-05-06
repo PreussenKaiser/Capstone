@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
+using Scheduler.Application.Options;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Events;
-using Scheduler.Options;
 
-namespace Scheduler.Services;
+namespace Scheduler.Application.Services;
 
 /// <summary>
 /// A background job that runs in order to delete past events.
@@ -59,20 +59,24 @@ public sealed class ScheduleCullingService : BackgroundService
 				using (IServiceScope scope = this.serviceProvider.CreateScope())
 				{
 					// TODO: Catch possible exception then log.
-					IScheduleRepository scheduleRepository = scope.ServiceProvider.GetRequiredService<IScheduleRepository>();
+					IScheduleRepository scheduleRepository = scope
+						.ServiceProvider
+						.GetRequiredService<IScheduleRepository>();
 
 					await scheduleRepository.CancelAsync(
 						new PastEventSpecification(new SystemDateProvider()));
 				}
 
-				DateTime nextDay = this.dateProvider.Today.AddDays(1);
+				DateTime nextDay = this.dateProvider.Now.AddDays(this.options.Interval);
 				TimeSpan timeToWait = nextDay + cullTime - this.dateProvider.Now;
 
 				await Task.Delay(timeToWait, stoppingToken);
 			}
 			else
 			{
-				await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+				await Task.Delay(
+					TimeSpan.FromMinutes(1),
+					stoppingToken);
 			}
 		}
 	}

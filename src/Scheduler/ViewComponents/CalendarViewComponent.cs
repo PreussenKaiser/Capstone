@@ -3,6 +3,8 @@ using Scheduler.Domain.Models;
 using Scheduler.ViewModels;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
+using Scheduler.Domain.Specifications.Events;
+using Scheduler.Domain.Services;
 
 namespace Scheduler.ViewComponents;
 
@@ -14,18 +16,28 @@ public sealed class CalendarViewComponent : ViewComponent
 	private readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
+	/// API for retrieving dates.
+	/// </summary>
+	private readonly IDateProvider dateProvider;
+
+	/// <summary>
 	/// Initializes the <see cref="CalendarViewComponent"/> class.
 	/// </summary>
-	/// <param name="scheduleRepository">The repository to qiery events with.</param>
-	public CalendarViewComponent(IScheduleRepository scheduleRepository)
+	/// <param name="scheduleRepository">The repository to query events with.</param>
+	/// <param name="dateProvider">API for retrieving dates.</param>
+	public CalendarViewComponent(
+		IScheduleRepository scheduleRepository,
+		IDateProvider dateProvider)
 	{
 		this.scheduleRepository = scheduleRepository;
+		this.dateProvider = dateProvider;
 	}
 
 	public async Task<IViewComponentResult> InvokeAsync(int? selectedYear = null, int? selectedMonth = null)
 	{
+		Specification<Event> pastEventsSpec = new PastEventSpecification(this.dateProvider);
 		IEnumerable<Event> events = await this.scheduleRepository.SearchAsync(
-			new GetAllSpecification<Event>());
+			pastEventsSpec.Not());
 
 		int currentYear;
 		int currentMonth;
@@ -37,8 +49,8 @@ public sealed class CalendarViewComponent : ViewComponent
 		}
 		else
 		{
-			currentYear = DateTime.Today.Year;
-			currentMonth = DateTime.Today.Month;
+			currentYear = this.dateProvider.Now.Year;
+			currentMonth = this.dateProvider.Now.Month;
 		}
 
 		DateTime firstOfMonth;
@@ -51,11 +63,11 @@ public sealed class CalendarViewComponent : ViewComponent
 		lastOfMonth = firstOfMonth.AddMonths(1).AddDays(-1);
 		topOfCalendar = GetTopOfCalendar(firstOfMonth);
 		bottomOfCalendar = GetBottomOfCalendar(lastOfMonth);
-		currentDay = DateTime.Today;
+		currentDay = this.dateProvider.Now.Date;
 
 		ViewData["CurrentYear"] = currentYear;
 
-		if (currentMonth == DateTime.Today.Month && currentYear == DateTime.Today.Year)
+		if (currentMonth == this.dateProvider.Now.Month && currentYear == this.dateProvider.Now.Year)
 		{
 			this.ViewData["PreviousMonth"] = 0;
 			this.ViewData["PreviousYear"] = 0;

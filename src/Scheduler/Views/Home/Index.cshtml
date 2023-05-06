@@ -1,16 +1,26 @@
-﻿@model IndexViewModel
+﻿@using Scheduler.Domain.Services;
+@using Scheduler;
+
+@inject IDateProvider DateProvider
+@model IndexViewModel
 
 @{
     this.ViewData["Title"] = "Home Page";
-    string today = DateTime.Now.ToString("yyyy-MM-dd");
-    string startDateString = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    string endDateString = DateTime.Now.AddYears(2).ToString("yyyy-MM-dd");
+
+    string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
+    List<string> closedWarnings = (List<string>)this.ViewData["ClosedWarnings"];
+    string startDateString = this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT);
+    string endDateString = this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT);
 }
 
 <div class="layoutContainer noPrintIfModal text-center" style="padding-left:20px;padding-right:20px;border:2px solid gray;font-size:12px;">
     <h3 class="text-danger">Welcome to the PCYS Scheduling Application</h3>
     <p class="lead">Use the Calendar below to search for Dates and Times of Practices, Games, and other Events at the PCYS facility. You can use the Filtering Menu in the List to refine your search.</p>
     <p class="lead">You can also use the Search Button to search for Events outside of the Calendar. Search by Team Name, Event Name, or a range of Dates.</p>
+    @foreach (string warning in closedWarnings)
+    {
+        <p class="text-danger lead">@warning</p>
+    }
     <div class="text-end mb-2">
         <button class="buttonGreen" data-bs-toggle="modal" data-bs-target="#mapModal">Facility Map</button>
     </div>
@@ -108,11 +118,9 @@
 
     $(document).ready(function () {
 
-        $("#teamName").chosen({
-            no_results_text: "Sorry, I can't find that Team!",
-            placeholder_text_single: "Start typing to select a Team...",
-            width: "100%",
-            search_contains: true
+        $("#teamName").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%"
         });
 
     });
@@ -184,8 +192,7 @@
                 teamName: ''
             },
             success: function (data) {
-                    $('.chosen option-selected').removeAttr('selected');
-                    $('.chosen').trigger('chosen:updated');
+                    $("#teamName").val(null).trigger('change');
             }
         });
     }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Scheduler.Filters;
 using Scheduler.Domain.Specifications;
 using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications.Events;
 using System.Net.Mail;
 using System.Net;
 
@@ -23,10 +24,31 @@ public sealed class HomeController : Controller
 	[AllowAnonymous]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Index(
-		[FromServices] ITeamRepository teamRepository)
+		[FromServices] ITeamRepository teamRepository,
+		[FromServices] IScheduleRepository scheduleRepository)
 	{
 		IEnumerable<Team> teams = await teamRepository.SearchAsync(
 			new GetAllSpecification<Team>());
+
+		IEnumerable<Event> closeoutEvents = await scheduleRepository.SearchAsync(new CloseoutSpecification());
+
+		closeoutEvents = closeoutEvents.OrderBy(e => e.StartDate).ToList();
+
+		List<string> closedWarnings = new List<string>();
+
+		foreach (Event closedEvent in closeoutEvents)
+		{
+			if (closedEvent.StartDate.Date == closedEvent.EndDate.Date)
+			{
+				closedWarnings.Add($"The PCYS Facility will be closed on {closedEvent.StartDate.Date.ToString("MM/dd/yyyy")}.");
+			}
+			else
+			{
+				closedWarnings.Add($"The PCYS Facility will be closed from {closedEvent.StartDate.Date.ToString("MM/dd/yyyy")} to {closedEvent.EndDate.Date.ToString("MM/dd/yyyy")}.");
+			}			
+		}
+
+		this.ViewData["ClosedWarnings"] = closedWarnings;
 
 		return this.View(new IndexViewModel(teams));
 	}
