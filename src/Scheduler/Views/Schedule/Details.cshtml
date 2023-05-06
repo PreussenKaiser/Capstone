@@ -69,11 +69,12 @@
                                                         <input asp-for="Name" class="form-control" />
                                                         <span asp-validation-for="Name" class="text-danger"></span>
                                                     </div>
-
-                                                    @if (eventType != nameof(Event))
-                                                    {
-                                                        <partial name="Forms/_@(eventType)Inputs" />
-                                                    }
+                                                    <div class="w-100">
+                                                        @if (eventType != nameof(Event))
+                                                        {
+                                                            <partial name="Forms/_@(eventType)Inputs" />
+                                                        }
+                                                    </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <partial name="Forms/_UpdateTypeInput" />
@@ -258,7 +259,7 @@
                                                 <div class="col-6">
                                                     <div class="mb-3">
                                                         <label asp-for="FieldId" class="form-label"></label>
-                                                        <select data-val="false" asp-for="FieldId" asp-items="fieldList" class="form-select"></select>
+                                                        <select data-val="false" asp-for="FieldId" id="fields" asp-items="fieldList" class="form-select"></select>
                                                         <span asp-validation-for="FieldId" class="text-danger"></span>
                                                     </div>
                                                     @if (this.User.IsInRole(Role.ADMIN) &&
@@ -310,6 +311,32 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script>
+    $(document).ready(function () {
+
+        $("#practiceTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%",
+            dropdownParent: $('#detailsModal')
+        });
+
+        $("#homeTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%",
+            dropdownParent: $('#detailsModal')
+        });
+
+        $("#opposingTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%",
+            dropdownParent: $('#detailsModal')
+        });
+
+        $("#fields").select2({
+            width: "100%",
+            dropdownParent: $('#relocateModal')
+        });
+
+    });
      var startDateString = "@startDateString";
      var endDateString = "@endDateString";
      var minDateString = "@today";

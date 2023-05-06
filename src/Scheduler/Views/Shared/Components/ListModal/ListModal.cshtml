@@ -87,11 +87,10 @@
 
     $(document).ready(function () {
 
-        $("#teamNameFilter").chosen({
-            no_results_text: "Sorry, I can't find that Team!",
-            placeholder_text_single: "Start typing to select a Team...",
+        $("#teamNameFilter").select2({
+            placeholder: "Start typing to select a Team...",
             width: "100%",
-            search_contains: true
+            dropdownParent: $('#listModalPopup')
         });
 
     });
@@ -124,8 +123,7 @@
                 teamName: ''
             },
             success: function(data) {
-                $('.chosen option-selected').removeAttr('selected');
-                $('.chosen').trigger('chosen:updated');
+                $("#teamNameFilter").val(null).trigger('change');
                 $("#listModalTable").html(data);
             }
         });
