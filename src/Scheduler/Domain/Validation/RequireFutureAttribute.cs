@@ -16,8 +16,16 @@ public sealed class RequireFutureAttribute : ValidationAttribute
 	protected override ValidationResult? IsValid(
 		object? value, ValidationContext validationContext)
 	{
-		IDateProvider dateProvider = validationContext.GetService<IDateProvider>()
-			?? new SystemDateProvider();
+		IDateProvider dateProvider;
+
+		try
+		{
+			dateProvider = validationContext.GetRequiredService<IDateProvider>();
+		}
+		catch
+		{
+			dateProvider = new SystemDateProvider();
+		}
 
 		if (value is not DateTime time)
 		{
