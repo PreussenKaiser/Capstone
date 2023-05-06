@@ -8,6 +8,7 @@
     this.ViewData["Title"] = "Home Page";
 
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
+    List<string> closedWarnings = (List<string>)this.ViewData["ClosedWarnings"];
     string startDateString = this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT);
     string endDateString = this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT);
 }

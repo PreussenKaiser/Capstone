@@ -36,7 +36,14 @@ public sealed class HomeController : Controller
 
 		foreach (Event closedEvent in closeoutEvents)
 		{
-			closedWarnings.Add($"Facility will be closed from {closedEvent.StartDate.Date.ToString("MM/dd/yyyy")} to {closedEvent.EndDate.Date.ToString("MM/dd/yyyy")}.");
+			if (closedEvent.StartDate.Date == closedEvent.EndDate.Date)
+			{
+				closedWarnings.Add($"The PCYS Facility will be closed on {closedEvent.StartDate.Date.ToString("MM/dd/yyyy")}.");
+			}
+			else
+			{
+				closedWarnings.Add($"The PCYS Facility will be closed from {closedEvent.StartDate.Date.ToString("MM/dd/yyyy")} to {closedEvent.EndDate.Date.ToString("MM/dd/yyyy")}.");
+			}			
 		}
 
 		this.ViewData["ClosedWarnings"] = closedWarnings;
