@@ -27,15 +27,19 @@
 
 <div class="row mb-3">
     <div class="col-6">
-        <a asp-action="Leagues"
-           asp-controller="Dashboard"
-           class="btn btn-lg btn-danger w-100">
-            Cancel
-        </a>
+        <div class="linkElement">
+            <a asp-action="Leagues"
+               asp-controller="Dashboard"
+               class="buttonRed w-100">
+                Cancel
+            </a>
+        </div>
     </div>
     <div class="col-6">
-        <button type="submit" class="btn btn-lg btn-primary w-100">
-            Submit
-        </button>
+        <div class="linkElement">
+            <button type="submit" class="formSubmit buttonGreen w-100">
+                Submit
+            </button>
+        </div>
     </div>
 </div>

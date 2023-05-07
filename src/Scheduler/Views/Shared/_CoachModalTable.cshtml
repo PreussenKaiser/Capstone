@@ -128,7 +128,9 @@
                                          this.User.Identity.IsAuthenticated)
                                     {
                                         <td>
-                                            <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
+                                        <form action="@Url.Action("Details", "Schedule", new { id = e.Id })" method="get">
+                                            <button type="submit" class="buttonRed">Details</button>
+                                        </form>
                                         </td>
                                     }
                             </tr>

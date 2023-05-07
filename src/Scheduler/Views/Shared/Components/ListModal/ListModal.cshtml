@@ -20,7 +20,10 @@
                     <div class="btn-group mb-2 noPrintIfModal">
                         <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="filterForm" autocomplete="off">
                             <div>                                
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter these results using specific criteria."></i></button>
+                                <div class="linkElement">
+                                    <button type="button" class="buttonRed" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter these results using specific criteria."></i></button>
+                                    <button class="buttonRed" type="reset" onclick="resetEvents()">Reset Filter <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Reset your filter criteria."></i></button>
+                                </div>
                                 <ul class="dropdown-menu p-3" style="width:120%" id="listModalDropdown">
                                     <h5 class="lead text-danger text-center">Filter Criteria <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose options below to filter your results."></i></h5>
                                     <div class="mb-3">
@@ -47,11 +50,12 @@
                                         </select>
                                     </div>
                                     <div class="text-center">
-                                        <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
-                                        <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeDropdown()">Close</button>
+                                        <div class="linkElement">
+                                            <input type="submit" class="buttonGreen" value="Search" />
+                                            <button type="button" class="buttonRed" onclick="closeDropdown()">Close</button>
+                                        </div>
                                     </div>
                                 </ul>
-                                <button class="btn btn-sm btn-danger" type="reset" onclick="resetEvents()">Reset Filter <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Reset your filter criteria."></i></button>
                             </div>
                         </form>
                     </div>
@@ -61,12 +65,14 @@
                 </div>
             </div>
             <div class="modal-footer noPrintIfModal">
+                <div class="linkElement">
                 @if (User.Identity.IsAuthenticated && startTime.Day == endTime.Day)
                 {
                     <button class="btn btn-sm btn-dark calendar-mobile" data-bs-dismiss="modal" onclick="gridModal(@startTime.Year, @startTime.Month, @startTime.Day)">Scheduling Grid</button>
                 }
-                <button class="btn btn-sm btn-secondary" onclick="window.print()">Print These Results</button>
-                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button class="buttonGreen" onclick="window.print()">Print These Results</button>
+                    <button type="button" class="buttonRed" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>

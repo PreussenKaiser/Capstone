@@ -4,37 +4,27 @@
 @using Scheduler.Infrastructure.Persistence;
 @using System.Text;
 
-<div class="text-center mb-3 mt-3 noPrintIfModal">
-	@if (this.User.IsInRole(Role.ADMIN))
-	{
-		<div class="row">
-			<div class="col-md text-end">
-				<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded">
-					Schedule New Event
-				</a>
-			</div>
-			<div class="col-md text-start">
-				<a asp-controller="Schedule" asp-action="CloseFacility" class="btn btn-sm btn-danger rounded text-start">
-					Close Facility
-				</a>
-			</div>
-		</div>
-	}
-	else
-	{
-		<div>
-			<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded">
-				Schedule New Event
-			</a>
-		</div>
-	}
-	<div class="mt-3">
-			<button class="btn btn-sm btn-secondary mb-2" onclick="gamesModal()">
+<div class="text-center mb-3 mt-3 noPrintIfModal">	
+		
+	<div class="linkElement">
+		<a asp-controller="Schedule" asp-action="" class="mainButton">
+			Schedule New Event
+		</a>
+	</div>
+
+	<div>
+			<button class="buttonRed mt-3" onclick="gamesModal()">
 				My Scheduled Games <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Games for all of your teams."></i>
 			</button>
-		<button class="btn btn-sm btn-success mb-2" onclick="practicesModal()">
+			<button class="buttonRed mt-3" onclick="practicesModal()">
 				My Scheduled Practices <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Practices for all of your teams."></i>
 			</button>
+			@if (this.User.IsInRole(Role.ADMIN))
+			{
+			<form action="@Url.Action("CloseFacility", "Schedule")" method="get">
+				<button type="submit" class="buttonGreen mt-3" value="Update">Close Facility <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Close the entire PCYS Facility for a length of time."></i></button>
+			</form>
+			}
 	</div>
 </div>
 			

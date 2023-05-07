@@ -28,7 +28,10 @@
                         <div class="btn-group mb-2 noPrintIfModal">
                             <form class="me-3" action="javascript:void(0);" onsubmit="filterGames(this)" id="gamesFilterForm" autocomplete="off">
                                 <div>
-                                    <button type="button" class="btn btn-sm btn-secondary" onclick="showGamesModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results </button>
+                                    <div class="linkElement">
+                                        <button type="button" class="buttonRed" onclick="showGamesModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results </button>
+                                        <button class="buttonRed" type="reset" onclick="resetGamesFilter()">Reset Filter <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Reset your filter criteria."></i></button>
+                                    </div>
                                     <ul class="dropdown-menu p-3" style="width:120%" id="gamesModalDropdown">
                                         <h5 class="lead text-danger text-center">Filter Criteria <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose options below to filter your results."></i></h5>
                                         <div>
@@ -69,11 +72,13 @@
                                             <select name="teamName" hidden value="@team.Name"></select>
                                         }
                                         <div class="text-center">
-                                            <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
-                                            <button type="button" class="btn btn-sm btn-danger text-end" onclick="closeGamesDropdown()">Close</button>
+                                            <div class="linkElement">
+                                                <input type="submit" class="buttonGreen" value="Search" />
+                                                <button type="button" class="buttonRed" onclick="closeGamesDropdown()">Close</button>
+                                            </div>
                                         </div>
                                     </ul>
-                                    <button class="btn btn-sm btn-danger" type="reset" onclick="resetGamesFilter()">Reset Filter <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Reset your filter criteria."></i></button>
+                                    
                                 </div>
                             </form>
                         </div>
@@ -83,8 +88,10 @@
                     </div>
                 </div>
                 <div class="modal-footer noPrintIfModal">
-                    <button class="btn btn-sm btn-secondary" onclick="window.print()">Print These Results</button>
-                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                    <div class="linkElement">
+                        <button class="buttonGreen" onclick="window.print()">Print These Results</button>
+                        <button type="button" class="buttonRed" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             }
             else
@@ -93,7 +100,9 @@
                     <h1 class="text-danger text-center display-5">You have no Teams</h1>
                 </div>
                 <div class="modal-footer noPrintIfModal">
-                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                    <div class="linkElement">
+                        <button type="button" class="buttonRed" data-bs-dismiss="modal">Close</button>
+                    </div>     
                 </div>
             }
         </div>
