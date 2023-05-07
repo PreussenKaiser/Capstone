@@ -36,10 +36,10 @@
 
 <div class="row">
     <div class="col-sm-6 mx-auto">
-        <div class="mb-3 linkElement">
-            <a asp-action="Events" asp-controller="Dashboard" class="buttonRed">
-                < Back
-            </a>
+        <div class="mb-2">
+            <form action="@Url.Action("Events", "Dashboard")" method="get">
+                <button type="submit" class="buttonRed">< Back</button>
+            </form>
         </div>
 
         <form method="post" action="">
