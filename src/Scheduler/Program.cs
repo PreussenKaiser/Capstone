@@ -62,6 +62,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.ExpireTimeSpan = TimeSpan.FromDays(1);
 });
 
+builder.Services.Configure<SecurityStampValidatorOptions>(o =>
+{
+	o.ValidationInterval = TimeSpan.FromMinutes(1);
+});
+
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 	options.TokenLifespan = TimeSpan.FromHours(2));
 
