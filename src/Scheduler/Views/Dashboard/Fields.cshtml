@@ -18,8 +18,8 @@
                     <h5 class="text-center">@field.Name</h5>
                     <div class="row">
                         <div class="col mb-2 text-center">
-                            <form action="@Url.Action("Details", "Field", new { id = field.Id })" method="get">
-                                <button type="submit" class="buttonRed w-100">Update</button>
+                            <form action="@this.Url.Action("Details", "Field", new { id = field.Id })" method="get">
+                                <button type="submit" class="buttonRedOutline w-100">Update</button>
                             </form>
                         </div>
                         <div class="col mb-2 text-center">
