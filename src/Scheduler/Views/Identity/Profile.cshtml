@@ -40,7 +40,22 @@
         <input asp-for="currentUserIsAdmin" hidden />
     }
 
-    <button class="formSubmit buttonGreen w-100 h-100">
-        Save
-    </button>
+    <div class="row mb-3">
+        <div class="col-6">
+            <div class="linkElement">
+                <a asp-action="Users"
+                   asp-controller="Dashboard"
+                   class="buttonRed w-100">
+                    Back to User List
+                </a>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="linkElement">
+                <button type="submit" class="formSubmit buttonGreen w-100">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
 </form>

@@ -2,7 +2,7 @@
 
 <div class="text-center mb-3 mt-3">
     <div class="linkElement">
-        <a asp-action="Add" asp-controller="Field" class="">
+        <a asp-action="Add" asp-controller="Field" class="mainButton">
             Add New Field
         </a>
     </div>
@@ -18,14 +18,9 @@
                     <h5 class="text-center">@field.Name</h5>
                     <div class="row">
                         <div class="col mb-2 text-center">
-                            <div class="exemptAnchor">
-                                <a asp-action="Details"
-                               asp-controller="Field"
-                               asp-route-id="@field.Id"
-                                   class="buttonRed w-100">
-                                    Update
-                                </a>
-                            </div>
+                            <form action="@Url.Action("Details", "Field", new { id = field.Id })" method="get">
+                                <button type="submit" class="buttonRed w-100">Update</button>
+                            </form>
                         </div>
                         <div class="col mb-2 text-center">
                             <div class="linkElement">

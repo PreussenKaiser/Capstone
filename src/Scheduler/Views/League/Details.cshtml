@@ -10,10 +10,10 @@
     bool canEdit = this.User.IsInRole(Role.ADMIN);
 }
 
-<div class="mb-3 linkElement w-25">
-    <a asp-action="Leagues" asp-controller="Dashboard" class="buttonRed">
-        < Back
-    </a>
+<div class="mb-2">
+    <form action="@Url.Action("Leagues", "Dashboard")" method="get">
+        <button type="submit" class="buttonRed">< Back</button>
+    </form>
 </div>
 
 
@@ -97,12 +97,13 @@
             </div>
             <div class="col-md-8">
                 <div class="d-flex justify-content-between">
-            <h4 class="text-center">@this.Model.Name Teams</h4>
-                    <div class="linkElement w-75">
-                        <a asp-action="Add" asp-route-leagueId="@this.Model.Id" asp-controller="Team" class="buttonGreen">
-                            Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
-                        </a>
-                    </div>
+                    <h4 class="text-center">@this.Model.Name Teams</h4>
+                        <div class="w-75 text-end me-3">
+                            <form action="@Url.Action("Add", "Team", new { leagueId = this.Model.Id })" method="get">
+                                <button type="submit" class="buttonRed" value="Update">Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
+                                </button>
+                             </form>
+                        </div>
                 </div>
 
                 <table class="table">
@@ -133,13 +134,12 @@
                                 <tr>
                                     <th scope="row">@team.Name</th>
                                     <td>@(team.User is null ? "Visiting Coach" : team.User.ToString())</td>
-                                    <td class="linkElement">
-                                        <a asp-action="Details"
-                                           asp-controller="Team"
-                                           asp-route-id="@team.Id"
-                                           class="btn btn-sm btn-secondary @mutationEnabled w-100">
-                                            Edit
-                                        </a>
+                                    <td>
+                                        <form action="@Url.Action("Details", "Team", new { id = team.Id })" method="get">
+                                            <button type="submit" class="buttonRed w-100">
+                                                Edit
+                                            </button>
+                                        </form>
                                     </td>
                                     <td class="linkElement">
                                         <button type="button" class="buttonRed @mutationEnabled" data-bs-toggle="modal" data-bs-target="#removeTeamModal">

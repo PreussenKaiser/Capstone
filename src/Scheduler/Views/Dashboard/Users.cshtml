@@ -5,7 +5,7 @@
 
 <div class="text-center mb-3 mt-3">
     <div class="linkElement">
-        <a asp-action="Register" asp-controller="Identity" class="">
+        <a asp-action="Register" asp-controller="Identity" class="mainButton">
             Register New User
         </a>
     </div>
@@ -51,14 +51,9 @@
                         }
                     </td>
                     <td class="text-center">
-                        <div class="linkElement">
-                            <a asp-action="Profile"
-                           asp-controller="Identity"
-                           asp-route-id="@user.Id"
-                               class="buttonRed w-100">
-                                Update
-                            </a>
-                        </div>
+                        <form action="@Url.Action("Profile", "Identity", new { id = user.Id })" method="get">
+                            <button type="submit" class="buttonRed w-100">Update</button>
+                        </form>
                     </td>
                     <td>
                         @if (this.UserManager.GetUserAsync(this.User).Result?.Id != user.Id)

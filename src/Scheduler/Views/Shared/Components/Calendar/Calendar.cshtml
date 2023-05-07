@@ -75,7 +75,7 @@
                 </th>
             </tr>
             <tr class="text-center">
-                <th class="linkElement"><button class="monthlyListButton" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this month."></i></button></th>
+                <th><button class="buttonRed month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this month."></i></button></th>
                 <th>Sunday</th>
                 <th>Monday</th>
                 <th>Tuesday</th>
@@ -100,7 +100,7 @@
                         }
                         @if (endOfWeek >= currentDay)
                         {
-                            <button class="buttonYellow" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this week."></i></button>
+                            <button class="buttonYellow week-button" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this week."></i></button>
                         }
                     </td>
 
@@ -178,7 +178,7 @@
                 </th>
             </tr>
             <tr class="text-start">
-                <th colspan="4"><button class="btn btn-sm btn-danger" onclick="monthModal(@currentYear, @currentMonth)">Monthly List</button></th>
+                <th colspan="4"><button class="buttonRed month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List</button></th>
             </tr>
             <tr class="text-center">
                 <th>Sun</th>

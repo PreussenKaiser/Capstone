@@ -238,6 +238,10 @@
     .field-card {
         width: 50%;
     }
+
+    .mainButton {
+        width: 100% !important;
+    }
 }
 
 @media (max-width: 360px) {
