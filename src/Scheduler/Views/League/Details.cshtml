@@ -97,10 +97,10 @@
             </div>
             <div class="col-md-8">
                 <div class="d-flex justify-content-between">
-                    <h4 class="text-center">@this.Model.Name Teams</h4>
+                    <h4 class="text-start w-100">@this.Model.Name Teams</h4>
                         <div class="w-75 text-end me-3">
-                            <form action="@Url.Action("Add", "Team", new { leagueId = this.Model.Id })" method="get">
-                                <button type="submit" class="buttonRed" value="Update">Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
+                            <form action="@Url.Action("Add", "Team", new { leagueId = this.Model.Id })" method="post">
+                                <button type="submit" class="buttonRed">Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
                                 </button>
                              </form>
                         </div>
