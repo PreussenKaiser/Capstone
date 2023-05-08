@@ -6,9 +6,6 @@ using Scheduler.Filters;
 using Scheduler.Domain.Specifications;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications.Events;
-using System.Net.Mail;
-using System.Net;
-using Azure.Messaging;
 
 namespace Scheduler.Web.Controllers;
 
@@ -34,7 +31,6 @@ public sealed class HomeController : Controller
 		IEnumerable<Team> teams = await teamRepository.SearchAsync(
 			new GetAllSpecification<Team>());
 		
-		// May not need the OrderBy as it's alredy ordered in the repository.
 		IEnumerable<string> closedWarnings = (await scheduleRepository
 			.SearchAsync(new CloseoutSpecification()))
 			.OrderBy(e => e.StartDate)

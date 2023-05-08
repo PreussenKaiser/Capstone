@@ -114,20 +114,21 @@ public sealed class ScheduleController : Controller
 	[HttpGet]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	[Authorize(Roles = Role.ADMIN)]
-	public async Task<IActionResult> CloseFacility([FromServices] UserManager<User> userManager)
+	public async Task<IActionResult> CloseFacility(
+		[FromServices] UserManager<User> userManager)
 	{
 		var user = await userManager.GetUserAsync(this.User);
 
 		Event closeoutEvent = new Event()
 		{
-			//Tomorrow at 8 am and a month from tomorrow at 11 pm
-			StartDate = DateTime.Today.AddDays(1).AddHours(8),
-			EndDate = DateTime.Today.AddMonths(1).AddDays(1).AddHours(22).AddMinutes(59),
+			// Tomorrow at 8 am and a month from tomorrow at 11 pm
+			Id = Guid.NewGuid(),
+			UserId = user.Id,
+			StartDate = this.dateProvider.Now.AddDays(1).AddHours(8),
+			EndDate = this.dateProvider.Now.AddMonths(1).AddDays(1).AddHours(22).AddMinutes(59),
 			RecurrenceId = null,
 			Name = "Facility Closed",
-			IsBlackout = true,
-			Id = Guid.NewGuid(),
-			UserId = user.Id
+			IsBlackout = true
 		};
 
 		return this.View(closeoutEvent);
