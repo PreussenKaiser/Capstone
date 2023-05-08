@@ -170,7 +170,7 @@
 
     function searchEvents(e) {
         $.ajax({
-            url: '@Url.Action("searchModal", "Dashboard")',
+            url: '@this.Url.Action("searchModal", "Dashboard")',
             data: {
                 start: e.StartDate.value,
                 end: e.EndDate.value,

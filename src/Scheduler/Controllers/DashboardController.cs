@@ -11,7 +11,6 @@ using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Scheduler.ViewModels;
 using Scheduler.Domain.Services;
-using Microsoft.Extensions.Logging;
 
 namespace Scheduler.Web.Controllers;
 
@@ -148,7 +147,7 @@ public sealed class DashboardController : Controller
 		string? searchTerm = null,
 		string? teamName = null)
 	{
-		Guid userId = Guid.Parse(userManager.GetUserId(this.User)
+		Guid userId = Guid.Parse(this.userManager.GetUserId(this.User)
 			?? throw new NullReferenceException("Could not determine current user."));
 
 		IEnumerable<Team> teams = await this.context.Teams.ToListAsync();
