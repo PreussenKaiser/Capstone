@@ -1,11 +1,8 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@using Scheduler.Domain.Repositories;
-@using Scheduler.Domain.Specifications;
-@using Scheduler.Infrastructure.Persistence;
-@using System.Text;
+﻿@{
+	this.ViewData["Title"] = "Events";
+}
 
 <div class="text-center mb-3 mt-3 noPrintIfModal">	
-		
 	<div class="linkElement">
 		<a asp-controller="Schedule" asp-action="" class="mainButton">
 			Schedule New Event
@@ -13,22 +10,22 @@
 	</div>
 
 	<div>
-			<button class="buttonRed mt-3" onclick="gamesModal()">
-				My Scheduled Games <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Games for all of your teams."></i>
-			</button>
-			<button class="buttonRed mt-3" onclick="practicesModal()">
-				My Scheduled Practices <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Practices for all of your teams."></i>
-			</button>
-			@if (this.User.IsInRole(Role.ADMIN))
-			{
-			<form action="@Url.Action("CloseFacility", "Schedule")" method="get">
-				<button type="submit" class="buttonGreen mt-3" value="Update">Close Facility <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Close the entire PCYS Facility for a length of time."></i></button>
+		<button class="button buttonRed mt-3" onclick="gamesModal()">
+			My Scheduled Games <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Games for all of your teams."></i>
+		</button>
+
+		<button class="button buttonRed mt-3" onclick="practicesModal()">
+			My Scheduled Practices <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Practices for all of your teams."></i>
+		</button>
+		@if (this.User.IsInRole(Role.ADMIN))
+		{
+			<form action="@this.Url.Action("CloseFacility", "Schedule")" method="get">
+				<button type="submit" class="button buttonGreen mt-3" value="Update">Close Facility <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Close the entire PCYS Facility for a length of time."></i></button>
 			</form>
-			}
+		}
 	</div>
 </div>
-			
-			
+				
 <div id="eventModal"></div>
 
 <div id="calendar">

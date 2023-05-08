@@ -186,7 +186,7 @@ public sealed class IdentityController : Controller
 				<p>
 					Welcome to the PCYS Scheduler!
 					<br>
-					Your username is {user.UserName} and your password is <span style=\""color: red\"">{{randomPassword}}</span>
+					Your username is {user.UserName} and your password is <span style=\""color: red\"">{randomPassword}</span>
 				</p>
 				<p>To begin scheduling events, visit the website at {callback} to log in and change your temporary password.</p>
 				<p style=\""text-decoration: underline\"">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";

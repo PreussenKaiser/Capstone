@@ -4,6 +4,10 @@
 
 @model ErrorViewModel
 
+@{
+    this.ViewData["Title"] = this.Model.StatusCode;
+}
+
 <div class="row my-5">
     <div class="col-12 text-center">
         <h1 class="display-5 text-danger fw-bold">

@@ -75,7 +75,7 @@
                 </th>
             </tr>
             <tr class="text-center">
-                <th><button class="buttonRed month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this month."></i></button></th>
+                <th><button class="button buttonRed month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this month."></i></button></th>
                 <th>Sunday</th>
                 <th>Monday</th>
                 <th>Tuesday</th>
@@ -96,11 +96,10 @@
                             DateTime endOfWeek = (DateTime)ViewData["Week" + i + "End"];
                             DateTime startOfWeek = (DateTime)ViewData["Week" + i + "Start"];
                             DateTime currentDay = (DateTime)ViewData["CurrentDay"];
-
                         }
                         @if (endOfWeek >= currentDay)
                         {
-                            <button class="buttonYellow week-button" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this week."></i></button>
+                            <button class="button buttonYellow week-button" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this week."></i></button>
                         }
                     </td>
 
@@ -178,7 +177,7 @@
                 </th>
             </tr>
             <tr class="text-start">
-                <th colspan="4"><button class="buttonRed month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List</button></th>
+                <th colspan="4"><button class="button buttonRed month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List</button></th>
             </tr>
             <tr class="text-center">
                 <th>Sun</th>

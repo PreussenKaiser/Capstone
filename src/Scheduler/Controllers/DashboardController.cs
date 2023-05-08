@@ -231,9 +231,6 @@ public sealed class DashboardController : Controller
 			}
 		}
 
-		IEnumerable<Event>? filteredGames = null;
-		IEnumerable<Event>? filteredPractices = null;
-
 		if (!games.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";

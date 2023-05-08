@@ -3,6 +3,10 @@
 @inject UserManager<User> UserManager
 @model IEnumerable<League>
 
+@{
+    this.ViewData["Title"] = "Leagues";
+}
+
 @if (this.User.IsInRole(Role.ADMIN))
 { 
     <div class="text-center mt-3">

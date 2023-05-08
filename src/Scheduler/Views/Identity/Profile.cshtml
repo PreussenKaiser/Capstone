@@ -2,6 +2,7 @@
 
 @{
     this.Layout = "Shared/_AccountLayout.cshtml";
+    this.ViewData["Title"] = "Profile";
 }
 
 <form asp-action="Profile">
@@ -43,16 +44,15 @@
     <div class="row mb-3">
         <div class="col-6">
             <div class="linkElement">
-                <a asp-action="Users"
-                   asp-controller="Dashboard"
-                   class="buttonRed w-100">
-                    Back to User List
+                <a href="javascript:history.go(-1)"
+                   class="button buttonRedOutline w-100">
+                    Back
                 </a>
             </div>
         </div>
         <div class="col-6">
             <div class="linkElement">
-                <button type="submit" class="formSubmit buttonGreen w-100">
+                <button type="submit" class="formSubmit button buttonGreen w-100">
                     Save
                 </button>
             </div>

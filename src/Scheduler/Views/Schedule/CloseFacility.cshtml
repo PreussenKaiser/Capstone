@@ -1,10 +1,16 @@
-﻿@model Event;
+﻿@using Scheduler.Domain.Services;
+@using Scheduler;
+
+@inject IDateProvider DateProvider
+
+@model Event;
 
 @{
 	this.ViewData["Title"] = "Schedule Facility Closure";
-	string today = DateTime.Now.ToString("yyyy-MM-dd");
-	string startDateString = Model.StartDate.ToString("yyyy-MM-ddTHH:mm");
-	string endDateString = Model.EndDate.ToString("yyyy-MM-ddTHH:mm");
+
+	string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
+	string startDateString = this.Model.StartDate.ToString("yyyy-MM-ddTHH:mm");
+	string endDateString = this.Model.EndDate.ToString("yyyy-MM-ddTHH:mm");
 }
 
 <div class="row">
@@ -20,30 +26,30 @@
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 			<div class="row mb-3">
-					<div>
-						<label class="form-label">Event Time <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates and times will <u>not</u> be applied."></i></label>
-						<input type="text" name="daterange" class="text-center form-control" />
-					</div>
-					<div>
-						<input asp-for="StartDate" type="hidden" id="StartDate" />
-						<span asp-validation-for="StartDate" class="text-danger"></span>
-						<br />
-					</div>
-					<div>
-						<input asp-for="EndDate" type="hidden" id="EndDate" />
-						<span asp-validation-for="EndDate" class="text-danger"></span>
-					</div>
-					<input asp-for="Name" type="hidden"/>
-					<input asp-for="Id" type="hidden" />
-					<input asp-for="UserId" type="hidden"/>
-					<input asp-for="IsBlackout" type="hidden"/>
+				<div>
+					<label class="form-label">Event Time <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates and times will <u>not</u> be applied."></i></label>
+					<input type="text" name="daterange" class="text-center form-control" />
+				</div>
+				<div>
+					<input asp-for="StartDate" type="hidden" id="StartDate" />
+					<span asp-validation-for="StartDate" class="text-danger"></span>
+					<br />
+				</div>
+				<div>
+					<input asp-for="EndDate" type="hidden" id="EndDate" />
+					<span asp-validation-for="EndDate" class="text-danger"></span>
+				</div>
+				<input asp-for="Name" type="hidden"/>
+				<input asp-for="Id" type="hidden" />
+				<input asp-for="UserId" type="hidden"/>
+				<input asp-for="IsBlackout" type="hidden"/>
 			</div>
 			<div class="row mb-3">
 				<div class="col-6 linkElement">
-							<a asp-controller="Dashboard" asp-action="Events" type="button" class="buttonRed w-100">Cancel</a>
+					<a asp-controller="Dashboard" asp-action="Events" type="button" class="button buttonRedOutline w-100">Cancel</a>
 				</div>
 				<div class="col-6 linkElement">
-					<button type="submit" class="formSubmit buttonGreen w-100">
+					<button type="submit" class="formSubmit button buttonGreen w-100">
 						Close Facility
 					</button>
 				</div>
@@ -67,12 +73,12 @@
 	var endDateFormatted;
 	var minDate;
 	var minDateFormatted;
-    startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the start date string and specify the format
-    startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the start date as desired
-    endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the end date string and specify the format
-    endDateFormatted = endDate.format('M/DD/YYYY hh:mm A'); // Format the end date as desired
-    minDate = moment(minDateString, "YYYY-MM-DDTHH:mm"); // Parse the min date string and specify the format
-    minDateFormatted = minDate.format('M/DD/YYYY hh:mm A'); // Format the min date as desired
+	startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the start date string and specify the format
+	startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the start date as desired
+	endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the end date string and specify the format
+	endDateFormatted = endDate.format('M/DD/YYYY hh:mm A'); // Format the end date as desired
+	minDate = moment(minDateString, "YYYY-MM-DDTHH:mm"); // Parse the min date string and specify the format
+	minDateFormatted = minDate.format('M/DD/YYYY hh:mm A'); // Format the min date as desired
 	$('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
 	$('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
 

@@ -5,35 +5,38 @@
 @model IndexViewModel
 
 @{
-    this.ViewData["Title"] = "Home Page";
+    this.ViewData["Title"] = "Home";
 
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
-    List<string> closedWarnings = (List<string>)this.ViewData["ClosedWarnings"];
     string startDateString = this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT);
     string endDateString = this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT);
 }
 
-<div class="layoutContainer noPrintIfModal text-center" style="padding-left:20px;padding-right:20px;border:2px solid gray;font-size:12px;">
-    <h3 class="text-danger">Welcome to the PCYS Scheduling Application</h3>
-    <p class="lead">Use the Calendar below to search for Dates and Times of Practices, Games, and other Events at the PCYS facility. You can use the Filtering Menu in the List to refine your search.</p>
-    <p class="lead">You can also use the Search Button to search for Events outside of the Calendar. Search by Team Name, Event Name, or a range of Dates.</p>
-    @foreach (string warning in closedWarnings)
-    {
-        <p class="text-danger lead">@warning</p>
-    }
-    <div class="text-end mb-2">
-        <button class="buttonGreen" data-bs-toggle="modal" data-bs-target="#mapModal">Facility Map</button>
+<div class="row text-center px-sm-5 mt-4 noPrintIfModal">
+    <div class="col-12 border-bottom border-3 border-danger">
+        <h3 class="text-danger">Welcome to the PCYS Scheduling Application</h3>
+        <p class="lead">Use the Calendar below to search for Dates and Times of Practices, Games, and other Events at the PCYS facility. You can use the Filtering Menu in the List to refine your search.</p>
+        <p class="lead">You can also use the Search Button to search for Events outside of the Calendar. Search by Team Name, Event Name, or a range of Dates.</p>
+        @foreach (string warning in this.Model.ClosedWarnings)
+        {
+            <p class="text-danger lead">@warning</p>
+        }
+        <div class="text-end mb-3git ">
+            <button class="button buttonGreen" data-bs-toggle="modal" data-bs-target="#mapModal">Facility Map</button>
+        </div>
     </div>
 </div>
+
 <br />
-<div id="searchBar">
-    <div class="text-center">
+
+<div id="searchBar" class="row">
+    <div class="col-12 text-center">
         <div class="btn-group mb-2 noPrintIfModal">
             <form action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
                 <div>
                     <div class="linkElement">
-                        <button type="button" class="buttonRed" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Search the Schedule using specific criteria."></i></button>
-                        <button class="buttonRed" type="reset" onclick="resetSearchEvents()">Reset Search <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset your search criteria."></i></button>
+                        <button type="button" class="button buttonRed" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Search the Schedule using specific criteria."></i></button>
+                        <button class="button buttonRed" type="reset" onclick="resetSearchEvents()">Reset Search <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset your search criteria."></i></button>
                     </div>
                     
                     <ul class="dropdown-menu p-3" id="homepage-dropdown">
@@ -78,8 +81,8 @@
                         </div>
                         <div class="text-center">
                             <div class="linkElement">
-                                <input type="submit" class="buttonGreen" value="Search" />
-                                <button type="button" class="buttonRed" onclick="closeHomePageDropdown()">Close</button>
+                                <input type="submit" class="button buttonGreen" value="Search" />
+                                <button type="button" class="button buttonRed" onclick="closeHomePageDropdown()">Close</button>
                             </div>
                         </div>
                     </ul>
@@ -88,24 +91,27 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="mapModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-body bg-dark">
+            <div class="modal-body">
                 <img class="w-100 m-auto"src="~/Images/PCYS Facility Map.png" />
             </div>
             <div class="modal-footer noPrintIfModal">
                 <div class="linkElement">
-                    <button class="buttonRed" onclick="window.print()">Print The Map</button>
-                    <button type="button" class="buttonRed" data-bs-dismiss="modal">Close</button>
+                    <button class="button buttonRed" onclick="window.print()">Print The Map</button>
+                    <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <div id="calendar">
     @await this.Component.InvokeAsync("Calendar")
 </div>
+
 @section Scripts {
 <script>
     function showHomepageDropdown() {

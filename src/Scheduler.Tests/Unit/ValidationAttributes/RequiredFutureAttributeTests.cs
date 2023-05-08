@@ -1,7 +1,7 @@
 ﻿using Scheduler.Domain.Validation;
 using Xunit;
 
-namespace Scheduler.Tests.ValidationAttributes;
+namespace Scheduler.Tests.Unit.ValidationAttributes;
 
 /// <summary>
 /// Tests for <see cref="RequiredIfFalseAttribute"/>.

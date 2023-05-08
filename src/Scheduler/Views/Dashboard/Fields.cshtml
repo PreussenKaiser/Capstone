@@ -1,5 +1,9 @@
 ﻿@model IEnumerable<Field>
 
+@{
+    this.ViewData["Title"] = "Fields";
+}
+
 <div class="text-center mb-3 mt-3">
     <div class="linkElement">
         <a asp-action="Add" asp-controller="Field" class="mainButton">
@@ -18,13 +22,13 @@
                     <h5 class="text-center">@field.Name</h5>
                     <div class="row">
                         <div class="col mb-2 text-center">
-                            <form action="@Url.Action("Details", "Field", new { id = field.Id })" method="get">
-                                <button type="submit" class="buttonRed w-100">Update</button>
+                            <form action="@this.Url.Action("Details", "Field", new { id = field.Id })" method="get">
+                                <button type="submit" class="button buttonRedOutline w-100">Update</button>
                             </form>
                         </div>
                         <div class="col mb-2 text-center">
                             <div class="linkElement">
-                                <button type="button" class="buttonRed" data-bs-toggle="modal" data-bs-target="#remove@(field.Id)">
+                                <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#remove@(field.Id)">
                                     Remove
                                 </button>
                             </div>
@@ -38,12 +42,12 @@
                                             Are you sure you want to remove @(field.Name)?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="buttonRed" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Close</button>
                                             <form asp-action="Remove"
                                                   asp-controller="Field"
                                                   asp-route-id="@field.Id"
                                                   method="post">
-                                                <input type="submit" value="Remove" class="buttonRed" />
+                                                <input type="submit" value="Remove" class="button buttonRed" />
                                             </form>
                                         </div>
                                     </div>

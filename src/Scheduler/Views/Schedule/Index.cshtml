@@ -21,8 +21,8 @@
             : nameof(Practice));
 
     Specification<Field> fieldSpec = this.Model.FieldId is null
-    ? new GetAllSpecification<Field>()
-    : new ByIdSpecification<Field>((Guid)this.Model.FieldId);
+        ? new GetAllSpecification<Field>()
+        : new ByIdSpecification<Field>((Guid)this.Model.FieldId);
 
     IEnumerable<SelectListItem> fields = (await this.FieldRepository
         .SearchAsync(fieldSpec))
@@ -149,12 +149,12 @@
                 <div class="col-6 linkElement">
                     <a asp-action="Events"
                        asp-controller="Dashboard"
-                       class="buttonRed w-100">
+                       class="button buttonRedOutline w-100">
                         Cancel
                     </a>
                 </div>
                 <div class="col-6 linkElement">
-                    <input type="submit" class="formSubmit buttonGreen w-100" />
+                    <input type="submit" class="formSubmit button buttonGreen w-100" />
                 </div>
             </div>
         </form>

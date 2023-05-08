@@ -11,171 +11,167 @@
 }
 
 <div class="mb-2">
-    <form action="@Url.Action("Leagues", "Dashboard")" method="get">
-        <button type="submit" class="buttonRed">< Back</button>
+    <form action="@this.Url.Action("Leagues", "Dashboard")" method="get">
+        <button type="submit" class="button buttonRed">< Back</button>
     </form>
 </div>
+<div class="row">
+    <div class="col-sm-4 mb-3">
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <h5>League Name:</h5>
 
-
-        <div class="row">
-            <div class="col-sm-4 mb-3">
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        <div class="d-flex justify-content-between">
-                            <h5>League Name:</h5>
-
-                            @if (canEdit)
-                            {      
-                                <button type="button" class="buttonRed" data-bs-toggle="modal" data-bs-target="#detailsModal">
-                                    Edit <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Details for the @Model.Name League."></i>
-                                </button>
-                                <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <form method="post">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">@this.Model.Name</h5>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <div class="mb-3">
-                                                                <label asp-for="Name" class="form-label h6"></label>
-                                                                <input asp-for="Name" class="form-control" />
-                                                                <span asp-validation-for="Name" class="text-danger"></span>
-                                                            </div>
-                                                        </div>
+                    @if (canEdit)
+                    {      
+                        <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#detailsModal">
+                            Edit <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Details for the @Model.Name League."></i>
+                        </button>
+                        <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form method="post">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">@this.Model.Name</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="mb-3">
+                                                        <label asp-for="Name" class="form-label h6"></label>
+                                                        <input asp-for="Name" class="form-control" />
+                                                        <span asp-validation-for="Name" class="text-danger"></span>
                                                     </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="buttonRed" data-bs-dismiss="modal">Close</button>
-                                                    <input type="submit" value="Submit" class="buttonGreen" />
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                        <div class="row">
-                        <h4 class="text-danger text-start" style="text-shadow: .5px .5px black;">@this.Model.Name</h4>
-                            
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-12 text-end">
-                                @if (canEdit)
-                                {        
-                                    <button type="button" class="buttonRed" data-bs-toggle="modal" data-bs-target="#removeLeagueModal">
-                                        Remove
-                                    </button>
-                                    <div class="modal fade" id="removeLeagueModal" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Remove @this.Model.Name?</h5>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>Are you sure you want to delete <b>@this.Model.Name</b>?</p>
-                                                    <p>This league, along with all teams in it will be permanently removed.</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="buttonRed" data-bs-dismiss="modal">Cancel</button>
-                                                    <form asp-action="Remove" asp-route-id="@this.Model.Id">
-                                                        <input type="submit" value="Remove" class="buttonRed" />
-                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Cancel</button>
+                                            <input type="submit" value="Submit" class="button buttonGreen" />
+                                        </div>
                                     </div>
-                                }
+                                </form>
                             </div>
                         </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-8">
-                <div class="d-flex justify-content-between">
-                    <h4 class="text-start w-100">@this.Model.Name Teams</h4>
-                        <div class="w-75 text-end me-3">
-                            <form action="@Url.Action("Add", "Team", new { leagueId = this.Model.Id })" method="post">
-                                <button type="submit" class="buttonRed">Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @Model.Name League."></i>
-                                </button>
-                             </form>
-                        </div>
+                    }
                 </div>
-
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Coach</th>
-                            <th colspan="2"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (this.Model.Teams.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="2">@this.Model.Name has no teams.</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            @foreach (var team in this.Model.Teams)
-                            {
-                                string mutationEnabled = 
-                                        this.User.IsInRole(Role.ADMIN) ||
-                                        this.UserManager.GetUserId(this.User) == team.UserId.ToString()
-                                    ? string.Empty
-                                    : "disabled";
-
-                                <tr>
-                                    <th scope="row">@team.Name</th>
-                                    <td>@(team.User is null ? "Visiting Coach" : team.User.ToString())</td>
-                                    <td>
-                                        <form action="@Url.Action("Details", "Team", new { id = team.Id })" method="get">
-                                            <button type="submit" class="buttonRed w-100">
-                                                Edit
-                                            </button>
-                                        </form>
-                                    </td>
-                                    <td class="linkElement">
-                                        <button type="button" class="buttonRed @mutationEnabled" data-bs-toggle="modal" data-bs-target="#removeTeamModal">
-                                            Remove
-                                        </button>
-                                        <div class="modal fade" id="removeTeamModal" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Remove @team.Name</h5>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>
-                                                            Are you sure you want to permanently delete <b>@team.Name</b>?
-                                                            <br>
-                                                            All events <b>@team.Name</b> is particiapting in will be removed as well.
-                                                        </p>                
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="buttonRed" data-bs-dismiss="modal">Cancel</button>
-                                                        <form asp-action="Remove"
-                                                              asp-controller="Team"
-                                                              asp-route-id="@team.Id"
-                                                              asp-route-leagueId="@this.Model.Id"
-                                                              method="post">
-                                                            <input type="submit" value="Remove" class="buttonRed @mutationEnabled" />
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+                <div class="row">
+                    <h4 class="text-danger text-start" style="text-shadow: .5px .5px black;">@this.Model.Name</h4>            
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-12 text-end">
+                        @if (canEdit)
+                        {        
+                            <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#removeLeagueModal">
+                                Remove
+                            </button>
+                            <div class="modal fade" id="removeLeagueModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Remove @this.Model.Name?</h5>
                                         </div>
-                                    </td>
-                                </tr>
-                            }
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete <b>@this.Model.Name</b>?</p>
+                                            <p>This league, along with all teams in it will be permanently removed.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Cancel</button>
+                                            <form asp-action="Remove" asp-route-id="@this.Model.Id">
+                                                <input type="submit" value="Remove" class="button buttonRed" />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         }
-                    </tbody>
-                </table>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between">
+            <h4 class="text-start w-100">@this.Model.Name Teams</h4>
+            <div class="w-75 text-end me-3">
+                <form action="@this.Url.Action("Add", "Team", new { leagueId = this.Model.Id })" method="post">
+                    <button type="submit" class="button buttonRed">Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @this.Model.Name League."></i></button>
+                </form>
             </div>
         </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Coach</th>
+                    <th colspan="2"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (this.Model.Teams.Count == 0)
+                {
+                    <tr>
+                        <td colspan="2">@this.Model.Name has no teams.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var team in this.Model.Teams)
+                    {
+                        string mutationEnabled = 
+                            this.User.IsInRole(Role.ADMIN) ||
+                            this.UserManager.GetUserId(this.User) == team.UserId.ToString()
+                                ? string.Empty
+                                : "disabled";
+
+                        <tr>
+                            <th scope="row">@team.Name</th>
+                            <td>@(team.User is null ? "Visiting Coach" : team.User.ToString())</td>
+                            <td>
+                                <form action="@Url.Action("Details", "Team", new { id = team.Id })" method="get">
+                                    <button type="submit" class="button buttonRed w-100">
+                                        Edit
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="linkElement">
+                                <button type="button" class="button buttonRed @mutationEnabled" data-bs-toggle="modal" data-bs-target="#removeTeamModal">
+                                    Remove
+                                </button>
+                                <div class="modal fade" id="removeTeamModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Remove @team.Name</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>
+                                                    Are you sure you want to permanently delete <b>@team.Name</b>?
+                                                    <br>
+                                                    All events <b>@team.Name</b> is particiapting in will be removed as well.
+                                                </p>                
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Cancel</button>
+                                                <form asp-action="Remove"
+                                                      asp-controller="Team"
+                                                      asp-route-id="@team.Id"
+                                                      asp-route-leagueId="@this.Model.Id"
+                                                      method="post">
+                                                    <input type="submit" value="Remove" class="button buttonRed @mutationEnabled" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
