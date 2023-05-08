@@ -20,7 +20,6 @@ html {
 .buttonRed {
     background-color: #c9000a;
     border: solid #c9000a !important;
-    box-shadow: 0 -3px #af0006 inset;
 }
 
 .buttonRedOutline {
@@ -74,7 +73,6 @@ html {
     text-decoration: none;
     width: 40%;
     background-color: #c9000a;
-    box-shadow: 0 -3px #af0006 inset;
     padding: 10px 20px 10px 10px;
     margin-bottom: 0px;
     line-height: 1.3;
