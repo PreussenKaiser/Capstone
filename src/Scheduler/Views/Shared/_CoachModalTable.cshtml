@@ -101,7 +101,9 @@
                                      this.User.Identity.IsAuthenticated)
                                 {
                                     <td>
-                                        <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
+                                        <form action="@Url.Action("Details", "Schedule", new { id = e.Id })" method="post">
+                                            <button type="submit" class="buttonRed">Details</button>
+                                        </form>
                                     </td>
                                 }
                             </tr>
@@ -128,7 +130,7 @@
                                          this.User.Identity.IsAuthenticated)
                                     {
                                         <td>
-                                        <form action="@Url.Action("Details", "Schedule", new { id = e.Id })" method="get">
+                                        <form action="@Url.Action("Details", "Schedule", new { id = e.Id })" method="post">
                                             <button type="submit" class="buttonRed">Details</button>
                                         </form>
                                         </td>

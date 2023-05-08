@@ -11,6 +11,7 @@ using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Scheduler.ViewModels;
 using Scheduler.Domain.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Scheduler.Web.Controllers;
 
@@ -412,12 +413,16 @@ public sealed class DashboardController : Controller
 	{
 		DateTime monthDate = new DateTime(year, month, 1);
 		DateTime monthEndDate = monthDate.AddMonths(1);
-		this.ViewData["Events"] = await this.DateSearch(monthDate, monthEndDate).ToListAsync();
+		IQueryable<Event> events = this.DateSearch(monthDate, monthEndDate);
+		this.ViewData["Events"] = events.ToList();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = monthDate;
 		this.ViewData["End"] = monthEndDate;
 		this.ViewData["Title"] = $"Events in {monthDate.ToString("MMMM")}";
-		this.ViewData["TypeFilterMessage"] = "Showing all Events";
+		if (!events.IsNullOrEmpty())
+		{
+			this.ViewData["TypeFilterMessage"] = "Showing all Events";
+		}			
 		return this.ViewComponent("ListModal");
 	}
 
@@ -433,12 +438,16 @@ public sealed class DashboardController : Controller
 	{
 		DateTime weekStartDate = new DateTime(year, month, weekStart);
 		DateTime weekEndDate = weekStartDate.AddDays(7);
-		this.ViewData["Events"] = await this.DateSearch(weekStartDate, weekEndDate).ToListAsync();
+		IQueryable<Event> events = this.DateSearch(weekStartDate, weekEndDate);
+		this.ViewData["Events"] = events.ToList();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = weekStartDate;
 		this.ViewData["End"] = weekEndDate;
 		this.ViewData["Title"] = $"Events for the week of {weekStartDate.ToString("M")}";
-		this.ViewData["TypeFilterMessage"] = "Showing all Events";
+		if (!events.IsNullOrEmpty())
+		{
+			this.ViewData["TypeFilterMessage"] = "Showing all Events";
+		}
 		return this.ViewComponent("ListModal");
 	}
 
@@ -453,12 +462,16 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> dayModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-		this.ViewData["Events"] = await this.DateSearch(eventDate, eventDate).ToListAsync();
+		IQueryable<Event> events = this.DateSearch(eventDate, eventDate);
+		this.ViewData["Events"] = events.ToList();
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = eventDate; //12:00 AM on the selected day.
 		this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
 		this.ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
-		this.ViewData["TypeFilterMessage"] = "Showing all Events";
+		if (!events.IsNullOrEmpty())
+		{
+			this.ViewData["TypeFilterMessage"] = "Showing all Events";
+		}
 		return this.ViewComponent("ListModal");
 	}
 
