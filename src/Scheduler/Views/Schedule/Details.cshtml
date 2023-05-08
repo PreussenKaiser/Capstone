@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Identity;
-@using Microsoft.EntityFrameworkCore;
 @using Scheduler.Domain.Repositories;
 @using Scheduler.Domain.Services;
 @using Scheduler.Domain.Specifications;
@@ -26,7 +25,8 @@
     bool canEdit = this.User.IsInRole(Role.ADMIN) ||
                    this.UserManager.GetUserId(this.User) == this.Model.UserId.ToString();
 
-    IEnumerable<SelectListItem> fieldList = (await this.FieldRepository.SearchAsync(new GetAllSpecification<Field>()))
+    IEnumerable<SelectListItem> fieldList = (await this.FieldRepository
+        .SearchAsync(new GetAllSpecification<Field>()))
         .Select(f => new SelectListItem
         {
             Text = f.Name,
@@ -192,7 +192,7 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="button buttonRed" data-bs-dismiss="modal">Back</button>
+                                                <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Back</button>
                                                 <input asp-action="Reschedule" asp-controller="@eventType" type="submit" value="Reschedule" class="button buttonGreen" />
                                             </div>
                                         </div>
@@ -221,14 +221,13 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="button buttonRed" data-bs-dismiss="modal">Back</button>
-                                                <input asp-action="Cancel" asp-controller="@eventType" type="submit" value="Yes, Cancel It" class="button buttonGreen" />
+                                                <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">No, go back</button>
+                                                <input asp-action="Cancel" asp-controller="@eventType" type="submit" value="Yes, Cancel it" class="button buttonGreen" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             }
-
                         </div>
                     </div>
 
@@ -281,7 +280,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Close</button>
                                             <input asp-action="Relocate" asp-controller="@eventType" type="submit" value="Relocate" class="button buttonGreen" />
                                         </div>
                                     </div>
