@@ -26,9 +26,6 @@
                 <div class="text-center">
                     <div class="btn-group mb-2 noPrintIfModal">
                         <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="searchForm" autocomplete="off">
-                            <input name="StartDateTest" hidden id="StartDateTest" />
-                            <input name="EndDate" hidden id="EndDate" />
-                            
                             <div>
                                 <div class="linkElement">
                                     <button type="button" class="button buttonRed" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter these results using specific criteria."></i></button>
@@ -103,7 +100,6 @@
     }
 
     $(document).ready(function () {
-
         $("#teamNameSearchFilter").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%",
@@ -121,13 +117,15 @@
     var endDateFormatted;
     var minDate;
     var minDateFormatted;
+
     startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
     startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
     endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
     endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
     minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
     minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
-    $('#StartDateTest').val(startDateFormatted); // Set initial value of StartDate on the form
+
+    $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
     $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
 
     $(function () {
@@ -148,16 +146,14 @@
         });
     });
     
-    function filterEvents(e){
-        console.log(e)
-
+    function filterEvents(e) {
         $.ajax({
             url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
-                searchTerm: e.searchTerm.value,
+                start: $('StartDate').val(),
+                end: $('EndDate').val(),
                 type: e.type.value,
-                start: e.StartDateTest.value,
-                end: e.EndDate.value,
+                searchTerm: e.searchTerm.value,
                 teamName: e.teamName.value
             },
             success: function(data) {
@@ -167,9 +163,9 @@
         });
     }
 
-        function resetEvents(e){
+    function resetEvents(e){
         $.ajax({
-            url: '@Url.Action("filterModalEvents", "Dashboard")',
+            url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
                 searchTerm: '',
                 type: 'Event',
