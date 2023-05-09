@@ -18,8 +18,9 @@
 <div class="modal fade" id="practicesModalPopup" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header m-auto">
-                <h2 class="text-center">@this.ViewData["Title"]</h2>
+            <div class="modal-header">
+                <h2>@this.ViewData["Title"]</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             @if (this.Model.CoachTeamsCount != 0)
