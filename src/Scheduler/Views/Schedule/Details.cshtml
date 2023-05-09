@@ -81,7 +81,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
-                                                    <partial name="Forms/_UpdateTypeInput" />
+                                                    @if (recurringEvent)
+                                                    {
+                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -187,7 +190,10 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-6">
-                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                        @if (recurringEvent)
+                                                        {
+                                                            <partial name="Forms/_UpdateTypeInput" />
+                                                        }
                                                     </div>
                                                 </div>
                                             </div>
@@ -216,7 +222,10 @@
                                                         </p>
                                                     </div>
                                                     <div class="col-6">
-                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                        @if (recurringEvent)
+                                                        {
+                                                            <partial name="Forms/_UpdateTypeInput" />
+                                                        }
                                                     </div>
                                                 </div>
                                             </div>
@@ -276,7 +285,10 @@
                                                     }
                                                 </div>
                                                 <div class="col-6">
-                                                    <partial name="Forms/_UpdateTypeInput" />
+                                                    @if (recurringEvent)
+                                                    {
+                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
