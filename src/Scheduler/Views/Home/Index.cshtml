@@ -31,6 +31,9 @@
     <div class="col-12 text-center">
         <div class="btn-group mb-2 noPrintIfModal">
             <form action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
+                <input name="StartDate" hidden id="StartDate" />
+                <input name="EndDate" hidden id="EndDate" />
+
                 <div>
                     <div class="linkElement">
                         <button type="button" class="button buttonRed" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Search the Schedule using specific criteria."></i></button>
@@ -45,13 +48,6 @@
                                     Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br />Once the desired dates are selected and shown at the bottom, click 'Apply' and confirm that the desired dates show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates will <u>not</u> be applied."></i>
                                 </label>
                                 <input type="text" name="daterange" class="text-center form-control" />
-                            </div>
-                            <div>
-                                <input name="StartDate" type="hidden" id="StartDate" />
-                                <br />
-                            </div>
-                            <div>
-                                <input name="EndDate" type="hidden" id="EndDate" />
                             </div>
                         </div>
                         <div class="mb-3">
@@ -121,12 +117,10 @@
     }
 
     $(document).ready(function () {
-
         $("#teamNameSearch").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%"
         });
-
     });
 
     var startDateString = "@startDateString";
@@ -146,7 +140,6 @@
     minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
     $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
     $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
-
 
     $(function () {
         $('input[name="daterange"]').daterangepicker({

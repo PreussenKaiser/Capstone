@@ -333,7 +333,12 @@ public sealed class DashboardController : Controller
 	/// <param name="teamName">The inputted team name - defaults to null.</param>
 	/// <returns>A list of Events.</returns>
 	[AllowAnonymous]
-	public async Task<IActionResult> searchModal(DateTime start, DateTime end, string type, string? searchTerm = null, string? teamName = null)
+	public async Task<IActionResult> searchModal(
+		DateTime start,
+		DateTime end,
+		string type,
+		string? searchTerm = null,
+		string? teamName = null)
 	{
 		IQueryable<Event> events = type switch
 		{
@@ -499,7 +504,12 @@ public sealed class DashboardController : Controller
 	/// <param name="teamName">The inputted team name - defaults to null.</param>
 	/// <returns>The List Modal partial view.</returns>
 	[AllowAnonymous]
-	public async Task<IActionResult> filterModalEvents(string type, DateTime start, DateTime end, string? searchTerm = null, string? teamName = null)
+	public async Task<IActionResult> filterModalEvents(
+		string type,
+		DateTime start,
+		DateTime end,
+		string? searchTerm = null,
+		string? teamName = null)
 	{
 		IQueryable<Event> events = type switch
 		{
@@ -545,7 +555,10 @@ public sealed class DashboardController : Controller
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
-		return PartialView("_ListModalTable", events);
+		this.ViewData["Start"] = start;
+		this.ViewData["End"] = end;
+
+		return this.PartialView("_ListModalTable", events);
 	}
 
 	/// <summary>

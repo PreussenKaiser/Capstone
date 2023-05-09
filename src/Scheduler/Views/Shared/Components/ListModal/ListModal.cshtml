@@ -1,8 +1,10 @@
 ﻿@using System.Text.Json;
 
 @{
-    IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
     string title = this.ViewData["Title"].ToString();
+
+    IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
+    
     DateTime startTime = (DateTime)this.ViewData["Start"];
     DateTime endTime = (DateTime)this.ViewData["End"];
 }
@@ -19,7 +21,7 @@
                 <div class="text-center">
                     <div class="btn-group mb-2 noPrintIfModal">
                         <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="filterForm" autocomplete="off">
-                            <div>                                
+                            <div>               
                                 <div class="linkElement">
                                     <button type="button" class="button buttonRed" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter these results using specific criteria."></i></button>
                                     <button class="button buttonRed" type="reset" onclick="resetEvents()">Reset Filter <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Reset your filter criteria."></i></button>
@@ -43,7 +45,7 @@
                                         <label class="form-label">Team Name</label>
                                         <select id="teamNameFilter" name="teamName" class="form-select chosen">
                                             <option value=""></option>
-                                            @foreach (Team t in (IEnumerable<Team>)ViewData["Teams"])
+                                            @foreach (Team t in (IEnumerable<Team>)this.ViewData["Teams"])
                                             {
                                                 <option value=@t.Name>@t.Name</option>
                                             }
@@ -66,10 +68,11 @@
             </div>
             <div class="modal-footer noPrintIfModal">
                 <div class="linkElement">
-                @if (User.Identity.IsAuthenticated && startTime.Day == endTime.Day)
-                {
-                    <button class="btn btn-sm btn-dark calendar-mobile" data-bs-dismiss="modal" onclick="gridModal(@startTime.Year, @startTime.Month, @startTime.Day)">Scheduling Grid</button>
-                }
+                    @if (this.User.Identity.IsAuthenticated && startTime.Day == endTime.Day)
+                    {
+                        <button class="btn btn-sm btn-dark calendar-mobile" data-bs-dismiss="modal" onclick="gridModal(@startTime.Year, @startTime.Month, @startTime.Day)">Scheduling Grid</button>
+                    }
+
                     <button class="button buttonGreen" onclick="window.print()">Print These Results</button>
                     <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
                 </div>
@@ -92,23 +95,21 @@
     }
 
     $(document).ready(function () {
-
         $("#teamNameFilter").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%",
             dropdownParent: $('#listModalPopup')
         });
-
     });
     
     function filterEvents(e){
         $.ajax({
-            url: '@Url.Action("filterModalEvents", "Dashboard")',
+            url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
                 searchTerm: e.searchTerm.value,
                 type: e.type.value,
-                start: '@startTime.ToString()',
-                end: '@endTime.ToString()',
+                start: e.StartDate.value,
+                end: e.EndDate.value,
                 teamName: e.teamName.value
             },
             success: function(data) {
@@ -120,7 +121,7 @@
 
         function resetEvents(e){
         $.ajax({
-            url: '@Url.Action("filterModalEvents", "Dashboard")',
+            url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
                 searchTerm: '',
                 type: 'Event',
@@ -137,7 +138,7 @@
 
     function gridModal(year, month, date) {
         $.ajax({
-            url: '@Url.Action("gridModal", "Dashboard")',
+            url: '@this.Url.Action("gridModal", "Dashboard")',
             data: {
                 year: year ?? new Date().getFullYear(),
                 month: month ?? new Date().getMonth(),
