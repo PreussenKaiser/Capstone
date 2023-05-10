@@ -143,6 +143,8 @@ public sealed class ScheduleController : Controller
 			return this.View(closeoutEvent);
 		}
 
+		closeoutEvent.EndDate = closeoutEvent.EndDate.AddHours(23).AddMinutes(59);
+
 		await this.scheduleRepository.ScheduleAsync(closeoutEvent);
 
 		return this.View("~/Views/Schedule/Details.cshtml", closeoutEvent);
