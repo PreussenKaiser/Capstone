@@ -18,14 +18,14 @@
 <div class="modal fade" id="gamesModalPopup" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>@this.ViewData["Title"]</h2>
+            <div class="modal-header noPrintIfModal">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             @if (this.Model.CoachTeamsCount != 0)
             {
                 <div class="modal-body">
                     <div class="text-center">
+                        <h2 class="mb-4">@this.ViewData["Title"]</h2>
                         <div class="btn-group mb-2 noPrintIfModal">
                             <form class="me-3" action="javascript:void(0);" onsubmit="filterGames(this)" id="gamesFilterForm" autocomplete="off">
                                 <div>
