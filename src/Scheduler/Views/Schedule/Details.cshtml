@@ -67,25 +67,26 @@
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col">
                                                     <div class="mb-3">
                                                         <label asp-for="Name" class="form-label h6"></label>
                                                         <input asp-for="Name" class="form-control" />
                                                         <span asp-validation-for="Name" class="text-danger"></span>
                                                     </div>
-                                                    <div class="w-100">
+                                                    <div class="mb-3">
                                                         @if (eventType != nameof(Event))
                                                         {
                                                             <partial name="Forms/_@(eventType)Inputs" />
                                                         }
                                                     </div>
                                                 </div>
-                                                <div class="col-6">
-                                                    @if (recurringEvent)
-                                                    {
+
+                                                @if (recurringEvent)
+                                                {
+                                                    <div class="col-6">
                                                         <partial name="Forms/_UpdateTypeInput" />
-                                                    }
-                                                </div>
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -130,9 +131,7 @@
                                 {
                                     <h6>Teams</h6>
                                     <small>
-                                        @homeTeam.Name
-                                        vs.
-                                        @opposingTeam.Name
+                                        @homeTeam.Name vs. @opposingTeam.Name
                                     </small>
                                 }
                             }
