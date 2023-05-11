@@ -8,16 +8,20 @@ namespace Scheduler.Tests.Unit.Specifications;
 /// <summary>
 /// Tests for <see cref="ByRecurrenceIdSpecificiation"/>.
 /// </summary>
-public sealed class ByRecurrenceIdSpecificiationTests
+public sealed class ByRecurrenceIdSpecificationTests
 {
 	/// <summary>
-	/// Asserts that, given the correct recurrence identifier, the specifiction is satisfied.
+	/// Asserts that, given the correct recurrence identifier, the specification is satisfied.
 	/// </summary>
 	[Fact]
 	public void Recurrence_Satisfied()
 	{
 		Event scheduledEvent = SeedData.Events.First();
-		Guid recurrenceId = (Guid)scheduledEvent.RecurrenceId;
+
+		Guid recurrenceId = scheduledEvent.RecurrenceId is null
+			? Guid.Empty // Test will fail.
+			: (Guid)scheduledEvent.RecurrenceId;
+
 		ByRecurrenceIdSpecification byRecurrenceIdSpec = new(recurrenceId);
 
 		bool result = byRecurrenceIdSpec.IsSatisifiedBy(scheduledEvent);
@@ -26,7 +30,7 @@ public sealed class ByRecurrenceIdSpecificiationTests
 	}
 
 	/// <summary>
-	/// Asserts that, given the incorrect recurrence identifier, the specification isn't satisified.
+	/// Asserts that, given the incorrect recurrence identifier, the specification isn't satisfied.
 	/// </summary>
 	[Fact]
 	public void Recurrence_NotSatisfied()

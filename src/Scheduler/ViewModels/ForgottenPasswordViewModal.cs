@@ -6,5 +6,5 @@ public class ForgottenPasswordViewModal
 {
 	[Required]
 	[EmailAddress]
-	public string Email { get; set; }
+	public required string Email { get; set; }
 }

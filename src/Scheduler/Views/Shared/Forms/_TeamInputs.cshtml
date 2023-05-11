@@ -7,22 +7,26 @@
 @inject UserManager<User> UserManager;
 @model Team
 
+@{
+    List<SelectListItem> userList = UserManager.Users
+       .Select(user => new SelectListItem
+        {
+            Text = user.ToString(),
+            Value = user.Id.ToString(),
+            Selected = Model != null && Model.UserId == user.Id
+        })
+       .ToList();
+
+    userList.Add(new SelectListItem
+    {
+        Text = "Visiting Coach",
+        Value = null, Selected = false 
+    });
+}
+
 @if (this.Model is not null)
 {
     <input hidden asp-for="Id" />
-}
-
-@{
-    var UserList = UserManager.Users
-       .Select(user => new SelectListItem
-               {
-                   Text = user.ToString(),
-                   Value = user.Id.ToString(),
-                   Selected = Model != null && Model.UserId == user.Id
-               })
-       .ToList();
-
-    UserList.Add(new SelectListItem { Text = "Visiting Coach", Value = null, Selected = false });
 }
 
 <input hidden asp-for="LeagueId" />
@@ -36,7 +40,7 @@
     <div class="col-sm-6">
         <label asp-for="UserId" class="form-label">Coach</label>
         <select asp-for="UserId" id="coaches" class="form-select">
-            @foreach (var user in UserList)
+            @foreach (var user in userList)
             {
                 <option value=@user.Value>@user.Text</option>
             }
@@ -49,7 +53,7 @@
     <div class="col-6 linkElement">
         <a asp-action="Details"
            asp-controller="League"
-           asp-route-id="@this.Model.LeagueId"
+           asp-route-id="@this.Model?.LeagueId"
            class="button buttonRedOutline w-100">
             Cancel
         </a>

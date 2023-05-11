@@ -1,8 +1,11 @@
 ﻿@using System.Text.Json;
 
 @{
-    IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
-    string title = this.ViewData["Title"].ToString();
+    IEnumerable<Event> events = this.ViewData["Events"] as IEnumerable<Event> ?? Enumerable.Empty<Event>();
+    IEnumerable<Team> teams = this.ViewData["Teams"] as IEnumerable<Team> ?? Enumerable.Empty<Team>();
+
+    string title = this.ViewData["Title"] as string ?? string.Empty;
+
     DateTime startTime = (DateTime)this.ViewData["Start"];
     DateTime endTime = (DateTime)this.ViewData["End"];
 }
@@ -43,7 +46,7 @@
                                         <label class="form-label">Team Name</label>
                                         <select id="teamNameFilter" name="teamName" class="form-select chosen">
                                             <option value=""></option>
-                                            @foreach (Team t in (IEnumerable<Team>)ViewData["Teams"])
+                                            @foreach (Team t in teams)
                                             {
                                                 <option value=@t.Name>@t.Name</option>
                                             }
@@ -66,10 +69,12 @@
             </div>
             <div class="modal-footer noPrintIfModal">
                 <div class="linkElement">
-                @if (User.Identity.IsAuthenticated && startTime.Day == endTime.Day)
-                {
-                    <button class="btn btn-sm btn-dark calendar-mobile" data-bs-dismiss="modal" onclick="gridModal(@startTime.Year, @startTime.Month, @startTime.Day)">Scheduling Grid</button>
-                }
+                    @if (this.User.Identity is not null &&
+                         this.User.Identity.IsAuthenticated &&
+                         startTime.Day == endTime.Day)
+                    {
+                        <button class="btn btn-sm btn-dark calendar-mobile" data-bs-dismiss="modal" onclick="gridModal(@startTime.Year, @startTime.Month, @startTime.Day)">Scheduling Grid</button>
+                    }
                     <button class="button buttonGreen calendar-full" onclick="window.print()">Print These Results</button>
                     <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
                 </div>

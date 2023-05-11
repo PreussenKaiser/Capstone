@@ -24,16 +24,15 @@
     int nextMonth = (int)this.ViewData["nextMonth"];
     int currentMonth = (int)this.ViewData["Month"];
     int currentYear = (int)this.ViewData["Year"];
-    string currentMonthName = (string)this.ViewData["MonthName"];
+    string currentMonthName = this.ViewData["MonthName"] as string ?? string.Empty;
 }
 
 <div class="calendar noPrintIfModal table-responsive w-100 m-auto">
-
     <table id="calendar-full" class="table table-bordered calendar-full">
         <thead>
             <tr>
                 <th colspan="2" class="text-center">
-                    @if ((int)ViewData["PreviousMonth"] != 0)
+                    @if ((int)this.ViewData["PreviousMonth"] != 0)
                     {
                         <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
                     }
@@ -88,15 +87,16 @@
         <tbody>
             @for (int i = 1; i < weeks + 1; i++)
             {
-                List<string> currentWeek = (List<string>)ViewData["Week" + i + "List"];
+                List<string> currentWeek = (List<string>)this.ViewData["Week" + i + "List"];
 
                 <tr colspan="8">
                     <td colspan="1" id="weekly-button" class="text-center">
                         @{
-                            DateTime endOfWeek = (DateTime)ViewData["Week" + i + "End"];
-                            DateTime startOfWeek = (DateTime)ViewData["Week" + i + "Start"];
-                            DateTime currentDay = (DateTime)ViewData["CurrentDay"];
+                            DateTime endOfWeek = (DateTime)this.ViewData["Week" + i + "End"];
+                            DateTime startOfWeek = (DateTime)this.ViewData["Week" + i + "Start"];
+                            DateTime currentDay = (DateTime)this.ViewData["CurrentDay"];
                         }
+
                         @if (endOfWeek >= currentDay)
                         {
                             <button class="button buttonYellow week-button" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this week."></i></button>
@@ -105,7 +105,6 @@
 
                     @for (int ii = 0; ii < 49; ii += 7)
                     {
-
                         <td colspan="1" class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center">
                             <span class="calendar-date text-center">@currentWeek[ii+1]</span>
                             @if (currentWeek[ii + 3] == "active")
@@ -159,7 +158,7 @@
             </tr>
             <tr>
                 <th>
-                    @if ((int)ViewData["PreviousMonth"] != 0)
+                    @if ((int)this.ViewData["PreviousMonth"] != 0)
                     {
                         <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
                     }
@@ -192,10 +191,9 @@
         <tbody>
             @for (int i = 1; i < weeks + 1; i++)
             {
-                List<string> currentWeek = (List<string>)ViewData["Week" + i + "List"];
+                List<string> currentWeek = this.ViewData["Week" + i + "List"] as List<string> ?? new();
 
-                <tr>
-                    
+                <tr> 
                     @for (int ii = 0; ii < 49; ii += 7)
                     {
 
@@ -206,15 +204,16 @@
                             if (currentWeek[ii + 6] != "0")
                             {
                                 <td class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center clickable-cell"
-                    data-year="@buttonDate.Year" data-month="@buttonDate.Month" data-date="@buttonDate.Day">
+                                    data-year="@buttonDate.Year" data-month="@buttonDate.Month" data-date="@buttonDate.Day">
                                     <span class="calendar-date text-center">@currentWeek[ii+1]</span>
                                     Tap for Events
                                 </td>
                             }
-                            else if (User.Identity.IsAuthenticated)
+                            else if (this.User.Identity is not null &&
+                                     this.User.Identity.IsAuthenticated)
                             {
                                 <td class="@currentWeek[ii + 2] @currentWeek[ii + 4] @currentWeek[ii + 5] text-center clickable-grid"
-                    data-year="@buttonDate.Year" data-month="@buttonDate.Month" data-date="@buttonDate.Day">
+                                    data-year="@buttonDate.Year" data-month="@buttonDate.Month" data-date="@buttonDate.Day">
                                     <span class="calendar-date text-center">@currentWeek[ii+1]</span>
                                     Tap for Grid
                                 </td>
@@ -240,12 +239,9 @@
 
 </div>
 
-<div id="gridmodal">
+<div id="gridmodal"></div>
 
-</div>
-
-<div id="modal">
-</div>
+<div id="modal"></div>
 
 <script>
     var calendar = document.getElementById('calendar-full');

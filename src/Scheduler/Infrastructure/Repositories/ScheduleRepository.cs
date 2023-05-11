@@ -157,9 +157,9 @@ public sealed class ScheduleRepository : IScheduleRepository
 
 				if (team is not null &&
 					team.UserId is null &&
-					eventsToDelete.Count() >= 1)
+					eventsToDelete.Any())
 				{
-					this.context.Teams.Remove(practice.Team);
+					this.context.Teams.Remove(team);
 				}
 			}
 			else if (e is Game game)

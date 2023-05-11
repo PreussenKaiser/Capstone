@@ -19,7 +19,7 @@ public sealed class RequiredIfFalseAttribute : RequiredAttribute
 		object instance = context.ObjectInstance;
 		Type type = instance.GetType();
 
-		bool.TryParse(type.GetProperty(this.PropertyName).GetValue(instance)?.ToString(), out bool propertyValue);
+		bool.TryParse(type.GetProperty(this.PropertyName)?.GetValue(instance)?.ToString(), out bool propertyValue);
 
 		if (!propertyValue && string.IsNullOrWhiteSpace(value?.ToString()))
 		{

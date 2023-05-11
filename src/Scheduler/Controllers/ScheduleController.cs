@@ -117,7 +117,12 @@ public sealed class ScheduleController : Controller
 	public async Task<IActionResult> CloseFacility(
 		[FromServices] UserManager<User> userManager)
 	{
-		var user = await userManager.GetUserAsync(this.User);
+		User? user = await userManager.GetUserAsync(this.User);
+
+		if (user is null)
+		{
+			return this.BadRequest("Could not determine current user.");
+		}
 
 		Event closeoutEvent = new Event()
 		{
@@ -340,10 +345,20 @@ public abstract class ScheduleController<TEvent> : Controller
 			.SearchAsync(byIdSpec))
 			.FirstOrDefault();
 
-		Specification<Event> cancelSpec = updateType.ToSpecification(scheduledEvent);
-		await this.scheduleRepository.CancelAsync(cancelSpec);
+		if (scheduledEvent is null)
+		{
+			return this.BadRequest("Could not determine the event to cancel.");
+		}
 
 		User? currentUser = await this.userManager.GetUserAsync(this.User);
+
+		if (currentUser is null)
+		{
+			return this.BadRequest("Could not determine current user.");
+		}
+
+		Specification<Event> cancelSpec = updateType.ToSpecification(scheduledEvent);
+		await this.scheduleRepository.CancelAsync(cancelSpec);
 
 		string emailMessage = 
 			$"Event {scheduledEvent.Name} has been cancelled by {currentUser.FirstName} {currentUser.LastName}" +
@@ -403,11 +418,9 @@ public abstract class ScheduleController<TEvent> : Controller
 		{
 			User? user = await this.userManager.FindByIdAsync(team.UserId.ToString()!);
 
-			if (user is not null &&
-				user.Email is not null)
+			if (user is not null && user.Email is not null)
 			{
-				await this.emailSender.SendAsync(
-					user.Email, subject, body);
+				await this.emailSender.SendAsync(user.Email, subject, body);
 			}
 		}
 	}

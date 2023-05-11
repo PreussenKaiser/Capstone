@@ -254,11 +254,10 @@ public sealed class IdentityController : Controller
 		}
 
 		bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(user, Role.ADMIN);
-
-		User currentUser = await this.signInManager.UserManager.GetUserAsync(this.User);
-
 		bool currentUserIsAdmin = false;
-		if (currentUser != null)
+		User? currentUser = await this.signInManager.UserManager.GetUserAsync(this.User);
+
+		if (currentUser is not null)
 		{
 			currentUserIsAdmin = await this.signInManager.UserManager.IsInRoleAsync(currentUser, Role.ADMIN);
 		}
@@ -303,15 +302,16 @@ public sealed class IdentityController : Controller
 			user.UserName = viewModel.Email;
 			user.Email = viewModel.Email;
 
-			User currentUser = await this.signInManager.UserManager.GetUserAsync(this.User);
+			User? currentUser = await this.signInManager.UserManager.GetUserAsync(this.User);
 
-			bool isAdmin = false;
-			if (currentUser != null)
+			if (currentUser is null)
 			{
-				isAdmin = await this.signInManager.UserManager.IsInRoleAsync(currentUser, Role.ADMIN);
+				return this.BadRequest("Could not determine current user.");
 			}
 
-			//A non-admin user should not be able to edit roles, not even their own.
+			bool isAdmin = await this.signInManager.UserManager.IsInRoleAsync(currentUser, Role.ADMIN);
+
+			// A non-admin user should not be able to edit roles, not even their own.
 			if (isAdmin)
 			{
 				if (!viewModel.IsAdmin)
@@ -334,7 +334,7 @@ public sealed class IdentityController : Controller
 				}
 			}
 
-			//If the current user is the same as the user being edited, the signin must be refreshed to replace the current token.
+			// If the current user is the same as the user being edited, the signin must be refreshed to replace the current token.
 			if (currentUser.Id == user.Id)
 			{
 				await this.signInManager.RefreshSignInAsync(user);

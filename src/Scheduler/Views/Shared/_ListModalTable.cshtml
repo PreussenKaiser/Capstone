@@ -1,24 +1,24 @@
 ﻿@model IEnumerable<Event>;
 
 @{
-    IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
-    string typeFilterMessage = (string)ViewData["TypeFilterMessage"];
-    string nameFilterMessage = (string)ViewData["NameFilterMessage"];
-    string teamFilterMessage = (string)ViewData["TeamFilterMessage"];
-    
+    IEnumerable<Team> teams = this.ViewData["Teams"] as IEnumerable<Team> ?? Enumerable.Empty<Team>();
+
+    string typeFilterMessage = this.ViewData["TypeFilterMessage"] as string ?? string.Empty;
+    string nameFilterMessage = this.ViewData["NameFilterMessage"] as string ?? string.Empty;
+    string teamFilterMessage = this.ViewData["TeamFilterMessage"] as string ?? string.Empty;
 }
 
-@if (Model != null && Model.Count() > 0)
+@if (this.Model is not null && this.Model.Count() > 0)
 {
-    if(typeFilterMessage != "")
+    if(typeFilterMessage != string.Empty)
     {
         <h5 class="text-center lead text-danger">@typeFilterMessage</h5>
     }
-    if(nameFilterMessage != "")
+    if(nameFilterMessage != string.Empty)
     {
         <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
     }
-    if(teamFilterMessage != "")
+    if(teamFilterMessage != string.Empty)
     {
         <h5 class="text-center lead text-danger">@teamFilterMessage</h5>
     }
@@ -32,7 +32,8 @@
                 <th>Location</th>
                 <th>Team 1</th>
                 <th>Team 2</th>
-                @if (User.Identity.IsAuthenticated)
+                @if (this.User.Identity is not null &&
+                     this.User.Identity.IsAuthenticated)
                 {
                     <th>Details</th>
                 }
@@ -60,13 +61,14 @@
                         Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);
                         Team? awayTeam = teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
 
-                        <td>@homeTeam.Name</td>
-                        <td>@awayTeam.Name</td>
+                        <td>@homeTeam?.Name</td>
+                        <td>@awayTeam?.Name</td>
                     }
                     else if (e is Practice practice)
                     {
                         Team? homeTeam = teams.FirstOrDefault(t => t.Id == practice.TeamId);
-                        <td>@homeTeam.Name</td>
+                        
+                        <td>@homeTeam?.Name</td>
                         <td class="bg-secondary"></td>
                     }
                     else
@@ -75,7 +77,8 @@
                         <td class="bg-secondary"></td>
                     }
 
-                    @if (User.Identity.IsAuthenticated)
+                    @if (this.User.Identity is not null &&
+                         this.User.Identity.IsAuthenticated)
                     {
                         <td>
                             <form action="@this.Url.Action("Details", "Schedule", new { id = e.Id })" method="get">
@@ -88,7 +91,9 @@
         }
     </table>
 }
-else if (teamFilterMessage != null || nameFilterMessage != null || typeFilterMessage != null)
+else if (teamFilterMessage is not null ||
+         nameFilterMessage is not null ||
+         typeFilterMessage is not null)
 {
     <h5 class="text-center lead text-danger" >@typeFilterMessage</h5>
     <h5 class="text-center lead text-danger" style="white-space: pre-wrap">@teamFilterMessage</h5>

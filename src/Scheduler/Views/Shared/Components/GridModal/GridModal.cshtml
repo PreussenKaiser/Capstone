@@ -5,10 +5,13 @@
 @inject UserManager<User> UserManager;
 
 @{    
-    IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
-    IEnumerable<Field> fields = (IEnumerable<Field>)this.ViewData["Fields"];
-    string title = this.ViewData["Title"].ToString();
+    IEnumerable<Event> events = this.ViewData["Events"] as IEnumerable<Event> ?? Enumerable.Empty<Event>();
+    IEnumerable<Field> fields = this.ViewData["Fields"] as IEnumerable<Field> ?? Enumerable.Empty<Field>();
+
+    string title = this.ViewData["Title"] as string ?? string.Empty;
+
     DateTime currentDate = (DateTime)this.ViewData["CurrentDate"];
+
     int tableWidth = 15 + (fields.Count() * 4);
 }
 
@@ -23,12 +26,12 @@
                     <thead>
                         <tr>
                             <th>Time</th>
-                @foreach (var f in fields)
-                {
-                    <th class="field-name">@f.Name</th>
-                }
-                </tr>
-                </thead>
+                            @foreach (var f in fields)
+                            {
+                                <th class="field-name">@f.Name</th>
+                            }
+                        </tr>
+                    </thead>
                     <tbody>
                         @{
                             int halfHour = 0;
@@ -276,7 +279,7 @@
                                 </tr>
                             }
                             
-                            if(halfHour == 0)
+                            if (halfHour == 0)
                             {
                                 halfHour = 30;
                             }
@@ -286,7 +289,7 @@
                                 hour++;
                             }
 
-                            if(hour > 11)
+                            if (hour > 11)
                             {
                                 daypart = 1;
                             }
@@ -304,7 +307,7 @@
 </div>
 
 <script>
-    $(document).ready(function (){
+    $(document).ready(function() {
         $("#gridModalPopup").modal("show");
     })
 </script>

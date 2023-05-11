@@ -94,8 +94,8 @@
                                     Team? awayTeam = this.Model.Teams.FirstOrDefault(t => t.Id == game.OpposingTeamId);
                                 }
 
-                                <td>@homeTeam.Name</td>
-                                <td>@awayTeam.Name</td>
+                                <td>@homeTeam?.Name</td>
+                                <td>@awayTeam?.Name</td>
 
                                 @if (this.User.Identity is not null &&
                                      this.User.Identity.IsAuthenticated)
@@ -111,7 +111,7 @@
                     }
                     else if (e is Practice practice)
                     {
-                        if(practice.TeamId == team.Id)
+                        if (practice.TeamId == team.Id)
                         {
                             <tr>
                                 <td>@e.Name</td>
@@ -123,14 +123,14 @@
                                     Team? homeTeam = this.Model.Teams.FirstOrDefault(t => t.Id == practice.TeamId);
                                 }
 
-                                <td>@homeTeam.Name</td>
+                                <td>@homeTeam?.Name</td>
                                 <td class="bg-secondary"></td>
 
                                 @if (this.User.Identity is not null &&
-                                        this.User.Identity.IsAuthenticated)
+                                     this.User.Identity.IsAuthenticated)
                                 {
                                     <td>
-                                        <form action="@Url.Action("Details", "Schedule", new { id = e.Id })" method="post">
+                                        <form action="@this.Url.Action("Details", "Schedule", new { id = e.Id })" method="post">
                                             <button type="submit" class="button buttonRed">Details</button>
                                         </form>
                                     </td>

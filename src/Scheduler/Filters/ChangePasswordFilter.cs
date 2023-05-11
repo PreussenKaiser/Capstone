@@ -10,12 +10,12 @@ public sealed class ChangePasswordFilter : AuthorizeAttribute, IAuthorizationFil
 {
 	private readonly SchedulerContext context;
 
-	public ChangePasswordFilter(SchedulerContext? context)
+	public ChangePasswordFilter(SchedulerContext context)
 	{
 		this.context = context;
 	}
 
-	void IAuthorizationFilter.OnAuthorization(Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext filterContext)
+	public void OnAuthorization(AuthorizationFilterContext filterContext)
 	{
 		if (filterContext.HttpContext.User.Identity.IsAuthenticated)
 		{
