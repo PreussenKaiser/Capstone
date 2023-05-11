@@ -26,6 +26,9 @@
                 <div class="text-center">
                     <div class="btn-group mb-2 noPrintIfModal">
                         <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="searchForm" autocomplete="off">
+                            <input name="FilterStartDate" hidden id="FilterStartDate" />
+                            <input name="FilterEndDate" hidden id="FilterEndDate" />
+                            
                             <div>
                                 <div class="linkElement">
                                     <button type="button" class="button buttonRed" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter these results using specific criteria."></i></button>
@@ -77,7 +80,7 @@
             </div>
             <div class="modal-footer noPrintIfModal">
                 <div class="linkElement">
-                    <button class="button buttonGreen" onclick="window.print()">Print These Results</button>
+                    <button class="button buttonGreen calendar-full" onclick="window.print()">Print These Results</button>
                     <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -125,8 +128,8 @@
     minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
     minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
 
-    $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
-    $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+    $('#FilterStartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+    $('#FilterEndDate').val(endDateFormatted); // Set initial value of EndDate on the form
 
     $(function () {
         $('input[name="searchdaterange"]').daterangepicker({
@@ -141,8 +144,8 @@
         }).on('apply.daterangepicker', function (ev, picker) {
             startDateFormatted = picker.startDate.format('M/DD/YYYY');
             endDateFormatted = picker.endDate.format('M/DD/YYYY');
-            $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
-            $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
+            $('#FilterStartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
+            $('#FilterEndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
         });
     });
     
@@ -150,8 +153,8 @@
         $.ajax({
             url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
-                start: $('StartDate').val(),
-                end: $('EndDate').val(),
+                start: $('#FilterStartDate').val(),
+                end: $('#FilterEndDate').val(),
                 type: e.type.value,
                 searchTerm: e.searchTerm.value,
                 teamName: e.teamName.value
@@ -167,14 +170,11 @@
         $.ajax({
             url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
-                searchTerm: '',
-                type: 'Event',
-                start: '@startDate.ToString()',
-                end: '@endDate.ToString()',
-                teamName: ''
+                type: 'Event'
             },
             success: function(data) {
                 $("#teamNameSearchFilter").val(null).trigger('change');
+                $('#searchModalTable').html(data);
             }
         });
     }

@@ -506,11 +506,14 @@ public sealed class DashboardController : Controller
 	[AllowAnonymous]
 	public async Task<IActionResult> filterModalEvents(
 		string type,
-		DateTime start,
-		DateTime end,
+		DateTime? start = null,
+		DateTime? end = null,
 		string? searchTerm = null,
 		string? teamName = null)
 	{
+		start ??= this.dateProvider.Now;
+		end ??= this.dateProvider.Now.AddYears(2);
+
 		IQueryable<Event> events = type switch
 		{
 			nameof(Practice) => this.context.Practices
@@ -532,7 +535,7 @@ public sealed class DashboardController : Controller
 
 		if (!events.IsNullOrEmpty())
 		{
-			events = this.DateSearch(start, end, events);
+			events = this.DateSearch((DateTime)start, (DateTime)end, events);
 		}
 
 		if (!searchTerm.IsNullOrEmpty())

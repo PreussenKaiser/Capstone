@@ -94,7 +94,7 @@
             </div>
             <div class="modal-footer noPrintIfModal">
                 <div class="linkElement">
-                    <button class="button buttonRed" onclick="window.print()">Print The Map</button>
+                    <button class="button buttonGreen calendar-full" onclick="window.print()">Print The Map</button>
                     <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -162,6 +162,8 @@
     });
 
     function searchEvents(e) {
+        console.log(e)
+
         $.ajax({
             url: '@this.Url.Action("searchModal", "Dashboard")',
             data: {
