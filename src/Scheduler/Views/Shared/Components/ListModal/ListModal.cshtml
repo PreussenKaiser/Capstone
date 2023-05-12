@@ -108,8 +108,8 @@
             data: {
                 searchTerm: e.searchTerm.value,
                 type: e.type.value,
-                start: e.StartDate.value,
-                end: e.EndDate.value,
+                start: '@startTime.ToString()',
+                end: '@endTime.ToString()',
                 teamName: e.teamName.value
             },
             success: function(data) {
