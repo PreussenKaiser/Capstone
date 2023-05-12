@@ -10,7 +10,7 @@ function navClick(eventType) {
         ? eventInputs.empty()
         : (result) => {
             eventInputs.empty()
-            eventInputs.html(result)
+            eventInputs.html(result);
         }
 
     const refreshBlackoutInputs = eventType != 'Event'
@@ -24,7 +24,7 @@ function navClick(eventType) {
         type: 'GET',
         url: '/Schedule/RenderInputs',
         data: { type: eventType},
-        success: refreshEventInputs
+        success: refreshEventInputs, refreshNav(eventType)
     })
 
     $.ajax({
@@ -33,8 +33,6 @@ function navClick(eventType) {
         data: { type: 'Blackout' },
         success: refreshBlackoutInputs
     })
-
-    refreshNav(eventType)
 }
 
 /**

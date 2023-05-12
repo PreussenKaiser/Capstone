@@ -46,6 +46,7 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="type">The type of inputs to render. Name aligns with object name.</param>
 	/// <returns>The rendered inputs.</returns>
+	[HttpGet]
 	[TypeFilter(typeof(ChangePasswordFilter))]
 	public PartialViewResult RenderInputs(string type)
 	{

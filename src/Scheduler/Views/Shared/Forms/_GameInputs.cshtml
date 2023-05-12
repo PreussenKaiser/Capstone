@@ -17,42 +17,41 @@
 <div class="row mb-3">
     <div class="col">
         <label asp-for="HomeTeamId" class="form-label"></label>
-        <select id="homeTeams" asp-for="HomeTeamId" class="form-select">
+        <select id="HomeTeamId" asp-for="HomeTeamId" class="form-select">
             <option value=""></option>
             @foreach (SelectListItem t in teamsSelect)
             {
                 <option value=@t.Value>@t.Text</option>
             }
         </select>
+        <span asp-validation-for="HomeTeamId" class="text-danger"></span>
     </div>
     <div class="col">
         <label asp-for="OpposingTeamId" class="form-label"></label>
-        <select id="opposingTeams" asp-for="OpposingTeamId" class="form-select">
+        <select id="OpposingTeamId" asp-for="OpposingTeamId" class="form-select">
             <option value=""></option>
             @foreach (SelectListItem t in teamsSelect)
             {
                 <option value=@t.Value>@t.Text</option>
             }
         </select>
+        <span asp-validation-for="OpposingTeamId" class="text-danger"></span>
     </div>
-    <span asp-validation-for="OpposingTeamId" class="text-danger"></span>
 </div>
-
+<partial name="_ValidationScriptsPartial" />
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
     $(document).ready(function () {
-
-        $("#homeTeams").select2({
+        $("#HomeTeamId").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%"
         });
 
-        $("#opposingTeams").select2({
+        $("#OpposingTeamId").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%"
         });
-
     });
 </script>

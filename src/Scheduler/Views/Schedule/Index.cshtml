@@ -95,12 +95,12 @@
                             else
                             {
                                 <select data-val="false" class="form-select" asp-for="FieldId" id="fieldSelect">
-                                <option value=""></option>
-                                @foreach (SelectListItem f in fields)
-                                {
-                                    <option value=@f.Value>@f.Text</option>
-                                }
-                            </select>
+                                    <option value=""></option>
+                                    @foreach (SelectListItem f in fields)
+                                    {
+                                        <option value=@f.Value>@f.Text</option>
+                                    }
+                                </select>
                             }
                             
                             <span asp-validation-for="FieldId" class="text-danger"></span>
@@ -118,7 +118,7 @@
                     </div>
                     <div class="col-lg">
                         <label class="form-label">Event Time <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates and times will <u>not</u> be applied."></i></label>
-                        <input type="text" name="daterange" class="text-center form-control" />
+                        <input type="text" id="daterange" name="daterange" class="text-center form-control" />
                     </div>
                     <div>
                         <input asp-for="StartDate" type="hidden" id="StartDate" />
@@ -167,37 +167,27 @@
     <script src="~/js/EventForm.js"></script>
     <script>
         document.onload = navClick('@eventType');
-    </script>
-    <script>
-        $(document).ready(function () {
 
-            $("#fieldSelect").select2({
-                placeholder: "Start typing to select a Field...",
-                width: "100%"
-            });
-
+        $("#fieldSelect").select2({
+            placeholder: "Start typing to select a Field...",
+            width: "100%"
         });
-        var startDateString = "@this.Model.StartDate.ToString(DATE_FORMAT)";
-        var endDateString = "@this.Model.EndDate.ToString(DATE_FORMAT)";
-        var minDateString = "@this.DateProvider.Now.ToString(DATE_FORMAT)";
-        var startDate;
-        var startDateFormatted;
-        var endDate;
-        var endDateFormatted;
-        var minDate;
-        var minDateFormatted;
 
-        startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the start date string and specify the format
-        startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the start date as desired
-        endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the end date string and specify the format
-        endDateFormatted = endDate.format('M/DD/YYYY hh:mm A'); // Format the end date as desired
-        minDate = moment(minDateString, "YYYY-MM-DDTHH:mm"); // Parse the min date string and specify the format
-        minDateFormatted = minDate.format('M/DD/YYYY hh:mm A'); // Format the min date as desired
+        function initializeDateRangePicker() {
+            var startDateString = "@this.Model.StartDate.ToString(DATE_FORMAT)";
+            var endDateString = "@this.Model.EndDate.ToString(DATE_FORMAT)";
+            var minDateString = "@this.DateProvider.Now.ToString(DATE_FORMAT)";
 
-        $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
-        $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+            var startDate = moment(startDateString, "YYYY-MM-DDTHH:mm");
+            var startDateFormatted = startDate.format('M/DD/YYYY hh:mm A');
+            var endDate = moment(endDateString, "YYYY-MM-DDTHH:mm");
+            var endDateFormatted = endDate.format('M/DD/YYYY hh:mm A');
+            var minDate = moment(minDateString, "YYYY-MM-DDTHH:mm");
+            var minDateFormatted = minDate.format('M/DD/YYYY hh:mm A');
 
-        $(function () {
+            $('#StartDate').val(startDateFormatted);
+            $('#EndDate').val(endDateFormatted);
+
             $('input[name="daterange"]').daterangepicker({
                 timePicker: true,
                 startDate: startDateFormatted,
@@ -211,9 +201,13 @@
             }).on('apply.daterangepicker', function (ev, picker) {
                 startDateFormatted = picker.startDate.format('M/DD/YYYY hh:mm A');
                 endDateFormatted = picker.endDate.format('M/DD/YYYY hh:mm A');
-                $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
-                $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
+                $('#StartDate').val(startDateFormatted);
+                $('#EndDate').val(endDateFormatted);
             });
+        }
+
+        $(document).ready(function () {
+            initializeDateRangePicker();
         });
     </script>
 }

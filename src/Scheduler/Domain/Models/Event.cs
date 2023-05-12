@@ -34,6 +34,7 @@ public class Event : Entity, IValidatableObject
 	/// <summary>
 	/// References the user who created the <see cref="Event"/>.
 	/// </summary>
+	[ScaffoldColumn(false)]
 	public Guid UserId { get; init; }
 
 	/// <summary>
