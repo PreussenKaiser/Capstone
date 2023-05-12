@@ -4,11 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Utility;
 using Scheduler.Web.ViewModels;
-using Scheduler.Filters;
 using Scheduler.ViewModels;
-using System.Net.Mail;
-using Microsoft.AspNetCore.Http.Extensions;
 using Scheduler.Domain.Services;
+using Scheduler.Filters;
+using System.Xml.Serialization;
 
 namespace Scheduler.Web.Controllers;
 
@@ -112,6 +111,7 @@ public sealed class IdentityController : Controller
 	/// </summary>
 	/// <returns>Redirected to <see cref="HomeController.Index"/>.</returns>
 	[HttpPost]
+	[IgnoreChangePassword]
 	public async Task<IActionResult> Logout()
 	{
 		await this.signInManager.SignOutAsync();
@@ -391,6 +391,7 @@ public sealed class IdentityController : Controller
 		return this.View(viewModel);
 	}
 
+	[IgnoreChangePassword]
 	public IActionResult ForceReset(Guid? id = null)
 	{
 		if (!this.IsUser(out User? user, id) || user is null)
@@ -414,6 +415,7 @@ public sealed class IdentityController : Controller
 	/// <param name="viewModel">Form values.</param>
 	/// <returns>Redirected to <see cref="HomeController.Index"/>.</returns>
 	[HttpPost]
+	[IgnoreChangePassword]
 	public async ValueTask<IActionResult> ForceReset(SecurityViewModel viewModel)
 	{
 		if (this.ModelState.IsValid)
