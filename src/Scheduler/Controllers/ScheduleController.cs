@@ -46,7 +46,6 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="type">The type of inputs to render. Name aligns with object name.</param>
 	/// <returns>The rendered inputs.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public PartialViewResult RenderInputs(string type)
 	{
 		return this.PartialView($"Forms/_{type}Inputs");
@@ -56,7 +55,6 @@ public sealed class ScheduleController : Controller
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
 	/// <returns>A form for scheduling an event.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Index(
 		DateTime? date = null, Guid? fieldId = null)
 	{
@@ -94,7 +92,6 @@ public sealed class ScheduleController : Controller
 	/// <param name="id">References the event to detail.</param>
 	/// <returns></returns>
 	[AllowAnonymous]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		ByIdSpecification<Event> byIdSpec = new(id);
@@ -112,7 +109,6 @@ public sealed class ScheduleController : Controller
 	}
 
 	[HttpGet]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> CloseFacility(
 		[FromServices] UserManager<User> userManager)
@@ -135,7 +131,6 @@ public sealed class ScheduleController : Controller
 	}
 
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> CloseFacility(Event closeoutEvent)
 	{
 		if (!this.ModelState.IsValid)
@@ -202,7 +197,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// Redirected to <see cref="ScheduleController{TEvent}.Schedule(TEvent)"/> if invalid.
 	/// </returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Schedule(TEvent scheduledEvent)
 	{
 		if (!this.ModelState.IsValid)
@@ -232,7 +226,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <param name="values"><see cref="Event"/> values as well as the <see cref="Event"/> to edit.</param>
 	/// <returns></returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public abstract Task<IActionResult> EditDetails(
 		TEvent values, UpdateType updateType);
 
@@ -244,7 +237,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// Redirected to <see cref="ScheduleController.Details(Guid)"/> if valid.
 	/// Redirected to <see cref="ScheduleController{TEvent}.Schedule(TEvent)"/> if invalid.
 	/// </returns>	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Reschedule(TEvent values)
 	{
 		if (!this.ModelState.IsValid)
@@ -288,7 +280,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <param name="values"></param>
 	/// <returns></returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Relocate(
 		TEvent values, UpdateType updateType,
 		[FromServices] IFieldRepository fieldRepository)
@@ -330,7 +321,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <param name="id">References the <see cref="Event"/> to cancel.</param>
 	/// <returns>Redirected to <see cref="DashboardController.Events(string?, string?)"/>.</returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Cancel(
 		Guid id, UpdateType updateType)
 	{

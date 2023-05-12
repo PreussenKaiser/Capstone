@@ -6,7 +6,7 @@ using Scheduler.Web.Controllers;
 
 namespace Scheduler.Filters;
 
-public sealed class ChangePasswordFilter : AuthorizeAttribute, IAuthorizationFilter
+public sealed class ChangePasswordFilter : IAuthorizationFilter
 {
 	private readonly SchedulerContext context;
 
