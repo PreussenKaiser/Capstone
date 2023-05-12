@@ -28,7 +28,8 @@ public interface IScheduleRepository
 	/// </summary>
 	/// <param name="searchSpec">The specification to search events by.</param>
 	/// <returns>Events which meet the specification.</returns>
-	Task<IEnumerable<Event>> SearchAsync(Specification<Event> searchSpec);
+	Task<IEnumerable<TEvent>> SearchAsync<TEvent>(Specification<TEvent> searchSpec)
+		where TEvent : Event;
 
 	/// <summary>
 	/// Edits the details of a scheduled event.

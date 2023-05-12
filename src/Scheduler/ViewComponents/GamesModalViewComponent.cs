@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Repositories;
+using Scheduler.Domain.Specifications;
+using Scheduler.Domain.Specifications.Events;
+using Scheduler.Domain.Specifications.Teams;
 using Scheduler.ViewModels;
 
 namespace Scheduler.ViewComponents;
@@ -10,19 +15,73 @@ namespace Scheduler.ViewComponents;
 public sealed class GamesModalViewComponent : ViewComponent
 {
 	/// <summary>
+	/// Yje repository to query teams with.
+	/// </summary>
+	private readonly ITeamRepository teamRepository;	
+
+	/// <summary>
+	/// The repository to query the schedule with.
+	/// </summary>
+	private readonly IScheduleRepository scheduleRepository;
+
+	/// <summary>
+	/// Provides an API to access ASP.NET Identity Core.
+	/// </summary>
+	private readonly UserManager<User> userManager;
+
+	/// <summary>
+	/// Initializes the <see cref="GamesModalViewComponent"/> view component via DI.
+	/// </summary>
+	/// <param name="teamRepository">The repository to query teams with.</param>
+	/// <param name="scheduleRepository">he repository to query the schedule with.</param>
+	/// <param name="userManager">Provides an API for accessing ASP.NET Identity Core.</param>
+	public GamesModalViewComponent(
+		ITeamRepository teamRepository,
+		IScheduleRepository scheduleRepository,
+		UserManager<User> userManager)
+	{
+		this.teamRepository = teamRepository;
+		this.scheduleRepository = scheduleRepository;
+		this.userManager = userManager;
+	}
+
+	/// <summary>
 	/// Invokes the view component.
 	/// </summary>
 	/// <param name="coachTeams">The current user's teams.</param>
 	/// <param name="games">Games the user's teams have participated in.</param>
 	/// <returns>A modal displaying all the user's teams if they have games.</returns>
-	public async Task<IViewComponentResult> InvokeAsync(
-		IEnumerable<Team> coachTeams,
-		IEnumerable<Team> teams,
-		IEnumerable<Event> games)
+	public async Task<IViewComponentResult> InvokeAsync()
 	{
-		UpcomingEventsModalViewModel viewModel = new(
-			coachTeams, teams, games);
+		Guid coachId = this.GetCurrentCoach();
 
-		return this.View("GamesModal", viewModel);
+		IEnumerable<Game> games = await this.scheduleRepository.SearchAsync(new GameByCoachSpecification(coachId));
+		IEnumerable<Team> teams = await this.teamRepository.SearchAsync(new GetAllSpecification<Team>());
+		IEnumerable<Team> coachTeams = teams
+			.AsQueryable()
+			.Where(new ByCoachSpecification(coachId).ToExpression())
+			.ToList();
+
+		this.ViewData["TypeFilterMessage"] = games.Any()
+			? "Showing all games"
+			: "No games found";
+
+		return this.View(
+			"GamesModal",
+			new UpcomingEventsModalViewModel(coachTeams, teams, games));
+	}
+
+	/// <summary>
+	/// Gets the current user's identifier.
+	/// </summary>
+	/// <remarks>Not a pure function.</remarks>
+	/// <returns>The current user.</returns>
+	/// <exception cref="NullReferenceException"></exception>
+	private Guid GetCurrentCoach()
+	{
+		string coachIdString = this.userManager.GetUserId(this.UserClaimsPrincipal)
+			?? throw new NullReferenceException("Could not determine current user.");
+
+		return Guid.Parse(coachIdString);
 	}
 }

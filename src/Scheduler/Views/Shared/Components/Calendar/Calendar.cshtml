@@ -17,13 +17,13 @@
         yearList.Add(currentDate + i);
     }
 
-    int weeks = (int)this.ViewData["NumberOfWeeks"];
-    int previousYear = (int)this.ViewData["previousYear"];
-    int previousMonth = (int)this.ViewData["previousMonth"];
-    int nextYear = (int)this.ViewData["nextYear"];
-    int nextMonth = (int)this.ViewData["nextMonth"];
-    int currentMonth = (int)this.ViewData["Month"];
-    int currentYear = (int)this.ViewData["Year"];
+    int weeks = Convert.ToInt32(this.ViewData["NumberOfWeeks"]);
+    int previousYear = Convert.ToInt32(this.ViewData["previousYear"]);
+    int previousMonth = Convert.ToInt32(this.ViewData["previousMonth"]);
+    int nextYear = Convert.ToInt32(this.ViewData["nextYear"]);
+    int nextMonth = Convert.ToInt32(this.ViewData["nextMonth"]);
+    int currentMonth = Convert.ToInt32(this.ViewData["Month"]);
+    int currentYear = Convert.ToInt32(this.ViewData["Year"]);
     string currentMonthName = this.ViewData["MonthName"] as string ?? string.Empty;
 }
 
@@ -32,7 +32,7 @@
         <thead>
             <tr>
                 <th colspan="2" class="text-center">
-                    @if ((int)this.ViewData["PreviousMonth"] != 0)
+                    @if (Convert.ToInt32(this.ViewData["PreviousMonth"]) != 0)
                     {
                         <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
                     }
@@ -87,14 +87,14 @@
         <tbody>
             @for (int i = 1; i < weeks + 1; i++)
             {
-                List<string> currentWeek = (List<string>)this.ViewData["Week" + i + "List"];
+                List<string> currentWeek = this.ViewData["Week" + i + "List"] as List<string> ?? new();
 
                 <tr colspan="8">
                     <td colspan="1" id="weekly-button" class="text-center">
                         @{
-                            DateTime endOfWeek = (DateTime)this.ViewData["Week" + i + "End"];
-                            DateTime startOfWeek = (DateTime)this.ViewData["Week" + i + "Start"];
-                            DateTime currentDay = (DateTime)this.ViewData["CurrentDay"];
+                            DateTime endOfWeek = Convert.ToDateTime(this.ViewData["Week" + i + "End"]);
+                            DateTime startOfWeek = Convert.ToDateTime(this.ViewData["Week" + i + "Start"]);
+                            DateTime currentDay = Convert.ToDateTime(this.ViewData["CurrentDay"]);
                         }
 
                         @if (endOfWeek >= currentDay)
@@ -158,7 +158,7 @@
             </tr>
             <tr>
                 <th>
-                    @if ((int)this.ViewData["PreviousMonth"] != 0)
+                    @if (Convert.ToInt32(this.ViewData["PreviousMonth"]) != 0)
                     {
                         <button class="monthly-arrow left-arrow" onclick="RefreshCalendar(@previousYear, @previousMonth)">&#8592;</button>
                     }

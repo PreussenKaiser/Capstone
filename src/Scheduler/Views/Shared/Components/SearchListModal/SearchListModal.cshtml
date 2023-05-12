@@ -11,8 +11,8 @@
     string title = this.ViewData["Title"] as string ?? string.Empty;
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
 
-    DateTime startDate = (DateTime)this.ViewData["Start"];
-    DateTime endDate = (DateTime)this.ViewData["End"];
+    DateTime startDate = Convert.ToDateTime(this.ViewData["Start"]);
+    DateTime endDate = Convert.ToDateTime(this.ViewData["End"]);
 
     string startDateString = startDate.ToString(Constants.DATE_FORMAT);
     string endDateString = endDate.ToString(Constants.DATE_FORMAT);

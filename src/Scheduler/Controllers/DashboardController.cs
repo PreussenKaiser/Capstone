@@ -68,68 +68,11 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <param name="type">The currently selected type of Event.</param>
 	/// <returns>The appropriate ViewComponent.</returns>
-	public async ValueTask <IActionResult> CoachEvents(string type)
+	public IActionResult CoachEvents(string type)
 	{
-		Guid userId = Guid.Parse(this.userManager.GetUserId(this.User)
-			?? throw new NullReferenceException("Could not get current user."));
-
-		IEnumerable<Team> teams = await this.context.Teams.ToListAsync();
-		IEnumerable<Team>? coachTeams = await this.context.Teams
-			.Where(t => t.UserId == userId)
-			.ToListAsync();
-
-		List<Event> games = new List<Event>();
-		List<Event> practices = new List<Event>();
-		
-		foreach (Team team in coachTeams)
-		{
-			if (type == nameof(Game))
-			{
-				IEnumerable<Event> coachGames = await this.context.Games
-					.Where(g => g.HomeTeamId == team.Id || g.OpposingTeamId == team.Id)
-					.WithScheduling(this.dateProvider)
-					.ToListAsync();
-
-				games.AddRange(coachGames);			
-			}
-			else
-			{
-				IEnumerable<Event> coachPractices = await this.context.Practices
-					.Where(g => g.TeamId == team.Id)
-					.WithScheduling(this.dateProvider)
-					.ToListAsync();
-
-				practices.AddRange(coachPractices);
-			}			
-		}
-
-		if (games.Count > 0)
-		{
-
-			games = games
-				.DistinctBy(g => g.Id)
-				.ToList();
-
-			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
-		}
-
-		if (practices.Count > 0)
-		{
-			practices = practices
-				.DistinctBy(g => g.Id)
-				.ToList();
-
-			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
-		}
-
-		if (games.Count == 0 && practices.Count == 0)
-		{
-			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
-		}
-
 		return type == nameof(Game)
-			? this.ViewComponent("GamesModal", new { coachTeams, teams, games })
-			: this.ViewComponent("PracticesModal", new { coachTeams, teams, practices });
+			? this.ViewComponent("GamesModal")
+			: this.ViewComponent("PracticesModal");
 	}
 
 	/// <summary>
@@ -191,8 +134,8 @@ public sealed class DashboardController : Controller
 					games = games
 						.OfType<Game>()
 						.Where(game => 
-							game.HomeTeam.Name == teamName ||
-							game.OpposingTeam.Name == teamName);
+							game.HomeTeam!.Name == teamName ||
+							game.OpposingTeam!.Name == teamName);
 
 					this.ViewData["TeamFilterMessage"] = $"for Team {teamName}";
 				}
@@ -226,7 +169,7 @@ public sealed class DashboardController : Controller
 				{
 					practices = practices
 						.OfType<Practice>()
-						.Where(p => p.Team.Name == teamName);
+						.Where(p => p.Team!.Name == teamName);
 
 					this.ViewData["TeamFilterMessage"] = $"for Team {teamName}";
 				}
@@ -364,24 +307,24 @@ public sealed class DashboardController : Controller
 
 		if (!searchTerm.IsNullOrEmpty())
 		{
-			events = this.NameSearch(searchTerm!, type, events);
+			events = this.NameSearch(searchTerm!, type, events)
+				?? Enumerable.Empty<Event>().AsQueryable();
 		}
 
 		if (!teamName.IsNullOrEmpty())
 		{
-			events = this.TeamSearch(teamName!, type, events);
+			events = this.TeamSearch(teamName!, type, events)
+				?? Enumerable.Empty<Event>().AsQueryable();
 		}
 
 		if (events.IsNullOrEmpty())
 		{
 			this.ViewData["Events"] = null;
-
 			this.ViewData["TypeFilterMessage"] = $"No {type} found";
 		}
 		else
 		{
 			this.ViewData["Events"] = events?.ToList();
-
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 		}
 
@@ -548,12 +491,14 @@ public sealed class DashboardController : Controller
 
 		if (!searchTerm.IsNullOrEmpty())
 		{
-			events = this.NameSearch(searchTerm!, type, events);
+			events = this.NameSearch(searchTerm!, type, events)
+				?? Enumerable.Empty<Event>().AsQueryable();
 		}
 
 		if (!teamName.IsNullOrEmpty())
 		{
-			events = this.TeamSearch(teamName!, type, events);
+			events = this.TeamSearch(teamName!, type, events)
+				?? Enumerable.Empty<Event>().AsQueryable();
 		}
 
 		if (events.IsNullOrEmpty())
@@ -618,12 +563,17 @@ public sealed class DashboardController : Controller
 			matchingGames = events
 				.AsQueryable()
 				.OfType<Game>()
-				.Where(game => game.HomeTeam.Id == selectedTeam.Id || game.OpposingTeam.Id == selectedTeam.Id);
+				.Where(game =>
+					game.HomeTeam!.Id == selectedTeam.Id ||
+					game.OpposingTeam!.Id == selectedTeam.Id);
 		}
 
 		if (type == nameof(Event) || type == nameof(Practice))
 		{
-			matchingPractices = events.AsQueryable().OfType<Practice>().Where(practice => practice.Team.Id == selectedTeam.Id);
+			matchingPractices = events
+				.AsQueryable()
+				.OfType<Practice>()
+				.Where(practice => practice.Team!.Id == selectedTeam.Id);
 		}
 
 		if (matchingGames.IsNullOrEmpty() && matchingPractices.IsNullOrEmpty())

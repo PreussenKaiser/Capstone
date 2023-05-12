@@ -9,10 +9,9 @@
     IEnumerable<Field> fields = this.ViewData["Fields"] as IEnumerable<Field> ?? Enumerable.Empty<Field>();
 
     string title = this.ViewData["Title"] as string ?? string.Empty;
-
-    DateTime currentDate = (DateTime)this.ViewData["CurrentDate"];
-
     int tableWidth = 15 + (fields.Count() * 4);
+
+    DateTime currentDate = Convert.ToDateTime(this.ViewData["CurrentDate"]);
 }
 
 <div class="modal fade" id="gridModalPopup" tabindex="-1" aria-hidden="false">
@@ -86,9 +85,14 @@
 
                                         foreach (var e in events)
                                         {
+                                            // One problem, always initialized.
+                                            IEnumerable<Field> fieldsInit = e.Field is null
+                                                ? new List<Field>()
+                                                : new List<Field> { e.Field };
+
                                             IEnumerable<Field>  fieldIteration = e.IsBlackout
                                                 ? fields
-                                                : new List<Field> { e.Field };
+                                                : fieldsInit;
 
                                             foreach (var ff in fieldIteration)
                                             {
@@ -97,6 +101,7 @@
                                                     DateTime cd = currentDate.Date;
                                                     DateTime sd = e.StartDate.Date;
                                                     DateTime ed = e.EndDate.Date;
+
                                                     int sh = e.StartDate.Hour;
                                                     int sm = e.StartDate.Minute;
                                                     int eh = e.EndDate.Hour;

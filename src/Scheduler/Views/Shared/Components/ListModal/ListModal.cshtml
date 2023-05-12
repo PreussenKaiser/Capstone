@@ -6,8 +6,8 @@
 
     string title = this.ViewData["Title"] as string ?? string.Empty;
 
-    DateTime startTime = (DateTime)this.ViewData["Start"];
-    DateTime endTime = (DateTime)this.ViewData["End"];
+    DateTime startTime = Convert.ToDateTime(this.ViewData["Start"]);
+    DateTime endTime = Convert.ToDateTime(this.ViewData["End"]);
 }
 
 <link rel="stylesheet" href="~/css/Calendar.css" asp-append-version="true" />

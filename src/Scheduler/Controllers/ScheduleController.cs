@@ -266,13 +266,19 @@ public abstract class ScheduleController<TEvent> : Controller
 		await this.scheduleRepository.RescheduleAsync(values);
 
 		User? currentUser = await this.userManager.GetUserAsync(this.User);
+		
+		if (currentUser is null)
+		{
+			return this.BadRequest("Could not determine current user.");
+		}
+		
 		string callback = this.Url.Action(
 			nameof(DashboardController.Events),
 			"Dashboard", new { }, this.Request.Scheme)
 				?? throw new NullReferenceException("Could not get Events link.");
 
 		string emailMessage = $@"
-			<p>Event {values.Name} has been rescheduled to start at {values.StartDate} and end at {values.EndDate}. This change was made by {currentUser.FirstName} {currentUser.LastName}</p>
+			<p>Event {values.Name} has been rescheduled to start at {values.StartDate} and end at {values.EndDate}. This change was made by {currentUser}</p>
 			<p><a href='{callback}'>Click here to view events.</a></p>";
 
 		await this.SendTeamEmailsAsync(
@@ -309,13 +315,19 @@ public abstract class ScheduleController<TEvent> : Controller
 			values, relocateSpec);
 
 		User? currentUser = await this.userManager.GetUserAsync(this.User);
+		
+		if (currentUser is null)
+		{
+			return this.BadRequest("Could not determine current user.");
+		}
+
 		Field? field = (await fieldRepository
-			.SearchAsync(new ByIdSpecification<Field>((Guid)values.FieldId)))
+			.SearchAsync(new ByIdSpecification<Field>(values.FieldId ?? Guid.Empty)))
 			.FirstOrDefault();
 
 		string emailMessage =
-			$"Event {values.Name} has been relocated to {field.Name}. This change was made by {currentUser.FirstName} {currentUser.LastName}" +
-			$"<br /><a href=\"{this.Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, Request.Scheme)}\">Click here to view events.</a>";
+			$"Event {values.Name} has been relocated to {field?.Name}. This change was made by {currentUser}" +
+			$"<br /><a href=\"{this.Url.Action(nameof(DashboardController.Events), "Dashboard", new { }, this.Request.Scheme)}\">Click here to view events.</a>";
 
 		await this.SendTeamEmailsAsync(
 			values,

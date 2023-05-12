@@ -50,10 +50,10 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public async Task<IEnumerable<Event>> SearchAsync(
-		Specification<Event> searchSpec)
+	public async Task<IEnumerable<TEvent>> SearchAsync<TEvent>(Specification<TEvent> searchSpec)
+		where TEvent : Event
 	{
-		IEnumerable<Event>? events = null;
+		IEnumerable<TEvent>? events = null;
 
 		try
 		{
@@ -66,7 +66,7 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 			throw;
 		}
 
-		return events ?? Enumerable.Empty<Event>();
+		return events ?? Enumerable.Empty<TEvent>();
 	}
 
 	/// <inheritdoc/>

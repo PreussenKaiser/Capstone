@@ -32,9 +32,11 @@ public sealed class MockScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public Task<IEnumerable<Event>> SearchAsync(Specification<Event> searchSpec)
+	public Task<IEnumerable<TEvent>> SearchAsync<TEvent>(Specification<TEvent> searchSpec)
+		where TEvent : Event
 	{
-		IEnumerable<Event> result = this.events
+		IEnumerable<TEvent> result = this.events
+			.Cast<TEvent>()
 			.AsQueryable()
 			.Where(searchSpec.ToExpression());
 

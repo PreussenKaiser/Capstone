@@ -44,8 +44,8 @@ public sealed class CalendarViewComponent : ViewComponent
 
 		if (this.ViewData["Year"] is not null)
 		{
-			currentYear = (int)this.ViewData["Year"];
-			currentMonth = (int)this.ViewData["Month"];
+			currentYear = Convert.ToInt32(this.ViewData["Year"]);
+			currentMonth = Convert.ToInt32(this.ViewData["Month"]);
 		}
 		else
 		{
