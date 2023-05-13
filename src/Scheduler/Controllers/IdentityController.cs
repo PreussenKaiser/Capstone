@@ -408,7 +408,7 @@ public sealed class IdentityController : Controller
 
 		if (user.NeedsNewPassword == false)
 		{
-			return RedirectToAction(nameof(IdentityController.Security), "Identity");
+			return this.RedirectToAction(nameof(IdentityController.Security), "Identity");
 		}
 
 		SecurityViewModel viewModel = new() { UserId = user.Id };
@@ -472,7 +472,7 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 
-		User? user = await signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+		User? user = await this.signInManager.UserManager.FindByEmailAsync(viewModel.Email);
 
 		if (user is null)
 		{
@@ -482,7 +482,7 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);	
 		}
 
-		string? token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
+		string? token = await this.signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
 		string? callback = this.Url.Action(
 			nameof(this.ResetPassword),
 			"Identity",

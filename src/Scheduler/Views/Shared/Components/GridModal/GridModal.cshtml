@@ -4,7 +4,7 @@
 @inject IDateProvider DateProvider
 @inject UserManager<User> UserManager;
 
-@{    
+@{
     IEnumerable<Event> events = this.ViewData["Events"] as IEnumerable<Event> ?? Enumerable.Empty<Event>();
     IEnumerable<Field> fields = this.ViewData["Fields"] as IEnumerable<Field> ?? Enumerable.Empty<Field>();
 
@@ -40,7 +40,7 @@
 
                         @for (var t = 0; t < 48; t++)
                         {
-                            string timestring = "";
+                            string timestring = string.Empty;
 
                             if (hour == 0)
                             {
@@ -63,6 +63,7 @@
                             {
                                 timestring += ":30";
                             }
+
                             if (daypart == 0 && halfHour != 30)
                             {
                                 timestring += " am";
@@ -71,10 +72,11 @@
                             {
                                 timestring += " pm";
                             }
+
                             if (hour > 7 && hour < 23)
                             {
-                                Guid eventId = Guid.NewGuid();
-                                Guid userId = Guid.NewGuid();
+                                Guid eventId = Guid.Empty;
+                                Guid userId = Guid.Empty;
 
                                 <tr>
                                     <td class="grid-time">@timestring</td>
@@ -90,7 +92,7 @@
                                                 ? new List<Field>()
                                                 : new List<Field> { e.Field };
 
-                                            IEnumerable<Field>  fieldIteration = e.IsBlackout
+                                            IEnumerable<Field> fieldIteration = e.IsBlackout
                                                 ? fields
                                                 : fieldsInit;
 

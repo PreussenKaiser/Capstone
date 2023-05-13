@@ -436,7 +436,6 @@ public sealed class DashboardController : Controller
 	[AllowAnonymous]
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
-		
 		DateTime eventDate = new DateTime(year, month, date);
 
 		this.ViewData["Events"] = await this
@@ -444,7 +443,7 @@ public sealed class DashboardController : Controller
 			.ToListAsync();
 
 		this.ViewData["Fields"] = await this.context.Fields
-			.OrderBy(e => e.Name)
+			.OrderBy(f => f.Name)
 			.ToListAsync();
 
 		this.ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
