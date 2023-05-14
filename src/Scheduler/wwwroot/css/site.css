@@ -29,11 +29,6 @@ html {
     box-shadow: none !important;
 }
 
-.buttonGreen {
-    background-color: #095211;
-    border: solid #095211;
-}
-
 .buttonYellow {
     background-color: #d1932e;
     border: solid #d1932e;
@@ -59,8 +54,8 @@ html {
     text-decoration: none;
     transition: background-color .2s;
     width: 40%;
-    background-color: #095211;
-    box-shadow: 0 -3px #095211 inset;
+    background-color: #d1932e;
+    box-shadow: 0 -3px #d1932e inset;
     padding: 10px 20px 10px 10px;
     margin-bottom: 0px;
     line-height: 1.3;
