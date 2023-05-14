@@ -9,8 +9,8 @@
 	this.ViewData["Title"] = "Schedule Facility Closure";
 
 	string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
-	string startDateString = this.Model.StartDate.ToString("yyyy-MM-ddTHH:mm");
-	string endDateString = this.Model.EndDate.ToString("yyyy-MM-ddTHH:mm");
+	string startDateString = this.Model.StartDate.ToString("yyyy-MM-dd");
+	string endDateString = this.Model.EndDate.ToString("yyyy-MM-dd");
 }
 
 <div class="row">
@@ -73,12 +73,12 @@
 	var endDateFormatted;
 	var minDate;
 	var minDateFormatted;
-	startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the start date string and specify the format
-	startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the start date as desired
-	endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the end date string and specify the format
-	endDateFormatted = endDate.format('M/DD/YYYY hh:mm A'); // Format the end date as desired
-	minDate = moment(minDateString, "YYYY-MM-DDTHH:mm"); // Parse the min date string and specify the format
-	minDateFormatted = minDate.format('M/DD/YYYY hh:mm A'); // Format the min date as desired
+	startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
+	startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
+	endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
+	endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
+	minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
+	minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
 	$('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
 	$('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
 
@@ -87,18 +87,16 @@
 	$(function () {
 		console.log('hit')
 		$('input[name="daterange"]').daterangepicker({
-			timePicker: true,
 			startDate: startDateFormatted,
 			endDate: endDateFormatted,
 			minDate: minDateFormatted,
-			timePickerIncrement: 30,
 			drops: "down",
 			locale: {
-				format: 'M/DD hh:mm A'
+				format: 'M/DD/YYYY'
 			}
 		}).on('apply.daterangepicker', function (ev, picker) {
-			startDateFormatted = picker.startDate.format('M/DD/YYYY hh:mm A');
-			endDateFormatted = picker.endDate.format('M/DD/YYYY hh:mm A');
+			startDateFormatted = picker.startDate.format('M/DD/YYYY');
+			endDateFormatted = picker.endDate.format('M/DD/YYYY');
 			$('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
 			$('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
 		});
