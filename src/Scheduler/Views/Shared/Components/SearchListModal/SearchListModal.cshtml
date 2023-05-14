@@ -6,12 +6,14 @@
 
 @{
     IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
-    string title = this.ViewData["Title"].ToString();
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
+    string title = this.ViewData["Title"] as string ?? string.Empty;
+
     DateTime startDate = (DateTime)this.ViewData["Start"];
     DateTime endDate = (DateTime)this.ViewData["End"];
-    string startDateString = startDate.ToString(Constants.DATE_FORMAT);
-    string endDateString = endDate.ToString(Constants.DATE_FORMAT);
+
+    string searchModalStartDateString = startDate.ToString(Constants.DATE_FORMAT);
+    string searchModalEndDateString = endDate.ToString(Constants.DATE_FORMAT);
 }
 
 <div class="modal fade" id="searchListModalPopup" tabindex="-1">
@@ -25,6 +27,9 @@
                     <h2 class="mb-4">@title</h2>
                     <div class="btn-group mb-2 noPrintIfModal">
                         <form class="me-3" action="javascript:void(0);" onsubmit="filterEvents(this)" id="searchForm" autocomplete="off">
+                            <input name="FilterStartDate" hidden id="FilterStartDate" />
+                            <input name="FilterEndDate" hidden id="FilterEndDate" />
+                            
                             <div>
                                 <div class="linkElement">
                                     <button type="button" class="button buttonRed" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter these results using specific criteria."></i></button>
@@ -35,13 +40,6 @@
                                     <div class="form-label">
                                         <label class="form-label">Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />DO NOT click outside of the datepicker box without clicking 'Apply' or the new dates and times will NOT be applied."></i></label>
                                         <input type="text" name="searchdaterange" class="text-center form-control" />
-                                    </div>
-                                    <div>
-                                        <input name="StartDate" type="hidden" id="StartDate" />
-                                        <br />
-                                    </div>
-                                    <div>
-                                        <input name="EndDate" type="hidden" id="EndDate" />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Event Type</label>
@@ -73,7 +71,6 @@
                                         </div>
                                     </div>
                                 </ul>
-                                
                             </div>
                         </form>
                     </div>
@@ -96,6 +93,13 @@
 <script>
     $(document).ready(function (){
         $("#searchListModalPopup").modal("show");
+        setSearchFilterDatePicker();
+        setTitle("@ViewData["Title"].ToString()");
+        $("#teamNameSearchFilter").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%",
+            dropdownParent: $('#searchListModalPopup')
+        });
     });
 
     function showModalDropdown() {
@@ -106,36 +110,27 @@
         $('#searchListModalDropdown').removeClass('show');
     }
 
-    $(document).ready(function () {
+    function setSearchFilterDatePicker() {
+        var startDateString = "@searchModalStartDateString";
+        var endDateString = "@searchModalEndDateString";
+        var minDateString = "@today";
+        var startDate;
+        var startDateFormatted;
+        var endDate;
+        var endDateFormatted;
+        var minDate;
+        var minDateFormatted;
 
-        $("#teamNameSearchFilter").select2({
-            placeholder: "Start typing to select a Team...",
-            width: "100%",
-            dropdownParent: $('#searchListModalPopup')
-        });
+        startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
+        startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
+        endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
+        endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
+        minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
+        minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
 
-    });
+        $('#FilterStartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+        $('#FilterEndDate').val(endDateFormatted); // Set initial value of EndDate on the form
 
-    var startDateString = "@startDateString";
-    var endDateString = "@endDateString";
-    var minDateString = "@today";
-    var startDate;
-    var startDateFormatted;
-    var endDate;
-    var endDateFormatted;
-    var minDate;
-    var minDateFormatted;
-    startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
-    startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
-    endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
-    endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
-    minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
-    minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
-    $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
-    $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
-
-
-    $(function () {
         $('input[name="searchdaterange"]').daterangepicker({
             startDate: startDateFormatted,
             endDate: endDateFormatted,
@@ -148,40 +143,47 @@
         }).on('apply.daterangepicker', function (ev, picker) {
             startDateFormatted = picker.startDate.format('M/DD/YYYY');
             endDateFormatted = picker.endDate.format('M/DD/YYYY');
-            $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
-            $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
+            $('#FilterStartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
+            $('#FilterEndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
         });
-    });
+    };
+
+    function setTitle(title) {
+        $('#searchModalTitle').html(title);
+    }
     
-    function filterEvents(e){
+    function filterEvents(e) {
         $.ajax({
-            url: '@Url.Action("filterModalEvents", "Dashboard")',
+            url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
-                searchTerm: e.searchTerm.value,
+                start: $('#FilterStartDate').val(),
+                end: $('#FilterEndDate').val(),
                 type: e.type.value,
-                start: '@startDate.ToString()',
-                end: '@endDate.ToString()',
+                searchTerm: e.searchTerm.value,
                 teamName: e.teamName.value
             },
             success: function(data) {
+                const title = "Events from " + $('#FilterStartDate').val() + " to " + $('#FilterEndDate').val();
+                setTitle(title);
                 $("#searchModalTable").html(data);
                 $('#searchListModalDropdown').removeClass('show');
             }
         });
     }
 
-        function resetEvents(e){
+    function resetEvents(e){
         $.ajax({
-            url: '@Url.Action("filterModalEvents", "Dashboard")',
+            url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
-                searchTerm: '',
                 type: 'Event',
-                start: '@startDate.ToString()',
-                end: '@endDate.ToString()',
-                teamName: ''
+                start: "@searchModalStartDateString",
+                end: "@searchModalEndDateString"
             },
             success: function(data) {
+                setTitle("@ViewData["Title"].ToString()");
                 $("#teamNameSearchFilter").val(null).trigger('change');
+                $('#searchModalTable').html(data);
+                setSearchFilterDatePicker();
             }
         });
     }
