@@ -230,14 +230,14 @@ public class Event : Entity, IValidatableObject
 		{
 			string eventName = conflict.Name;
 			string eventField = conflict.Field is null
-				? "(Unknown Field)"
+				? "the entire facility"
 				: conflict.Field.Name;
 
 			const string FORMAT = "M/dd/yy h:mm tt";
 			string eventStart = conflict.StartDate.ToString(FORMAT);
 			string eventEnd = conflict.EndDate.ToString(FORMAT);
 
-			results.Add(new($"An event titled '{eventName}' is already scheduled on {eventField} from {eventStart} to {eventEnd}."));
+			results.Add(new($"An event titled '{eventName}' is already scheduled for {eventField} from {eventStart} to {eventEnd}."));
 		}
 
 		return results;
