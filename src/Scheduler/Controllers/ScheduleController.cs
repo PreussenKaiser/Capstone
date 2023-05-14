@@ -124,8 +124,8 @@ public sealed class ScheduleController : Controller
 			// Tomorrow at 8 am and a month from tomorrow at 11 pm
 			Id = Guid.NewGuid(),
 			UserId = user.Id,
-			StartDate = this.dateProvider.Now.AddDays(1).AddHours(8),
-			EndDate = this.dateProvider.Now.AddMonths(1).AddDays(1).AddHours(22).AddMinutes(59),
+			StartDate = this.dateProvider.Now.Date.AddDays(1),
+			EndDate = this.dateProvider.Now.Date.AddMonths(1).AddDays(1),
 			RecurrenceId = null,
 			Name = "Facility Closed",
 			IsBlackout = true
@@ -142,6 +142,8 @@ public sealed class ScheduleController : Controller
 		{
 			return this.View(closeoutEvent);
 		}
+
+		closeoutEvent.EndDate = closeoutEvent.EndDate.AddHours(23).AddMinutes(59);
 
 		await this.scheduleRepository.ScheduleAsync(closeoutEvent);
 

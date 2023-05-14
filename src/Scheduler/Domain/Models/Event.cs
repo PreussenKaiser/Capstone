@@ -210,12 +210,12 @@ public class Event : Entity, IValidatableObject
 	{
 		ICollection<ValidationResult> results = new List<ValidationResult>(3);
 
-		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)))
+		if (this.EndDate <= (this.StartDate + TimeSpan.FromMinutes(29)) && this.Name != "Facility Closed")
 		{
 			results.Add(new("End time must be at least 30 minutes after start time."));
 		}
 
-		if (this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 22)
+		if ((this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 22) && this.Name != "Facility Closed")
 		{
 			results.Add(new("Event Times must be between 8 am and 11 pm."));
 		}
@@ -230,14 +230,14 @@ public class Event : Entity, IValidatableObject
 		{
 			string eventName = conflict.Name;
 			string eventField = conflict.Field is null
-				? "(Unknown Field)"
+				? "the entire facility"
 				: conflict.Field.Name;
 
 			const string FORMAT = "M/dd/yy h:mm tt";
 			string eventStart = conflict.StartDate.ToString(FORMAT);
 			string eventEnd = conflict.EndDate.ToString(FORMAT);
 
-			results.Add(new($"An event titled '{eventName}' is already scheduled on {eventField} from {eventStart} to {eventEnd}."));
+			results.Add(new($"An event titled '{eventName}' is already scheduled for {eventField} from {eventStart} to {eventEnd}."));
 		}
 
 		return results;
