@@ -7,9 +7,18 @@
 @{
     this.ViewData["Title"] = "Home";
 
+    var start = this.ViewData["Start"] as DateTime?;
+    var end = this.ViewData["End"] as DateTime?;
+
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
-    string startDateString = this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT);
-    string endDateString = this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT);
+
+    string startDateString = start is null
+        ? this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT)
+        : ((DateTime)start).ToString(Constants.DATE_FORMAT);
+
+    string endDateString = end is null
+        ? this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT)
+        : ((DateTime)end).ToString(Constants.DATE_FORMAT);
 }
 
 <div class="row text-center px-sm-5 mt-4 noPrintIfModal">
@@ -162,8 +171,6 @@
     });
 
     function searchEvents(e) {
-        console.log(e)
-
         $.ajax({
             url: '@this.Url.Action("searchModal", "Dashboard")',
             data: {
@@ -184,14 +191,8 @@
         console.log(@startDateString);
         console.log(@endDateString);
         $.ajax({
-            url: '@Url.Action("searchModal", "Dashboard")',
-            data: {
-                start: @startDateString,
-                end: @endDateString,
-                type: 'Event',
-                searchTerm: '',
-                teamName: ''
-            },
+            url: '@this.Url.Action("searchModal", "Dashboard")',
+            data: { },
             success: function (data) {
                     $("#teamNameSearch").val(null).trigger('change');
             }
