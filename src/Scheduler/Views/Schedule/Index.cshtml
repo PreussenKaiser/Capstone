@@ -173,41 +173,35 @@
             width: "100%"
         });
 
-        function initializeDateRangePicker() {
-            var startDateString = "@this.Model.StartDate.ToString(DATE_FORMAT)";
-            var endDateString = "@this.Model.EndDate.ToString(DATE_FORMAT)";
-            var minDateString = "@this.DateProvider.Now.ToString(DATE_FORMAT)";
+        var startDateString = "@this.Model.StartDate.ToString(DATE_FORMAT)";
+        var endDateString = "@this.Model.EndDate.ToString(DATE_FORMAT)";
+        var minDateString = "@this.DateProvider.Now.ToString(DATE_FORMAT)";
 
-            var startDate = moment(startDateString, "YYYY-MM-DDTHH:mm");
-            var startDateFormatted = startDate.format('M/DD/YYYY hh:mm A');
-            var endDate = moment(endDateString, "YYYY-MM-DDTHH:mm");
-            var endDateFormatted = endDate.format('M/DD/YYYY hh:mm A');
-            var minDate = moment(minDateString, "YYYY-MM-DDTHH:mm");
-            var minDateFormatted = minDate.format('M/DD/YYYY hh:mm A');
+        var startDate = moment(startDateString, "YYYY-MM-DDTHH:mm");
+        var startDateFormatted = startDate.format('M/DD/YYYY hh:mm A');
+        var endDate = moment(endDateString, "YYYY-MM-DDTHH:mm");
+        var endDateFormatted = endDate.format('M/DD/YYYY hh:mm A');
+        var minDate = moment(minDateString, "YYYY-MM-DDTHH:mm");
+        var minDateFormatted = minDate.format('M/DD/YYYY hh:mm A');
 
+        $('#StartDate').val(startDateFormatted);
+        $('#EndDate').val(endDateFormatted);
+
+        $('input[name="daterange"]').daterangepicker({
+            timePicker: true,
+            startDate: startDateFormatted,
+            endDate: endDateFormatted,
+            minDate: minDateFormatted,
+            timePickerIncrement: 30,
+            drops: "up",
+            locale: {
+                format: 'M/DD hh:mm A'
+            }
+        }).on('apply.daterangepicker', function (ev, picker) {
+            startDateFormatted = picker.startDate.format('M/DD/YYYY hh:mm A');
+            endDateFormatted = picker.endDate.format('M/DD/YYYY hh:mm A');
             $('#StartDate').val(startDateFormatted);
             $('#EndDate').val(endDateFormatted);
-
-            $('input[name="daterange"]').daterangepicker({
-                timePicker: true,
-                startDate: startDateFormatted,
-                endDate: endDateFormatted,
-                minDate: minDateFormatted,
-                timePickerIncrement: 30,
-                drops: "up",
-                locale: {
-                    format: 'M/DD hh:mm A'
-                }
-            }).on('apply.daterangepicker', function (ev, picker) {
-                startDateFormatted = picker.startDate.format('M/DD/YYYY hh:mm A');
-                endDateFormatted = picker.endDate.format('M/DD/YYYY hh:mm A');
-                $('#StartDate').val(startDateFormatted);
-                $('#EndDate').val(endDateFormatted);
-            });
-        }
-
-        $(document).ready(function () {
-            initializeDateRangePicker();
         });
     </script>
 }
