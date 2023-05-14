@@ -19,16 +19,18 @@
             <div class="card border border-3 border-success">
                 <img src="~/Images/field.png" class="card-img-top rounded-0">
                 <div class="card-body">
-                    <h5 class="text-center">@field.Name</h5>
+                    <h5 class="text-center mb-3">@field.Name</h5>
                     <div class="row">
-                        <div class="col mb-2 text-center">
-                            <form action="@this.Url.Action("Details", "Field", new { id = field.Id })" method="get">
-                                <button type="submit" class="button buttonRedOutline w-100">Update</button>
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <form asp-action="Details" asp-controller="Field" asp-route-id="@field.Id" method="get">
+                                <button type="submit" class="button buttonRedOutline w-100">
+                                    Edit
+                                </button>
                             </form>
                         </div>
-                        <div class="col mb-2 text-center">
+                        <div class="col-sm-6">
                             <div class="linkElement">
-                                <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#remove@(field.Id)">
+                                <button type="button" class="button buttonRed w-100" data-bs-toggle="modal" data-bs-target="#remove@(field.Id)">
                                     Remove
                                 </button>
                             </div>
