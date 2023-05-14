@@ -333,15 +333,13 @@ public sealed class DashboardController : Controller
 	/// <param name="teamName">The inputted team name - defaults to null.</param>
 	/// <returns>A list of Events.</returns>
 	[AllowAnonymous]
-	public async Task<IActionResult> searchModal(
+	public async Task<IActionResult> searchModal(		
+		DateTime start,
+		DateTime end,
 		string type = nameof(Event),
-		DateTime? start = null,
-		DateTime? end = null,
 		string? searchTerm = null,
 		string? teamName = null)
 	{
-		start ??= this.dateProvider.Now;
-		end ??= this.dateProvider.Now.AddYears(2);
 
 		IQueryable<Event> events = type switch
 		{
@@ -387,7 +385,7 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["Events"] = events.ToList();
 
-			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
+			this.ViewData["TypeFilterMessage"] = $"Showing All {type}s";
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
@@ -395,7 +393,7 @@ public sealed class DashboardController : Controller
 		this.ViewData["End"] = end;
 
 		
-		this.ViewData["Title"] = $"All {type}s from {start.ToString("M/dd/yyyy")} to {end.ToString("M/dd/yyyy")}";
+		this.ViewData["Title"] = $"Events from {start.ToString("M/dd/yyyy")} to {end.ToString("M/dd/yyyy")}";
 
 		return this.ViewComponent("SearchListModal");
 	}
@@ -502,9 +500,9 @@ public sealed class DashboardController : Controller
 	/// <returns>The List Modal partial view.</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> filterModalEvents(
-		string type,
 		DateTime start,
 		DateTime end,
+		string type,
 		string? searchTerm = null,
 		string? teamName = null)
 	{
@@ -548,7 +546,7 @@ public sealed class DashboardController : Controller
 		}
 		else
 		{
-			this.ViewData["TypeFilterMessage"] = $"Showing {type}s between {((DateTime)start).ToString(Constants.DATE_FORMAT)} & {((DateTime)end).ToString(Constants.DATE_FORMAT)}";
+			this.ViewData["TypeFilterMessage"] = $"Showing All {type}s";
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();

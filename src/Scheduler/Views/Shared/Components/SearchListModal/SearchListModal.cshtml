@@ -161,7 +161,7 @@
                 teamName: e.teamName.value
             },
             success: function(data) {
-                const title = "All " + e.type.value + "s from " + $('#FilterStartDate').val() + " to " + $('#FilterEndDate').val();
+                const title = "Events from " + $('#FilterStartDate').val() + " to " + $('#FilterEndDate').val();
                 setTitle(title);
                 $("#searchModalTable").html(data);
                 $('#searchListModalDropdown').removeClass('show');
