@@ -20,7 +20,7 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header m-auto">
-                <h2 class="text-center">@title</h2>
+                <h2 class="text-center" id="modalTitle">@title</h2>
             </div>
             <div class="modal-body">
                 <div class="text-center">
@@ -108,7 +108,6 @@
             width: "100%",
             dropdownParent: $('#searchListModalPopup')
         });
-
     });
 
     var startDateString = "@startDateString";
@@ -162,6 +161,12 @@
             success: function(data) {
                 $("#searchModalTable").html(data);
                 $('#searchListModalDropdown').removeClass('show');
+                const start = $('#FilterStartDate').val();
+                const end = $('#FilterEndDate').val();
+                const startString = moment(start, 'M/DD/YYYY');
+                const endString = moment(end, 'M/DD/YYYY');
+                console.log('hit');
+                $("#modalTitle").html(`All Events from ${startString.format('M/DD/YY')} to ${endString.format('M/DD/YY')}`);
             }
         });
     }
@@ -175,6 +180,7 @@
             success: function(data) {
                 $("#teamNameSearchFilter").val(null).trigger('change');
                 $('#searchModalTable').html(data);
+                $("#modalTitle").html(`All Events from @startDate.ToString("M/dd/yy") to @endDate.ToString("M/dd/yy")`);
             }
         });
     }
