@@ -247,6 +247,9 @@
 <div id="modal">
 </div>
 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     var calendar = document.getElementById('calendar-full');
     calendar.removeEventListener('click', handleClick);
@@ -352,6 +355,16 @@
         });
     }
 
+    $(document).on('click', '.month-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
+
     function weekModal(year, month, start) {
         $.ajax({
             url: '@Url.Action("weekModal", "Dashboard")',
@@ -366,6 +379,16 @@
         });
     }
 
+    $(document).on('click', '.week-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
+
     function dayModal(year, month, date) {
         $.ajax({
             url: '@this.Url.Action("dayModal", "Dashboard")',
@@ -379,6 +402,16 @@
             }
         });
     }
+
+    $(document).on('click', '.day-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
 
     function gridModal(year, month, date) {
         $.ajax({
