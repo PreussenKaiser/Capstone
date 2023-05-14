@@ -333,15 +333,13 @@ public sealed class DashboardController : Controller
 	/// <param name="teamName">The inputted team name - defaults to null.</param>
 	/// <returns>A list of Events.</returns>
 	[AllowAnonymous]
-	public async Task<IActionResult> searchModal(
+	public async Task<IActionResult> searchModal(		
+		DateTime start,
+		DateTime end,
 		string type = nameof(Event),
-		DateTime? start = null,
-		DateTime? end = null,
 		string? searchTerm = null,
 		string? teamName = null)
 	{
-		start ??= this.dateProvider.Now;
-		end ??= this.dateProvider.Now.AddYears(2);
 
 		IQueryable<Event> events = type switch
 		{
@@ -381,27 +379,21 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["Events"] = null;
 
-			this.ViewData["TypeFilterMessage"] = $"No {type} found";
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 		else
 		{
 			this.ViewData["Events"] = events.ToList();
 
-			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
+			this.ViewData["TypeFilterMessage"] = $"Showing All {type}s";
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = start;
 		this.ViewData["End"] = end;
 
-		if (end > ((DateTime)end).AddYears(1))
-		{
-			this.ViewData["Title"] = $"All {type}s";
-		}
-		else
-		{
-			this.ViewData["Title"] = $"All {type}s from {((DateTime)start).ToString("M/dd/y")} to {((DateTime)end).ToString("M/dd/y")}";
-		}
+		
+		this.ViewData["Title"] = $"Events from {start.ToString("M/dd/yyyy")} to {end.ToString("M/dd/yyyy")}";
 
 		return this.ViewComponent("SearchListModal");
 	}
@@ -508,15 +500,12 @@ public sealed class DashboardController : Controller
 	/// <returns>The List Modal partial view.</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> filterModalEvents(
+		DateTime start,
+		DateTime end,
 		string type,
-		DateTime? start = null,
-		DateTime? end = null,
 		string? searchTerm = null,
 		string? teamName = null)
 	{
-		start ??= this.dateProvider.Now;
-		end ??= this.dateProvider.Now.AddYears(2);
-
 		IQueryable<Event> events = type switch
 		{
 			nameof(Practice) => this.context.Practices
@@ -553,11 +542,11 @@ public sealed class DashboardController : Controller
 
 		if (events.IsNullOrEmpty())
 		{
-			this.ViewData["TypeFilterMessage"] = $"No {type} found";
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 		else
 		{
-			this.ViewData["TypeFilterMessage"] = $"Showing {type}s between {((DateTime)start).ToString(Constants.DATE_FORMAT)} & {((DateTime)end).ToString(Constants.DATE_FORMAT)}";
+			this.ViewData["TypeFilterMessage"] = $"Showing All {type}s";
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
