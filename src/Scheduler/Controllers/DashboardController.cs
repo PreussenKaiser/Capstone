@@ -334,12 +334,15 @@ public sealed class DashboardController : Controller
 	/// <returns>A list of Events.</returns>
 	[AllowAnonymous]
 	public async Task<IActionResult> searchModal(
-		DateTime start,
-		DateTime end,
-		string type,
+		string type = nameof(Event),
+		DateTime? start = null,
+		DateTime? end = null,
 		string? searchTerm = null,
 		string? teamName = null)
 	{
+		start ??= this.dateProvider.Now;
+		end ??= this.dateProvider.Now.AddYears(2);
+
 		IQueryable<Event> events = type switch
 		{
 			nameof(Practice) => this.context.Practices
@@ -361,7 +364,7 @@ public sealed class DashboardController : Controller
 
 		if (!events.IsNullOrEmpty())
 		{
-			events = this.DateSearch(start, end, events);
+			events = this.DateSearch((DateTime)start, (DateTime)end, events);
 		}
 
 		if (!searchTerm.IsNullOrEmpty())
@@ -545,7 +548,7 @@ public sealed class DashboardController : Controller
 		}
 		else
 		{
-			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
+			this.ViewData["TypeFilterMessage"] = $"Showing {type}s between {((DateTime)start).ToString(Constants.DATE_FORMAT)} & {((DateTime)end).ToString(Constants.DATE_FORMAT)}";
 		}
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
