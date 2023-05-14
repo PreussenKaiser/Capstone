@@ -42,13 +42,14 @@ public sealed class TeamController : Controller
 	/// Displays the <see cref="Add"/> view.
 	/// </summary>
 	/// <returns>Contains a form for adding a <see cref="Team"/>.</returns>
+	[HttpGet]
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public IActionResult Add(Guid leagueId)
+	public IActionResult Add(Guid? id)
 	{
 		Team team = new()
 		{
 			Name = string.Empty,
-			LeagueId = leagueId
+			LeagueId = id ?? Guid.Empty
 		};
 
 		return this.View(team);
