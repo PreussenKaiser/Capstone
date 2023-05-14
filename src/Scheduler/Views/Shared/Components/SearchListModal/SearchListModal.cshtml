@@ -6,21 +6,20 @@
 
 @{
     IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
-    string title = this.ViewData["Title"].ToString();
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
 
     DateTime startDate = (DateTime)this.ViewData["Start"];
     DateTime endDate = (DateTime)this.ViewData["End"];
 
-    string startDateString = startDate.ToString(Constants.DATE_FORMAT);
-    string endDateString = endDate.ToString(Constants.DATE_FORMAT);
+    string searchModalStartDateString = startDate.ToString(Constants.DATE_FORMAT);
+    string searchModalEndDateString = endDate.ToString(Constants.DATE_FORMAT);
 }
 
 <div class="modal fade" id="searchListModalPopup" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header m-auto">
-                <h2 class="text-center">@title</h2>
+                <h2 id="searchModalTitle" class="text-center"></h2>
             </div>
             <div class="modal-body">
                 <div class="text-center">
@@ -92,6 +91,13 @@
 <script>
     $(document).ready(function (){
         $("#searchListModalPopup").modal("show");
+        setSearchFilterDatePicker();
+        setTitle("@ViewData["Title"].ToString()");
+        $("#teamNameSearchFilter").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%",
+            dropdownParent: $('#searchListModalPopup')
+        });
     });
 
     function showModalDropdown() {
@@ -102,36 +108,27 @@
         $('#searchListModalDropdown').removeClass('show');
     }
 
-    $(document).ready(function () {
-        $("#teamNameSearchFilter").select2({
-            placeholder: "Start typing to select a Team...",
-            width: "100%",
-            dropdownParent: $('#searchListModalPopup')
-        });
+    function setSearchFilterDatePicker() {
+        var startDateString = "@searchModalStartDateString";
+        var endDateString = "@searchModalEndDateString";
+        var minDateString = "@today";
+        var startDate;
+        var startDateFormatted;
+        var endDate;
+        var endDateFormatted;
+        var minDate;
+        var minDateFormatted;
 
-    });
+        startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
+        startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
+        endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
+        endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
+        minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
+        minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
 
-    var startDateString = "@startDateString";
-    var endDateString = "@endDateString";
-    var minDateString = "@today";
-    var startDate;
-    var startDateFormatted;
-    var endDate;
-    var endDateFormatted;
-    var minDate;
-    var minDateFormatted;
+        $('#FilterStartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+        $('#FilterEndDate').val(endDateFormatted); // Set initial value of EndDate on the form
 
-    startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
-    startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
-    endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
-    endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
-    minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
-    minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
-
-    $('#FilterStartDate').val(startDateFormatted); // Set initial value of StartDate on the form
-    $('#FilterEndDate').val(endDateFormatted); // Set initial value of EndDate on the form
-
-    $(function () {
         $('input[name="searchdaterange"]').daterangepicker({
             startDate: startDateFormatted,
             endDate: endDateFormatted,
@@ -147,7 +144,11 @@
             $('#FilterStartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
             $('#FilterEndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
         });
-    });
+    };
+
+    function setTitle(title) {
+        $('#searchModalTitle').html(title);
+    }
     
     function filterEvents(e) {
         $.ajax({
@@ -160,6 +161,8 @@
                 teamName: e.teamName.value
             },
             success: function(data) {
+                const title = "All " + e.type.value + "s from " + $('#FilterStartDate').val() + " to " + $('#FilterEndDate').val();
+                setTitle(title);
                 $("#searchModalTable").html(data);
                 $('#searchListModalDropdown').removeClass('show');
             }
@@ -170,11 +173,15 @@
         $.ajax({
             url: '@this.Url.Action("filterModalEvents", "Dashboard")',
             data: {
-                type: 'Event'
+                type: 'Event',
+                start: "@searchModalStartDateString",
+                end: "@searchModalEndDateString"
             },
             success: function(data) {
+                setTitle("@ViewData["Title"].ToString()");
                 $("#teamNameSearchFilter").val(null).trigger('change');
                 $('#searchModalTable').html(data);
+                setSearchFilterDatePicker();
             }
         });
     }

@@ -391,14 +391,8 @@ public sealed class DashboardController : Controller
 		this.ViewData["Start"] = start;
 		this.ViewData["End"] = end;
 
-		if (end > start.AddYears(1))
-		{
-			this.ViewData["Title"] = $"All {type}s";
-		}
-		else
-		{
-			this.ViewData["Title"] = $"All {type}s from {start.ToString("M/dd/y")} to {end.ToString("M/dd/y")}";
-		}
+		
+		this.ViewData["Title"] = $"All {type}s from {start.ToString("M/dd/yyyy")} to {end.ToString("M/dd/yyyy")}";
 
 		return this.ViewComponent("SearchListModal");
 	}
@@ -506,14 +500,11 @@ public sealed class DashboardController : Controller
 	[AllowAnonymous]
 	public async Task<IActionResult> filterModalEvents(
 		string type,
-		DateTime? start = null,
-		DateTime? end = null,
+		DateTime start,
+		DateTime end,
 		string? searchTerm = null,
 		string? teamName = null)
 	{
-		start ??= this.dateProvider.Now;
-		end ??= this.dateProvider.Now.AddYears(2);
-
 		IQueryable<Event> events = type switch
 		{
 			nameof(Practice) => this.context.Practices

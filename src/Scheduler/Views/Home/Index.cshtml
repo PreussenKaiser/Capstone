@@ -117,33 +117,34 @@
     }
 
     $(document).ready(function () {
+        setSearchModalDatePicker();
         $("#teamNameSearch").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%"
         });
     });
 
-    var startDateString = "@startDateString";
-    var endDateString = "@endDateString";
-    var minDateString = "@today";
-    var startDate;
-    var startDateFormatted;
-    var endDate;
-    var endDateFormatted;
-    var minDate;
-    var minDateFormatted;
+    function setSearchModalDatePicker() {
+        var startDateString = "@startDateString";
+        var endDateString = "@endDateString";
+        var minDateString = "@today";
+        var startDate;
+        var startDateFormatted;
+        var endDate;
+        var endDateFormatted;
+        var minDate;
+        var minDateFormatted;
 
-    startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
-    startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
-    endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
-    endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
-    minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
-    minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
+        startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
+        startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
+        endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
+        endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
+        minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
+        minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
 
-    $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
-    $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+        $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+        $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
 
-    $(function () {
         $('input[name="daterange"]').daterangepicker({
             startDate: startDateFormatted,
             endDate: endDateFormatted,
@@ -159,7 +160,7 @@
             $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
             $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
         });
-    });
+    };
 
     function searchEvents(e) {
         console.log(e)
@@ -181,19 +182,18 @@
     }
 
     function resetSearchEvents() {
-        console.log(@startDateString);
-        console.log(@endDateString);
         $.ajax({
             url: '@Url.Action("searchModal", "Dashboard")',
             data: {
-                start: @startDateString,
-                end: @endDateString,
+                start: "@startDateString",
+                end: "@endDateString",
                 type: 'Event',
                 searchTerm: '',
                 teamName: ''
             },
             success: function (data) {
-                    $("#teamNameSearch").val(null).trigger('change');
+                $("#teamNameSearch").val(null).trigger('change');
+                setSearchModalDatePicker();
             }
         });
     }
