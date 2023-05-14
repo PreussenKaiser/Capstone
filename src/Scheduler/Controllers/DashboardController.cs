@@ -379,7 +379,7 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["Events"] = null;
 
-			this.ViewData["TypeFilterMessage"] = $"No {type} found";
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 		else
 		{
@@ -542,7 +542,7 @@ public sealed class DashboardController : Controller
 
 		if (events.IsNullOrEmpty())
 		{
-			this.ViewData["TypeFilterMessage"] = $"No {type} found";
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 		else
 		{
