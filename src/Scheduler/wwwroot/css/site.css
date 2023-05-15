@@ -168,20 +168,28 @@ body {
     display: none;
 }
 
-    .custom-minutes-dropdown ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-    }
+.custom-minutes-dropdown ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
 
-        .custom-minutes-dropdown ul li {
-            cursor: pointer;
-            padding: 5px;
-        }
+.custom-minutes-dropdown ul li {
+    cursor: pointer;
+    padding: 5px;
+}
 
-            .custom-minutes-dropdown ul li:hover {
-                background-color: #f8f9fa;
-            }
+.custom-minutes-dropdown ul li:hover {
+    background-color: #f8f9fa;
+}
+
+body::-webkit-scrollbar {
+    width: 1rem;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #c9000a;
+}
 
 @media (max-width: 999px) {
     .site-banner-wrapper {
