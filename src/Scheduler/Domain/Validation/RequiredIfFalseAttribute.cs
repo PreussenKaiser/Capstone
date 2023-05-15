@@ -5,7 +5,8 @@ namespace Scheduler.Domain.Validation;
 /// <summary>
 /// Checks if a seperate property is false before determining if the field is required.
 /// </summary>
-public sealed class RequiredIfFalseAttribute : RequiredAttribute
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class RequiredIfFalseAttribute : ValidationAttribute
 {
 	/// <summary>
 	/// Initializes <see cref="RequiredIfFalseAttribute"/> with property to check.
