@@ -17,7 +17,7 @@
 <div class="row mb-3">
     <div class="col">
         <label asp-for="HomeTeamId" class="form-label"></label>
-        <select id="homeTeams" asp-for="HomeTeamId" class="form-select">
+        <select title="Home Team" id="homeTeams" asp-for="HomeTeamId" class="form-select">
             <option value=""></option>
             @foreach (SelectListItem t in teamsSelect)
             {
@@ -27,7 +27,7 @@
     </div>
     <div class="col">
         <label asp-for="OpposingTeamId" class="form-label"></label>
-        <select id="opposingTeams" asp-for="OpposingTeamId" class="form-select">
+        <select title="Opposing Team" id="opposingTeams" asp-for="OpposingTeamId" class="form-select">
             <option value=""></option>
             @foreach (SelectListItem t in teamsSelect)
             {

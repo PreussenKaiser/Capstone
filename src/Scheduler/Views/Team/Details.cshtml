@@ -1,18 +1,151 @@
-﻿@model Team
+﻿@using Microsoft.AspNetCore.Identity;
+@using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Specifications;
+
+@inject UserManager<User> UserManager
+@inject ILeagueRepository LeagueRepository
+
+@model Team
 
 @{
     this.ViewData["Title"] = this.Model.Name;
+
+    bool canEdit =
+        this.User.IsInRole(Role.ADMIN) ||
+        this.Model.UserId == Guid.Parse(this.UserManager.GetUserId(this.User) ?? string.Empty);
+
+    IEnumerable<SelectListItem> leagues = (await this.LeagueRepository
+        .SearchAsync(new GetAllSpecification<League>()))
+        .Select(l => new SelectListItem
+        {
+            Text = l.Name,
+            Value = l.Id.ToString(),
+            Selected = this.Model.LeagueId == l.Id
+        });
+
+    IEnumerable<SelectListItem> users = this.UserManager.Users
+        .Select(u => new SelectListItem
+        {
+            Text = u.ToString(),
+            Value = u.Id.ToString(),
+            Selected = this.Model.UserId == u.Id
+        })
+        .ToList();
 }
+
+<div class="row mb-3">
+    <div class="col-sm-6 mx-auto">
+        <a asp-action="Details" asp-controller="League" asp-route-id="@this.Model.LeagueId" class="button buttonRed px-1">
+            < Back 
+        </a>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-sm-6 mx-auto">
-        <form method="post">
-            <h1 class="text-center text-danger">
-                @this.ViewData["Title"]
-            </h1>
-            <hr />
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5>Details</h5>
 
-            @await this.Html.PartialAsync("Forms/_TeamInputs", this.Model)
-        </form>
+                    @if (canEdit)
+                    {
+                        <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#detailsModal">
+                            Edit <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit details for @(this.Model.Name)."></i>
+                        </button>
+                        <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form method="post">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">@this.Model.Name</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="mb-3">
+                                                        <label asp-for="Name" class="form-label h6"></label>
+                                                        <input asp-for="Name" class="form-control" />
+                                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="mb-3">
+                                                        <label asp-for="LeagueId" class="form-label h6"></label>
+                                                        <select asp-for="LeagueId" asp-items="leagues" class="form-control"></select>
+                                                        <span asp-validation-for="LeagueId" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Cancel</button>
+                                            <input type="submit" value="Submit" class="button buttonGreen" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Name</h6>
+                        @this.Model.Name
+                    </div>
+                    <div class="col-6">
+                        <h6>League</h6>
+                        @this.Model.League?.Name
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5>Coach</h5>
+
+                    @if (this.User.IsInRole(Role.ADMIN))
+                    {
+                        <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#coachModal">
+                            Edit <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Change @(this.Model.Name)'s coach."></i>
+                        </button>
+                        <div class="modal fade" id="coachModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form method="post">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">@this.Model.Name</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="mb-3">
+                                                        <label asp-for="UserId" class="form-label h6"></label>
+                                                        <select asp-for="UserId" asp-items="users" class="form-control" />
+                                                        <span asp-validation-for="UserId" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Cancel</button>
+                                            <input type="submit" value="Submit" class="button buttonGreen" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <h6>Name</h6>
+                        @this.Model.User?.ToString()
+                    </div>
+                </div>
+            </li>
+        </ul>
     </div>
 </div>

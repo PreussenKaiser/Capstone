@@ -2,23 +2,22 @@
 
 @{
     IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
-    string typeFilterMessage = (string)ViewData["TypeFilterMessage"];
-    string nameFilterMessage = (string)ViewData["NameFilterMessage"];
-    string teamFilterMessage = (string)ViewData["TeamFilterMessage"];
-    
+    string typeFilterMessage = (string)this.ViewData["TypeFilterMessage"];
+    string nameFilterMessage = (string)this.ViewData["NameFilterMessage"];
+    string teamFilterMessage = (string)this.ViewData["TeamFilterMessage"];
 }
 
-@if (Model != null && Model.Count() > 0)
+@if (this.Model != null && this.Model.Count() > 0)
 {
-    if(typeFilterMessage != "")
+    if (typeFilterMessage != "")
     {
         <h5 class="text-center lead text-danger">@typeFilterMessage</h5>
     }
-    if(nameFilterMessage != "")
+    if (nameFilterMessage != "")
     {
         <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
     }
-    if(teamFilterMessage != "")
+    if (teamFilterMessage != "")
     {
         <h5 class="text-center lead text-danger">@teamFilterMessage</h5>
     }
