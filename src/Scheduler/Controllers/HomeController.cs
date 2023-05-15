@@ -12,7 +12,6 @@ namespace Scheduler.Web.Controllers;
 /// <summary>
 /// Displays views for the home page.
 /// </summary>
-[Authorize]
 public sealed class HomeController : Controller
 {
 	/// <summary>
@@ -21,15 +20,12 @@ public sealed class HomeController : Controller
 	/// <param name="teamRepository">The repository to query teams from.</param>
 	/// <param name="scheduleRepository">The repository to query scheduled events from.</param>
 	/// <returns>The home page.</returns>
-	[AllowAnonymous]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Index(
 		[FromServices] ITeamRepository teamRepository,
 		[FromServices] IScheduleRepository scheduleRepository)
 	{
 		const string DATE_FORMAT = "MM/dd/yyyy";
-		IEnumerable<Team> teams = await teamRepository.SearchAsync(
-			new GetAllSpecification<Team>());
+		IEnumerable<Team> teams = await teamRepository.SearchAsync(new GetAllSpecification<Team>());
 		
 		IEnumerable<string> closedWarnings = (await scheduleRepository
 			.SearchAsync(new CloseoutSpecification()))
@@ -47,7 +43,6 @@ public sealed class HomeController : Controller
 	/// <param name="year">The year sent by the arrow function.</param>
 	/// <param name="month">The month sent by the arrow function.</param>
 	/// <returns>The refreshed Razor Calendar view component.</returns>
-	[AllowAnonymous]
 	public IActionResult refreshCalendar(int? year, int? month)
 	{
 		this.ViewData["Year"] = year;

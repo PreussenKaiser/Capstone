@@ -32,14 +32,14 @@
 <div class="row mb-3">
     <div class="col-sm">
         <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
+        <input asp-for="Name" title="Team name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span> 
     </div>
 </div>
 <div class="row">
     <div class="col-sm-6 mb-3">
         <label asp-for="UserId" class="form-label">Coach</label>
-        <select asp-for="UserId" id="coaches" class="form-select">
+        <select asp-for="UserId" title="Team coach" id="coaches" class="form-select">
             @foreach (var user in UserList)
             {
                 <option value=@user.Value>@user.Text</option>
