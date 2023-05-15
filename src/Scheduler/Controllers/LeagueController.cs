@@ -2,7 +2,6 @@
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
-using Scheduler.Filters;
 using Scheduler.Web.Controllers;
 using Scheduler.Domain.Specifications;
 
@@ -33,7 +32,6 @@ public sealed class LeagueController : Controller
 	/// </summary>
 	/// <returns>A form for creating a <see cref="League"/>.</returns>
 	[Authorize(Roles = Role.ADMIN)]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Add()
 	{
 		return this.View();
@@ -50,7 +48,6 @@ public sealed class LeagueController : Controller
 	/// </returns>
 	[HttpPost]
 	[Authorize(Roles = Role.ADMIN)]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Add(League league)
 	{
 		if (!this.ModelState.IsValid)
@@ -71,7 +68,6 @@ public sealed class LeagueController : Controller
 	/// <param name="id">The identifier of the <see cref="League"/> to detail.</param>
 	/// <returns>A page with <see cref="League"/> details.</returns>
 	[Authorize]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		League? league = (await this.leagueRepository
@@ -90,7 +86,6 @@ public sealed class LeagueController : Controller
 	/// <returns></returns>
 	[HttpPost]
 	[Authorize(Roles = Role.ADMIN)]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Details(League league)
 	{
 		if (!this.ModelState.IsValid)
@@ -112,7 +107,6 @@ public sealed class LeagueController : Controller
 	/// <returns>Redirected to <see cref="DashboardController.Leagues(ILeagueRepository)"/>.</returns>
 	[HttpPost]
 	[Authorize(Roles = Role.ADMIN)]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id)
 	{
 		await this.leagueRepository.RemoveAsync(id);

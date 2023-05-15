@@ -98,7 +98,7 @@
         <div class="d-flex justify-content-between">
             <h4 class="text-start w-100">@this.Model.Name Teams</h4>
             <div class="w-75 text-end me-3">
-                <form action="@this.Url.Action("Add", "Team", new { leagueId = this.Model.Id })" method="post">
+                <form asp-action="Add" asp-controller="Team" asp-route-id="@this.Model.Id" method="get">
                     <button type="submit" class="button buttonRed">Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @this.Model.Name League."></i></button>
                 </form>
             </div>

@@ -6,39 +6,37 @@
 }
 
 <form asp-action="Profile">
+    <input title="Current user" hidden asp-for="UserId" value="@this.Model.UserId" />
+    
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <input hidden asp-for="UserId" value="@this.Model.UserId" />
 
     <div class="row mb-3">
         <div class="col-sm-6">
             <label asp-for="FirstName" class="form-label"></label>
-            <input asp-for="FirstName" class="form-control" />
+            <input title="First name" asp-for="FirstName" class="form-control" />
             <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
         <div class="col-sm-6">
             <label asp-for="LastName" class="form-label"></label>
-            <input asp-for="LastName" class="form-control" />
+            <input title="Last name" asp-for="LastName" class="form-control" />
             <span asp-validation-for="LastName" class="text-danger"></span>
         </div>
     </div>
 
     <div class="mb-3">
         <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
+        <input title="Email" asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
-    @if (Model.currentUserIsAdmin)
+    @if (this.Model.currentUserIsAdmin)
     {
         <div class="form-check mb-3">
             <label asp-for="IsAdmin" class="form-check-label"></label>
-            <input asp-for="IsAdmin" 
-               class="form-check-input"
-               type="checkbox" />
+            <input title="Is an admin?" asp-for="IsAdmin" class="form-check-input" type="checkbox" />
         </div>
 
-        <input asp-for="currentUserIsAdmin" hidden />
+        <input title="Is an admin?" asp-for="currentUserIsAdmin" hidden />
     }
 
     <div class="row mb-3">

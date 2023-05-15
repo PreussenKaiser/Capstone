@@ -5,7 +5,8 @@
 @model Practice
 
 @{
-    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository.SearchAsync(new GetAllSpecification<Team>()))
+    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository
+        .SearchAsync(new GetAllSpecification<Team>()))
     .Select(t => new SelectListItem
         {
             Text = t.Name,
@@ -17,7 +18,7 @@
 <div class="row mb-3">
     <div class="col-lg">
         <label asp-for="TeamId" class="form-label"></label>
-        <select id="TeamId" asp-for="TeamId" class="form-select">
+        <select title="Practicing Team" id="TeamId" asp-for="TeamId" class="form-select">
             <option value=""></option>
             @foreach (SelectListItem t in teamsSelect)
             {

@@ -11,6 +11,9 @@ using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Scheduler.ViewModels;
 using Scheduler.Domain.Services;
+using Microsoft.Extensions.Logging;
+using NaturalSort.Extension;
+using System.Collections.Immutable;
 
 namespace Scheduler.Web.Controllers;
 
@@ -56,7 +59,6 @@ public sealed class DashboardController : Controller
 	/// Can also be POSTed to in order to provide filtering.
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Events()
 	{
 		return this.View();
@@ -268,7 +270,6 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Fields(
 		[FromServices] IFieldRepository fieldRepository)
 	{
@@ -284,7 +285,6 @@ public sealed class DashboardController : Controller
 	/// <param name="userManager">The service to get users with.</param>
 	/// <returns>A table containing all users.</returns>
 	[Authorize(Roles = Role.ADMIN)]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Users(
 		[FromServices] UserManager<User> userManager)
 	{
@@ -299,7 +299,6 @@ public sealed class DashboardController : Controller
 	/// <param name="leagueRepository">Queries all leagues.</param>
 	/// <returns>A view displaying all leagues with pagination.</returns>
 	[Authorize]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Leagues(
 		[FromServices] ILeagueRepository leagueRepository)
 	{
@@ -395,6 +394,15 @@ public sealed class DashboardController : Controller
 		
 		this.ViewData["Title"] = $"Events from {start.ToString("M/dd/yyyy")} to {end.ToString("M/dd/yyyy")}";
 
+		//if (end > start.AddYears(1))
+		//{
+		//	this.ViewData["Title"] = $"All {type}s";
+		//}
+		//else
+		//{
+		//	this.ViewData["Title"] = $"All {type}s from {start.ToString("M/dd/y")} to {end.ToString("M/dd/y")}";
+		//}
+
 		return this.ViewComponent("SearchListModal");
 	}
 
@@ -415,10 +423,9 @@ public sealed class DashboardController : Controller
 		this.ViewData["Start"] = monthDate;
 		this.ViewData["End"] = monthEndDate;
 		this.ViewData["Title"] = $"Events in {monthDate.ToString("MMMM")}";
-		if (!events.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = "Showing all Events";
-		}			
+		this.ViewData["TypeFilterMessage"] = !events.IsNullOrEmpty()
+			? "Showing all Events"
+			: null;
 		return this.ViewComponent("ListModal");
 	}
 
@@ -440,10 +447,9 @@ public sealed class DashboardController : Controller
 		this.ViewData["Start"] = weekStartDate;
 		this.ViewData["End"] = weekEndDate;
 		this.ViewData["Title"] = $"Events for the week of {weekStartDate.ToString("M")}";
-		if (!events.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = "Showing all Events";
-		}
+		this.ViewData["TypeFilterMessage"] = !events.IsNullOrEmpty()
+			? "Showing all Events"
+			: null;		
 		return this.ViewComponent("ListModal");
 	}
 
@@ -464,10 +470,9 @@ public sealed class DashboardController : Controller
 		this.ViewData["Start"] = eventDate; //12:00 AM on the selected day.
 		this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
 		this.ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
-		if (!events.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = "Showing all Events";
-		}
+		this.ViewData["TypeFilterMessage"] = !events.IsNullOrEmpty()
+			? "Showing all Events"
+			: null;
 		return this.ViewComponent("ListModal");
 	}
 
@@ -483,7 +488,15 @@ public sealed class DashboardController : Controller
 	{
 		DateTime eventDate = new DateTime(year, month, date);
 		this.ViewData["Events"] = await this.DateSearch(eventDate, eventDate).ToListAsync();
-		this.ViewData["Fields"] = await this.context.Fields.OrderBy(e => e.Name).ToListAsync();
+		var fieldList = await this.context.Fields.ToListAsync();
+		try
+		{
+			this.ViewData["Fields"] = fieldList.OrderBy(e => e.Name, new NaturalSortComparer(StringComparison.OrdinalIgnoreCase));
+		}
+		catch (Exception ex)
+		{
+			this.ViewData["Fields"] = fieldList.OrderBy(e => e.Name);
+		}
 		this.ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
 		this.ViewData["CurrentDate"] = eventDate;
 		return this.ViewComponent("GridModal");
@@ -540,14 +553,9 @@ public sealed class DashboardController : Controller
 			events = this.TeamSearch(teamName, type, events);
 		}
 
-		if (events.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
-		}
-		else
-		{
-			this.ViewData["TypeFilterMessage"] = $"Showing All {type}s";
-		}
+		this.ViewData["TypeFilterMessage"] = events.IsNullOrEmpty()
+			? $"No {type}s found"
+			: $"Showing all {type}s";
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = start;
@@ -614,7 +622,7 @@ public sealed class DashboardController : Controller
 
 		if(matchingGames.IsNullOrEmpty() && matchingPractices.IsNullOrEmpty())
 		{
-			ViewData["TeamFilterMessage"] = "There are no scheduled " + type + "s for Team " + selectedTeam.Name + "\nduring the selected dates";
+			this.ViewData["TeamFilterMessage"] = "for Team " + selectedTeam.Name + " during the selected dates";
 			return null;
 		}
 		else if (matchingGames.IsNullOrEmpty() && !matchingPractices.IsNullOrEmpty())
@@ -651,9 +659,7 @@ public sealed class DashboardController : Controller
 			.Where(e => e.Name.ToLower()
 			.Contains(searchTerm.ToLower()));
 
-		this.ViewData["NameFilterMessage"] = events.Count() > 0
-			? $"that match the search term {searchTerm}"
-			: $"There are no {type}s that match the search term {searchTerm}";
+		this.ViewData["NameFilterMessage"] = $"that match the search term {searchTerm}";
 
 		return events;
 	}

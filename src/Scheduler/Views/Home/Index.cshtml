@@ -46,19 +46,19 @@
                         <button class="button buttonRed" type="reset" onclick="resetSearchEvents()">Reset Search <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset your search criteria."></i></button>
                     </div>
                     
-                    <ul class="dropdown-menu p-3" id="homepage-dropdown">
+                    <div class="dropdown-menu p-3" id="homepage-dropdown">
                         <h5 class="lead text-danger text-center">Search Criteria <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose options below to search the Schedule."></i></h5>
                         <div>
                             <div class="form-label">
                                 <label class="form-label">
                                     Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br />Once the desired dates are selected and shown at the bottom, click 'Apply' and confirm that the desired dates show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates will <u>not</u> be applied."></i>
                                 </label>
-                                <input type="text" name="daterange" class="text-center form-control" />
+                                <input type="text" name="daterange" title="Event Date(s)" class="text-center form-control" />
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Event Type</label>
-                            <select name="type" class="form-select">
+                            <select name="type" title="Event Type" class="form-select">
                                 <option value="Event">Events</option>
                                 <option value="Non-Team Event">Non-Team Events</option>
                                 <option value="Practice">Practices</option>
@@ -67,11 +67,11 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Event Name</label>
-                            <input type="text" name="searchTerm" class="form-control" />
+                            <input type="text" name="searchTerm" title="Event Name" class="form-control" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Team Name</label>
-                            <select id="teamNameSearch" name="teamName" class="form-select chosen">
+                            <select id="teamNameSearch" name="teamName" title="Team Name" class="form-select chosen">
                                 <option value=""></option>
                                 @foreach (Team t in this.Model.Teams)
                                 {
@@ -85,7 +85,7 @@
                                 <button type="button" class="button buttonRed" onclick="closeHomePageDropdown()">Close</button>
                             </div>
                         </div>
-                    </ul>
+                    </div>
                 </div>
             </form>
         </div>

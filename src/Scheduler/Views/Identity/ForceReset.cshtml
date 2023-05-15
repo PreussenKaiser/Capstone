@@ -3,11 +3,11 @@
 <div class="row">
     <div class="col-sm-6 mx-auto">
         <form asp-action="ForceReset">
-            <div class="text-danger">You must reset your password before using the app.</div>
+            <div class="text-danger mb-3">You must reset your password before using the app.</div>
 
             @await this.Html.PartialAsync("Forms/_ResetPasswordInputs", this.Model)
 
-            <button class="button buttonRed w-100">
+            <button type="submit" class="formSubmit button buttonLarge w-100">
                 Reset Password
             </button>
         </form>
