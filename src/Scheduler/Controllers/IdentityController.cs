@@ -68,15 +68,29 @@ public sealed class IdentityController : Controller
 			return this.View(viewModel);
 		}
 
+		var loggedInUser = await this.signInManager.UserManager.FindByEmailAsync(viewModel.Email);
+
+		if (loggedInUser != null)
+		{
+			await this.signInManager.UserManager.UpdateSecurityStampAsync(loggedInUser);
+		}
+
 		var result = await this.signInManager.PasswordSignInAsync(
 			viewModel.Email,
 			viewModel.Password,
 			viewModel.PersistUser,
-			lockoutOnFailure: false);
+			lockoutOnFailure: true);
 
 		if (!result.Succeeded)
 		{
-			this.ModelState.AddModelError(string.Empty, "Incorrect credentials, please try again.");
+			if (result.IsLockedOut)
+			{
+				this.ModelState.AddModelError(string.Empty, "This account is unavailable. Please reset your password or wait 15 minutes to try again.");
+			}
+			else
+			{
+				this.ModelState.AddModelError(string.Empty, "Incorrect credentials, please try again.");
+			}
 
 			return this.View(viewModel);
 		}
@@ -140,7 +154,8 @@ public sealed class IdentityController : Controller
 			Email = viewModel.Email,
 			FirstName = viewModel.FirstName,
 			LastName = viewModel.LastName,
-			NeedsNewPassword = true
+			NeedsNewPassword = true,
+			LockoutEnabled = true
 		};
 
 		string randomPassword = Password.Random();
@@ -171,7 +186,7 @@ public sealed class IdentityController : Controller
 				<p>
 					Welcome to the PCYS Scheduler!
 					<br>
-					Your username is {user.UserName} and your password is <span style=\""color: red\"">{{randomPassword}}</span>
+					Your username is {user.UserName} and your password is <span style=\""color: red\"">{randomPassword}</span>
 				</p>
 				<p>To begin scheduling events, visit the website at {callback} to log in and change your temporary password.</p>
 				<p style=\""text-decoration: underline\"">Your new password must be at least 6 characters and contain an uppercase character, a lowercase character, a number and a symbol.</p>";
@@ -522,6 +537,8 @@ public sealed class IdentityController : Controller
 				user.NeedsNewPassword = false;
 
 				await this.signInManager.UserManager.UpdateAsync(user);
+
+				await this.signInManager.UserManager.UpdateSecurityStampAsync(user);
 
 				await this.signInManager.SignInAsync(user, false);
 

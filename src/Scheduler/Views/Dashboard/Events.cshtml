@@ -1,30 +1,31 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@using Scheduler.Domain.Repositories;
-@using Scheduler.Domain.Specifications;
-@using Scheduler.Infrastructure.Persistence;
-@using System.Text;
+﻿@{
+	this.ViewData["Title"] = "Events";
+}
 
-<div class="text-center mb-3 mt-3 noPrintIfModal">
-	<div>
-		<a asp-controller="Schedule" asp-action="" class="btn btn-sm btn-primary rounded">
+<div class="text-center mb-3 mt-3 noPrintIfModal">	
+	<div class="linkElement">
+		<a asp-controller="Schedule" asp-action="" class="mainButton">
 			Schedule New Event
 		</a>
 	</div>
-	<div class="row mt-3">
-		<div class="col-md text-end">
-			<button class="btn btn-sm btn-secondary" onclick="gamesModal()">
-				My Scheduled Games <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a List of Scheduled Games for all of Your Teams."></i>
-			</button>
-		</div>
-		<div class="col-md text-start">
-			<button class="btn btn-sm btn-success" onclick="practicesModal()">
-				My Scheduled Practices <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a List of Scheduled Practices for all of Your Teams."></i>
-			</button>
-		</div>
+
+	<div>
+		<button class="button buttonRed mt-3 coach-modal" onclick="gamesModal()">
+			My Scheduled Games <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Games for all of your teams."></i>
+		</button>
+
+		<button class="button buttonRed mt-3 coach-modal" onclick="practicesModal()">
+			My Scheduled Practices <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Practices for all of your teams."></i>
+		</button>
+		@if (this.User.IsInRole(Role.ADMIN))
+		{
+			<form action="@this.Url.Action("CloseFacility", "Schedule")" method="get">
+				<button type="submit" class="button buttonGreen mt-3" value="Update">Close Facility <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Close the entire PCYS Facility for a length of time."></i></button>
+			</form>
+		}
 	</div>
 </div>
-
-			
+				
 <div id="eventModal"></div>
 
 <div id="calendar">
@@ -43,6 +44,17 @@
 			}
 		});
 	}
+
+	$(document).on('click', '.coach-modal', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
+
 	function practicesModal() {
 		$.ajax({
 			url: '@this.Url.Action("coachEvents", "Dashboard")',

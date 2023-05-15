@@ -3,16 +3,22 @@
 @inject UserManager<User> UserManager
 @model IEnumerable<League>
 
+@{
+    this.ViewData["Title"] = "Leagues";
+}
+
 @if (this.User.IsInRole(Role.ADMIN))
 { 
     <div class="text-center mt-3">
-        <a asp-action="Add" asp-controller="League" class="btn btn-sm btn-primary">
-            Add League
-        </a>
+        <div class="linkElement">
+            <a asp-action="Add" asp-controller="League" class="mainButton">
+                Add League
+            </a>
+        </div>
     </div>
 }
 
-<div class="row mt-3">
+<div class="row mt-3 m-auto w-100">
     @if (this.Model is null ||
          this.Model.Count() == 0)
     {
@@ -24,10 +30,10 @@
     {
         @foreach (var league in this.Model)
         {
-            <div class="col-sm-4 mb-3">
+            <div class="col-lg-4 mb-3">
                 <div class="card border-secondary border-3">
                     <a asp-action="Details" asp-route-id="@league.Id" asp-controller="League" class="card-body text-decoration-none">
-                        <h4 class="text-danger" style="text-shadow: .5px .5px black;">@league.Name <i class="bi bi-question-circle text-dark" style="text-shadow:none; font-size:17px;" data-bs-toggle="tooltip" data-bs-placement="right" title="Click Anywhere on this Card to bring up the Team Management Page for the @league.Name League."></i></h4>
+                        <h4 class="text-danger" style="text-shadow: .5px .5px black;">@league.Name <i class="bi bi-question-circle text-dark calendar-full" style="text-shadow:none; font-size:17px;" data-bs-toggle="tooltip" data-bs-placement="right" title="Click anywhere on this card to bring up the Team Management page for the @league.Name League."></i></h4>
                         <table class="table">
                             <thead>
                                 <tr>

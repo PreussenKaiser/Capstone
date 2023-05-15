@@ -4,19 +4,34 @@
  */
 function navClick(eventType) {
     const eventInputs = $('#eventInputs')
+    const blackoutInputs = $('#blackoutInputs')
 
-    const refreshInputs = eventType == 'Event'
+    const refreshEventInputs = eventType == 'Event'
         ? eventInputs.empty()
         : (result) => {
-            eventInputs.empty();
-            eventInputs.html(result);
+            eventInputs.empty()
+            eventInputs.html(result)
+        }
+
+    const refreshBlackoutInputs = eventType != 'Event'
+        ? blackoutInputs.empty()
+        : (result) => {
+            blackoutInputs.empty()
+            blackoutInputs.html(result)
         }
 
     $.ajax({
         type: 'GET',
         url: '/Schedule/RenderInputs',
         data: { type: eventType},
-        success: refreshInputs
+        success: refreshEventInputs
+    })
+
+    $.ajax({
+        type: 'GET',
+        url: '/Schedule/RenderInputs',
+        data: { type: 'Blackout' },
+        success: refreshBlackoutInputs
     })
 
     refreshNav(eventType)

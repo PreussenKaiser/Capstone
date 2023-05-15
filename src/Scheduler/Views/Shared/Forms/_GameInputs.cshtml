@@ -5,22 +5,54 @@
 @model Game
 
 @{
-    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository.SearchAsync(new GetAllSpecification<Team>()))
+    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository
+        .SearchAsync(new GetAllSpecification<Team>()))
         .Select(t => new SelectListItem
         {
             Text = t.Name,
             Value = t.Id.ToString()
-        });
+        }); 
 }
 
 <div class="row mb-3">
-    <div class="col-6">
+    <div class="col">
         <label asp-for="HomeTeamId" class="form-label"></label>
-        <select asp-for="HomeTeamId" asp-items="teamsSelect" class="form-select"></select>
+        <select id="homeTeams" asp-for="HomeTeamId" class="form-select">
+            <option value=""></option>
+            @foreach (SelectListItem t in teamsSelect)
+            {
+                <option value=@t.Value>@t.Text</option>
+            }
+        </select>
     </div>
-    <div class="col-6">
+    <div class="col">
         <label asp-for="OpposingTeamId" class="form-label"></label>
-        <select asp-for="OpposingTeamId" asp-items="teamsSelect" class="form-select"></select>
+        <select id="opposingTeams" asp-for="OpposingTeamId" class="form-select">
+            <option value=""></option>
+            @foreach (SelectListItem t in teamsSelect)
+            {
+                <option value=@t.Value>@t.Text</option>
+            }
+        </select>
     </div>
     <span asp-validation-for="OpposingTeamId" class="text-danger"></span>
 </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#homeTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%"
+        });
+
+        $("#opposingTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%"
+        });
+
+    });
+</script>

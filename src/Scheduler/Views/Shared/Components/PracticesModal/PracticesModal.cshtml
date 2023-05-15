@@ -1,4 +1,8 @@
-﻿@using Scheduler.ViewModels;
+﻿@using Scheduler.Domain.Services;
+@using Scheduler.ViewModels;
+@using Scheduler;
+
+@inject IDateProvider DateProvider
 
 @model UpcomingEventsModalViewModel
 
@@ -6,40 +10,39 @@
     this.ViewData["Title"] = "My Scheduled Practices";
     this.ViewData["EventType"] = nameof(Practice);
 
-    string today = DateTime.Now.ToString("yyyy-MM-dd");
-    string startDateString = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    string endDateString = DateTime.Now.AddYears(2).ToString("yyyy-MM-dd");
+    string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
+    string startDateString = this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT);
+    string endDateString = this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT);
 }
 
 <div class="modal fade" id="practicesModalPopup" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header m-auto">
-                <h2 class="text-center">@this.ViewData["Title"]</h2>
+            <div class="modal-header noPrintIfModal">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             @if (this.Model.CoachTeamsCount != 0)
             {
                 <div class="modal-body">
                     <div class="text-center">
+                        <h2 class="mb-4">@this.ViewData["Title"]</h2>
                         <div class="btn-group mb-2 noPrintIfModal">
                             <form class="me-3" action="javascript:void(0);" onsubmit="filterPractices(this)" id="practicesFilterForm" autocomplete="off">
                                 <div>
-                                    <button type="button" class="btn btn-sm btn-secondary" onclick="showPracticesModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results </button>
+                                    <div class="linkElement">
+                                        <button type="button" class="button buttonRed" onclick="showPracticesModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results </button>
+                                        <button class="button buttonRed" type="reset" onclick="resetPracticesFilter()">Reset Filter <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Reset your filter criteria."></i></button>
+                                    </div>
                                     <ul class="dropdown-menu p-3" style="width:120%" id="practicesModalDropdown">
-                                        <h5 class="lead text-danger text-center">Filter Criteria</h5>
+                                        <h5 class="lead text-danger text-center">Filter Criteria <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose options below to filter your results."></i></h5>
                                         <div>
                                             <div class="form-label">
                                                 <label class="form-label">Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates and times will <u>not</u> be applied."></i></label>
                                                 <input type="text" name="practicesDaterange" class="text-center form-control" />
                                             </div>
-                                            <div>
-                                                <input name="StartDate" type="hidden" id="StartDate" />
-                                                <br />
-                                            </div>
-                                            <div>
-                                                <input name="EndDate" type="hidden" id="EndDate" />
-                                            </div>
+                                            <input name="StartDate" type="hidden" id="StartDate" />
+                                            <input name="EndDate" type="hidden" id="EndDate" />
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Event Name</label>
@@ -66,22 +69,25 @@
                                         }
 
                                         <div class="text-center">
-                                            <input type="submit" class="btn btn-sm btn-secondary" value="Filter" />
-                                            <button type="button" class="btn btn-sm btn-danger text-end" onclick="closePracticesDropdown()">Close</button>
+                                            <div class="linkElement">
+                                                <input type="submit" class="button buttonGreen" value="Search" />
+                                                <button type="button" class="button buttonRed" onclick="closePracticesDropdown()">Close</button>
+                                            </div>
                                         </div>
                                     </ul>
-                                    <button class="btn btn-sm btn-danger" type="reset" onclick="resetPracticesFilter()">Reset Filter</button>
                                 </div>
                             </form>
                         </div>
                     </div>
-                    <div id="practicesModalTable">
+                    <div id="practicesModalTable" class="table-responsive w-100 m-auto">
                         <partial name="_CoachModalTable" model="this.Model" />
                     </div>
                 </div>
                 <div class="modal-footer noPrintIfModal">
-                    <button class="btn btn-sm btn-secondary" onclick="window.print()">Print These Results</button>
-                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                    <div class="linkElement">
+                        <button class="button buttonGreen calendar-full" onclick="window.print()">Print These Results</button>
+                        <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             }
             else
@@ -90,7 +96,9 @@
                     <h1 class="text-danger text-center display-5">You have no Teams</h1>
                 </div>
                 <div class="modal-footer noPrintIfModal">
-                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
+                    <div class="linkElement">
+                        <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             }
         </div>
@@ -112,11 +120,10 @@
 
     $(document).ready(function () {
 
-        $("#coachTeamNameFilterPractices").chosen({
-            no_results_text: "Sorry, I can't find that Team!",
-            placeholder_text_single: "Start typing to select a Team...",
+        $("#coachTeamNameFilterPractices").select2({
+            placeholder: "Start typing to select a Team...",
             width: "100%",
-            search_contains: true
+            dropdownParent: $('#practicesModalPopup')
         });
 
     });
@@ -186,6 +193,7 @@
                 teamName: ''
             },
             success: function (data) {
+                $("#coachTeamNameFilterPractices").val(null).trigger('change');
                 $("#practicesModalTable").html(data);
             }
         });

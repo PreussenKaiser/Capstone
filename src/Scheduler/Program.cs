@@ -1,47 +1,70 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Scheduler.Application.Logging;
+using Scheduler.Application.Middleware;
+using Scheduler.Application.Options;
+using Scheduler.Application.Services;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Repositories;
-using Scheduler.Options;
-using Scheduler.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
 // Configure database
-#if DEBUG
-const string CONN = "Local";
-#else
-const string CONN = "Hosted";
-#endif
-
-string connectionString = builder.Configuration.GetConnectionString(CONN)
+string connectionString = builder.Configuration.GetConnectionString("Default")
 	?? throw new ArgumentException("Could not retrieve connection string.");
 
 builder.Services
 	.AddDbContext<SchedulerContext>(o => o
 		.UseSqlServer(connectionString)
 		.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking))
-	.AddScoped<IScheduleRepository, ScheduleRepository>()
-	.AddScoped<IFieldRepository, FieldRepository>()
-	.AddScoped<ILeagueRepository, LeagueRepository>()
-	.AddScoped<ITeamRepository, TeamRepository>();
+	.AddScoped<IScheduleRepository>(
+		p => new ScheduleRepositoryLogger(
+				new ScheduleRepository(p.GetRequiredService<SchedulerContext>()),
+				p.GetRequiredService<ILogger<IScheduleRepository>>()))
+	.AddScoped<IFieldRepository>(
+		p => new FieldRepositoryLogger(
+				new FieldRepository(p.GetRequiredService<SchedulerContext>()),
+				p.GetRequiredService<ILogger<IFieldRepository>>()))
+	.AddScoped<ILeagueRepository>(
+		p => new LeagueRepositoryLogger(
+				new LeagueRepository(p.GetRequiredService<SchedulerContext>()),
+				p.GetRequiredService<ILogger<ILeagueRepository>>()))
+	.AddScoped<ITeamRepository>(
+		p => new TeamRepositoryLogger(
+				new TeamRepository(p.GetRequiredService<SchedulerContext>()),
+				p.GetRequiredService<ILogger<ITeamRepository>>()));
+
+string timeZone = builder.Configuration
+	.GetSection("TimeZone")
+	.Value
+		?? "Central Standard Time";
 
 builder.Services
 	.AddHostedService<ScheduleCullingService>()
-	.AddSingleton<IDateProvider, SystemDateProvider>()
+	.AddHostedService<LogCullingService>()
+	.AddSingleton<IDateProvider, SystemDateProvider>(p => new(timeZone))
 	.AddSingleton<IEmailSender, SmtpEmailSender>();
 
 builder.Services
-	.AddIdentity<User, Role>()
+	.AddIdentity<User, Role>(opt =>
+	{
+		opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+		opt.Lockout.MaxFailedAccessAttempts = 10;
+	})
 	.AddEntityFrameworkStores<SchedulerContext>()
 	.AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
 	options.ExpireTimeSpan = TimeSpan.FromDays(1);
+});
+
+builder.Services.Configure<SecurityStampValidatorOptions>(o =>
+{
+	o.ValidationInterval = TimeSpan.FromMinutes(1);
 });
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
@@ -53,6 +76,10 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddControllersWithViews();
+
+builder.Logging
+	.ClearProviders()
+	.AddTextLogging();
 
 builder.Services
 	.AddOptions<CullingOptions>()
@@ -70,6 +97,8 @@ builder.Services
 	.ValidateDataAnnotations();
 
 WebApplication app = builder.Build();
+
+app.UseMiddleware<LoggingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

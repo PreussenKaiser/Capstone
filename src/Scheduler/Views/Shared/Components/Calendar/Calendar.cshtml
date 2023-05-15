@@ -1,11 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Scheduler.Domain.Services;
 @using Scheduler.Web.Controllers;
 
+@inject IDateProvider DateProvider
 @inject SignInManager<User> SignInManager
 
 @{
-    // The current year is stored.
-    int currentDate = DateTime.Now.Year;
+    int currentDate = this.DateProvider.Now.Year;
 
     // The list to store the years used for the select.
     List<int> yearList = new() { currentDate };
@@ -16,14 +17,14 @@
         yearList.Add(currentDate + i);
     }
 
-    int weeks = (int)ViewData["NumberOfWeeks"];
-    int previousYear = (int)ViewData["previousYear"];
-    int previousMonth = (int)ViewData["previousMonth"];
-    int nextYear = (int)ViewData["nextYear"];
-    int nextMonth = (int)ViewData["nextMonth"];
-    int currentMonth = (int)ViewData["Month"];
-    int currentYear = (int)ViewData["Year"];
-    string currentMonthName = (string)ViewData["MonthName"];
+    int weeks = (int)this.ViewData["NumberOfWeeks"];
+    int previousYear = (int)this.ViewData["previousYear"];
+    int previousMonth = (int)this.ViewData["previousMonth"];
+    int nextYear = (int)this.ViewData["nextYear"];
+    int nextMonth = (int)this.ViewData["nextMonth"];
+    int currentMonth = (int)this.ViewData["Month"];
+    int currentYear = (int)this.ViewData["Year"];
+    string currentMonthName = (string)this.ViewData["MonthName"];
 }
 
 <div class="calendar noPrintIfModal table-responsive w-100 m-auto">
@@ -74,7 +75,7 @@
                 </th>
             </tr>
             <tr class="text-center">
-                <th><button class="btn btn-sm btn-danger month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a List of all Events for this Month."></i></button></th>
+                <th><button class="button buttonRed month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this month."></i></button></th>
                 <th>Sunday</th>
                 <th>Monday</th>
                 <th>Tuesday</th>
@@ -95,11 +96,10 @@
                             DateTime endOfWeek = (DateTime)ViewData["Week" + i + "End"];
                             DateTime startOfWeek = (DateTime)ViewData["Week" + i + "Start"];
                             DateTime currentDay = (DateTime)ViewData["CurrentDay"];
-
                         }
                         @if (endOfWeek >= currentDay)
                         {
-                            <button class="btn btn-sm btn-warning" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a List of all Events for this Week."></i></button>
+                            <button class="button buttonYellow week-button" onclick="weekModal(@startOfWeek.Year, @startOfWeek.Month, @startOfWeek.Day)">Weekly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a list of all Events for this week."></i></button>
                         }
                     </td>
 
@@ -123,10 +123,10 @@
                                         <span class="calendar-event">@currentWeek[ii+6] Events</span>
                                     }
                                     <hr>
-                                    <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">LIST <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="View a List of all Events for this Day."></i></button>
+                                    <button class="btn btn-sm btn-secondary day-button" onclick="dayModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">LIST <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="View a list of all Events for this day."></i></button>
                                     @if (this.SignInManager.IsSignedIn(this.User))
                                     {
-                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Access the Interactive Scheduling Grid for this Day."></i></button>
+                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Access the Interactive Scheduling Grid for this day."></i></button>
                                     }
                                 }
                                 else
@@ -135,7 +135,7 @@
                                     <hr>
                                     @if (this.SignInManager.IsSignedIn(this.User))
                                     {
-                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Access the Interactive Scheduling Grid for this Day."></i></button>
+                                        <button class="btn btn-sm btn-dark day-button" onclick="gridModal(@buttonDate.Year, @buttonDate.Month, @buttonDate.Day)">GRID <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Access the Interactive Scheduling Grid for this day."></i></button>
                                     }
                                 }
                             }
@@ -177,7 +177,7 @@
                 </th>
             </tr>
             <tr class="text-start">
-                <th colspan="4"><button class="btn btn-sm btn-danger" onclick="monthModal(@currentYear, @currentMonth)">Monthly List <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="View a List of all Events for this Month."></i></button></th>
+                <th colspan="4"><button class="button buttonRed month-button" onclick="monthModal(@currentYear, @currentMonth)">Monthly List</button></th>
             </tr>
             <tr class="text-center">
                 <th>Sun</th>
@@ -246,6 +246,9 @@
 
 <div id="modal">
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     var calendar = document.getElementById('calendar-full');
@@ -352,6 +355,16 @@
         });
     }
 
+    $(document).on('click', '.month-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
+
     function weekModal(year, month, start) {
         $.ajax({
             url: '@Url.Action("weekModal", "Dashboard")',
@@ -366,6 +379,16 @@
         });
     }
 
+    $(document).on('click', '.week-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
+
     function dayModal(year, month, date) {
         $.ajax({
             url: '@this.Url.Action("dayModal", "Dashboard")',
@@ -379,6 +402,16 @@
             }
         });
     }
+
+    $(document).on('click', '.day-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
 
     function gridModal(year, month, date) {
         $.ajax({

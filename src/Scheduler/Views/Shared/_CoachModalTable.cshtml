@@ -59,7 +59,7 @@
                 @(type)s for Team @team.Name
             </h5>
 
-            <table class="table-bordered w-100 m-auto text-center">
+            <table class="table-bordered w-100 m-auto text-center list-table">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -101,7 +101,9 @@
                                      this.User.Identity.IsAuthenticated)
                                 {
                                     <td>
-                                        <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
+                                        <form action="@Url.Action("Details", "Schedule", new { id = e.Id })" method="post">
+                                            <button type="submit" class="button buttonRed">Details</button>
+                                        </form>
                                     </td>
                                 }
                             </tr>
@@ -124,13 +126,15 @@
                                 <td>@homeTeam.Name</td>
                                 <td class="bg-secondary"></td>
 
-                                    @if (this.User.Identity is not null &&
-                                         this.User.Identity.IsAuthenticated)
-                                    {
-                                        <td>
-                                            <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
-                                        </td>
-                                    }
+                                @if (this.User.Identity is not null &&
+                                        this.User.Identity.IsAuthenticated)
+                                {
+                                    <td>
+                                        <form action="@Url.Action("Details", "Schedule", new { id = e.Id })" method="post">
+                                            <button type="submit" class="button buttonRed">Details</button>
+                                        </form>
+                                    </td>
+                                }
                             </tr>
                         }
                     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scheduler.Domain.Models;
+using Scheduler.Domain.Services;
 using Scheduler.Infrastructure.Persistence;
 
 namespace Scheduler.Infrastructure.Extensions;
@@ -15,11 +16,13 @@ public static class SchedulerContextExtensions
 	/// <typeparam name="TEvent">The type of event to get scheduling information with.</typeparam>
 	/// <param name="events">The events <see cref="IQueryable{T}"/> to add scheduling to.</param>
 	/// <returns>A <see cref="IQueryable{T}"/> of events with scheduling information and formatting.</returns>
-	public static IQueryable<TEvent> WithScheduling<TEvent>(this IQueryable<TEvent> events)
-		where TEvent : Event
+	public static IQueryable<TEvent> WithScheduling<TEvent>(
+		this IQueryable<TEvent> events,
+		IDateProvider dateProvider)
+			where TEvent : Event
 	{
 		return events
-			.Where(e => e.EndDate >= DateTime.Now)
+			.Where(e => e.EndDate >= dateProvider.Now)
 			.OrderBy(e => e.StartDate)
 			.Include(e => e.Recurrence)
 			.Include(e => e.Field);

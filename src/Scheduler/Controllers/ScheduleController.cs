@@ -7,7 +7,6 @@ using Scheduler.Domain.Specifications;
 using Scheduler.ViewModels;
 using Scheduler.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Scheduler.Domain.Utility;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Teams;
 
@@ -25,12 +24,21 @@ public sealed class ScheduleController : Controller
 	private readonly IScheduleRepository scheduleRepository;
 
 	/// <summary>
+	/// API for retrieving dates.
+	/// </summary>
+	private readonly IDateProvider dateProvider;
+
+	/// <summary>
 	/// Initializes the <see cref="ScheduleController"/> class.
 	/// </summary>
 	/// <param name="scheduleRepository">The repository to execute queries and commands against.</param>
-	public ScheduleController(IScheduleRepository scheduleRepository)
+	/// <param name="dateProvider">API for retrieving dates.</param>
+	public ScheduleController(
+		IScheduleRepository scheduleRepository,
+		IDateProvider dateProvider)
 	{
 		this.scheduleRepository = scheduleRepository;
+		this.dateProvider = dateProvider;
 	}
 
 	/// <summary>
@@ -49,12 +57,36 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <returns>A form for scheduling an event.</returns>
 	[TypeFilter(typeof(ChangePasswordFilter))]
-	public IActionResult Index(DateTime? date = null, string field = "")
+	public IActionResult Index(
+		DateTime? date = null,
+		Guid? fieldId = null)
 	{
-		this.ViewData["enteredDate"] = date;
-		this.ViewData["field"] = field;
+		DateTime startDate = this.dateProvider.Now;
 
-		return this.View();
+		if (date is null)
+		{
+			DateTime currentTime = startDate.AddHours(1);
+
+			startDate = new DateTime(
+				currentTime.Year,
+				currentTime.Month,
+				currentTime.Day,
+				currentTime.Hour,
+				0, 0);
+		}
+		else
+		{
+			startDate = (DateTime)date;
+		}
+
+		Event scheduledEvent = new()
+		{
+			FieldId = fieldId,
+			StartDate = startDate,
+			EndDate = startDate.AddMinutes(30)
+		};
+
+		return this.View(scheduledEvent);
 	}
 
 	/// <summary>
@@ -78,6 +110,45 @@ public sealed class ScheduleController : Controller
 		}
 
 		return this.View(scheduledEvent);
+	}
+
+	[HttpGet]
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	[Authorize(Roles = Role.ADMIN)]
+	public async Task<IActionResult> CloseFacility(
+		[FromServices] UserManager<User> userManager)
+	{
+		var user = await userManager.GetUserAsync(this.User);
+
+		Event closeoutEvent = new Event()
+		{
+			// Tomorrow at 8 am and a month from tomorrow at 11 pm
+			Id = Guid.NewGuid(),
+			UserId = user.Id,
+			StartDate = this.dateProvider.Now.Date.AddDays(1),
+			EndDate = this.dateProvider.Now.Date.AddMonths(1).AddDays(1),
+			RecurrenceId = null,
+			Name = "Facility Closed",
+			IsBlackout = true
+		};
+
+		return this.View(closeoutEvent);
+	}
+
+	[HttpPost]
+	[TypeFilter(typeof(ChangePasswordFilter))]
+	public async Task<IActionResult> CloseFacility(Event closeoutEvent)
+	{
+		if (!this.ModelState.IsValid)
+		{
+			return this.View(closeoutEvent);
+		}
+
+		closeoutEvent.EndDate = closeoutEvent.EndDate.AddHours(23).AddMinutes(59);
+
+		await this.scheduleRepository.ScheduleAsync(closeoutEvent);
+
+		return this.View("~/Views/Schedule/Details.cshtml", closeoutEvent);
 	}
 }
 
@@ -144,6 +215,12 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.View("~/Views/Schedule/Index.cshtml", scheduledEvent);
 		}
 
+		if (scheduledEvent.IsBlackout &&
+			!this.User.IsInRole(Role.ADMIN))
+		{
+			return this.BadRequest();
+		}
+
 		await this.scheduleRepository.ScheduleAsync(scheduledEvent);
 
 		return this.RedirectToAction(
@@ -176,6 +253,12 @@ public abstract class ScheduleController<TEvent> : Controller
 		if (!this.ModelState.IsValid)
 		{
 			return this.View("~/Views/Schedule/Details.cshtml", values);
+		}
+
+		if (values.IsBlackout &&
+			!this.User.IsInRole(Role.ADMIN))
+		{
+			return this.BadRequest();
 		}
 
 		await this.scheduleRepository.RescheduleAsync(values);

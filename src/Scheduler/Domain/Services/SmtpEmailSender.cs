@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Scheduler.Options;
+using Scheduler.Application.Options;
 using System.Net;
 using System.Net.Mail;
 

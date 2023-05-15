@@ -2216,10 +2216,6 @@ html, body {
     background: #fff;
 }
 
-.layoutContainer {
-    padding: 0;
-}
-
 .snFooterContainer {
     width: 100%;
     max-width: 1000px;

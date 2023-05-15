@@ -2,28 +2,27 @@
 
 @{
     IEnumerable<Team> teams = (IEnumerable<Team>)this.ViewData["Teams"];
-    string typeFilterMessage = (string)ViewData["TypeFilterMessage"];
-    string nameFilterMessage = (string)ViewData["NameFilterMessage"];
-    string teamFilterMessage = (string)ViewData["TeamFilterMessage"];
-    
+    string typeFilterMessage = (string)this.ViewData["TypeFilterMessage"];
+    string nameFilterMessage = (string)this.ViewData["NameFilterMessage"];
+    string teamFilterMessage = (string)this.ViewData["TeamFilterMessage"];
 }
 
-@if (Model != null && Model.Count() > 0)
+@if (this.Model != null && this.Model.Count() > 0)
 {
-    if(typeFilterMessage != "")
+    if (typeFilterMessage != "")
     {
         <h5 class="text-center lead text-danger">@typeFilterMessage</h5>
     }
-    if(nameFilterMessage != "")
+    if (nameFilterMessage != "")
     {
         <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
     }
-    if(teamFilterMessage != "")
+    if (teamFilterMessage != "")
     {
         <h5 class="text-center lead text-danger">@teamFilterMessage</h5>
     }
     <br />
-    <table class="table-bordered w-100 m-auto text-center">
+    <table class="table-bordered text-center w-100 m-auto list-table">
         <thead>
             <tr>
                 <th>Name</th>
@@ -78,7 +77,9 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <td>
-                            <a asp-action="Details" asp-controller="Schedule" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Details</a>
+                            <form action="@this.Url.Action("Details", "Schedule", new { id = e.Id })" method="get">
+                                <button type="submit" class="button buttonRed">Details</button>
+                            </form>
                         </td>
                     }
                 </tr>

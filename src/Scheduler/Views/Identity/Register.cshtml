@@ -50,16 +50,20 @@
 
             <div class="row">
                 <div class="col-6">
-                    <a asp-action="Events"
-                       asp-controller="Dashboard"
-                       class="btn btn-lg btn-danger w-100">
-                        Cancel
-                    </a>
+                    <div class="linkElement">
+                        <a asp-action="Users"
+                           asp-controller="Dashboard"
+                           class="button buttonRedOutline w-100">
+                            Cancel
+                        </a>
+                    </div>
                 </div>
                 <div class="col-6">
-                    <button type="submit" class="btn btn-lg btn-primary w-100">
-                        Register
-                    </button>
+                    <div class="linkElement">
+                        <button type="submit" class="formSubmit button buttonGreen w-100">
+                            Register
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>

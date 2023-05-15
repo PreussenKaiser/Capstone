@@ -5,6 +5,92 @@ html {
     background-color: #000000;
 }
 
+.week-button {
+    font-size: 14px;
+}
+
+.button {
+    color: white !important;
+    line-height: 1.3;
+    text-decoration: none;
+    transition: background-color .2s;
+    text-align: center;
+}
+
+.buttonRed {
+    background-color: #c9000a;
+    border: solid #c9000a !important;
+}
+
+.buttonRedOutline {
+    background-color: transparent !important;
+    border: solid #c9000a;
+    color: black !important;
+    box-shadow: none !important;
+}
+
+.buttonGreen {
+    background-color: #095211;
+    border: solid #095211;
+}
+
+.buttonYellow {
+    background-color: #d1932e;
+    border: solid #d1932e;
+    box-shadow: 0 -3px #d1932e inset;
+}
+
+.linkElement .buttonRed:after {
+    color: #000000;
+    font-family: FontAwesome;
+    transition: color .2s;
+}
+
+.linkElement button {
+    line-height: 1.3;
+    display: inline-block;
+    text-decoration: none;
+    transition: background-color .2s;
+}
+
+.formSubmit {
+    display: inline-block;
+    color: #fff !important;
+    text-decoration: none;
+    transition: background-color .2s;
+    width: 40%;
+    background-color: #095211;
+    box-shadow: 0 -3px #095211 inset;
+    padding: 10px 20px 10px 10px;
+    margin-bottom: 0px;
+    line-height: 1.3;
+    font-weight: 400;
+}
+
+.linkElement a {
+    display: inline-block;
+    color: #fff;
+    text-decoration: none;
+    width: 40%;
+    background-color: #c9000a;
+    padding: 10px 20px 10px 10px;
+    margin-bottom: 0px;
+    line-height: 1.3;
+}
+
+.exemptAnchor a {
+    display: inline-block;
+    color: #fff !important;
+    text-decoration: none;
+    transition: background-color .2s;
+    background-color: #c9000a;
+    box-shadow: 0 -3px #af0006 inset;
+    padding: 0px 0px 4px 0px;
+    margin-bottom: 0px;
+    line-height: 1.3;
+    text-align: center;
+}
+
 .site-background {
     position: absolute;
     top: 0;
@@ -32,6 +118,10 @@ html {
 .btn-link {
     color:white;
     font-size:inherit;
+}
+
+.select2-selection__placeholder {
+    font-size: 13px !important;
 }
 
 @media (min-width: 768px) {

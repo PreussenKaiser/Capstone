@@ -1,5 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity;
+@using Scheduler.Domain.Services;
+
+@inject IDateProvider DateProvider
 @inject UserManager<User> UserManager;
+
 @{    
     IEnumerable<Event> events = (IEnumerable<Event>)this.ViewData["Events"];
     IEnumerable<Field> fields = (IEnumerable<Field>)this.ViewData["Fields"];
@@ -11,10 +15,11 @@
 <div class="modal fade" id="gridModalPopup" tabindex="-1" aria-hidden="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header m-auto">
-                <h2 class="text-center">@title</h2>
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body fix-head">
+                <h2 class="mb-4">@title</h2>
                 <table id="grid-table" class="table table-sm table-bordered" style="width:@tableWidth%">
                     <thead>
                         <tr>
@@ -57,13 +62,13 @@
                             {
                                 timestring += ":30";
                             }
-                            if (daypart == 0)
+                            if (daypart == 0 && halfHour != 30)
                             {
-                                timestring += " AM";
+                                timestring += " am";
                             }
-                            else
+                            else if (halfHour != 30)
                             {
-                                timestring += " PM";
+                                timestring += " pm";
                             }
                             if (hour > 7 && hour < 23)
                             {
@@ -71,7 +76,7 @@
                                 Guid userId = Guid.NewGuid();
 
                                 <tr>
-                                    <td>@timestring</td>
+                                    <td class="grid-time">@timestring</td>
 
                                     @foreach (var f in fields)
                                     {
@@ -247,19 +252,18 @@
                                         DateTime squareDate = new DateTime(squareYear, squareMonth, squareDay, squareHour, squareMinutes, 0);
                                         if (eventhit == 0)
                                         {
-                                            if (squareDate > DateTime.Now)
+                                            if (squareDate > this.DateProvider.Now)
                                             {
-                                                <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-field="@squareField">*</a></td>
+                                                <td><a asp-controller="Schedule" asp-action="" asp-route-date="@squareDate" asp-route-fieldId="@f.Id">*</a></td>
                                             }
                                             else
                                             {
                                                 <td class="bg-warning"></td>
                                             }
-
                                         }
                                         else
                                         {
-                                            if (squareDate > DateTime.Now)
+                                            if (squareDate > this.DateProvider.Now)
                                             {
                                                 <td class="bg-danger"><a asp-action="Details" asp-controller="Schedule" asp-route-id="@eventId">*</a></td>
                                                 
@@ -292,7 +296,9 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <div class="linkElement">
+                    <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>

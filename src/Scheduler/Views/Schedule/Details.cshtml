@@ -1,24 +1,28 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using Microsoft.EntityFrameworkCore;
 @using Scheduler.Domain.Repositories;
+@using Scheduler.Domain.Services;
 @using Scheduler.Domain.Specifications;
 @using System.Security.Claims;
 @using System.Text;
+@using Scheduler;
 
-@inject UserManager<User> UserManager
 @inject ITeamRepository TeamRepository
 @inject IFieldRepository FieldRepository
+@inject IDateProvider DateProvider
+@inject UserManager<User> UserManager
 
 @model Event
 
 @{
-    this.ViewData["Title"] = "Reschedule Event";
-    string today = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
-    string startDateString = Model.StartDate.ToString("yyyy-MM-ddTHH:mm");
-    string endDateString = Model.EndDate.ToString("yyyy-MM-ddTHH:mm");
+    this.ViewData["Title"] = this.Model.Name;
+
+    string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
+    string startDateString = this.Model.StartDate.ToString(Constants.DATE_FORMAT);
+    string endDateString = this.Model.EndDate.ToString(Constants.DATE_FORMAT);
 
     string eventType = this.Model.GetType().Name;
-    bool recurringEvent = this.Model.Recurrence is not null;
+    bool recurringEvent = this.Model.RecurrenceId is not null;
     bool canEdit = this.User.IsInRole(Role.ADMIN) ||
                    this.UserManager.GetUserId(this.User) == this.Model.UserId.ToString();
 
@@ -32,10 +36,10 @@
 
 <div class="row">
     <div class="col-sm-6 mx-auto">
-        <div class="mb-3">
-            <a asp-action="Events" asp-controller="Dashboard" class="btn btn-sm btn-danger">
-                < Back
-            </a>
+        <div class="mb-2">
+            <form action="@this.Url.Action("Events", "Dashboard")" method="get">
+                <button type="submit" class="button buttonRed">< Back</button>
+            </form>
         </div>
 
         <form method="post" action="">
@@ -52,37 +56,43 @@
 
                         @if (canEdit)
                         {                
-                            <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#detailsModal">
-                                Edit <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Name of this Event, or Participating Teams."></i>
+                            <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#detailsModal">
+                                Edit <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Name of this Event, or Participating Teams."></i>
                             </button>
                             <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">@this.Model.Name Details</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col">
                                                     <div class="mb-3">
                                                         <label asp-for="Name" class="form-label h6"></label>
                                                         <input asp-for="Name" class="form-control" />
                                                         <span asp-validation-for="Name" class="text-danger"></span>
                                                     </div>
+                                                    <div class="mb-3">
+                                                        @if (eventType != nameof(Event))
+                                                        {
+                                                            <partial name="Forms/_@(eventType)Inputs" />
+                                                        }
+                                                    </div>
+                                                </div>
 
-                                                    @if (eventType != nameof(Event))
-                                                    {
-                                                        <partial name="Forms/_@(eventType)Inputs" />
-                                                    }
-                                                </div>
-                                                <div class="col-6">
-                                                    <partial name="Forms/_UpdateTypeInput" />
-                                                </div>
+                                                @if (recurringEvent)
+                                                {
+                                                    <div class="col-6">
+                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
-                                            <input asp-action="EditDetails" asp-controller="@eventType" type="submit" value="Submit" class="btn btn-sm btn-primary" />
+                                            <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Close</button>
+                                            <input asp-action="EditDetails" asp-controller="@eventType" type="submit" value="Submit" class="button buttonGreen" />
                                         </div>
                                     </div>
                                 </div>
@@ -122,9 +132,7 @@
                                 {
                                     <h6>Teams</h6>
                                     <small>
-                                        @homeTeam.Name
-                                        vs.
-                                        @opposingTeam.Name
+                                        @homeTeam.Name vs. @opposingTeam.Name
                                     </small>
                                 }
                             }
@@ -137,14 +145,15 @@
                         <div class="d-grid gap-2 d-md-block">
                             @if (canEdit)
                             {             
-                                <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
-                                    Reschedule <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Times of this Event."></i>
+                                <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
+                                    Reschedule <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Times of this Event."></i>
                                 </button>
                                 <div class="modal fade" id="rescheduleModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Reschedule Event</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
@@ -181,26 +190,30 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-6">
-                                                        <partial name="Forms/_UpdateTypeInput" />
-                                                    </div>
+                                                    @if (recurringEvent)
+                                                    {
+                                                        <div class="col-6">
+                                                            <partial name="Forms/_UpdateTypeInput" />
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Back</button>
-                                                <input asp-action="Reschedule" asp-controller="@eventType" type="submit" value="Reschedule" class="btn btn-sm btn-primary" />
+                                                <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Close</button>
+                                                <input asp-action="Reschedule" asp-controller="@eventType" type="submit" value="Reschedule" class="button buttonGreen" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                                    Cancel Event <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel this Event."></i>
+                                <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                    Cancel Event <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel this Event."></i>
                                 </button>
                                 <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Cancel @eventType</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
@@ -210,14 +223,17 @@
                                                             It and all recurrences will be permanently removed.
                                                         </p>
                                                     </div>
-                                                    <div class="col-6">
-                                                        <partial name="Forms/_UpdateTypeInput" />
-                                                    </div>
+                                                    @if (recurringEvent)
+                                                    {
+                                                        <div class="col-6">
+                                                            <partial name="Forms/_UpdateTypeInput" />
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal">No, Go Back</button>
-                                                <input asp-action="Cancel" asp-controller="@eventType" type="submit" value="Yes, Cancel It" class="btn btn-sm btn-danger" />
+                                                <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Close</button>
+                                                <input asp-action="Cancel" asp-controller="@eventType" type="submit" value="Yes, Cancel It" class="button buttonGreen" />
                                             </div>
                                         </div>
                                     </div>
@@ -244,43 +260,59 @@
                         
                         @if (canEdit)
                         {   
-                            <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#relocateModal">
-                                Relocate <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Location of this Event."></i>
+                            <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#relocateModal">
+                                Relocate <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Location of this Event."></i>
                             </button>
                             <div class="modal fade" id="relocateModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Relocate Event</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-6">
-                                                    <div class="form-check mb-3">
-                                                        <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
-                                                        <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
-                                                    </div>
                                                     <div class="mb-3">
                                                         <label asp-for="FieldId" class="form-label"></label>
-                                                        <select data-val="false" asp-for="FieldId" asp-items="fieldList" class="form-select"></select>
+                                                        <select data-val="false" asp-for="FieldId" id="fields" asp-items="fieldList" class="form-select"></select>
                                                         <span asp-validation-for="FieldId" class="text-danger"></span>
                                                     </div>
+                                                    @if (this.User.IsInRole(Role.ADMIN) &&
+                                                         eventType == nameof(Event))
+                                                    {                                               
+                                                        <div class="form-check mb-3">
+                                                            <input asp-for="IsBlackout" type="checkbox" class="form-check-input">
+                                                            <label asp-for="IsBlackout" class="form-check-label">Blackout Facility?</label>
+                                                        </div>
+                                                    }
                                                 </div>
                                                 <div class="col-6">
-                                                    <partial name="Forms/_UpdateTypeInput" />
+                                                    @if (recurringEvent)
+                                                    {
+                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Close</button>
-                                            <input asp-action="Relocate" asp-controller="@eventType" type="submit" value="Relocate" class="btn btn-sm btn-primary" />
+                                            <button type="button" class="button buttonRedOutline" data-bs-dismiss="modal">Close</button>
+                                            <input asp-action="Relocate" asp-controller="@eventType" type="submit" value="Relocate" class="button buttonGreen" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         }
                     </div>
-                    @this.Model.Field?.Name
+
+                    @if (this.Model.IsBlackout)
+                    {
+                        <span>Entire Facility</span>
+                    }
+                    else
+                    {
+                        @this.Model.Field?.Name
+                    }
                 </li>
             </ul>
         </form>
@@ -298,6 +330,32 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script>
+    $(document).ready(function () {
+
+        $("#practiceTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%",
+            dropdownParent: $('#detailsModal')
+        });
+
+        $("#homeTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%",
+            dropdownParent: $('#detailsModal')
+        });
+
+        $("#opposingTeams").select2({
+            placeholder: "Start typing to select a Team...",
+            width: "100%",
+            dropdownParent: $('#detailsModal')
+        });
+
+        $("#fields").select2({
+            width: "100%",
+            dropdownParent: $('#relocateModal')
+        });
+
+    });
      var startDateString = "@startDateString";
      var endDateString = "@endDateString";
      var minDateString = "@today";
@@ -324,6 +382,7 @@
              endDate: endDateFormatted,
              minDate: minDateFormatted,
              timePickerIncrement: 30,
+             drops: "down",
              locale: {
                  format: 'M/DD hh:mm A'
              }

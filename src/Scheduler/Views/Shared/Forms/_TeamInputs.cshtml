@@ -14,13 +14,13 @@
 
 @{
     var UserList = UserManager.Users
-        .Select(user => new SelectListItem
-        {
-            Text = string.Join(" ", user.FirstName, user.LastName),
-            Value = user.Id.ToString(),
-            Selected = Model != null && Model.UserId == user.Id
-        })
-        .ToList();
+       .Select(user => new SelectListItem
+               {
+                   Text = user.ToString(),
+                   Value = user.Id.ToString(),
+                   Selected = Model != null && Model.UserId == user.Id
+               })
+       .ToList();
 
     UserList.Add(new SelectListItem { Text = "Visiting Coach", Value = null, Selected = false });
 }
@@ -35,7 +35,7 @@
     </div>
     <div class="col-sm-6">
         <label asp-for="UserId" class="form-label">Coach</label>
-        <select asp-for="UserId" class="form-select">
+        <select asp-for="UserId" id="coaches" class="form-select">
             @foreach (var user in UserList)
             {
                 <option value=@user.Value>@user.Text</option>
@@ -46,17 +46,29 @@
 </div>
 
 <div class="row mb-3">
-    <div class="col-6">
+    <div class="col-6 linkElement">
         <a asp-action="Details"
            asp-controller="League"
            asp-route-id="@this.Model.LeagueId"
-           class="btn btn-lg btn-danger w-100">
+           class="button buttonRedOutline w-100">
             Cancel
         </a>
     </div>
-    <div class="col-6">
-        <button type="submit" class="btn btn-lg btn-primary w-100">
+    <div class="col-6 linkElement">
+        <button type="submit" class="formSubmit button buttonGreen w-100">
             Submit
         </button>
     </div>
 </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#coaches").select2({
+            width: "100%"
+        });
+
+    });
+</script>
