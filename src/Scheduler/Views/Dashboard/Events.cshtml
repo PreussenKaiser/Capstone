@@ -20,7 +20,7 @@
 		@if (this.User.IsInRole(Role.ADMIN))
 		{
 			<form action="@this.Url.Action("CloseFacility", "Schedule")" method="get">
-				<button type="submit" class="button buttonGreen mt-3" value="Update">Close Facility <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Close the entire PCYS Facility for a length of time."></i></button>
+				<button type="submit" class="button buttonYellow mt-3" value="Update">Close Facility <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Close the entire PCYS Facility for a length of time."></i></button>
 			</form>
 		}
 	</div>

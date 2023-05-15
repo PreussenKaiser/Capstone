@@ -18,7 +18,7 @@
 <div class="row mb-3">
     <div class="col-lg">
         <label asp-for="TeamId" class="form-label"></label>
-        <select title="Practicing Team" id="practiceTeams" asp-for="TeamId" class="form-select">
+        <select title="Practicing Team" id="TeamId" asp-for="TeamId" class="form-select">
             <option value=""></option>
             @foreach (SelectListItem t in teamsSelect)
             {
@@ -31,11 +31,9 @@
 
 <script>
     $(document).ready(function () {
-
-        $("#practiceTeams").select2({
+        $("#TeamId").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%"
         });
-
     });
 </script>

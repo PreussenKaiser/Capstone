@@ -95,12 +95,12 @@
                             else
                             {
                                 <select data-val="false" class="form-select" asp-for="FieldId" id="fieldSelect">
-                                <option value=""></option>
-                                @foreach (SelectListItem f in fields)
-                                {
-                                    <option value=@f.Value>@f.Text</option>
-                                }
-                            </select>
+                                    <option value=""></option>
+                                    @foreach (SelectListItem f in fields)
+                                    {
+                                        <option value=@f.Value>@f.Text</option>
+                                    }
+                                </select>
                             }
                             
                             <span asp-validation-for="FieldId" class="text-danger"></span>
@@ -154,7 +154,7 @@
                     </a>
                 </div>
                 <div class="col-6 linkElement">
-                    <input type="submit" class="formSubmit button buttonGreen w-100" />
+                    <input type="submit" class="formSubmit button buttonYellow w-100" />
                 </div>
             </div>
         </form>
@@ -167,53 +167,41 @@
     <script src="~/js/EventForm.js"></script>
     <script>
         document.onload = navClick('@eventType');
-    </script>
-    <script>
-        $(document).ready(function () {
 
-            $("#fieldSelect").select2({
-                placeholder: "Start typing to select a Field...",
-                width: "100%"
-            });
-
+        $("#fieldSelect").select2({
+            placeholder: "Start typing to select a Field...",
+            width: "100%"
         });
+
         var startDateString = "@this.Model.StartDate.ToString(DATE_FORMAT)";
         var endDateString = "@this.Model.EndDate.ToString(DATE_FORMAT)";
         var minDateString = "@this.DateProvider.Now.ToString(DATE_FORMAT)";
-        var startDate;
-        var startDateFormatted;
-        var endDate;
-        var endDateFormatted;
-        var minDate;
-        var minDateFormatted;
 
-        startDate = moment(startDateString, "YYYY-MM-DDTHH:mm"); // Parse the start date string and specify the format
-        startDateFormatted = startDate.format('M/DD/YYYY hh:mm A'); // Format the start date as desired
-        endDate = moment(endDateString, "YYYY-MM-DDTHH:mm"); // Parse the end date string and specify the format
-        endDateFormatted = endDate.format('M/DD/YYYY hh:mm A'); // Format the end date as desired
-        minDate = moment(minDateString, "YYYY-MM-DDTHH:mm"); // Parse the min date string and specify the format
-        minDateFormatted = minDate.format('M/DD/YYYY hh:mm A'); // Format the min date as desired
+        var startDate = moment(startDateString, "YYYY-MM-DDTHH:mm");
+        var startDateFormatted = startDate.format('M/DD/YYYY hh:mm A');
+        var endDate = moment(endDateString, "YYYY-MM-DDTHH:mm");
+        var endDateFormatted = endDate.format('M/DD/YYYY hh:mm A');
+        var minDate = moment(minDateString, "YYYY-MM-DDTHH:mm");
+        var minDateFormatted = minDate.format('M/DD/YYYY hh:mm A');
 
-        $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
-        $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+        $('#StartDate').val(startDateFormatted);
+        $('#EndDate').val(endDateFormatted);
 
-        $(function () {
-            $('input[name="daterange"]').daterangepicker({
-                timePicker: true,
-                startDate: startDateFormatted,
-                endDate: endDateFormatted,
-                minDate: minDateFormatted,
-                timePickerIncrement: 30,
-                drops: "down",
-                locale: {
-                    format: 'M/DD hh:mm A'
-                }
-            }).on('apply.daterangepicker', function (ev, picker) {
-                startDateFormatted = picker.startDate.format('M/DD/YYYY hh:mm A');
-                endDateFormatted = picker.endDate.format('M/DD/YYYY hh:mm A');
-                $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
-                $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
-            });
+        $('input[name="daterange"]').daterangepicker({
+            timePicker: true,
+            startDate: startDateFormatted,
+            endDate: endDateFormatted,
+            minDate: minDateFormatted,
+            timePickerIncrement: 30,
+            drops: "up",
+            locale: {
+                format: 'M/DD hh:mm A'
+            }
+        }).on('apply.daterangepicker', function (ev, picker) {
+            startDateFormatted = picker.startDate.format('M/DD/YYYY hh:mm A');
+            endDateFormatted = picker.endDate.format('M/DD/YYYY hh:mm A');
+            $('#StartDate').val(startDateFormatted);
+            $('#EndDate').val(endDateFormatted);
         });
     </script>
 }
