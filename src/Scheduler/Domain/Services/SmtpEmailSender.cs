@@ -25,6 +25,8 @@ public sealed class SmtpEmailSender : IEmailSender
 	/// </summary>
 	private readonly EmailOptions emailOptions;
 
+	private static object locker;
+
 	/// <summary>
 	/// Initializes the <see cref="SmtpEmailSender"/> class.
 	/// </summary>
@@ -51,6 +53,11 @@ public sealed class SmtpEmailSender : IEmailSender
 		};
 	}
 
+	static SmtpEmailSender()
+	{
+		locker = new { };
+	}
+
 	/// <inheritdoc/>
 	public async Task SendAsync(
 		string to, string subject, string body)
@@ -62,6 +69,9 @@ public sealed class SmtpEmailSender : IEmailSender
 			IsBodyHtml = true
 		};
 
-		await this.client.SendMailAsync(message);
+		lock (locker)
+		{
+			await this.client.SendMailAsync(message);
+		}
 	}
 }
