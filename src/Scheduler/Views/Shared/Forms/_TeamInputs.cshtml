@@ -5,9 +5,14 @@
 @using Scheduler.Domain.Specifications;
 @using Scheduler.Domain.Repositories;
 
-@inject UserManager<User> UserManager;
-@inject ILeagueRepository LeagueRepository;
+@inject UserManager<User> UserManager
+@inject ILeagueRepository LeagueRepository
 @model Team
+
+@if (this.Model is not null)
+{
+    <input hidden asp-for="Id" value="@this.Model.Id" />
+}
 
 @{
     List<SelectListItem> userList = UserManager.Users
@@ -89,13 +94,9 @@
         $("#coaches").select2({
             width: "100%"
         });
-<<<<<<< HEAD
-=======
 
         $("#leagues").select2({
             width: "100%"
         });
-
->>>>>>> dev
     });
 </script>

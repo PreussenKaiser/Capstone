@@ -435,28 +435,22 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
-<<<<<<< HEAD
+		IEnumerable<Field> fields = await this.context.Fields.ToListAsync();
 
 		this.ViewData["Events"] = await this
 			.DateSearch(eventDate, eventDate)
 			.ToListAsync();
 
-		this.ViewData["Fields"] = await this.context.Fields
-			.OrderBy(f => f.Name)
-			.ToListAsync();
-
-=======
-		this.ViewData["Events"] = await this.DateSearch(eventDate, eventDate).ToListAsync();
-		var fieldList = await this.context.Fields.ToListAsync();
+		// Fallback in case library is borked.
 		try
 		{
-			this.ViewData["Fields"] = fieldList.OrderBy(e => e.Name, new NaturalSortComparer(StringComparison.OrdinalIgnoreCase));
+			this.ViewData["Fields"] = fields.OrderBy(e => e.Name, new NaturalSortComparer(StringComparison.OrdinalIgnoreCase));
 		}
-		catch (Exception ex)
+		catch
 		{
-			this.ViewData["Fields"] = fieldList.OrderBy(e => e.Name);
+			this.ViewData["Fields"] = fields.OrderBy(e => e.Name);
 		}
->>>>>>> dev
+
 		this.ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
 		this.ViewData["CurrentDate"] = eventDate;
 		
