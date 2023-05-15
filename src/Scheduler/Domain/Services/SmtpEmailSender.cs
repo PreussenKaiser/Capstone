@@ -71,7 +71,7 @@ public sealed class SmtpEmailSender : IEmailSender
 
 		lock (locker)
 		{
-			await this.client.SendMailAsync(message);
+			this.client.Send(message);
 		}
 	}
 }
