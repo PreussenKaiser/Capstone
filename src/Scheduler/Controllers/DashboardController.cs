@@ -11,6 +11,9 @@ using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Scheduler.ViewModels;
 using Scheduler.Domain.Services;
+using Microsoft.Extensions.Logging;
+using NaturalSort.Extension;
+using System.Collections.Immutable;
 
 namespace Scheduler.Web.Controllers;
 
@@ -432,6 +435,7 @@ public sealed class DashboardController : Controller
 	public async Task<IActionResult> gridModal(int year, int month, int date)
 	{
 		DateTime eventDate = new DateTime(year, month, date);
+<<<<<<< HEAD
 
 		this.ViewData["Events"] = await this
 			.DateSearch(eventDate, eventDate)
@@ -441,6 +445,18 @@ public sealed class DashboardController : Controller
 			.OrderBy(f => f.Name)
 			.ToListAsync();
 
+=======
+		this.ViewData["Events"] = await this.DateSearch(eventDate, eventDate).ToListAsync();
+		var fieldList = await this.context.Fields.ToListAsync();
+		try
+		{
+			this.ViewData["Fields"] = fieldList.OrderBy(e => e.Name, new NaturalSortComparer(StringComparison.OrdinalIgnoreCase));
+		}
+		catch (Exception ex)
+		{
+			this.ViewData["Fields"] = fieldList.OrderBy(e => e.Name);
+		}
+>>>>>>> dev
 		this.ViewData["Title"] = $"Scheduling Grid for {eventDate.ToString("M")}";
 		this.ViewData["CurrentDate"] = eventDate;
 		

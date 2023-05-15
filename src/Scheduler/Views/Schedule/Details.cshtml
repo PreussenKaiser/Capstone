@@ -18,8 +18,8 @@
     this.ViewData["Title"] = this.Model.Name;
 
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
-    string startDateString = this.Model.StartDate.ToString(Constants.DATE_FORMAT);
-    string endDateString = this.Model.EndDate.ToString(Constants.DATE_FORMAT);
+    string startDateString = this.Model.StartDate.ToString(Constants.DATETIME_FORMAT);
+    string endDateString = this.Model.EndDate.ToString(Constants.DATETIME_FORMAT);
 
     string eventType = this.Model.GetType().Name;
     bool recurringEvent = this.Model.RecurrenceId is not null;

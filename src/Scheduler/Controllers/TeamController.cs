@@ -41,13 +41,14 @@ public sealed class TeamController : Controller
 	/// <summary>
 	/// Displays the <see cref="Add"/> view.
 	/// </summary>
+	/// <param name="id">References the team's <see cref="League"/>, defaults to <see cref="Guid.Empty"/>.</param>
 	/// <returns>Contains a form for adding a <see cref="Team"/>.</returns>
-	public IActionResult Add(Guid leagueId)
+	public IActionResult Add(Guid? id)
 	{
 		Team team = new()
 		{
 			Name = string.Empty,
-			LeagueId = leagueId
+			LeagueId = id ?? Guid.Empty
 		};
 
 		return this.View(team);
