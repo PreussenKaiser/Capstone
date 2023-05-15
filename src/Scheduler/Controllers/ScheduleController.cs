@@ -9,6 +9,7 @@ using Scheduler.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Teams;
+using System.Runtime.CompilerServices;
 
 namespace Scheduler.Web.Controllers;
 

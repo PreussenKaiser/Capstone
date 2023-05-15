@@ -23,9 +23,6 @@
 
 <div class="row text-center px-sm-5 mt-4 noPrintIfModal">
     <div class="col-12 border-bottom border-3 border-danger">
-        <h3 class="text-danger">Welcome to the PCYS Scheduling Application</h3>
-        <p class="lead">Use the Calendar below to search for Dates and Times of Practices, Games, and other Events at the PCYS facility. You can use the Filtering Menu in the List to refine your search.</p>
-        <p class="lead">You can also use the Search Button to search for Events outside of the Calendar. Search by Team Name, Event Name, or a range of Dates.</p>
         @foreach (string warning in this.Model.ClosedWarnings)
         {
             <p class="text-danger lead">@warning</p>
