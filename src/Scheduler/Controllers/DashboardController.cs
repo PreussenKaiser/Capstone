@@ -56,7 +56,6 @@ public sealed class DashboardController : Controller
 	/// Can also be POSTed to in order to provide filtering.
 	/// </summary>
 	/// <returns>A view containing scheduled events.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Events()
 	{
 		return this.View();
@@ -268,7 +267,6 @@ public sealed class DashboardController : Controller
 	/// </summary>
 	/// <returns>A view containing all fields.</returns>
 	[Authorize(Roles = Role.ADMIN)]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Fields(
 		[FromServices] IFieldRepository fieldRepository)
 	{
@@ -284,7 +282,6 @@ public sealed class DashboardController : Controller
 	/// <param name="userManager">The service to get users with.</param>
 	/// <returns>A table containing all users.</returns>
 	[Authorize(Roles = Role.ADMIN)]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Users(
 		[FromServices] UserManager<User> userManager)
 	{
@@ -299,7 +296,6 @@ public sealed class DashboardController : Controller
 	/// <param name="leagueRepository">Queries all leagues.</param>
 	/// <returns>A view displaying all leagues with pagination.</returns>
 	[Authorize]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Leagues(
 		[FromServices] ILeagueRepository leagueRepository)
 	{
