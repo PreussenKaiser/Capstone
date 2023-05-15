@@ -9,8 +9,14 @@ namespace Scheduler.Tests.Unit.Specifications;
 /// </summary>
 public sealed class GameByCoachSpecificationTests
 {
+	/// <summary>
+	/// The game to test against.
+	/// </summary>
 	private readonly Game game;
 
+	/// <summary>
+	/// Initializes test.
+	/// </summary>
 	public GameByCoachSpecificationTests()
 	{
 		this.game = new Game
@@ -20,6 +26,9 @@ public sealed class GameByCoachSpecificationTests
 		};
 	}
 
+	/// <summary>
+	/// Asserts that the specification is satisfied when the coach matches the games home team.
+	/// </summary>
 	[Fact]
 	public void Coach_HomeTeam()
 	{
@@ -35,6 +44,9 @@ public sealed class GameByCoachSpecificationTests
 		Assert.True(result);
 	}
 
+	/// <summary>
+	/// Asserts that the specification is satisifed when the coach matches the opposing team.
+	/// </summary>
 	[Fact]
 	public void Coach_OpposingTeam()
 	{
@@ -50,11 +62,29 @@ public sealed class GameByCoachSpecificationTests
 		Assert.True(result);
 	}
 
+	/// <summary>
+	/// Asserts that the specification is satisfied when the coach matches both home and opposing teams.
+	/// </summary>
 	[Fact]
 	public void Coach_Both_Teams()
 	{
+		Guid coachId = Guid.NewGuid();
+		Game game = new()
+		{
+			HomeTeam = new Team { Name = string.Empty, UserId = coachId },
+			OpposingTeam = new Team { Name = string.Empty, UserId = coachId }
+		};
+
+		GameByCoachSpecification byCoachSpec = new(coachId);
+
+		bool result = byCoachSpec.IsSatisifiedBy(game);
+
+		Assert.True(result);
 	}
 
+	/// <summary>
+	/// Asserts that the specification is not satisifed when the coach doesn't match eaither team.
+	/// </summary>
 	[Fact]
 	public void Coach_Neither_Teams()
 	{

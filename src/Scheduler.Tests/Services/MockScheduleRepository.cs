@@ -86,7 +86,8 @@ public sealed class MockScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public Task EditPracticeDetails(Practice practice, Specification<Event> updateSpec)
+	public Task EditPracticeDetails(
+		Practice practice, Specification<Event> updateSpec)
 	{
 		IEnumerable<Practice> practices = this.events
 			.Where(e => e.GetType() == typeof(Practice))
@@ -107,8 +108,7 @@ public sealed class MockScheduleRepository : IScheduleRepository
 
 	/// <inheritdoc/>
 	public Task RelocateAsync(
-		Event scheduledEvent,
-		Specification<Event> updateSpec)
+		Event scheduledEvent, Specification<Event> updateSpec)
 	{
 		IEnumerable<Event> events = this.events
 			.AsQueryable()
@@ -124,7 +124,8 @@ public sealed class MockScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public Task RescheduleAsync(Event scheduledEvent)
+	public Task RescheduleAsync(
+		Event scheduledEvent, Specification<Event> updateSpec)
 	{
 		throw new NotImplementedException();
 	}

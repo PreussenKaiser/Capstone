@@ -64,7 +64,8 @@ public interface IScheduleRepository
 	/// <param name="scheduledEvent"><see cref="Event"/> values as well as the <see cref="Event"/> to reschedule.</param>
 	/// <param name="updateSpec">The specification to update the practice by.</param>
 	/// <returns>Whether the task was completed or not.</returns>
-	Task RescheduleAsync(Event scheduledEvent);
+	Task RescheduleAsync(
+		Event scheduledEvent, Specification<Event> updateSpec);
 
 	/// <summary>
 	/// Relocates a scheduled <see cref="Event"/>.

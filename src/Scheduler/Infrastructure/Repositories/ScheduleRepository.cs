@@ -110,22 +110,19 @@ public sealed class ScheduleRepository : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public async Task RescheduleAsync(Event scheduledEvent)
+	public async Task RescheduleAsync(
+		Event scheduledEvent, Specification<Event> updateType)
 	{
-		Event? eventToReschedule = await this.context.Events
+		IQueryable<Event> eventsToReschedule = this.context.Events
 			.AsTracking()
-			.FirstOrDefaultAsync(e => e.Id == scheduledEvent.Id);
+			.Where(updateType.ToExpression());
 
-		if (eventToReschedule is null)
+		foreach (var e in eventsToReschedule)
 		{
-			// Throw for logging.
-
-			return;
+			e.Reschedule(
+				scheduledEvent.StartDate,
+				scheduledEvent.EndDate);
 		}
-
-		eventToReschedule.Reschedule(
-			scheduledEvent.StartDate,
-			scheduledEvent.EndDate);
 
 		await this.context.SaveChangesAsync();
 	}

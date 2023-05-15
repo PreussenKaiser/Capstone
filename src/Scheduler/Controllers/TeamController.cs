@@ -107,7 +107,10 @@ public sealed class TeamController : Controller
 	{
 		if (!this.ModelState.IsValid)
 		{
-			return this.View(team);
+			return this.RedirectToAction(
+				nameof(TeamController.Details),
+				"Team",
+				new { team.Id });
 		}
 
 		if (!this.User.IsInRole(Role.ADMIN) &&

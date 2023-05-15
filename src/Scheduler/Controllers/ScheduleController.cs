@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scheduler.Domain.Models;
-using Scheduler.Filters;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
 using Scheduler.ViewModels;
@@ -9,8 +8,6 @@ using Scheduler.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Scheduler.Domain.Services;
 using Scheduler.Domain.Specifications.Teams;
-using System.Runtime.CompilerServices;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Scheduler.Web.Controllers;
 
@@ -247,7 +244,8 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// Redirected to <see cref="ScheduleController.Details(Guid)"/> if valid.
 	/// Redirected to <see cref="ScheduleController{TEvent}.Schedule(TEvent)"/> if invalid.
 	/// </returns>	[HttpPost]
-	public async ValueTask<IActionResult> Reschedule(TEvent values)
+	public async ValueTask<IActionResult> Reschedule(
+		TEvent values, UpdateType updateType)
 	{
 		if (!this.ModelState.IsValid)
 		{
@@ -260,7 +258,9 @@ public abstract class ScheduleController<TEvent> : Controller
 			return this.BadRequest();
 		}
 
-		await this.scheduleRepository.RescheduleAsync(values);
+		Specification<Event> updateSpec = updateType.ToSpecification(values);
+
+		await this.scheduleRepository.RescheduleAsync(values, updateSpec);
 
 		User? currentUser = await this.userManager.GetUserAsync(this.User);
 		

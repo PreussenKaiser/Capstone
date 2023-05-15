@@ -142,11 +142,12 @@ public sealed class ScheduleRepositoryLogger : IScheduleRepository
 	}
 
 	/// <inheritdoc/>
-	public async Task RescheduleAsync(Event scheduledEvent)
+	public async Task RescheduleAsync(
+		Event scheduledEvent, Specification<Event> updateSpec)
 	{
 		try
 		{
-			await this.scheduleRepository.RescheduleAsync(scheduledEvent);
+			await this.scheduleRepository.RescheduleAsync(scheduledEvent, updateSpec);
 
 			this.logger.LogInformation($"Event {scheduledEvent.Name} rescheduled.");
 		}
