@@ -74,7 +74,7 @@
                          this.User.Identity.IsAuthenticated &&
                          startTime.Day == endTime.Day)
                     {
-                        <button class="button buttonYellow" data-bs-dismiss="modal" onclick="gridModal(@startTime.Year, @startTime.Month, @startTime.Day)">Scheduling Grid</button>
+                        <button class="button buttonYellow calendar-mobile" data-bs-dismiss="modal" onclick="gridModal(@startTime.Year, @startTime.Month, @startTime.Day)">Scheduling Grid</button>
                     }
 
                     <button class="button buttonYellow calendar-full" onclick="window.print()">Print These Results</button>
