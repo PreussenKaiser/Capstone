@@ -1,5 +1,9 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css");
 
+:root {
+    --red: #c9000a;
+}
+
 html {
     font-size: 14px;
     background-color: #000000;
@@ -18,13 +22,13 @@ html {
 }
 
 .buttonRed {
-    background-color: #c9000a;
-    border: solid #c9000a !important;
+    background-color: var(--red);
+    border: solid var(--red) !important;
 }
 
 .buttonRedOutline {
     background-color: transparent !important;
-    border: solid #c9000a;
+    border: solid var(--red);
     color: black !important;
     box-shadow: none !important;
 }
@@ -72,7 +76,7 @@ html {
     color: #fff;
     text-decoration: none;
     width: 40%;
-    background-color: #c9000a;
+    background-color: var(--red);
     padding: 10px 20px 10px 10px;
     margin-bottom: 0px;
     line-height: 1.3;
@@ -83,7 +87,7 @@ html {
     color: #fff !important;
     text-decoration: none;
     transition: background-color .2s;
-    background-color: #c9000a;
+    background-color: var(--red);
     box-shadow: 0 -3px #af0006 inset;
     padding: 0px 0px 4px 0px;
     margin-bottom: 0px;
@@ -185,10 +189,11 @@ body {
 
 body::-webkit-scrollbar {
     width: 1rem;
+    background-color: black;
 }
 
 body::-webkit-scrollbar-thumb {
-    background-color: #c9000a;
+    background-color: var(--red);
 }
 
 @media (max-width: 999px) {
