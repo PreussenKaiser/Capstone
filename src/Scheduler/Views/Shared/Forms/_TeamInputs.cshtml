@@ -3,8 +3,10 @@
 @using Microsoft.AspNetCore.Identity;
 @using System.Security.Claims;
 @using Scheduler.Domain.Specifications;
+@using Scheduler.Domain.Repositories;
 
 @inject UserManager<User> UserManager;
+@inject ILeagueRepository LeagueRepository;
 @model Team
 
 @if (this.Model is not null)
@@ -23,17 +25,19 @@
        .ToList();
 
     UserList.Add(new SelectListItem { Text = "Visiting Coach", Value = null, Selected = false });
+
+    var LeagueList = await LeagueRepository.SearchAsync(new GetAllSpecification<League>());
 }
 
-<input hidden asp-for="LeagueId" />
-
 <div class="row mb-3">
-    <div class="col-sm-6">
+    <div class="col-sm">
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span> 
     </div>
-    <div class="col-sm-6">
+</div>
+<div class="row">
+    <div class="col-sm-6 mb-3">
         <label asp-for="UserId" class="form-label">Coach</label>
         <select asp-for="UserId" id="coaches" class="form-select">
             @foreach (var user in UserList)
@@ -42,6 +46,16 @@
             }
         </select>
         <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+    <div class="col-sm-6 mb-3">
+        <label asp-for="League" class="form-label">League</label>
+        <select asp-for="LeagueId" id="leagues" class="form-select">
+            @foreach (var league in LeagueList)
+            {
+                <option value="@league.Id">@league.Name</option>
+            }
+        </select>
+        <span asp-validation-for="LeagueId" class="text-danger"></span>
     </div>
 </div>
 
@@ -67,6 +81,10 @@
     $(document).ready(function () {
 
         $("#coaches").select2({
+            width: "100%"
+        });
+
+        $("#leagues").select2({
             width: "100%"
         });
 
