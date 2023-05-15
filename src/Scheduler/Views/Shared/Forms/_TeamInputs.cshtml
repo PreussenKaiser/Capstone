@@ -5,23 +5,23 @@
 @using Scheduler.Domain.Specifications;
 @using Scheduler.Domain.Repositories;
 
-@inject UserManager<User> UserManager;
-@inject ILeagueRepository LeagueRepository;
+@inject UserManager<User> UserManager
+@inject ILeagueRepository LeagueRepository
 @model Team
 
 @if (this.Model is not null)
 {
-    <input hidden asp-for="Id" />
+    <input hidden asp-for="Id" value="@this.Model.Id" />
 }
 
 @{
     var UserList = UserManager.Users
        .Select(user => new SelectListItem
-               {
-                   Text = user.ToString(),
-                   Value = user.Id.ToString(),
-                   Selected = Model != null && Model.UserId == user.Id
-               })
+        {
+            Text = user.ToString(),
+            Value = user.Id.ToString(),
+            Selected = Model != null && Model.UserId == user.Id
+        })
        .ToList();
 
     UserList.Add(new SelectListItem { Text = "Visiting Coach", Value = null, Selected = false });
