@@ -5,8 +5,9 @@
 @model Game
 
 @{
-    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository.SearchAsync(new GetAllSpecification<Team>()))
-    .Select(t => new SelectListItem
+    IEnumerable<SelectListItem> teamsSelect = (await this.TeamRepository
+        .SearchAsync(new GetAllSpecification<Team>()))
+        .Select(t => new SelectListItem
         {
             Text = t.Name,
             Value = t.Id.ToString()
@@ -14,7 +15,7 @@
 }
 
 <div class="row mb-3">
-    <div class="col-lg">
+    <div class="col">
         <label asp-for="HomeTeamId" class="form-label"></label>
         <select id="homeTeams" asp-for="HomeTeamId" class="form-select">
             <option value=""></option>
@@ -24,7 +25,7 @@
             }
         </select>
     </div>
-    <div class="col-lg">
+    <div class="col">
         <label asp-for="OpposingTeamId" class="form-label"></label>
         <select id="opposingTeams" asp-for="OpposingTeamId" class="form-select">
             <option value=""></option>
