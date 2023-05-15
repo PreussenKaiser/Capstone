@@ -41,9 +41,8 @@ public sealed class TeamController : Controller
 	/// <summary>
 	/// Displays the <see cref="Add"/> view.
 	/// </summary>
+	/// <param name="id">References the team's <see cref="League"/>, defaults to <see cref="Guid.Empty"/>.</param>
 	/// <returns>Contains a form for adding a <see cref="Team"/>.</returns>
-	[HttpGet]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Add(Guid? id)
 	{
 		Team team = new()
@@ -64,7 +63,6 @@ public sealed class TeamController : Controller
 	/// Redirected to <see cref="Add"/> if invalid.
 	/// </returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Add(Team team)
 	{
 		if (!this.ModelState.IsValid)
@@ -85,7 +83,6 @@ public sealed class TeamController : Controller
 	/// </summary>
 	/// <param name="id">References the <see cref="Team"/> to detail.</param>
 	/// <returns>Contains a form for updating the referenced <see cref="Team"/>.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		Team? team = (await this.teamRepository
@@ -106,7 +103,6 @@ public sealed class TeamController : Controller
 	/// Redirected to <see cref="Details(Guid)"/> if invalid.
 	/// </returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Details(Team team)
 	{
 		if (!this.ModelState.IsValid)
@@ -135,7 +131,6 @@ public sealed class TeamController : Controller
 	/// <param name="leagueId">The <see cref="League"/> the <see cref="Team"/> belongs to.</param>
 	/// <returns>Redirected to <see cref="LeagueController.Details(Guid)"/>.</returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Remove(Guid id, Guid leagueId)
 	{
 		// TODO: Unecessary query, might be better to pass this into RemoveAsync vs the id.

@@ -18,13 +18,14 @@
 <div class="modal fade" id="gamesModalPopup" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header m-auto">
-                <h2 class="text-center">@this.ViewData["Title"]</h2>
+            <div class="modal-header noPrintIfModal">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             @if (this.Model.CoachTeamsCount != 0)
             {
                 <div class="modal-body">
                     <div class="text-center">
+                        <h2 class="mb-4">@this.ViewData["Title"]</h2>
                         <div class="btn-group mb-2 noPrintIfModal">
                             <form class="me-3" action="javascript:void(0);" onsubmit="filterGames(this)" id="gamesFilterForm" autocomplete="off">
                                 <div>
@@ -88,7 +89,7 @@
                 </div>
                 <div class="modal-footer noPrintIfModal">
                     <div class="linkElement">
-                        <button class="button buttonGreen" onclick="window.print()">Print These Results</button>
+                        <button class="button buttonGreen calendar-full" onclick="window.print()">Print These Results</button>
                         <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -122,13 +123,11 @@
     }
 
     $(document).ready(function () {
-
         $("#coachTeamNameFilterGames").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%",
             dropdownParent: $('#gamesModalPopup')
         });
-
     });
 
     var startDateString = "@startDateString";
@@ -140,12 +139,14 @@
     var endDateFormatted;
     var minDate;
     var minDateFormatted;
+
     startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
     startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
     endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
     endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
     minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
     minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
+
     $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
     $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
 
@@ -170,7 +171,7 @@
 
     function filterGames(e) {
         $.ajax({
-            url: '@Url.Action("filterCoachEvents", "Dashboard")',
+            url: '@this.Url.Action("filterCoachEvents", "Dashboard")',
             data: {
                 searchTerm: e.searchTerm.value,
                 type: 'Game',
@@ -187,7 +188,7 @@
 
     function resetGamesFilter() {
         $.ajax({
-            url: '@Url.Action("filterCoachEvents", "Dashboard")',
+            url: '@this.Url.Action("filterCoachEvents", "Dashboard")',
             data: {
                 searchTerm: '',
                 type: 'Game',

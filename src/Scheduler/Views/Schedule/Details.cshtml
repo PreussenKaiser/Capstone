@@ -18,11 +18,11 @@
     this.ViewData["Title"] = this.Model.Name;
 
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
-    string startDateString = this.Model.StartDate.ToString(Constants.DATE_FORMAT);
-    string endDateString = this.Model.EndDate.ToString(Constants.DATE_FORMAT);
+    string startDateString = this.Model.StartDate.ToString(Constants.DATETIME_FORMAT);
+    string endDateString = this.Model.EndDate.ToString(Constants.DATETIME_FORMAT);
 
     string eventType = this.Model.GetType().Name;
-    bool recurringEvent = this.Model.Recurrence is not null;
+    bool recurringEvent = this.Model.RecurrenceId is not null;
     bool canEdit = this.User.IsInRole(Role.ADMIN) ||
                    this.UserManager.GetUserId(this.User) == this.Model.UserId.ToString();
 
@@ -57,32 +57,37 @@
                         @if (canEdit)
                         {                
                             <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#detailsModal">
-                                Edit <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Name of this Event, or Participating Teams."></i>
+                                Edit <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Name of this Event, or Participating Teams."></i>
                             </button>
                             <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">@this.Model.Name Details</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col">
                                                     <div class="mb-3">
                                                         <label asp-for="Name" class="form-label h6"></label>
                                                         <input asp-for="Name" class="form-control" />
                                                         <span asp-validation-for="Name" class="text-danger"></span>
                                                     </div>
-                                                    <div class="w-100">
+                                                    <div class="mb-3">
                                                         @if (eventType != nameof(Event))
                                                         {
                                                             <partial name="Forms/_@(eventType)Inputs" />
                                                         }
                                                     </div>
                                                 </div>
-                                                <div class="col-6">
-                                                    <partial name="Forms/_UpdateTypeInput" />
-                                                </div>
+
+                                                @if (recurringEvent)
+                                                {
+                                                    <div class="col-6">
+                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -127,9 +132,7 @@
                                 {
                                     <h6>Teams</h6>
                                     <small>
-                                        @homeTeam.Name
-                                        vs.
-                                        @opposingTeam.Name
+                                        @homeTeam.Name vs. @opposingTeam.Name
                                     </small>
                                 }
                             }
@@ -143,13 +146,14 @@
                             @if (canEdit)
                             {             
                                 <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
-                                    Reschedule <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Times of this Event."></i>
+                                    Reschedule <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Times of this Event."></i>
                                 </button>
                                 <div class="modal fade" id="rescheduleModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Reschedule Event</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
@@ -186,9 +190,12 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-6">
-                                                        <partial name="Forms/_UpdateTypeInput" />
-                                                    </div>
+                                                    @if (recurringEvent)
+                                                    {
+                                                        <div class="col-6">
+                                                            <partial name="Forms/_UpdateTypeInput" />
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -199,13 +206,14 @@
                                     </div>
                                 </div>
                                 <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                                    Cancel Event <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel this Event."></i>
+                                    Cancel Event <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel this Event."></i>
                                 </button>
                                 <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Cancel @eventType</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
@@ -215,9 +223,12 @@
                                                             It and all recurrences will be permanently removed.
                                                         </p>
                                                     </div>
-                                                    <div class="col-6">
-                                                        <partial name="Forms/_UpdateTypeInput" />
-                                                    </div>
+                                                    @if (recurringEvent)
+                                                    {
+                                                        <div class="col-6">
+                                                            <partial name="Forms/_UpdateTypeInput" />
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -250,13 +261,14 @@
                         @if (canEdit)
                         {   
                             <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#relocateModal">
-                                Relocate <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Location of this Event."></i>
+                                Relocate <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Change the Location of this Event."></i>
                             </button>
                             <div class="modal fade" id="relocateModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Relocate Event</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
@@ -276,7 +288,10 @@
                                                     }
                                                 </div>
                                                 <div class="col-6">
-                                                    <partial name="Forms/_UpdateTypeInput" />
+                                                    @if (recurringEvent)
+                                                    {
+                                                        <partial name="Forms/_UpdateTypeInput" />
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -367,6 +382,7 @@
              endDate: endDateFormatted,
              minDate: minDateFormatted,
              timePickerIncrement: 30,
+             drops: "down",
              locale: {
                  format: 'M/DD hh:mm A'
              }

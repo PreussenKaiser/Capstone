@@ -7,6 +7,7 @@ using Scheduler.Application.Services;
 using Scheduler.Domain.Models;
 using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Services;
+using Scheduler.Filters;
 using Scheduler.Infrastructure.Persistence;
 using Scheduler.Infrastructure.Repositories;
 
@@ -75,7 +76,10 @@ if (builder.Environment.IsDevelopment())
 	builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 }
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+	options.Filters.Add<ChangePasswordFilter>();
+});
 
 builder.Logging
 	.ClearProviders()

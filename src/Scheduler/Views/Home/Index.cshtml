@@ -7,9 +7,18 @@
 @{
     this.ViewData["Title"] = "Home";
 
+    var start = this.ViewData["Start"] as DateTime?;
+    var end = this.ViewData["End"] as DateTime?;
+
     string today = this.DateProvider.Now.ToString(Constants.DATE_FORMAT);
-    string startDateString = this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT);
-    string endDateString = this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT);
+
+    string startDateString = start is null
+        ? this.DateProvider.Now.Date.ToString(Constants.DATE_FORMAT)
+        : ((DateTime)start).ToString(Constants.DATE_FORMAT);
+
+    string endDateString = end is null
+        ? this.DateProvider.Now.AddYears(2).ToString(Constants.DATE_FORMAT)
+        : ((DateTime)end).ToString(Constants.DATE_FORMAT);
 }
 
 <div class="row text-center px-sm-5 mt-4 noPrintIfModal">
@@ -31,32 +40,28 @@
     <div class="col-12 text-center">
         <div class="btn-group mb-2 noPrintIfModal">
             <form action="javascript:void(0);" onsubmit="searchEvents(this)" id="searchForm" autocomplete="off">
+                <input name="StartDate" hidden id="StartDate" />
+                <input name="EndDate" hidden id="EndDate" />
+
                 <div>
                     <div class="linkElement">
                         <button type="button" class="button buttonRed" onclick="showHomepageDropdown()" data-bs-auto-close="false" aria-expanded="false">Search the Schedule <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Search the Schedule using specific criteria."></i></button>
                         <button class="button buttonRed" type="reset" onclick="resetSearchEvents()">Reset Search <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset your search criteria."></i></button>
                     </div>
                     
-                    <ul class="dropdown-menu p-3" id="homepage-dropdown">
+                    <div class="dropdown-menu p-3" id="homepage-dropdown">
                         <h5 class="lead text-danger text-center">Search Criteria <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose options below to search the Schedule."></i></h5>
                         <div>
                             <div class="form-label">
                                 <label class="form-label">
                                     Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br />Once the desired dates are selected and shown at the bottom, click 'Apply' and confirm that the desired dates show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates will <u>not</u> be applied."></i>
                                 </label>
-                                <input type="text" name="daterange" class="text-center form-control" />
-                            </div>
-                            <div>
-                                <input name="StartDate" type="hidden" id="StartDate" />
-                                <br />
-                            </div>
-                            <div>
-                                <input name="EndDate" type="hidden" id="EndDate" />
+                                <input type="text" name="daterange" title="Event Date(s)" class="text-center form-control" />
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Event Type</label>
-                            <select name="type" class="form-select">
+                            <select name="type" title="Event Type" class="form-select">
                                 <option value="Event">Events</option>
                                 <option value="Non-Team Event">Non-Team Events</option>
                                 <option value="Practice">Practices</option>
@@ -65,11 +70,11 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Event Name</label>
-                            <input type="text" name="searchTerm" class="form-control" />
+                            <input type="text" name="searchTerm" title="Event Name" class="form-control" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Team Name</label>
-                            <select id="teamNameSearch" name="teamName" class="form-select chosen">
+                            <select id="teamNameSearch" name="teamName" title="Team Name" class="form-select chosen">
                                 <option value=""></option>
                                 @foreach (Team t in this.Model.Teams)
                                 {
@@ -83,7 +88,7 @@
                                 <button type="button" class="button buttonRed" onclick="closeHomePageDropdown()">Close</button>
                             </div>
                         </div>
-                    </ul>
+                    </div>
                 </div>
             </form>
         </div>
@@ -98,7 +103,7 @@
             </div>
             <div class="modal-footer noPrintIfModal">
                 <div class="linkElement">
-                    <button class="button buttonRed" onclick="window.print()">Print The Map</button>
+                    <button class="button buttonGreen calendar-full" onclick="window.print()">Print The Map</button>
                     <button type="button" class="button buttonRed" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -121,34 +126,34 @@
     }
 
     $(document).ready(function () {
-
+        setSearchModalDatePicker();
         $("#teamNameSearch").select2({
             placeholder: "Start typing to select a Team...",
             width: "100%"
         });
-
     });
 
-    var startDateString = "@startDateString";
-    var endDateString = "@endDateString";
-    var minDateString = "@today";
-    var startDate;
-    var startDateFormatted;
-    var endDate;
-    var endDateFormatted;
-    var minDate;
-    var minDateFormatted;
-    startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
-    startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
-    endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
-    endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
-    minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
-    minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
-    $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
-    $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+    function setSearchModalDatePicker() {
+        var startDateString = "@startDateString";
+        var endDateString = "@endDateString";
+        var minDateString = "@today";
+        var startDate;
+        var startDateFormatted;
+        var endDate;
+        var endDateFormatted;
+        var minDate;
+        var minDateFormatted;
 
+        startDate = moment(startDateString, "YYYY-MM-DD"); // Parse the start date string and specify the format
+        startDateFormatted = startDate.format('M/DD/YYYY'); // Format the start date as desired
+        endDate = moment(endDateString, "YYYY-MM-DD"); // Parse the end date string and specify the format
+        endDateFormatted = endDate.format('M/DD/YYYY'); // Format the end date as desired
+        minDate = moment(minDateString, "YYYY-MM-DD"); // Parse the min date string and specify the format
+        minDateFormatted = minDate.format('M/DD/YYYY'); // Format the min date as desired
 
-    $(function () {
+        $('#StartDate').val(startDateFormatted); // Set initial value of StartDate on the form
+        $('#EndDate').val(endDateFormatted); // Set initial value of EndDate on the form
+
         $('input[name="daterange"]').daterangepicker({
             startDate: startDateFormatted,
             endDate: endDateFormatted,
@@ -164,11 +169,11 @@
             $('#StartDate').val(startDateFormatted); // Resets the value of StartDate when "Apply" is pressed
             $('#EndDate').val(endDateFormatted); // Resets the value of EndDate when "Apply" is pressed
         });
-    });    
+    };
 
     function searchEvents(e) {
         $.ajax({
-            url: '@Url.Action("searchModal", "Dashboard")',
+            url: '@this.Url.Action("searchModal", "Dashboard")',
             data: {
                 start: e.StartDate.value,
                 end: e.EndDate.value,
@@ -184,19 +189,18 @@
     }
 
     function resetSearchEvents() {
-        console.log(@startDateString);
-        console.log(@endDateString);
         $.ajax({
             url: '@Url.Action("searchModal", "Dashboard")',
             data: {
-                start: @startDateString,
-                end: @endDateString,
+                start: "@startDateString",
+                end: "@endDateString",
                 type: 'Event',
                 searchTerm: '',
                 teamName: ''
             },
             success: function (data) {
-                    $("#teamNameSearch").val(null).trigger('change');
+                $("#teamNameSearch").val(null).trigger('change');
+                setSearchModalDatePicker();
             }
         });
     }

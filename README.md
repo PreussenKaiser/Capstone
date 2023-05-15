@@ -17,5 +17,5 @@ Parents and athletes can find out when their practices or games are scheduled, a
 - Entity Framework Core
 - SQL Server 2022
 - xUnit
-- Chosen
+- Select2
 - Moq
