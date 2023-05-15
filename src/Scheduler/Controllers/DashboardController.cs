@@ -395,6 +395,15 @@ public sealed class DashboardController : Controller
 		
 		this.ViewData["Title"] = $"Events from {start.ToString("M/dd/yyyy")} to {end.ToString("M/dd/yyyy")}";
 
+		//if (end > start.AddYears(1))
+		//{
+		//	this.ViewData["Title"] = $"All {type}s";
+		//}
+		//else
+		//{
+		//	this.ViewData["Title"] = $"All {type}s from {start.ToString("M/dd/y")} to {end.ToString("M/dd/y")}";
+		//}
+
 		return this.ViewComponent("SearchListModal");
 	}
 
@@ -415,10 +424,9 @@ public sealed class DashboardController : Controller
 		this.ViewData["Start"] = monthDate;
 		this.ViewData["End"] = monthEndDate;
 		this.ViewData["Title"] = $"Events in {monthDate.ToString("MMMM")}";
-		if (!events.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = "Showing all Events";
-		}			
+		this.ViewData["TypeFilterMessage"] = !events.IsNullOrEmpty()
+			? "Showing all Events"
+			: null;
 		return this.ViewComponent("ListModal");
 	}
 
@@ -440,10 +448,9 @@ public sealed class DashboardController : Controller
 		this.ViewData["Start"] = weekStartDate;
 		this.ViewData["End"] = weekEndDate;
 		this.ViewData["Title"] = $"Events for the week of {weekStartDate.ToString("M")}";
-		if (!events.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = "Showing all Events";
-		}
+		this.ViewData["TypeFilterMessage"] = !events.IsNullOrEmpty()
+			? "Showing all Events"
+			: null;		
 		return this.ViewComponent("ListModal");
 	}
 
@@ -464,10 +471,9 @@ public sealed class DashboardController : Controller
 		this.ViewData["Start"] = eventDate; //12:00 AM on the selected day.
 		this.ViewData["End"] = eventDate.Date.AddDays(1).AddSeconds(-1); //11:59 PM on the selected day.
 		this.ViewData["Title"] = $"Events on {eventDate.ToString("M")}";
-		if (!events.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = "Showing all Events";
-		}
+		this.ViewData["TypeFilterMessage"] = !events.IsNullOrEmpty()
+			? "Showing all Events"
+			: null;
 		return this.ViewComponent("ListModal");
 	}
 
@@ -540,14 +546,9 @@ public sealed class DashboardController : Controller
 			events = this.TeamSearch(teamName, type, events);
 		}
 
-		if (events.IsNullOrEmpty())
-		{
-			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
-		}
-		else
-		{
-			this.ViewData["TypeFilterMessage"] = $"Showing All {type}s";
-		}
+		this.ViewData["TypeFilterMessage"] = events.IsNullOrEmpty()
+			? $"No {type}s found"
+			: $"Showing all {type}s";
 
 		this.ViewData["Teams"] = await this.context.Teams.ToListAsync();
 		this.ViewData["Start"] = start;
@@ -614,7 +615,7 @@ public sealed class DashboardController : Controller
 
 		if(matchingGames.IsNullOrEmpty() && matchingPractices.IsNullOrEmpty())
 		{
-			ViewData["TeamFilterMessage"] = "There are no scheduled " + type + "s for Team " + selectedTeam.Name + "\nduring the selected dates";
+			this.ViewData["TeamFilterMessage"] = "for Team " + selectedTeam.Name + " during the selected dates";
 			return null;
 		}
 		else if (matchingGames.IsNullOrEmpty() && !matchingPractices.IsNullOrEmpty())
@@ -651,9 +652,7 @@ public sealed class DashboardController : Controller
 			.Where(e => e.Name.ToLower()
 			.Contains(searchTerm.ToLower()));
 
-		this.ViewData["NameFilterMessage"] = events.Count() > 0
-			? $"that match the search term {searchTerm}"
-			: $"There are no {type}s that match the search term {searchTerm}";
+		this.ViewData["NameFilterMessage"] = $"that match the search term {searchTerm}";
 
 		return events;
 	}
