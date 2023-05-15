@@ -8,17 +8,17 @@
     string teamFilterMessage = this.ViewData["TeamFilterMessage"] as string ?? string.Empty;
 }
 
-@if (this.Model is not null && this.Model.Count() > 0)
+@if (this.Model is not null && this.Model.Any())
 {
-    if(typeFilterMessage != string.Empty)
+    if (typeFilterMessage != string.Empty)
     {
         <h5 class="text-center lead text-danger">@typeFilterMessage</h5>
     }
-    if(nameFilterMessage != string.Empty)
+    if (nameFilterMessage != string.Empty)
     {
         <h5 class="text-center lead text-danger">@nameFilterMessage</h5>
     }
-    if(teamFilterMessage != string.Empty)
+    if (teamFilterMessage != string.Empty)
     {
         <h5 class="text-center lead text-danger">@teamFilterMessage</h5>
     }
@@ -56,6 +56,7 @@
                         <td>@e.Field?.Name</td>
                         
                     }
+
                     @if (e is Game game)
                     {
                         Team? homeTeam = teams.FirstOrDefault(t => t.Id == game.HomeTeamId);

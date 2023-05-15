@@ -10,11 +10,11 @@
 	</div>
 
 	<div>
-		<button class="button buttonRed mt-3" onclick="gamesModal()">
+		<button class="button buttonRed mt-3 coach-modal" onclick="gamesModal()">
 			My Scheduled Games <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Games for all of your teams."></i>
 		</button>
 
-		<button class="button buttonRed mt-3" onclick="practicesModal()">
+		<button class="button buttonRed mt-3 coach-modal" onclick="practicesModal()">
 			My Scheduled Practices <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Bring up a list of Scheduled Practices for all of your teams."></i>
 		</button>
 		@if (this.User.IsInRole(Role.ADMIN))
@@ -44,6 +44,17 @@
 			}
 		});
 	}
+
+	$(document).on('click', '.coach-modal', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
+
 	function practicesModal() {
 		$.ajax({
 			url: '@this.Url.Action("coachEvents", "Dashboard")',

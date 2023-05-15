@@ -36,7 +36,6 @@ public sealed class EventController : ScheduleController<Event>
 	/// <param name="values">New <see cref="Event"/> values.</param>
 	/// <returns></returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public override async Task<IActionResult> EditDetails(
 		Event values, UpdateType updateType)
 	{

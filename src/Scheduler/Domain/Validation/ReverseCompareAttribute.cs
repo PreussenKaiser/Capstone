@@ -19,12 +19,14 @@ public sealed class ReverseCompareAttribute : ValidationAttribute
 	/// <inheritdoc />
 	protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
 	{
-		object? otherPropertyValue = validationContext.ObjectType
+		object? otherPropertyValue = validationContext?.ObjectType
 			.GetRuntimeProperty(this.OtherProperty)
 			?.GetValue(validationContext.ObjectInstance, null);
 
 		if (Equals(value, otherPropertyValue))
+		{
 			return new(this.ErrorMessage);
+		}
 
 		return null;
 	}

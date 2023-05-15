@@ -44,7 +44,7 @@
                 <th class="text-center align-middle" colspan="4">
                     <div class="row d-flex justify-content-center">
                         <div class="col">
-                            <select id="month" class="form-select calendar-title text-center" style="width:120%">
+                            <select title="Month" id="month" class="form-select calendar-title text-center" style="width:120%">
                                 <option value="1" selected="@(currentMonth == 1)">January</option>
                                 <option value="2" selected="@(currentMonth == 2)">February</option>
                                 <option value="3" selected="@(currentMonth == 3)">March</option>
@@ -60,7 +60,7 @@
                             </select>
                         </div>
                         <div class="col d-flex justify-content-center">
-                            <select id="year" class="form-select calendar-title text-center w-75">
+                            <select title="Year" id="year" class="form-select calendar-title text-center w-75">
                                 @foreach (var year in yearList)
                                 {
                                     <option value="@year" selected="@(currentYear == year)">@year</option>
@@ -243,6 +243,9 @@
 
 <div id="modal"></div>
 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     var calendar = document.getElementById('calendar-full');
     calendar.removeEventListener('click', handleClick);
@@ -348,6 +351,16 @@
         });
     }
 
+    $(document).on('click', '.month-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
+
     function weekModal(year, month, start) {
         $.ajax({
             url: '@Url.Action("weekModal", "Dashboard")',
@@ -362,6 +375,16 @@
         });
     }
 
+    $(document).on('click', '.week-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
+
     function dayModal(year, month, date) {
         $.ajax({
             url: '@this.Url.Action("dayModal", "Dashboard")',
@@ -375,6 +398,16 @@
             }
         });
     }
+
+    $(document).on('click', '.day-button', function () {
+        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
+
+        // Hide the tooltip
+        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
+        if (tooltip) {
+            tooltip.hide();
+        }
+    });
 
     function gridModal(year, month, date) {
         $.ajax({

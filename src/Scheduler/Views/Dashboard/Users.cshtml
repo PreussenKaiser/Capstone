@@ -56,7 +56,9 @@
                     </td>
                     <td class="text-center">
                         <form action="@this.Url.Action("Profile", "Identity", new { id = user.Id })" method="get">
-                            <button type="submit" class="button buttonRedOutline w-100">Update</button>
+                            <button type="submit" class="button buttonRedOutline w-100">
+                                Edit
+                            </button>
                         </form>
                     </td>
                     <td>
@@ -70,6 +72,7 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">@user.ToString()</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             Are you sure you want to remove @(user.ToString())?

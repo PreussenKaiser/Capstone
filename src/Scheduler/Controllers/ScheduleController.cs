@@ -46,7 +46,6 @@ public sealed class ScheduleController : Controller
 	/// </summary>
 	/// <param name="type">The type of inputs to render. Name aligns with object name.</param>
 	/// <returns>The rendered inputs.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public PartialViewResult RenderInputs(string type)
 	{
 		return this.PartialView($"Forms/_{type}Inputs");
@@ -56,9 +55,9 @@ public sealed class ScheduleController : Controller
 	/// Displays the <see cref="Index"/> view.
 	/// </summary>
 	/// <returns>A form for scheduling an event.</returns>
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public IActionResult Index(
-		DateTime? date = null, Guid? fieldId = null)
+		DateTime? date = null,
+		Guid? fieldId = null)
 	{
 		DateTime startDate = this.dateProvider.Now;
 
@@ -94,7 +93,6 @@ public sealed class ScheduleController : Controller
 	/// <param name="id">References the event to detail.</param>
 	/// <returns></returns>
 	[AllowAnonymous]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Details(Guid id)
 	{
 		ByIdSpecification<Event> byIdSpec = new(id);
@@ -112,7 +110,6 @@ public sealed class ScheduleController : Controller
 	}
 
 	[HttpGet]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	[Authorize(Roles = Role.ADMIN)]
 	public async Task<IActionResult> CloseFacility(
 		[FromServices] UserManager<User> userManager)
@@ -129,8 +126,8 @@ public sealed class ScheduleController : Controller
 			// Tomorrow at 8 am and a month from tomorrow at 11 pm
 			Id = Guid.NewGuid(),
 			UserId = user.Id,
-			StartDate = this.dateProvider.Now.AddDays(1).AddHours(8),
-			EndDate = this.dateProvider.Now.AddMonths(1).AddDays(1).AddHours(22).AddMinutes(59),
+			StartDate = this.dateProvider.Now.Date.AddDays(1),
+			EndDate = this.dateProvider.Now.Date.AddMonths(1).AddDays(1),
 			RecurrenceId = null,
 			Name = "Facility Closed",
 			IsBlackout = true
@@ -140,13 +137,14 @@ public sealed class ScheduleController : Controller
 	}
 
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> CloseFacility(Event closeoutEvent)
 	{
 		if (!this.ModelState.IsValid)
 		{
 			return this.View(closeoutEvent);
 		}
+
+		closeoutEvent.EndDate = closeoutEvent.EndDate.AddHours(23).AddMinutes(59);
 
 		await this.scheduleRepository.ScheduleAsync(closeoutEvent);
 
@@ -207,7 +205,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// Redirected to <see cref="ScheduleController{TEvent}.Schedule(TEvent)"/> if invalid.
 	/// </returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Schedule(TEvent scheduledEvent)
 	{
 		if (!this.ModelState.IsValid)
@@ -237,7 +234,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <param name="values"><see cref="Event"/> values as well as the <see cref="Event"/> to edit.</param>
 	/// <returns></returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public abstract Task<IActionResult> EditDetails(
 		TEvent values, UpdateType updateType);
 
@@ -249,7 +245,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// Redirected to <see cref="ScheduleController.Details(Guid)"/> if valid.
 	/// Redirected to <see cref="ScheduleController{TEvent}.Schedule(TEvent)"/> if invalid.
 	/// </returns>	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Reschedule(TEvent values)
 	{
 		if (!this.ModelState.IsValid)
@@ -299,7 +294,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <param name="values"></param>
 	/// <returns></returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async ValueTask<IActionResult> Relocate(
 		TEvent values, UpdateType updateType,
 		[FromServices] IFieldRepository fieldRepository)
@@ -347,7 +341,6 @@ public abstract class ScheduleController<TEvent> : Controller
 	/// <param name="id">References the <see cref="Event"/> to cancel.</param>
 	/// <returns>Redirected to <see cref="DashboardController.Events(string?, string?)"/>.</returns>
 	[HttpPost]
-	[TypeFilter(typeof(ChangePasswordFilter))]
 	public async Task<IActionResult> Cancel(
 		Guid id, UpdateType updateType)
 	{
