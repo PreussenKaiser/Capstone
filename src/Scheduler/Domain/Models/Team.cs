@@ -10,6 +10,7 @@ public sealed class Team : Entity
 	/// <summary>
 	/// References <see cref="League.Id"/>.
 	/// </summary>
+	[Display(Name = nameof(League))]
 	[Required(ErrorMessage = "Please select a league.")]
 	public Guid LeagueId { get; init; }
 

@@ -88,12 +88,10 @@ public sealed class LeagueController : Controller
 	[Authorize(Roles = Role.ADMIN)]
 	public async ValueTask<IActionResult> Details(League league)
 	{
-		if (!this.ModelState.IsValid)
+		if (this.ModelState.IsValid)
 		{
-			return this.View(league);
+			await this.leagueRepository.UpdateAsync(league);
 		}
-
-		await this.leagueRepository.UpdateAsync(league);
 
 		return this.RedirectToAction(
 			nameof(LeagueController.Details),

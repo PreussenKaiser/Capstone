@@ -33,8 +33,7 @@ function navClick(eventType) {
         data: { type: 'Blackout' },
         success: refreshBlackoutInputs
     })
-
-    refreshNav(eventType)
+    refreshNav(eventType);
 }
 
 /**
