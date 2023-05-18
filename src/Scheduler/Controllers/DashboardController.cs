@@ -7,13 +7,10 @@ using Scheduler.Domain.Repositories;
 using Scheduler.Domain.Specifications;
 using Scheduler.Infrastructure.Extensions;
 using Scheduler.Infrastructure.Persistence;
-using Scheduler.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Scheduler.ViewModels;
 using Scheduler.Domain.Services;
-using Microsoft.Extensions.Logging;
 using NaturalSort.Extension;
-using System.Collections.Immutable;
 
 namespace Scheduler.Web.Controllers;
 

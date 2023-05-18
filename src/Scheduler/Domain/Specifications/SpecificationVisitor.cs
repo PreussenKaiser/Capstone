@@ -16,7 +16,7 @@ public sealed class SpecificationVisitor : ExpressionVisitor
 		this.newExpr = newExpr;
 	}
 
-	[return: NotNullIfNotNull("node")]
+	[return: NotNullIfNotNull(nameof(node))]
 	public override Expression? Visit(Expression? node)
 	{
 		return node == this.oldExpr
