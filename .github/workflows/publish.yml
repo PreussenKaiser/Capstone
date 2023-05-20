@@ -1,5 +1,8 @@
 name: Publish
 
+env:
+    PROJ_ROOT: src/Scheduler
+
 on:
   push:
     branches: [main]
@@ -15,12 +18,19 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
+
+    - name: App variable substitution
+      uses: microsoft/app-variable-substitution@v1
+      with:
+        files: '${{ env.PROJ_ROOT }}/appsettings.json'
+      env:
+        ConnectionStrings.Default: ${{ secrets.DB_CONN }}
       
     - name: Deploy
-      run: dotnet publish src/Scheduler /p:PublishProfile=WebDeploy /p:Password=${{ secrets.MWH_PASS }}
+      run: dotnet publish ${{ env.PROJ_ROOT }} /p:PublishProfile=WebDeploy /p:Password=${{ secrets.MWH_PASS }}
 
     - name: Apply migrations
       run: |
         dotnet tool install --global dotnet-ef
         dotnet tool restore
-        dotnet ef database update -p src/Scheduler
+        dotnet ef database update -p ${{ env.PROJ_ROOT }}

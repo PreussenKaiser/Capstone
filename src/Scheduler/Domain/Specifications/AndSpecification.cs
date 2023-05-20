@@ -37,8 +37,9 @@ public sealed class AndSpecification<TEntity> : Specification<TEntity>
 	public override Expression<Func<TEntity, bool>> ToExpression()
 	{
 		ParameterExpression? parameter = Expression.Parameter(typeof(TEntity));
-		var leftExpr = this.leftSpec.ToExpression();
-		var rightExpr = this.rightSpec.ToExpression();
+
+		Expression<Func<TEntity, bool>> leftExpr = this.leftSpec.ToExpression();
+		Expression<Func<TEntity, bool>> rightExpr = this.rightSpec.ToExpression();
 
 		SpecificationVisitor leftVisitor = new(leftExpr.Parameters[0], parameter);
 		Expression? left = leftVisitor.Visit(leftExpr.Body);
