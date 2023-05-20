@@ -20,7 +20,7 @@ jobs:
         dotnet-version: 7.0.x
 
     - name: App variable substitution
-      uses: microsoft/app-variable-substitution@v1
+      uses: microsoft/variable-substitution@v1
       with:
         files: '${{ env.PROJ_ROOT }}/appsettings.json'
       env:
