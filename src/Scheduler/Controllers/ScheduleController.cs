@@ -405,9 +405,7 @@ public abstract class ScheduleController<TEvent> : Controller
 			ByCoachSpecification byCurrentUser = new(currentUserId);
 
 			teams = await this.teamRepository.SearchAsync(
-				byTeamId
-					.And(byCurrentUser
-						.Not()));
+				byTeamId.And(byCurrentUser.Not()));
 		}
 		else if (scheduledEvent is Game game)
 		{
