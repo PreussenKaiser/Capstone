@@ -25,7 +25,7 @@
                     @if (canEdit)
                     {      
                         <button type="button" class="button buttonRed" data-bs-toggle="modal" data-bs-target="#detailsModal">
-                            Edit <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Change the Details for the @Model.Name League."></i>
+                            Edit
                         </button>
                         <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
@@ -99,7 +99,7 @@
             <h4 class="text-start w-100">@this.Model.Name Teams</h4>
             <div class="w-75 text-end me-3">
                 <form asp-action="Add" asp-controller="Team" asp-route-id="@this.Model.Id" method="get">
-                    <button type="submit" class="button buttonRed">Add Team <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Team to the @this.Model.Name League."></i></button>
+                    <button type="submit" class="button buttonRed">Add Team</button>
                 </form>
             </div>
         </div>

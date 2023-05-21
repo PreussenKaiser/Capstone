@@ -69,10 +69,10 @@ public sealed class IdentityController : Controller
 
 		var loggedInUser = await this.signInManager.UserManager.FindByEmailAsync(viewModel.Email);
 
-		if (loggedInUser != null)
-		{
-			await this.signInManager.UserManager.UpdateSecurityStampAsync(loggedInUser);
-		}
+		//if (loggedInUser != null)
+		//{
+		//	await this.signInManager.UserManager.UpdateSecurityStampAsync(loggedInUser);
+		//}
 
 		var result = await this.signInManager.PasswordSignInAsync(
 			viewModel.Email,
