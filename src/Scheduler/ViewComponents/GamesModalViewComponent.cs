@@ -56,6 +56,7 @@ public sealed class GamesModalViewComponent : ViewComponent
 		Guid coachId = this.GetCurrentCoach();
 
 		IEnumerable<Game> games = await this.scheduleRepository.SearchAsync(new GameByCoachSpecification(coachId));
+		games = games.OrderBy(e => e.StartDate);
 		IEnumerable<Team> teams = await this.teamRepository.SearchAsync(new GetAllSpecification<Team>());
 		IEnumerable<Team> coachTeams = teams
 			.AsQueryable()
@@ -63,8 +64,8 @@ public sealed class GamesModalViewComponent : ViewComponent
 			.ToList();
 
 		this.ViewData["TypeFilterMessage"] = games.Any()
-			? "Showing all games"
-			: "No games found";
+			? "Showing all Games"
+			: "No Games found";
 
 		return this.View(
 			"GamesModal",

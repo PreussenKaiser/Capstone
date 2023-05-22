@@ -56,6 +56,7 @@ public sealed class PracticesModalViewComponent : ViewComponent
 			?? throw new NullReferenceException("Could not determine current user."));
 
 		IEnumerable<Practice> practices = await this.scheduleRepository.SearchAsync(new PracticeByCoachSpecification(coachId));
+		practices = practices.OrderBy(e => e.StartDate);
 		IEnumerable<Team> teams = await this.teamRepository.SearchAsync(new GetAllSpecification<Team>());
 		IEnumerable<Team> coachTeams = teams
 			.AsQueryable()
@@ -63,8 +64,8 @@ public sealed class PracticesModalViewComponent : ViewComponent
 			.ToList();
 
 		this.ViewData["TypeFilterMessage"] = practices.Any()
-			? "Showing all practices"
-			: "No practices found";
+			? "Showing all Practices"
+			: "No Practices found";
 
 		return this.View(
 			"PracticesModal",

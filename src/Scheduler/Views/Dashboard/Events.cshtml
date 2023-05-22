@@ -45,16 +45,6 @@
 		});
 	}
 
-	$(document).on('click', '.coach-modal', function () {
-        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
-
-        // Hide the tooltip
-        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
-        if (tooltip) {
-            tooltip.hide();
-        }
-    });
-
 	function practicesModal() {
 		$.ajax({
 			url: '@this.Url.Action("coachEvents", "Dashboard")',
