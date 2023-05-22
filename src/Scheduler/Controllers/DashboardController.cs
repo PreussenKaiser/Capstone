@@ -178,14 +178,14 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 
-			games = games!.Distinct();
+			games = games!.Distinct().OrderBy(e => e.StartDate);
 		}
 
 		if (!practices.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = $"Showing all {type}s";
 
-			practices = practices?.Distinct();
+			practices = practices?.Distinct().OrderBy(e => e.StartDate);
 		}
 
 		if (games.IsNullOrEmpty() && practices.IsNullOrEmpty())
