@@ -216,7 +216,7 @@ public class Event : Entity, IValidatableObject
 			results.Add(new("End time must be at least 30 minutes after start time."));
 		}
 
-		if ((this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 22) && this.Name != "Facility Closed")
+		if ((this.StartDate.Hour < 8 || this.StartDate.Hour > 22 || this.EndDate.Hour < 8 || this.EndDate.Hour > 23 || (this.EndDate.Hour == 23 && this.EndDate.Minute != 0)) && this.Name != "Facility Closed")
 		{
 			results.Add(new("Event Times must be between 8 am and 11 pm."));
 		}

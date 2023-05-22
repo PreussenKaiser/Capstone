@@ -48,7 +48,7 @@
 </div>
 <div class="row">
     <div class="col-sm-6 mb-3">
-        <label asp-for="UserId" class="form-label">Coach</label>
+        <label asp-for="UserId" class="form-label">Coach <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="top" title="Use the 'Visiting Coach' option for Teams that are not in the PCYS."></i></label>
         <select asp-for="UserId" title="Team coach" id="coaches" class="form-select">
             @foreach (var user in userList)
             {

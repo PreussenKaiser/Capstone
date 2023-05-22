@@ -18,6 +18,9 @@
     string endDateString = endDate.ToString(Constants.DATE_FORMAT);
     string searchModalStartDateString = startDate.ToString(Constants.DATE_FORMAT);
     string searchModalEndDateString = endDate.ToString(Constants.DATE_FORMAT);
+
+    string selectedTeam = this.ViewData["SelectedTeam"] as string ?? string.Empty;
+    string searchTerm = this.ViewData["SearchTerm"] as string ?? string.Empty;    
 }
 
 <div class="modal fade" id="searchListModalPopup" tabindex="-1">
@@ -36,13 +39,13 @@
                             
                             <div>
                                 <div class="linkElement">
-                                    <button type="button" class="button buttonRed" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Filter these results using specific criteria."></i></button>
-                                    <button class="button buttonRed" type="reset" onclick="resetEvents()">Reset Filter <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Reset your filter criteria."></i></button>
+                                    <button type="button" class="button buttonRed" onclick="showModalDropdown()" data-bs-auto-close="false" aria-expanded="false">Filter Results</button>
+                                    <button class="button buttonRed" type="reset" onclick="resetEvents()">Reset Filter</button>
                                 </div>
                                 <ul class="dropdown-menu p-3" style="width:120%" id="searchListModalDropdown">
                                     <h5 class="lead text-danger text-center">Filter Criteria <i class="bi bi-question-circle calendar-full" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose options below to filter your results."></i></h5>
                                     <div class="form-label">
-                                        <label class="form-label">Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br /><b>Adjusting times:</b> Use the dropdowns at the bottom. The starting time is on the left, the ending time is on the right.<br /><br />Once the desired dates and times are selected and shown at the bottom, click 'Apply' and confirm that the desired dates and times show in the resulting box.<br /><br />DO NOT click outside of the datepicker box without clicking 'Apply' or the new dates and times will NOT be applied."></i></label>
+                                        <label class="form-label">Event Date(s) <i class="bi bi-question-circle" data-bs-custom-class="custom-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="<b>To use the PCYS Date Picker:</b><br /><br /><b>Picking a single date:</b> Click twice on the desired day.<br /><br /><b>Picking a range of days:</b> Click once on the starting day, then click on the ending day. The highlight between the days will show the range.<br /><br />Once the desired dates are selected and shown at the bottom, click 'Apply' and confirm that the desired dates show in the resulting box.<br /><br />Do not click outside of the datepicker box without clicking 'Apply' or the new dates will <u>not</u> be applied."></i></label>
                                         <input type="text" name="searchdaterange" class="text-center form-control" />
                                     </div>
                                     <div class="mb-3">
@@ -56,17 +59,26 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Event Name</label>
-                                        <input type="text" name="searchTerm" class="form-control" />
+                                        <input type="text" name="searchTerm" value="@searchTerm" class="form-control" />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Team Name</label>
-                                        <select id="teamNameSearchFilter" name="teamName" class="form-select chosen">
-                                            <option value=""></option>
-                                            @foreach (Team t in teams)
+                                            @if (selectedTeam != "")
                                             {
-                                                <option value=@t.Name>@t.Name</option>
+                                                <select name="teamName" class="form-select chosen">
+                                                    <option value="@selectedTeam">@selectedTeam</option>
+                                                </select>
                                             }
-                                        </select>
+                                            else
+                                            {
+                                                <select id="teamNameSearchFilter" name="teamName" class="form-select chosen">
+                                                    <option value=""></option>
+                                                    @foreach (Team t in teams)
+                                                    {
+                                                        <option value=@t.Name>@t.Name</option>
+                                                    }
+                                                </select>
+                                            }
                                     </div>
                                     <div class="text-center">
                                         <div class="linkElement">
@@ -181,7 +193,10 @@
             data: {
                 type: 'Event',
                 start: "@searchModalStartDateString",
-                end: "@searchModalEndDateString"
+                end: "@searchModalEndDateString",
+                teamName: "@selectedTeam",
+                searchTerm: "@searchTerm"
+
             },
             success: function(data) {
                 setTitle("@title");

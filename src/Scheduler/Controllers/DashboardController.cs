@@ -310,18 +310,20 @@ public sealed class DashboardController : Controller
 		{
 			events = this.NameSearch(searchTerm!, type, events)
 				?? Enumerable.Empty<Event>().AsQueryable();
+			this.ViewData["SearchTerm"] = searchTerm;
 		}
 
 		if (!teamName.IsNullOrEmpty())
 		{
 			events = this.TeamSearch(teamName!, type, events)
 				?? Enumerable.Empty<Event>().AsQueryable();
+			this.ViewData["SelectedTeam"] = teamName;
 		}
 
 		if (events.IsNullOrEmpty())
 		{
 			this.ViewData["Events"] = null;
-			this.ViewData["TypeFilterMessage"] = $"No {type} found";
+			this.ViewData["TypeFilterMessage"] = $"No {type}s found";
 		}
 		else
 		{
@@ -362,6 +364,11 @@ public sealed class DashboardController : Controller
 		{
 			this.ViewData["TypeFilterMessage"] = "Showing all Events";
 		}
+		else
+		{
+			this.ViewData["TypeFilterMessage"] = "No Events Found";
+
+		}
 
 		return this.ViewComponent("ListModal");
 	}
@@ -389,6 +396,11 @@ public sealed class DashboardController : Controller
 		if (!events.IsNullOrEmpty())
 		{
 			this.ViewData["TypeFilterMessage"] = "Showing all Events";
+		}
+		else
+		{
+			this.ViewData["TypeFilterMessage"] = "No Events Found";
+
 		}
 
 		return this.ViewComponent("ListModal");
@@ -597,7 +609,8 @@ public sealed class DashboardController : Controller
 		{
 			events = matchingPractices
 				?.Concat(matchingGames!.AsQueryable())
-				.AsQueryable();
+				.AsQueryable()
+				.OrderBy(e => e.StartDate);
 		}
 
 		this.ViewData["TeamFilterMessage"] = "for Team " + selectedTeam.Name;
@@ -619,7 +632,8 @@ public sealed class DashboardController : Controller
 	{
 		events = events
 			?.Where(e => e.Name.ToLower()
-			.Contains(searchTerm.ToLower()));
+			.Contains(searchTerm.ToLower()))
+			.OrderBy(e => e.StartDate);
 
 		this.ViewData["NameFilterMessage"] = $"that match the search term {searchTerm}";
 

@@ -387,41 +387,4 @@
             }
         });
     }
-
-    $(document).on('click', '.month-button', function () {
-        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
-
-        console.log('hello mom!')
-
-        // Hide the tooltip
-        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
-        if (tooltip) {
-            tooltip.hide();
-        }
-    });
-
-    $(document).on('click', '.week-button', function () {
-        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
-
-        // Hide the tooltip
-        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
-        if (tooltip) {
-            tooltip.hide();
-        }
-    });
-
-    $(document).on('click', '.day-button', function () {
-        var $tooltip = $(this).find('[data-bs-toggle="tooltip"]');
-
-        // Hide the tooltip
-        var tooltip = bootstrap.Tooltip.getInstance($tooltip.get(0));
-        if (tooltip) {
-            tooltip.hide();
-        }
-    });
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
 </script>
