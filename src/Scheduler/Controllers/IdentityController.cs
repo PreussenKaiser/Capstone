@@ -75,19 +75,16 @@ public sealed class IdentityController : Controller
 
 		if (!result.Succeeded)
 		{
-			if (result.IsLockedOut)
-			{
-				this.ModelState.AddModelError(string.Empty, "This account is unavailable. Please reset your password or wait 15 minutes to try again.");
-			}
-			else
-			{
-				this.ModelState.AddModelError(string.Empty, "Incorrect credentials, please try again.");
-			}
+			this.ModelState.AddModelError(
+				string.Empty,
+				result.IsLockedOut
+					? "This account is unavailable. Please reset your password or wait 15 minutes to try again."
+					: "Incorrect credentials, please try again.");
 
 			return this.View(viewModel);
 		}
 
-		var user = this.signInManager.UserManager.Users.FirstOrDefault(u => u.Email == viewModel.Email);
+		User? user = await this.signInManager.UserManager.FindByEmailAsync(viewModel.Email);
 
 		if (user is null)
 		{
